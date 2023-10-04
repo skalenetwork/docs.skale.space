@@ -1,0 +1,26 @@
+---
+title: Network
+description: SKALE network explanation
+---
+
+The SKALE Network is an open-source, Ethereum-native multichain network built to scale Ethereum dApps with a focus on high-throughput, fast finality, and zero gas fee transactions via the native gas token sFuel.
+
+The ecosystem has over 120 nodes. However all this nodes are not responsible to make only one chain. The nodes are arranged in a way that allow the existence of several different chains hence SKALE being a multichain network.
+
+## Schain Creation
+
+Each individual SKALE chain follows the following creation process:
+- A call is made to the SKALE manager contract on the Ethereum mainnet
+- 16 randomly picked nodes are chosen out of the existing pool of the networtk
+- A DKG round is performed and each node gets is own secret key to be able to then participate of the consensus rounds
+
+## Schain caracheristics
+
+Every SKALE chain created possess the following caracheristics:
+- Zero gas fees since the native token, sFUEL, has no economic value
+- Fast transactions per second (TPS), up to 700 tps
+- High block gas limit, 268 million block gas limit
+- Fully compatible with Ethereum-native network which means all solidity smart contracts as well as typical wallets (ex: Metamask) works
+- Native SKALE bridge called IMA that enables the following communication: Ethereum--SKALE Chain and SKALE Chain--SKALE Chain 
+- Native Oracle called SKALE connect allows to access any external data through a JSON RPC request
+
