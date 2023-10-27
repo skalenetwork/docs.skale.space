@@ -7,74 +7,93 @@ import react from "@astrojs/react";
 export default defineConfig({
   integrations: [starlight({
     title: 'My SKALE Guide',
-    social: {
-      github: 'https://github.com/withastro/starlight'
-    },
-    sidebar: [{
-      label: 'Guide',
-      items: [
-      // Each item here is one entry in the navigation menu.
-      {
+    navbar: {
+      network: {
+        link: '/network/intro',
         label: 'Network',
-        link: '/guide/network/'
+        items: [
+          {
+            label: 'Network',
+            items:[
+              {
+                label:'Introduction',
+                link: 'network/intro'
+              },
+              {
+                label:'Native Token',
+                link: 'network/sfuel'
+              },
+            ]
+          }
+        ]
       },
-      {
-        label: 'Quick setup',
-        link: '/guide/setup/'
+      setup: {
+        link: '/setup/schain_intro/',
+        label: 'Setup',
+        items: [
+          {
+            label: 'Setup',
+            items:[
+              {
+                label:'SKALE Chain Intro',
+                link: 'setup/schain_intro'
+              },
+              {
+                label:'Wallet Setup',
+                link: 'setup/wallet_setup'
+              },
+              {
+                label:'Smart Contract Example',
+                link: 'setup/smartcontract_example'
+              },
+            ]
+          }
+        ]       
       },
-      {
-        label: 'Wallets',
-        link: '/guide/wallets/'
+      wallets: {
+        link: '/old_organization/specifics/sfuel/',
+        label: 'Wallets', 
+        items: [
+          {
+            label: 'Wallets',
+            items:[
+            ]
+          }
+        ]      
       },
-      {
+      bridges: {
+        link: '/old_organization/specifics/sfuel/',
         label: 'Bridges',
-        link: '/guide/bridges/'
+        items: [
+          {
+            label: 'Bridges',
+            items:[
+            ]
+          }
+        ]         
       },
-      {
-        label: 'SDKs/Libraries',
-        link: '/guide/libraries/'
+      libraries: {
+        link: '/old_organization/specifics/sfuel/',
+        label: 'SDK/Libraries',
+        items: [
+          {
+            label: 'SDK/Libraries',
+            items:[
+            ]
+          }
+        ]        
       },
-      {
-        label: 'Data Solutions',
-        link: '/guide/data/'
+      data: {
+        link: '/old_organization/specifics/sfuel/',
+        label: 'Data',
+        items: [
+          {
+            label: 'Data',
+            items:[
+            ]
+          }
+        ]        
       },
-      {
-        label: 'Development Flow',
-        link: '/guide/deployment_flow/'
-      }
-    ]
     },
-      {
-      label: 'Specifics',
-      items :[
-        {
-          label: 'sFUEL',
-          link: '/specifics/sfuel/'
-        },
-        {
-          label: 'SKALE Oracle',
-          link: '/specifics/oracle/'
-        },
-        {
-          label: 'SKALE IMA Bridge',
-          link: '/specifics/bridge/'
-        },
-        {
-          label: 'JSON RPC',
-          link: '/specifics/json_rpc/'
-        },
-        {
-          label: 'Solidity',
-          link: '/specifics/solidity/'
-        },
-        {
-          label: 'Adcional Infrastructure',
-          link: '/specifics/peripheral_infra/'
-        }
-        
-
-      ]
-    }
-    ]
   }), react()]
 });

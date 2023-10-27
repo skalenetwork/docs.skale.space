@@ -1,0 +1,216 @@
+diff --git a/node_modules/@astrojs/starlight/components/Header.astro b/node_modules/@astrojs/starlight/components/Header.astro
+index 6ed8aa1..1d949f5 100644
+--- a/node_modules/@astrojs/starlight/components/Header.astro
++++ b/node_modules/@astrojs/starlight/components/Header.astro
+@@ -1,5 +1,7 @@
+ ---
++import { getNavbar } from '../utils/navigation';
+ import LanguageSelect from './LanguageSelect.astro';
++import Navbar from './Navbar.astro';
+ import Search from './Search.astro';
+ import SiteTitle from './SiteTitle.astro';
+ import SocialIcons from './SocialIcons.astro';
+@@ -10,10 +12,12 @@ interface Props {
+ }
+ 
+ const { locale } = Astro.props;
++const navbar = getNavbar(locale);
+ ---
+ 
+ <div class="header sl-flex">
+ 	<SiteTitle {locale} />
++	{navbar && <Navbar {locale} {navbar} />}
+ 	<Search {locale} />
+ 	<div class="sl-hidden md:sl-flex right-group">
+ 		<SocialIcons />
+@@ -60,7 +64,9 @@ const { locale } = Astro.props;
+ 				)
+ 				/* 2 (search box): all free space that is available. */
+ 				1fr
+-				/* 3 (right items): use the space that these need. */
++				/* 3 (nav group): all free space that is available. */
++				1fr
++				/* 4 (right items): use the space that these need. */
+ 				auto;
+ 			align-content: center;
+ 		}
+diff --git a/node_modules/@astrojs/starlight/components/Navbar.astro b/node_modules/@astrojs/starlight/components/Navbar.astro
+new file mode 100644
+index 0000000..da7f957
+--- /dev/null
++++ b/node_modules/@astrojs/starlight/components/Navbar.astro
+@@ -0,0 +1,32 @@
++---
++import { getNavbar } from '../utils/navigation';
++
++interface Props {
++	navbar: NonNullable<ReturnType<typeof getNavbar>>;
++	locale: string | undefined;
++}
++
++const navbar = Astro.props.navbar;
++---
++
++<nav>
++	{
++		navbar.map(({ href, label }) => (
++			<a {href}>
++				<h4>{label}</h4>
++			</a>
++		))
++	}
++</nav>
++
++<style>
++	nav {
++		display: flex;
++		gap: 1rem;
++	}
++
++	a {
++		text-decoration: none;
++		color: var(--sl-text-color);
++	}
++</style>
+diff --git a/node_modules/@astrojs/starlight/utils/base.ts b/node_modules/@astrojs/starlight/utils/base.ts
+index d287ddc..13f4ced 100644
+--- a/node_modules/@astrojs/starlight/utils/base.ts
++++ b/node_modules/@astrojs/starlight/utils/base.ts
+@@ -13,3 +13,9 @@ export function fileWithBase(path: string) {
+ 	path = stripLeadingAndTrailingSlashes(path);
+ 	return path ? base + '/' + path : base;
+ }
++
++/** Get the a root-relative URL path without the site’s `base` prefixed. */
++export function pathWithoutBase(path: string) {
++  path = stripTrailingSlash(path);
++  return path.startsWith(base) ? path.slice(base.length) : path;
++}
+diff --git a/node_modules/@astrojs/starlight/utils/navigation.ts b/node_modules/@astrojs/starlight/utils/navigation.ts
+index 88d9e3e..20a09c6 100644
+--- a/node_modules/@astrojs/starlight/utils/navigation.ts
++++ b/node_modules/@astrojs/starlight/utils/navigation.ts
+@@ -1,12 +1,12 @@
+ import { basename, dirname } from 'node:path';
+ import config from 'virtual:starlight/user-config';
+ import type { PrevNextLinkConfig } from '../schemas/prevNextLink';
+-import { pathWithBase } from './base';
++import { pathWithBase, pathWithoutBase } from './base';
+ import { pickLang } from './i18n';
+ import { getLocaleRoutes, type Route } from './routing';
+ import { localeToLang, slugToPathname } from './slugs';
+-import type { AutoSidebarGroup, SidebarItem, SidebarLinkItem } from './user-config';
+-import { ensureLeadingAndTrailingSlashes, ensureTrailingSlash } from './path';
++import type { AutoSidebarGroup, Navbar, SidebarItem, SidebarLinkItem } from './user-config';
++import { ensureLeadingAndTrailingSlashes, ensureTrailingSlash, stripTrailingSlash } from './path';
+ import type { Badge } from '../schemas/badge';
+ 
+ const DirKey = Symbol('DirKey');
+@@ -99,7 +99,7 @@ function groupFromAutogenerateConfig(
+ }
+ 
+ /** Check if a string starts with one of `http://` or `https://`. */
+-const isAbsolute = (link: string) => /^https?:\/\//.test(link);
++export const isAbsolute = (link: string) => /^https?:\/\//.test(link);
+ 
+ /** Create a link entry from a user config object. */
+ function linkFromConfig(
+@@ -247,15 +247,62 @@ function sidebarFromDir(
+ 	);
+ }
+ 
++function sidebarFromNavbar(
++	navbar: Navbar | undefined,
++	pathname: string,
++	locale: string | undefined
++): SidebarItem[] {
++	if (!navbar) return [];
++
++	const pathWithoutLocale = locale ? pathname.replace(`/${locale}`, '') : pathname;
++	const prefix = ensureLeadingAndTrailingSlashes(pathWithoutBase(pathWithoutLocale));
++
++	const sidebars = Object.entries(navbar).filter(([key]) =>
++		prefix.startsWith(ensureLeadingAndTrailingSlashes(key))
++	);
++	// toSorted is not supported until node 20
++	sidebars.sort(([a], [b]) => b.length - a.length);
++
++	const [longestMatch] = sidebars;
++	if (!longestMatch) return [];
++
++	const [, sidebar] = longestMatch;
++	return sidebar.items ?? [];
++}
++
+ /** Get the sidebar for the current page. */
+ export function getSidebar(pathname: string, locale: string | undefined): SidebarEntry[] {
+ 	const routes = getLocaleRoutes(locale);
+-	if (config.sidebar) {
+-		return config.sidebar.map((group) => configItemToEntry(group, pathname, locale, routes));
+-	} else {
++
++	if (!config.sidebar && !config.navbar) {
+ 		const tree = treeify(routes, locale || '');
+ 		return sidebarFromDir(tree, pathname, locale, false);
+ 	}
++
++	const sidebar = config.sidebar ?? [];
++	const sidebarFromNav = sidebarFromNavbar(config.navbar, pathname, locale);
++
++	return sidebar
++		.concat(sidebarFromNav)
++		.map((group) => configItemToEntry(group, pathname, locale, routes));
++}
++
++function navLinkFrom(href: string, locale: string | undefined) {
++  href = ensureLeadingAndTrailingSlashes(locale ? `/${locale}${href}` : href);
++
++	if (!isAbsolute(href)) href = pathWithBase(href);
++  return ensureLeadingAndTrailingSlashes(href);
++}
++
++export function getNavbar(locale: string | undefined) {
++	if (!config.navbar) {
++		return null;
++	}
++
++	return Object.values(config.navbar).map(({ link, label, translations }) => ({
++		href: navLinkFrom(link, locale),
++		label: pickLang(translations, localeToLang(locale)) || label,
++	}));
+ }
+ 
+ /** Turn the nested tree structure of a sidebar into a flat list of all the links. */
+diff --git a/node_modules/@astrojs/starlight/utils/user-config.ts b/node_modules/@astrojs/starlight/utils/user-config.ts
+index dcc69ee..9aeba2a 100644
+--- a/node_modules/@astrojs/starlight/utils/user-config.ts
++++ b/node_modules/@astrojs/starlight/utils/user-config.ts
+@@ -101,6 +101,18 @@ const SidebarItemSchema = z.union([
+ ]);
+ export type SidebarItem = z.infer<typeof SidebarItemSchema>;
+ 
++const NavbarItemSchema = SidebarBaseSchema.extend({
++	/** The link to this sidebar’s content. Can be a relative link to local files or the full URL of an external page. */
++	link: z.string(),
++
++	/** Array of links and subcategories to display in this navbar. */
++	items: SidebarItemSchema.array().optional(),
++});
++export type NavbarItem = z.infer<typeof NavbarItemSchema>;
++
++const NavbarSchema = z.record(z.string(), NavbarItemSchema);
++export type Navbar = z.infer<typeof NavbarSchema>;
++
+ const UserConfigSchema = z.object({
+ 	/** Title for your website. Will be used in metadata and as browser tab title. */
+ 	title: z
+@@ -226,6 +238,9 @@ const UserConfigSchema = z.object({
+ 	/** Configure your site’s sidebar navigation items. */
+ 	sidebar: SidebarItemSchema.array().optional(),
+ 
++	/** Configure your site’s navbar and associated sidebars. */
++	navbar: NavbarSchema.optional(),
++
+ 	/**
+ 	 * Add extra tags to your site’s `<head>`.
+ 	 *
