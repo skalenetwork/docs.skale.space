@@ -1,0 +1,47 @@
+---
+import Select from '@astrojs/starlight/components/Select.astro';
+const { label, url, items } = Astro.props;
+---
+
+<custom-navigation-item>
+	<Select
+		label={label}
+		value="auto"
+		options={[
+			{ label, selected: url === Astro.url.pathname, value: null },
+			...items.map((item) => {
+				return {
+					label: item.label,
+					selected: url === Astro.url.pathname,
+					value: item.url
+				}
+			})]
+		}
+		width="7.5em"
+	/>
+</custom-navigation-item>
+
+<script>
+	
+	class CustomNavigationItem extends HTMLElement {
+
+		constructor() {			
+			super();
+			const selectEl = this.querySelector('select');
+			
+			if (selectEl) {
+				selectEl.addEventListener('change', (e) => {
+					if (e.currentTarget instanceof HTMLSelectElement) {
+						this.#onSelectUrl(e.currentTarget.value);
+					}
+				});
+			}
+		}
+
+		#onSelectUrl(url: string) {
+			window.location = url;
+		}
+	}
+
+	customElements.define('custom-navigation-item', CustomNavigationItem);
+</script>
