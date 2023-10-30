@@ -1,0 +1,26 @@
+---
+import config from 'virtual:starlight/user-config';
+import type { Props } from '@astrojs/starlight/props';
+import NavigationConfig from "../config/navigation";
+import NavigationItem from "./NavigationItem.astro";
+---
+
+<nav class="navigation-items">
+	{NavigationConfig.map((item) => {
+		<!-- console.log("Item: ", item); -->
+		return <NavigationItem {...item} />
+	})}
+</nav>
+
+<style>
+	.navigation-items {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-evenly;
+	}
+
+	.navigation-items select {
+		margin: 0 0 0 16px;
+	}
+</style>
