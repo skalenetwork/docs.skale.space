@@ -9,6 +9,7 @@ export default defineConfig({
 		starlight({
 			title: 'My Docs',
 			components: {
+				Badge: './src/components/Overrides/Badge.astro',
 				Header: './src/components/Overrides/Header.astro',
 				MobileMenuFooter: './src/components/Overrides/MobileMenuFooter.astro',
 				Sidebar: './src/components/Overrides/Sidebar.astro',
@@ -22,7 +23,7 @@ export default defineConfig({
 					label: 'Guides',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', link: '/guides/example/' },
+						{ label: 'Example Guide', link: '/guides/example/', badge: 'New' },
 					],
 				},
 				{
