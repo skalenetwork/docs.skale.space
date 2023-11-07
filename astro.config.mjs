@@ -10,7 +10,9 @@ export default defineConfig({
 			title: 'My Docs',
 			components: {
 				Header: './src/components/Overrides/Header.astro',
-				MobileMenuFooter: './src/components/Overrides/MobileMenuFooter.astro'
+				MobileMenuFooter: './src/components/Overrides/MobileMenuFooter.astro',
+				Sidebar: './src/components/Overrides/Sidebar.astro',
+				SidebarSublist: './src/components/Overrides/SidebarSublist.astro'
 			},
 			social: {
 				github: 'https://github.com/withastro/starlight',
