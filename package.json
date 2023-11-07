@@ -1,7 +1,31 @@
 {
-  "name": "build-on-skale",
+  "name": "skale-quick-start",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Sawyer Cutler",
+      "email": "sawyer@dirtroad.dev",
+      "url": "https://dirtroad.dev"
+    },
+    {
+      "name": "Manuel Barbas",
+      "email": "manuel@skalelabs.com",
+      "url": "https://skale.space"
+    }
+  ],
+  "description": "SKALE Documentation Experiment",
+  "keywords": ["skale", "docs", "dirtroaddev", "web3"],
+  "funding": {
+    "type": "Buy Me a Coffee",
+    "url": "https://www.buymeacoffee.com/thegreataxios"
+  },
+  "homepage": "https://docs.skale.dirtroad.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dirt-Road-Development/shiny-otco-giggle"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
