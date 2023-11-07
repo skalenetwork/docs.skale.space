@@ -7,7 +7,6 @@ import NavigationItem from "./NavigationItem.astro";
 
 <nav class="navigation-items">
 	{NavigationConfig.map((item) => {
-		<!-- console.log("Item: ", item); -->
 		return <NavigationItem {...item} />
 	})}
 </nav>
