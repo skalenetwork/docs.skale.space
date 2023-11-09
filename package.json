@@ -15,7 +15,12 @@
     }
   ],
   "description": "SKALE Documentation Experiment",
-  "keywords": ["skale", "docs", "dirtroaddev", "web3"],
+  "keywords": [
+    "skale",
+    "docs",
+    "dirtroaddev",
+    "web3"
+  ],
   "funding": {
     "type": "Buy Me a Coffee",
     "url": "https://www.buymeacoffee.com/thegreataxios"
@@ -31,12 +36,27 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "format": "prettier --loglevel warn --write \"**/*.{js,css,md}\"",
+    "posttest": "npm run format",
+    "lint": "eslint . --cache --fix",
+    "pretest": "npm run lint",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@astrojs/react": "^3.0.4",
     "@astrojs/starlight": "^0.11.2",
     "astro": "^3.0.6",
     "sharp": "^0.32.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.53.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.0.2",
+    "prettier": "^3.0.3"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
   }
 }
