@@ -9,7 +9,7 @@ export default defineConfig({
 		starlight({
 			title: "SKALE Developer Docs",
 			customCss: [
-				'./src/styles/overrides.css'
+				"./src/styles/overrides.css"
 			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",
@@ -19,7 +19,8 @@ export default defineConfig({
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
 			},
 			social: {
-				github: "https://github.com/withastro/starlight",
+				discord: "https://discord.com/invite/gM5XBy6",
+				github: "https://github.com/skalenetwork"
 			},
 			sidebar: [
 				{
