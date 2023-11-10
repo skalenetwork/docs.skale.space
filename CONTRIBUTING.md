@@ -1,8 +1,6 @@
 # Contributing Guide
 
-Welcome! Thanks for viewing the guide to contributing.
-As an open source project, we appreciate contributors of any size, from anyone regardless of skill level or experience.
-The following document will guide you through how to setup the documentation in your local repository as well as 
+Welcome! Thanks for viewing the guide to contributing. As an open source project, we appreciate contributors of any size, from anyone regardless of skill level or experience. The following document will guide you through how to setup the documentation in your local repository as well as
 
 ## Setup + Install
 
@@ -41,16 +39,17 @@ The main branch is the active production release of the documentation.
 
 ### Development Branches
 
-Developers interested in contributing should fork the main branch and checkout a new branch.
-The name of the branch should follow the following format: <github-username>/<type>/<name>.
+Developers interested in contributing should fork the main branch and checkout a new branch. The name of the branch should follow the following format: <github-username>/<type>/<name>.
 
 **Available Types**
+
 - feature
 - fix
 - content
 - config
 
 **Examples**
+
 - thegreataxios/feature/add-navbar-component
 - thegreataxios/content/add-tutorial-on-bulding-unity-game
 
@@ -61,6 +60,7 @@ Once you make your changes, it is time to create your pull request to merge thes
 ### PR Title
 
 The format of the PR
+
 - Title: type(component): Description
 
 > Example feat(tutorial): Create Tutorial for Unity Game
