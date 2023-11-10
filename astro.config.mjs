@@ -20,7 +20,8 @@ export default defineConfig({
 			},
 			favicon: '/favicon.png',
 			logo: {
-				src: './src/assets/skale_logo_w.svg'
+				dark: './src/assets/skale_logo_w.svg',
+				light: './src/assets/skale_logo_b.svg'
 			},
 			social: {
 				discord: "https://discord.com/invite/gM5XBy6",
