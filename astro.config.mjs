@@ -7,7 +7,7 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: "SKALE Developer Docs",
+			title: "Developer Docs",
 			customCss: [
 				"./src/styles/overrides.css"
 			],
@@ -19,6 +19,9 @@ export default defineConfig({
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
 			},
 			favicon: '/favicon.png',
+			logo: {
+				src: './src/assets/skale_logo_w.svg'
+			},
 			social: {
 				discord: "https://discord.com/invite/gM5XBy6",
 				github: "https://github.com/skalenetwork"
