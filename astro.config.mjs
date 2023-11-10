@@ -18,6 +18,7 @@ export default defineConfig({
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
 			},
+			favicon: '/favicon.png',
 			social: {
 				discord: "https://discord.com/invite/gM5XBy6",
 				github: "https://github.com/skalenetwork"
