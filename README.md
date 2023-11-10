@@ -1,51 +1,37 @@
-# Starlight Starter Kit: Basics
+# SKALE: Quick Start Documentation
 
-```
-npm create astro@latest -- --template starlight
-```
+The SKALE Quick Start Documentation is not meant to replace the existing https://docs.skale.network at this time, however is meant to act as a location for developers looking to build on SKALE to quickly find everything they need in a guided manner.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/starlight/tree/main/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/starlight/tree/main/examples/basics)
+## Documentation
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+See the official hosted documentatiok [here](https://docs.skale.dirtroad.dev).
 
-## 🚀 Project Structure
+## Support
 
-Inside of your Astro + Starlight project, you'll see the following folders and files:
+Docs giving you trouble? Request support in the [Discord](https://discord.dirtroad.dev).
 
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   ├── docs/
-│   │   └── config.ts
-│   └── env.d.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
-```
+## Contributing
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+If you are a new contributor or interested in contributing, welcome! We are excited to have you join us! Please check out our [Contributors Guide](./CONTRIBUTING.md) for help getting started.
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+Join us on [Discord](https://discord.dirtroad.dev) to meet other maintainers! We can help answer questions and support you in your contributions.
 
-Static assets, like favicons, can be placed in the `public/` directory.
+To contribute to this repo, please see [Contributor Documentation](./CONTRIBUTORS.md).
+
+## Links
+
+- [LICENSE (MIT)](./LICENSE)
+- [Website](https://docs.skale.dirtroad.dev)
 
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+| Command | Action |
+| :-- | :-- |
+| `npm install` | Installs dependencies |
+| `npm run dev` | Starts local dev server at `localhost:4321` |
+| `npm run build` | Build your production site to `./dist/` |
+| `npm run preview` | Preview your build locally, before deploying |
+| `npm run astro ...` | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI |
