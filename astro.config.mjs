@@ -7,7 +7,10 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: "My Docs",
+			title: "SKALE Developer Docs",
+			customCss: [
+				'./src/styles/overrides.css'
+			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",
 				Header: "./src/components/Overrides/Header.astro",
