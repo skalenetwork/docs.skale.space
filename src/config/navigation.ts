@@ -8,4 +8,21 @@ type NavigationItem = {
 
 type NavigationItems = NavigationItem[];
 
-export default [] satisfies NavigationItems;
+export default [
+	{
+		label: "Develop",
+		url: "/developers"
+	},
+	{
+		label: "Learn",
+		url: "/learn"
+	},
+	{
+		label: "Quick Start",
+		url: "/quick-start"
+	},
+	{
+		label: "Tools",
+		url: "/tools"
+	},
+] satisfies NavigationItems;

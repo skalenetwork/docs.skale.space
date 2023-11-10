@@ -25,15 +25,20 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: "Guides",
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: "Example Guide", link: "/guides/example/", badge: "New" },
-					],
+					label: "Developers",
+					autogenerate: { directory: "developers" },
 				},
 				{
-					label: "Reference",
-					autogenerate: { directory: "reference" },
+					label: "Learn",
+					autogenerate: { directory: "learn" },
+				},
+				{
+					label: "Quick Start",
+					autogenerate: { directory: "quick-start" },
+				},
+				{
+					label: "tools",
+					autogenerate: { directory: "tools" },
 				},
 			],
 		}),
