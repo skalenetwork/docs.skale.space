@@ -18,6 +18,11 @@ let items = isNested ? sublist : sublist.filter((item) => {
 		for (const e of item.entries) {
 			if (e.type === "group") {
 				for (const e2 of e.entries) {
+					if (e2.type === "group") {
+						for (const e3 of e2.entries) {
+							if (e3.isCurrent) return item;
+						}
+					}
 					if (e2.isCurrent) return item;
 				}
 			}

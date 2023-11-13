@@ -37,7 +37,39 @@ export default defineConfig({
 					items: [
 						{ label: "About SKALE Network", link: "/learn/about-skale-network"},
 						{ label: "SKALE Chain Overview", link: "/learn/skale-chain-overview"},
-						{ label: "FAQ", link: "/learn/faq"}
+						{ label: "FAQ", link: "/learn/faq"},
+						{ 
+							label: "Beginner",
+							items: [
+								{ label: "AppChain", link: "/learn/beginner/app-chain" },
+								{ label: "EVM Compatability", link: "/learn/beginner/evm-compatability" },
+								{ label: "Hub Chain", link: "/learn/beginner/hub-chain" },
+								{ label: "Hybrid Architecture", link: "/learn/beginner/hybrid-architecture" },
+								{ label: "SKALE Chain Fuel", link: "/learn/beginner/skale-chain-fuel" },
+								{ label: "Zero Gas Fees", link: "/learn/beginner/zero-gas-fees" },
+							]
+						},
+						{
+							label: "Advanced",
+							items: [
+								{ label: "Block Rotation", link: "/learn/advanced/block-rotation" },
+								{ label: "Code Size Limits", link: "/learn/advanced/code-size-limits" },
+								{ label: "Consensus", link: "/learn/advanced/consensus" },
+								{ label: "Consensus Deep Dive", link: "/learn/advanced/consensus-deep-dive" },
+								{ label: "Distributed Key Generation with BLS", link: "/learn/advanced/dkg-bls" },
+								{ label: "JSON-RPC Compatability", link: "/learn/advanced/json-rpc-compatability" },
+								{ label: "Precompiled Contracts", link: "/learn/advanced/precompiled-contracts" },
+								{ label: "Predeployed Contracts", link: "/learn/advanced/predeployed-contracts" },
+								{ label: "Snapshots", link: "/learn/advanced/snapshots" },
+								{
+									label: "Topics",
+									items: [
+										{ label: "Intro to Elliptic Curve Cryptography", link: "/learn/advanced/topics/ellptic-curve-cryptography" },
+										{ label: "Intro to Threshold Schemes", link: "/learn/advanced/topics/threshold-schemes" }
+									]
+								}
+							]
+						}
 					]
 				},
 				{
