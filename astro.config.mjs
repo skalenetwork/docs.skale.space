@@ -36,6 +36,7 @@ export default defineConfig({
 					label: "Learn",
 					items: [
 						{ label: "About SKALE Network", link: "/learn/about-skale-network"},
+						{ label: "Mainnet Beta", link: "/learn/mainnet-beta" },
 						{ label: "SKALE Chain Overview", link: "/learn/skale-chain-overview"},
 						{ label: "FAQ", link: "/learn/faq"},
 						{ 
