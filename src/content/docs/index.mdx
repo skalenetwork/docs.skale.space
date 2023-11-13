@@ -1,36 +1,41 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
+title: Ready to Build? 
+description: Start building on SKALE Network
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: Build on SKALE with zero gas fees, instant finality, and top-tier DX
   image:
-    file: ../../assets/houston.webp
+    alt: Hello world
+    light: ../../assets/skale_logo_b.svg
+    dark: ../../assets/skale_logo_w.svg
+    file: ../../assets/skale_token_w.svg
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: New to SKALE?
+      link: /quick-start
       icon: right-arrow
       variant: primary
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
+    - text: Detailed Developer Docs
+      link: /learn
       icon: external
 ---
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Next steps
+## Explore the Documentation
 
-<CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+Not sure where to go? No worries! We have selected a few of the most commonly visited areas of our docs for you to begin exloring!
+
+<CardGrid>
+	<Card title="Quick Start" icon="add-document">
+		Learn about moving your new or existing project to SKALE
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Learn about SKALE" icon="information">
+		New to SKALE? Deep dive into SKALE without touching code
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Issues + Support" icon="error">
+		If you are having trouble building on SKALE, get support in [Discord](https://discord.com/invite/gM5XBy6)
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Developer Deep Dive" icon="laptop">
+		For those looking to innovate and dive deep into the SKALE technical offerings
 	</Card>
 </CardGrid>

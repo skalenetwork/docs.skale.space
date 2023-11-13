@@ -7,7 +7,10 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: "My Docs",
+			title: "Developer Docs",
+			customCss: [
+				"./src/styles/overrides.css"
+			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",
 				Header: "./src/components/Overrides/Header.astro",
@@ -15,20 +18,31 @@ export default defineConfig({
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
 			},
+			favicon: '/favicon.png',
+			logo: {
+				dark: './src/assets/skale_logo_w.svg',
+				light: './src/assets/skale_logo_b.svg'
+			},
 			social: {
-				github: "https://github.com/withastro/starlight",
+				discord: "https://discord.com/invite/gM5XBy6",
+				github: "https://github.com/skalenetwork"
 			},
 			sidebar: [
 				{
-					label: "Guides",
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: "Example Guide", link: "/guides/example/", badge: "New" },
-					],
+					label: "Developers",
+					autogenerate: { directory: "developers" },
 				},
 				{
-					label: "Reference",
-					autogenerate: { directory: "reference" },
+					label: "Learn",
+					autogenerate: { directory: "learn" },
+				},
+				{
+					label: "Quick Start",
+					autogenerate: { directory: "quick-start" },
+				},
+				{
+					label: "tools",
+					autogenerate: { directory: "tools" },
 				},
 			],
 		}),
