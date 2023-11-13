@@ -34,7 +34,11 @@ export default defineConfig({
 				},
 				{
 					label: "Learn",
-					autogenerate: { directory: "learn" },
+					items: [
+						{ label: "About SKALE Network", link: "/learn/about-skale-network"},
+						{ label: "SKALE Chain Overview", link: "/learn/skale-chain-overview"},
+						{ label: "FAQ", link: "/learn/faq"}
+					]
 				},
 				{
 					label: "Quick Start",

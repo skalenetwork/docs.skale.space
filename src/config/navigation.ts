@@ -15,7 +15,7 @@ export default [
 	},
 	{
 		label: "Learn",
-		url: "/learn"
+		url: "/learn/about-skale-network"
 	},
 	{
 		label: "Quick Start",
