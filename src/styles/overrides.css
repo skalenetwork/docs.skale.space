@@ -27,3 +27,12 @@
 	--sl-color-gray-7: #f6f6f6;
 	--sl-color-black: #ffffff;
 }
+
+aside.starlight-aside[aria-label="Developer Warning"] {
+	background-color: var(--sl-color-gray);
+	border-color: red;
+}
+
+aside.starlight-aside[aria-label="Developer Warning"] .starlight-aside__title {
+	color: red;
+}
