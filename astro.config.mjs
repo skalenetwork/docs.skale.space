@@ -60,7 +60,7 @@ export default defineConfig({
 								},
 								{ label: "Hybrid Architecture", link: "/learn/beginner/hybrid-architecture" },
 								{ label: "SKALE Chain Fuel", link: "/learn/beginner/skale-chain-fuel" },
-								{ label: "Zero Gas Fees", link: "/learn/beginner/zero-gas-fees" },
+								{ label: "Zero Gas Fees", link: "/learn/beginner/zero-gas-fees" }
 							]
 						},
 						{

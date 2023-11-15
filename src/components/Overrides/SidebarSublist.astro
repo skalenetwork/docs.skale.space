@@ -56,7 +56,7 @@ let items = isNested ? sublist : sublist.filter((item) => {
 						</a>
 					) : (
 						<details
-							open={true}
+							open={!entry.collapsed}
 						>
 							<summary>
 								<span class="large">{entry.label}</span>
