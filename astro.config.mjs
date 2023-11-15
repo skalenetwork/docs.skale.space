@@ -49,11 +49,13 @@ export default defineConfig({
 								{ label: "HubChain", link: "/learn/beginner/hub-chain" },
 								{
 									label: "Hubs",
+									collapsed: true,
 									items: [
-										{
-											label: "Calypso Innovation Hub",
-											link: "/learn/beginner/hubs/calypso"
-										}
+										{ label: "Calypso Innovation Hub", link: "/learn/beginner/hubs/calypso" },
+										{ label: "Chaos Open Testnet", link: "/learn/beginner/hubs/chaos" },
+										{ label: "Europa Liquidity Hub", link: "/learn/beginner/hubs/europa" },
+										{ label: "Nebula Gaming Hub", link: "/learn/beginner/hubs/nebula" },
+										{ label: "Titan AI Hub", link: "/learn/beginner/hubs/titan" },
 									]
 								},
 								{ label: "Hybrid Architecture", link: "/learn/beginner/hybrid-architecture" },
