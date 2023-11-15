@@ -1,20 +1,22 @@
 {
   "useTabs": true,
+  "doubleQuote": true,
+  "tabWidth": 4,
   "overrides": [
     {
       "files": "*.md",
       "options": {
         "printWidth": 70,
-        "useTabs": false,
+        "useTabs": true,
         "trailingComma": "none",
         "arrowParens": "avoid",
-        "proseWrap": "never"
+        "proseWrap": "always"
       }
     },
     {
       "files": "*.{json,babelrc,eslintrc,remarkrc,prettierrc}",
       "options": {
-        "useTabs": false
+        "useTabs": true
       }
     }
   ]
