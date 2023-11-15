@@ -16,7 +16,8 @@ blockchains, including SKALE Chains. Being turing complete with a
 JavaScript-like syntax, Solidity empowers developers to build smart contracts
 that can run on a SKALE Chain.
 
-:::tip[Developer Warning] The EVM Compiler version Shangai is not compatible
+:::tip[Developer Warning]
+The EVM Compiler version Shangai is not compatible
 with SKALE Chains at this time. If using v0.8.20 or greater, you must manually
 set the EVM Version to Paris or lower. Fore more information, see the
 [Solidity Language Announcement](https://soliditylang.org/blog/2023/05/10/solidity-0.8.20-release-announcement)

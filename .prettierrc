@@ -9,7 +9,7 @@
         "useTabs": true,
         "trailingComma": "none",
         "arrowParens": "avoid",
-        "proseWrap": "always"
+        "proseWrap": "preserve"
       }
     },
     {
