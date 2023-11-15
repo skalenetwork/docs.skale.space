@@ -1,0 +1,21 @@
+aside.starlight-aside {
+	background-color: var(--sl-color-gray);
+}
+
+/** Note **/
+aside.starlight-aside[aria-label="Developer Note"] {
+	border-color: green;
+}
+
+aside.starlight-aside[aria-label="Developer Note"] .starlight-aside__title {
+	color: green;
+}
+
+/** WARNING **/
+aside.starlight-aside[aria-label="Developer Warning"] {
+	border-color: red;
+}
+
+aside.starlight-aside[aria-label="Developer Warning"] .starlight-aside__title {
+	color: red;
+}

@@ -9,7 +9,9 @@ export default defineConfig({
 		starlight({
 			title: "Developer Docs",
 			customCss: [
-				"./src/styles/overrides.css"
+				"./src/styles/hubs.css",
+				"./src/styles/overrides.css",
+				"./src/styles/tips.css"
 			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",
@@ -44,7 +46,16 @@ export default defineConfig({
 							items: [
 								{ label: "AppChain", link: "/learn/beginner/app-chain" },
 								{ label: "EVM Compatability", link: "/learn/beginner/evm-compatability" },
-								{ label: "Hub Chain", link: "/learn/beginner/hub-chain" },
+								{ label: "HubChain", link: "/learn/beginner/hub-chain" },
+								{
+									label: "Hubs",
+									items: [
+										{
+											label: "Calypso Innovation Hub",
+											link: "/learn/beginner/hubs/calypso"
+										}
+									]
+								},
 								{ label: "Hybrid Architecture", link: "/learn/beginner/hybrid-architecture" },
 								{ label: "SKALE Chain Fuel", link: "/learn/beginner/skale-chain-fuel" },
 								{ label: "Zero Gas Fees", link: "/learn/beginner/zero-gas-fees" },
