@@ -11,6 +11,7 @@ export default defineConfig({
 			customCss: [
 				"./src/styles/hubs.css",
 				"./src/styles/overrides.css",
+				"./src/styles/mathml.css",
 				"./src/styles/tips.css"
 			],
 			components: {
