@@ -103,17 +103,17 @@ In this case the number of honest nodes is
 
 
 Note, that it is beneficial to select `*N*` in such a way that
-<math display="inline"><mfrac><mrow><mn>N</mn><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
+<math display="inline"><mfrac><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
 is divisible by `3`. Otherwise an increase in `*N*` does not lead to an increase in the maximum allowed number of Byzantine nodes.
 
 As an example, for
-<math display="inline"><mn>N</mn><mo>=</mo><mi>17</mi></math>
+<math display="inline"><mi>N</mi><mo>=</mo><mn>17</mn></math>
 we get
-<math display="inline"><mn>t</mn><mo>=</mo><mi>5</mi></math>
+<math display="inline"><mi>t</mi><mo>=</mo><mn>5</mn></math>
 too so an increase in `*N*` does not improve Byzantine tolerance.
 
 In this specification, we assume that the `*N*` is always selected in such a way that 
-<math display="inline"><mn>N</mn><mo>=</mo><mi>1</mi></math>
+<math display="inline"><mi>N</mi><mo>=</mo><mn>1</mn></math>
 is divisible by 3.
 
 In this case, expressions simplify as follows
@@ -126,10 +126,10 @@ In this case, expressions simplify as follows
 	<mo>=</mo>
 	<mfrac>
 		<mrow>
-			<mi>2</mi>
-			<mn>N</mn>
+			<mn>2</mn>
+			<mi>N</mi>
 			<mo>+</mo>
-			<mi>1</mi>
+			<mn>1</mn>
 		</mrow>
 		<mi>3</mi>
 	</mfrac>
@@ -144,15 +144,15 @@ Typically, a node will vote by signing a value and transmitting it to other node
 The number of Byzantine nodes is less than a simple majority of honest nodes.
 
 This directly follows from the fact that
-<math display="inline"><mn>h</mn><mo>=</mo><mi>2</mi><mn>t</mn><mo>+</mo><mi>1</mi></math>
+<math display="inline"><mi>h</mi><mo>=</mo><mn>2</mn><mi>t</mi><mo>+</mo><mn>1</mn></math>
 and, therefore, a simple majority of honest nodes is
 
 <math>
-	<mn>s</mn>
+	<mi>s</mi>
 	<mo>=</mo>
-	<mn>t</mn>
+	<mi>t</mi>
 	<mo>+</mo>
-	<mi>1</mi>
+	<mn>1</mn>
 </math>
 
 We define _supermajority_ as a vote of at least
@@ -168,7 +168,30 @@ If a particular message was signed by a supermajority vote, at least a simple ma
 
 Even if all Byzantine nodes participate in a supermajority vote, the number of honest votes it needs to receive is
 
-{/*latexmath:[\frac{2N+1}{3}-t = 2t+1-t = t+1]*/}
+<math>
+    <mfrac>
+    	<mrow>
+    		<mn>2</mn>
+    		<mi>N</mi>
+    		<mo>+</mo>
+    		<mn>1</mn>
+    	</mrow>
+    	<mn>3</mn>
+    </mfrac>
+    <mo>-</mo>
+    <mi>t</mi>
+    <mo>=</mo>
+    <mn>2</mn>
+    <mi>t</mi>
+    <mo>+</mo>
+    <mn>1</mn>
+    <mo>-</mo>
+    <mi>t</mi>
+    <mo>=</mo>
+    <mi>t</mi>
+    <mo>+</mo>
+    <mn>1</mn>
+</math>
 
 which is exactly the simple majority of honest nodes `*s*`.
 
@@ -185,7 +208,7 @@ Our protocol uses threshold signatures for supermajority voting.
 Each node is supposed to be in possession of BLS private key share `*PKS~I~*`. Initial generation of key shares is performed using joint-Feldman Distributed Key Generation (DKG) algorithm that is described in this document. DKG algorithm is executed when an schain is created.
 
 Nodes are able to collectively issue supermajority threshold signatures on messages, where the threshold value is equal to the supermajority vote
-{/*latexmath:[\frac{2N+1}{3}]*/}
+<math display="inline"><mfrac><mrow><mn>2</mn><mi>N</mi><mo>+</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
 . For instance for `N = 16`, the threshold value is `11`.
 
 BLS threshold signatures are implemented as described in the paper of by Boldyreva. BLS threshold signatures require a choice of elliptic curve and group pairing. We use elliptic curve (altBN256) and group pairing (optimal-Ate) implemented in Ethereum Constantinople release.
@@ -324,11 +347,11 @@ hard crashed state at a given time plus the number of Byzantine nodes is
 less or equal `*N ⅓*`.
 
 Since the normal consensus algorithm is resilient to having 
-{/*latexmath:[\frac{N-1}{3}]*/}
+<math display="inline"><mfrac><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
 Byzantine nodes, normal consensus will still proceed if we count crashed
 nodes as Byzantine nodes and guarantee that the total number of
 Byzantine nodes is less than
-{/*latexmath:[\frac{N-1}{3}]*/}
+<math display="inline"><mfrac><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
 . When a node that crashed joins
 the system back, it will immediately start participating in the new
 consensus rounds. For the consensus rounds that it missed, it will use
@@ -533,9 +556,9 @@ It will vote `yes` for each block proposal that it received, and `no`
 for each block proposal that it did not receive.
 
 Vote of each honest node will include 
-{/*latexmath:[\frac{2N+1}{3}]*/}
+<math display="inline"><mfrac><mrow><mn>2</mn><mi>N</mi><mo>+</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
  `yes` votes and
-{/*latexmath:[\frac{2N-1}{3}]*/}
+<math display="inline"><mfrac><mrow><mn>2</mn><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
 `no` votes
 
 This simply follows from the fact, that node `*A*` votes immediately after
@@ -562,10 +585,10 @@ proposal and commit it to the chain.
 
 The proposal download algorithm is specified below. The proposal assumes
 that the proposal is split in $N-1$ chunks of equal size
-{/*latexmath:[\left\lceil \frac{size(P)}{N-1} \right\rceil],*/}
+<math display="inline"><mo>&lceil;</mo><mfrac><mrow><mi>size</mi><mi>(P)</mi></mrow><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></mfrac><mo>&rceil;</mo></math>
 except the last chunk the size of
 which will be the remainder of 
-{/*latexmath:[\frac{size(P)}{N-1}].*/}
+<math display="inline"><mfrac><mrow><mi>size</mi><mi>(P)</mi></mrow><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></mfrac></math>
 
 The purpose of the algorithm is to minimize network traffic.
 
@@ -629,7 +652,13 @@ amount of gas that the transaction would have used if we would charge
 for transactions. We are currently using the same PoW algorithm as
 Ethereum.
 
-{/*latexmath:[POW = k * gas]*/}
+<math display="inline">
+	<mi>POW</mi>
+	<mo>=</mo>
+	<mi>k</mi>
+	<mo>*</mo>
+	<mi>gas</mi>
+</math>
 
 This PoW is calculated in the browser or other client that submits a
 transaction and is passed together with the transaction. If the
