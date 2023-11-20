@@ -27,3 +27,20 @@
 	--sl-color-gray-7: #f6f6f6;
 	--sl-color-black: #ffffff;
 }
+
+.sl-container {
+	width: auto;
+	min-width: 100%;
+}
+
+.main-pane {
+	width: calc(
+		var(--sl-content-width) +
+			(100% - var(--sl-content-width) - var(--sl-sidebar-width))
+	) !important;
+}
+
+.right-sidebar-container,
+.right-sidebar {
+	max-width: 20vw;
+}
