@@ -68,13 +68,11 @@ export default defineConfig({
 							label: "Advanced",
 							items: [
 								{ label: "Block Rotation", link: "/learn/advanced/block-rotation" },
-								{ label: "Code Size Limits", link: "/learn/advanced/code-size-limits" },
 								{ label: "Consensus", link: "/learn/advanced/consensus" },
 								{ label: "Consensus Deep Dive", link: "/learn/advanced/consensus-deep-dive" },
 								{ label: "Distributed Key Generation with BLS", link: "/learn/advanced/dkg-bls" },
 								{ label: "JSON-RPC Compatability", link: "/learn/advanced/json-rpc-compatability" },
 								{ label: "Precompiled Contracts", link: "/learn/advanced/precompiled-contracts" },
-								// { label: "Predeployed Contracts", link: "/learn/advanced/predeployed-contracts" },
 								{ label: "Snapshots", link: "/learn/advanced/snapshots" },
 								{
 									label: "Topics",
