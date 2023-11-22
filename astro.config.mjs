@@ -74,12 +74,12 @@ export default defineConfig({
 								{ label: "Distributed Key Generation with BLS", link: "/learn/advanced/dkg-bls" },
 								{ label: "JSON-RPC Compatability", link: "/learn/advanced/json-rpc-compatability" },
 								{ label: "Precompiled Contracts", link: "/learn/advanced/precompiled-contracts" },
-								{ label: "Predeployed Contracts", link: "/learn/advanced/predeployed-contracts" },
+								// { label: "Predeployed Contracts", link: "/learn/advanced/predeployed-contracts" },
 								{ label: "Snapshots", link: "/learn/advanced/snapshots" },
 								{
 									label: "Topics",
 									items: [
-										{ label: "Intro to Elliptic Curve Cryptography", link: "/learn/advanced/topics/ellptic-curve-cryptography" },
+										{ label: "Intro to Elliptic Curve Cryptography", link: "/learn/advanced/topics/elliptic-curve-cryptography" },
 										{ label: "Intro to Threshold Schemes", link: "/learn/advanced/topics/threshold-schemes" }
 									]
 								}
