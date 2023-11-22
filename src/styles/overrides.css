@@ -28,19 +28,23 @@
 	--sl-color-black: #ffffff;
 }
 
-.sl-container {
-	width: auto;
-	min-width: 100%;
+.main-pane:where(.astro-67yu43on) {
+	min-width: 75%;
 }
 
-.main-pane {
-	width: calc(
-		var(--sl-content-width) +
-			(100% - var(--sl-content-width) - var(--sl-sidebar-width))
-	) !important;
+.main-pane:where(.astro-67yu43on) .sl-container {
+	padding: none;
 }
 
-.right-sidebar-container,
-.right-sidebar {
+.content-panel {
+	width: 100%;
+}
+
+.right-sidebar-container {
 	max-width: 20vw;
+	right: 0;
+}
+
+.right-sidebar {
+	width: 100%;
 }
