@@ -39,28 +39,25 @@ export default defineConfig({
 					label: "Learn",
 					items: [
 						{ label: "About SKALE Network", link: "/learn/about-skale-network"},
-						{ label: "Mainnet Beta", link: "/learn/mainnet-beta" },
-						{ label: "SKALE Chain Overview", link: "/learn/skale-chain-overview"},
-						{ label: "FAQ", link: "/learn/faq"},
+						{ 
+							label: "SKALE Chain",
+							items: [
+								{ label: "Overview", link: "/learn/skale-chain-overview" },
+								{ label: "AppChain", link: "/learn/app-chain" },
+								{ label: "HubChain", link: "/learn/hub-chain" },
+								{ label: "Calypso Innovation Hub", link: "/learn/calypso" },
+								{ label: "Chaos Open Testnet", link: "/learn/chaos" },
+								{ label: "Europa Liquidity Hub", link: "/learn/europa" },
+								{ label: "Nebula Gaming Hub", link: "/learn/nebula" },
+								{ label: "Titan AI Hub", link: "/learn/titan" },
+							]
+						},
 						{ 
 							label: "Beginner",
 							items: [
-								{ label: "AppChain", link: "/learn/beginner/app-chain" },
 								{ label: "EVM Compatability", link: "/learn/beginner/evm-compatability" },
-								{ label: "HubChain", link: "/learn/beginner/hub-chain" },
-								{
-									label: "Hubs",
-									collapsed: true,
-									items: [
-										{ label: "Calypso Innovation Hub", link: "/learn/beginner/hubs/calypso" },
-										{ label: "Chaos Open Testnet", link: "/learn/beginner/hubs/chaos" },
-										{ label: "Europa Liquidity Hub", link: "/learn/beginner/hubs/europa" },
-										{ label: "Nebula Gaming Hub", link: "/learn/beginner/hubs/nebula" },
-										{ label: "Titan AI Hub", link: "/learn/beginner/hubs/titan" },
-									]
-								},
 								{ label: "Hybrid Architecture", link: "/learn/beginner/hybrid-architecture" },
-								{ label: "SKALE Chain Fuel", link: "/learn/beginner/skale-chain-fuel" },
+								{ label: "SKALE Chain Gas", link: "/learn/beginner/skale-chain-gas" },
 								{ label: "Zero Gas Fees", link: "/learn/beginner/zero-gas-fees" }
 							]
 						},
@@ -82,7 +79,9 @@ export default defineConfig({
 									]
 								}
 							]
-						}
+						},
+						{ label: "Mainnet Beta", link: "/learn/mainnet-beta" },
+						{ label: "FAQ", link: "/learn/faq"},
 					]
 				},
 				{

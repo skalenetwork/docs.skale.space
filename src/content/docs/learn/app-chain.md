@@ -14,7 +14,7 @@ Creation of AppChains can be complicated in most instances. This is because outs
 3. Balance the above two items with decentralization, speed, and stability
 4. Handle security in a decentralized manner
 
-SKALE Chains can be created quickly with no additional work or setup required from dApp developers thanks to the combintation of the pooled-security model of validator nodes and SKALE Manager contracts on the Ethereum Mainnet that are used by the nodes to manage orchestration of a new SKALE Chain. Developers can focus on their dApps, and not on creating a complex system that will balance speed, security, and decentralization.
+SKALE Chains can be created quickly with no additional work or setup required from dApp developers thanks to the combination of the pooled-security model of validator nodes and SKALE Manager contracts on the Ethereum Mainnet that are used by the nodes to manage orchestration of a new SKALE Chain. Developers can focus on their dApps, and not on creating a complex system that will balance speed, security, and decentralization.
 
 ## Customization
 
@@ -30,16 +30,16 @@ Since SKALE v2 went live in June of 2022, the SKALE Network now also offers defa
 
 Monolithic blockchains are well known for having gas-fees that can spike during times of high usage on the chain.
 
-The SKALE Network, being a horizontal scaling solution, and having dedicated SKALE Chains (AppChains) for high-performant decentralized applications or enterprises; removes competition for resources out of the equation entirely. While having zero gas fees is also a huge benefit, the multi-chain architecture means that two AppChains will **NEVER** compete against eachother for block space.
+The SKALE Network, being a horizontal scaling solution, and having dedicated SKALE Chains (AppChains) for high-performant decentralized applications or enterprises; removes competition for resources out of the equation entirely. While having zero gas fees is also a huge benefit, the multi-chain architecture means that two AppChains will **NEVER** compete against each other for block space.
 
 ## Scalability
 
-As discussed in the previous section, the scalable nature of the network allows for AppChains to build fearlessly without worrying about crashing a monolithic chain or running into scenarios where they run out of room to transact. As dApps continue to evolve and projects continue to innovate, in an instance where a dApp did outgrow their AppChain, they could actually provision another -- or as many more as they needed -- AppChains, and link them together using the SKALE Interhcain Message Agent (IMA) meaning there is always room to SCALE!
+As discussed in the previous section, the scalable nature of the network allows for AppChains to build fearlessly without worrying about crashing a monolithic chain or running into scenarios where they run out of room to transact. As dApps continue to evolve and projects continue to innovate, in an instance where a dApp did outgrow their AppChain, they could actually provision another -- or as many more as they needed -- AppChains, and link them together using the SKALE Interchain Message Agent (IMA) meaning there is always room to SCALE!
 
 ## The Enterprise Advantage
 
 For enterprises, the AppChain model offers several advantages. It allows for the creation of permissioned or
-permissionless blockchains that can be tailored to the enterprise’s specific needs. This can be particularly
+permission-less blockchains that can be tailored to the enterprise’s specific needs. This can be particularly
 useful for applications that require high levels of control and security, such as supply chain or CRM services.
 
 Furthermore, the ability to customize the chain parameters can allow for even higher performance, as the

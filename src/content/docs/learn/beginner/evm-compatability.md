@@ -1,6 +1,6 @@
 ---
-title: EVM Compatability
-description: SKALE and EVM Compatability
+title: EVM Compatibility
+description: SKALE and EVM Compatibility
 ---
 
 The SKALE execution model is fully compatible with the Ethereum Virtual Machine
@@ -17,7 +17,7 @@ JavaScript-like syntax, Solidity empowers developers to build smart contracts
 that can run on a SKALE Chain.
 
 :::tip[Developer Warning]
-The EVM Compiler version Shangai is not compatible
+The EVM Compiler version Shanghai is not compatible
 with SKALE Chains at this time. If using v0.8.20 or greater, you must manually
 set the EVM Version to Paris or lower. Fore more information, see the
 [Solidity Language Announcement](https://soliditylang.org/blog/2023/05/10/solidity-0.8.20-release-announcement)
@@ -26,7 +26,7 @@ set the EVM Version to Paris or lower. Fore more information, see the
 #### EIPS & Popular Standards
 
 Since Solidity itself compiles to EVM compatible bytecode, many of the Ethereum
-Improvment Proposals ([EIP](https://eips.ethereum.org/)) that take shape in the
+Improvement Proposals ([EIP](https://eips.ethereum.org/)) that take shape in the
 form of Ethereum Request for Comment ([ERC](https://eips.ethereum.org/erc)), are
 also usable directly on SKALE with no changes needed. Examples of these popular
 standards include [ERC-20](https://eips.ethereum.org/EIPS/eip-20) (Fungible

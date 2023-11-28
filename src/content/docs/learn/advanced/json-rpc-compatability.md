@@ -1,6 +1,6 @@
 ---
-title: JSON-RPC Interface Compatability
-description: SKALE JSON-RPC Compatabilty Table
+title: JSON-RPC Interface Compatibility
+description: SKALE JSON-RPC Compatibility Table
 ---
 
 :::tip[Developer Warning]

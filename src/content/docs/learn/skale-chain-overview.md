@@ -19,17 +19,9 @@ Using SKALE is easy! Don't worry about [SGX enclaves](https://github.com/skalene
 
 You use your SKALE Chain as you work with Ethereum. SKALE Chain owners have a set of 16 available endpoints to receive Web3 transactions and data. Plug an endpoint into your Web3 client or developer config files, and you are using SKALE.
 
-<!-- == How to create a SKALE Chain
-
-To create a SKALE Chain, you stake SKALE tokens (SKL) into the Network over a length of time. Every month, a portion of your stake is distributed to the entire Network in return for receiving security and scalable resources powering your SKALE Chain. At the end of your stake, anyone can stake additional SKL tokens to extend the SKALE Chain's life .
-
-Creating a SKALE Chain requires SKL tokens and some ETH to fund the necessary transactions on Ethereum to create the SKALE Chain. When you create a SKALE Chain, you will fund some ETH to a special wallet. This wallet is used to reimburse transactions conducted by validator-nodes that form your SKALE Chain. Just as anyone can stake additional SKL to extend the SKALE Chain life, anyone with the wallet address can replenish ETH to fund additional SKALE Chain-related transactions. xref:validator-cli::self-recharging-wallets.adoc[More on these transactions and special wallets here.] -->
-
 ## SKALE Chain Features
 
-- **Decentralized and Permissionless network** where dApps run on chains supported by a randomly selected group of validator nodes, and nodes are swapped from time to time. The entire Network runs from the Ethereum Network to provide a permissionless way to access Web3 cloud resources.
-- **Flexible Chain Administration** that can be operated by a single entity, community, or a DAO. This provides a range of decentralization options for funding, operating, and maintaining SKALE Chains.
-- **Easy Cross-Chain Integration** using Ethereum and SKALE IMA – allows users to move tokens, state, and messages between Ethereum and SKALE Chains, and between SKALE Chains. This bridge is secured by stake, secure enclaves, and BLS Threshold cryptography.
-- **Web3 RPC API** so existing dApps can migrate to SKALE Chains with minimal change and developers can use Ethereum tooling such as Hardhat, Foundry, Metamask, Remix, etc.
-
-<!-- * **Customized for your dApp**: configure Web3 cloud resources specific to your dApp and end-users' needs. This includes various SKALE Chain sizes to support different levels of compute and storage resources and custom options for DDoS protection, node rotation, and more. -->
+-   **Decentralized and Permissionless network** where dApps run on chains supported by a randomly selected group of validator nodes, and nodes are swapped from time to time. The entire Network runs from the Ethereum Network to provide a permissionless way to access Web3 cloud resources.
+-   **Flexible Chain Administration** that can be operated by a single entity, community, or a DAO. This provides a range of decentralization options for funding, operating, and maintaining SKALE Chains.
+-   **Easy Cross-Chain Integration** using Ethereum and SKALE IMA – allows users to move tokens, state, and messages between Ethereum and SKALE Chains, and between SKALE Chains. This bridge is secured by stake, secure enclaves, and BLS Threshold cryptography.
+-   **Web3 RPC API** so existing dApps can migrate to SKALE Chains with minimal change and developers can use Ethereum tooling such as Hardhat, Foundry, Metamask, Remix, etc.

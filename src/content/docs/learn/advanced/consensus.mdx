@@ -197,7 +197,7 @@ After `block consensus` decides on the winning block, each node will sign the st
 
 On completion of _block signature phase_, all honest nodes will have the `block signature` but some of them may not have the block itself. 
 
-This can happen due to a malicious proposer, that intentionally does not send its proposals to some of the all nodes in order to break the liveliness property of the blocklchain. It can also happen due to proposer crashing, or due to slow network.
+This can happen due to a malicious proposer, that intentionally does not send its proposals to some of the all nodes in order to break the liveliness property of the blockchain. It can also happen due to proposer crashing, or due to slow network.
 
 Fortunately, `DA proof` requirement solves the problem.  It is guaranteed, that `block proposal` that wins _block consensus phase_ has `DA proof`, and is, therefore, widely distributed across the network.
 

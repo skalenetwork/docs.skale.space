@@ -5,7 +5,7 @@ description: SKALE Network Frequently Asked Questions
 
 ## General
 
-### How does the SKALE Network work? x
+### How does the SKALE Network work?
 
 The SKALE Network consists of a large pool of validator nodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These nodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager. SKALE Manager includes SKALE Token that governs its issuance and how rewards get distributed to validators and delegators.
 

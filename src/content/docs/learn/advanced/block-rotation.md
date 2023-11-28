@@ -4,9 +4,9 @@ description: Block Rotation on a SKALE Chain
 ---
 
 Block rotation on a SKALE Chain enables a limit on the size of the hard drive space that is
-occupied by blocks on core consensus nodes and full-sync nodes. The current deault siz of this space is **12.6 GB**.
+occupied by blocks on core consensus nodes and full-sync nodes. The current default size of this space is **12.6 GB**.
 
-Each SKALE Chain maintains a minimum to maximum number of blocks, which are the 80% to 100% of the above respectivley,
+Each SKALE Chain maintains a minimum to maximum number of blocks, which are the 80% to 100% of the above respectively,
 meaning the most recent 20% of the blocks.
 
 :::tip[Developer Note]

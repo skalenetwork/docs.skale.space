@@ -1,6 +1,6 @@
 ---
 title: Consensus Deep Dive
-description: SKALE Conensus Deep Dive
+description: SKALE Consensus Deep Dive
 ---
 
 import ByzantineFormula from "../../../../components/Math/ByzantineFormula.astro";
@@ -244,7 +244,7 @@ Note: All integers in this spec are unsigned 64-bit integers unless specified ot
 
 ### Block format: hash
 
-Block hash is calculated by taking 256-bit Keccack hash of block header concatenated with block body, while omitting `CURRENT BLOCK HASH`, `CURRENT BLOCK SIG`, and `CURRENT BLOCK TSIG` from the header. The reason why these fields are omitted is because they are not known at the time block is hashed and signed.
+Block hash is calculated by taking 256-bit Keccak hash of block header concatenated with block body, while omitting `CURRENT BLOCK HASH`, `CURRENT BLOCK SIG`, and `CURRENT BLOCK TSIG` from the header. The reason why these fields are omitted is because they are not known at the time block is hashed and signed.
 
 Note: Throughout this spec we use SHA-3 as a secure hash algorithm.
 
