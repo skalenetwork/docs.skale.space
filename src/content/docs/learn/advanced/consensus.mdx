@@ -1,0 +1,219 @@
+---
+title: Consensus
+description: SKALE Mainnet Beta
+---
+import ByzantineFormula from "../../../../components/Math/ByzantineFormula.astro";
+import Mermaid from "../../../../components/Mermaid.astro";
+import MermaidInit from "../../../../components/MermaidInit.astro";
+
+<MermaidInit />
+
+## Protocol Overview
+
+A SKALE chain is a Proof-of-Stake blockchain fully compatible with ETH mainnet. It can run ETH wallets, tools and dapps.
+
+As any Ethereum-compatible chain, SKALE chain includes `blockchain`, which is a chain of `transactions` ordered 
+into `committed blocks`, and a computing machine denoted as `EVM`. The set of variables stored in `EVM` is denoted
+as `EVM state`. 
+
+<Mermaid code={`
+flowchart LR
+    b0[Tx1processed]---b1[Tx2 processed]---b2[Tx3 processed]---|EVM Processing|b3[Tx3 unprocessed]
+`} />
+
+EVM processes `committed blocks` one `transaction` at a time. For each `transaction` it runs instructions (`bytecode`) specified by the `transaction` and changes `EVM state`.
+
+### Architecture overview
+
+The purpose of SKALE chain is to order `transactions` into `blocks` and then process them by `EVM`.
+
+SKALE chain is composed of a fixed set of `N` network `nodes` that process user `transactions` in the following phases
+
+. accept and validate user `transactions` (_submission phase_)
+. broadcast `transactions` to peer nodes (_broadcast phase_)
+. store `transactions` into `pending queues` (_pending queue phase_)
+. create `block proposal` for each `block number` and broadcast it to peers, collecting `2/3 N` `data availability signatures` and creating `DA proofs`. (_block proposal phase_)
+. broadcast `DA proofs` to peers (_DA broadcast phase_)
+. run `block consensus` for each `block proposal` to select a `winning proposal` (_block consensus phase_)
+. sign the statement on which proposal won (`block signature share`) and broadcast it to other nodes. Wait until receipt of 2/3 of `block signature shares` and merge them 
+into `block signature`. (_block signature phase_)
+. commit the `winning proposal` if `node` has it, otherwise download it from other nodes and commit it. The `winning proposal` becomes a`committed block` (_block finalization phase_)
+. process the `committed block` through `Ethereum Virtual Machine` to transition to the new `EVM state`. (_EVM processing phase_)
+. store `committed blocks` and `EVM state`(_storage phase_)
+
+The diagram below illustrates typical transaction flow:
+
+<Mermaid
+    code={`
+flowchart TD
+    b0[Transaction submission] --> b1[Transaction broadcast] --> b2[Pending Queue] --> b3[Block Proposal] --> b31[DA Broadcast] --> b32[Block Consensus] --> 
+    b33[Block Signature] --> 
+    b34[Block Finalization] --> b4[Block Commit] --> b5[EVM Processing] -->
+    b9[Storage phase]
+    b6[Block Catchup] -->b4
+`}/>
+
+Note that in addition to normal block processing, a node can receive blocks through `block catchup` mechanism.
+
+`Block catchup` means that the `node` does not participate in `block consensus`. Instead, it simply downloads  `committed blocks` from other `nodes`, verifying `block signatures`. `block catchup` typically happens when a node is powered on after being offline. `Block catchup` can also be used by `third-party nodes` that do not participate in `core chain`, such a `archive nodes`.
+
+`block consensus` and `block catchup` run in parallel. This means that every node in addition in normal `block consensus` procedure makes periodic random connections to other nodes, to attempt to download ready committed blocks.
+
+The blockchain provides a _guarantee that every transaction is included into the chain only once_. This means, in particular, that when a `node` commits a block, the `node` will remove the `transactions` included in the `block` from the `pending transaction queue`.
+
+### SKALE node overview
+
+Each `node` runs `skaled`, SKALE software blockchain agent. 
+
+`skaled` is composed of:
+
+. `Network API module` accepts `transactions` and user requests.
+. `Transaction validation module` validates `transactions` on receipt.
+. `Pending queue module` holds `transactions`.
+. `Transaction broadcast module` broadcasts `valid transactions` to other `nodes` in the chain
+. `Proposal module` creates `block proposals` for consensus
+. `Proposal broadcast module` broadcasts `block proposals` to peers and collects `DA proofs`
+. `DA proof broadcast module` broadcasts `DA proofs` to peers
+. `Consensus module` selects the winning `block proposal` and turns it into a `committed block`, and then creates `block signature` by assembling `signature shares`.
+. `Finalization module` downloads winning proposals from other `nodes`, if a node does not have a copy of winning proposal by completion `block consensus`.
+. `EVM module` processes the `committed block`
+. `Block storage module` stores `committed blocks`, deleting old blocks if `skaled` runs out of block storage space (`block rotation`)
+. `State storage module` stores EVM state.  State information is _never deleted automatically_. Cleaning up the state is the responsibility of dapps
+
+
+<Mermaid code={`
+flowchart TD
+    b1[Network API Module] -->|Txs| b2[Tx validation module] -->|Validated Txs| b3[Pending queue module] -->|Block Proposals| b5[Proposal Module] --> |DA Proofs| b6[DA proof broadcast module] --> |Proposals and DA proofs| b7[Consensus module] -->|consensus on winning proposal| b12[Finalization module] -->|committed block| b8[EVM module]
+    b2 -->|Validated Txs| b11[Tx Broadcast Module]
+    b8 -->|Committed Blocks| b9[Block Storage Module]
+    b8 -->|EVM State| b10[Evm Storage module]    
+`} />
+
+### Security assumptions overview
+
+SKALE is _provably secure_. This means one can prove two qualities of the blockchain
+
+* _consistency_ - for any `block number`, `committed blocks` and `EVM state` are identical on each `node`.  Note that due to network delays,
+some `nodes` may at a given moment have less `committed blocks` than others. Therefore, `the consistency is eventual`.
+* _liveliness_ - the blockchain will always keep producing new `committed blocks`. 
+
+Provable security means that _under certain mathematical assumptions_, SKALE chain _will always be  consistent and lively, no matter what the attacker does_.
+
+The mathematical assumptions for provable security are specified below.
+
+#### Node security assumptions 
+
+We assume that out of `N` `nodes`, `t` `nodes` at maximum are Byzantine (malicious), where
+
+<ByzantineFormula />
+
+Simply speaking, not more than 1/3 of nodes can be malicious. For instance, if `N = 16`, the maximum number of malicious `nodes` is `5`.
+
+The identity of malicious nodes is not known. A malicious node will typically pretend being an honest node.
+
+A malicious node will attempt to break the consistency and liveliness of the network by sending malicious messages, or not sending 
+any messages when it supposed to send a message by a protocol.
+
+It is assumed that `malicious nodes` do not control network routers and links. This means, in particular, that `malicious nodes` can not affect `messages` sent between `honest nodes`, such as corrupting or reordering them
+
+#### Network security assumptions
+
+The algorithms used by SKALE make assumptions about _the properties of the underlying network_.
+
+SKALE assumes that _the network is asynchronous and reliable with eventual delivery guarantee_.
+
+This means that:
+
+* `nodes` are assumed to be connected by a _reliable communications links_. 
+* Links can can be arbitrarily slow, but will eventually deliver `messages`.
+
+The asynchronous model described above is _similar to the model assumed by Bitcoin and Ethereum blockchains_. It reflects *the state of modern Internet*, where temporary network splits and interruptions are normal, but always resolve eventually.
+
+Since real Internet sometimes drops messages on the way without delivering them, _the eventual delivery guarantee is achieved in practice by retransmissions_. The `sending node` will make _multiple attempts to transfer_  `message` to the `receiving node`, until the transfer is successful and is confirmed by the `receiving node`.
+
+### Protocol phases overview
+
+#### Submission phase
+
+During submission phase a `user client` (browser or mobile app) signs a `transaction` using user `private wallet key` and submits it either directly to one of `core nodes` or to a `network proxy`. A `network proxy` is a node that load balances incoming transactions to `core nodes` attempting to load them evenly, and avoiding transaction submissions to non-responsive nodes. 
+
+#### Broadcast phase
+
+During the broadcast phase, a `node` that received a `transaction` from `user client` will broadcast it to other `core nodes`. 
+
+#### Pending queue phase
+
+During the pending queue phase, a `transaction` received from `user client` or from `transaction broadcast` is validated and placed into the`pending queue`.
+During the validation, `transaction signature` and format are verified. 
+
+Note that `pending queue` has fixed memory capacity. If the `pending queue` is full, adding a new `transaction` to the `queue` will cause some `transactions` to be dropped from the `pending queue`. Ethereum-compatible blockchains, including SKALE, drop transactions with the smallest `gas price`.
+
+#### Block proposal phase
+
+During the block proposal phase each SKALE node will form a `block proposal`.  A `block proposal` is an ordered list of `transactions`.
+
+If all `transactions` in `pending queue` can be placed into proposal without reaching `block gas limit`, then all `transactions` will be placed into `block proposal`. Otherwise, `transactions` with higher gas price will be selected from the queue to create a `block proposal` that fits the `block gas limit`. 
+
+Once a `node` created a proposal, it will broadcast `compressed proposal` to all its nodes. The compressed proposal includes only the `transaction hash` (fingerprint) of each transaction. The `receiving node` decompresses `transactions` by matching `transaction hashes` to `transactions` stored in is pending queue. In the event `receiving node` does not have a matching `transaction` in its pending queue, it will ask the `sending node` for the entire `transaction`.
+
+Once the `receiving node` receives the `block proposal`, it will sign a `Data Availability Signature` and pass it to the `sending node`. 
+
+Once the `sending node` collects `DA signatures` from `2/3` of nodes, it will merge the signatures into a `DA proof`. The `DA proof` proves that the proposal has been widely distributed over the network.
+
+#### DA broadcast phase
+
+Once a `node` obtains a `DA proof` for its `block proposal`, it will broadcast `DA proof` to other nodes.
+
+Note that `DA proof` requirement solves two problems:
+
+First, a `block proposal` that has a `DA proof` is _guaranteed to be widely distributed_.
+
+Second, since `DA proof` creation requires a 2/3 signature of nodes, the proposal is _guaranteed to be unique_. 
+A malicious proposal is not able to create two different proposals an obtain DA proofs for both of them.
+
+
+#### Block consensus phase
+
+Once a node receives `DA proofs` from 2/3 of nodes, the node will start the block consensus phase.
+
+During block consensus phase, the `node` will vote `1` if it received `DA proof` for a particular proposal, and vote `0` otherwise.
+
+The nodes will then executed asynchronous binary consensus algorithm, also known as `Byzantine Generals problem`. https://en.wikipedia.org/wiki/Byzantine_fault
+
+The particular binary consensus algorithm implemented in SKALE is specified in 
+
+https://inria.hal.science/hal-00944019/file/RR-2016-Consensus-optimal-V5.pdf
+
+Once the binary consensus completed, it guarantees that all honest node will reach consensus of `1` or `0'. If honest nodes reach `1` it is guaranteed
+that `1` was initially voted by at least `1' honest nodes. That, in turn, guarantees that the `block proposal` is `DA safe`, or that it is widely distributed over the network.
+
+If a `block consensus` phase outputs `1` for several proposals, the proposal with highest priority is selected. The priority changes from one block to another so that on average each node has similar probability to win.
+
+#### Block  signature phase
+
+After `block consensus` decides on the winning block, each node will sign the statement specifying the winning proposal (`block signature share`) and broadcast it to other nodes. The node will then wait until receipt of 2/3 of `block signature shares` and merge the shares into `block signature`.
+
+#### Block  finalization phase.
+
+On completion of _block signature phase_, all honest nodes will have the `block signature` but some of them may not have the block itself. 
+
+This can happen due to a malicious proposer, that intentionally does not send its proposals to some of the all nodes in order to break the liveliness property of the blockchain. It can also happen due to proposer crashing, or due to slow network.
+
+Fortunately, `DA proof` requirement solves the problem.  It is guaranteed, that `block proposal` that wins _block consensus phase_ has `DA proof`, and is, therefore, widely distributed across the network.
+
+Therefore, during _block finalization_phase_ If a `node` does not happen to have the `winning proposal`, it will simply connect to other `nodes` to download it from them. 
+
+Note that 2/3 of the nodes are guaranteed to have a copy of the proposal after _DA proof phase_
+
+#### EVM processing phase
+
+After block finalization the block is present on the node.
+
+It will be then processed through Ethereum Virtual Machine to update `EVM state`.
+
+#### Storage phase
+
+`Committed block` will now be stored in persistent storage, and 
+`EVM state` will be updated in persistent storage.
+
+The node will move into _block proposal phase_ for the next block.

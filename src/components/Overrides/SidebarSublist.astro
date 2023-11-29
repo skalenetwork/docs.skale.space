@@ -16,7 +16,17 @@ const { sublist, isNested } = Astro.props;
 let items = isNested ? sublist : sublist.filter((item) => {
 	if (item.type === "group") {
 		for (const e of item.entries) {
-			if (e.isCurrent === true) return item;
+			if (e.type === "group") {
+				for (const e2 of e.entries) {
+					if (e2.type === "group") {
+						for (const e3 of e2.entries) {
+							if (e3.isCurrent) return item;
+						}
+					}
+					if (e2.isCurrent) return item;
+				}
+			}
+			if (e.isCurrent) return item;
 		}
 	}
 });
@@ -46,7 +56,7 @@ let items = isNested ? sublist : sublist.filter((item) => {
 						</a>
 					) : (
 						<details
-							open={true}
+							open={!entry.collapsed}
 						>
 							<summary>
 								<span class="large">{entry.label}</span>

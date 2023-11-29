@@ -39,6 +39,7 @@
     "astro": "astro",
     "format": "prettier --loglevel warn --write \"**/*.{js,css,md}\"",
     "posttest": "npm run format",
+    "spellcheck": "cspell \"./src/content/**\"",
     "lint": "eslint . --cache --fix",
     "pretest": "npm run lint",
     "prepare": "husky install"
@@ -50,6 +51,7 @@
     "sharp": "^0.32.5"
   },
   "devDependencies": {
+    "cspell": "^8.0.0",
     "eslint": "^8.53.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",

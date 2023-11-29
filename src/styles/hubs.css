@@ -1,0 +1,18 @@
+:root,
+:root[data-theme="light"] {
+	--calypso-purple-light: rgb(103, 35, 71);
+	--calypso-purple-dark: rbg(57, 15, 68);
+	--calypso-gradient: linear-gradient(
+		270deg,
+		var(--calypso-purple-light),
+		var(--calypso-purple-dark)
+	);
+}
+
+.hub-page {
+	width: 100%;
+	height: 100%;
+}
+.calypso-background {
+	background-color: var(--calypso-gradient) !important;
+}

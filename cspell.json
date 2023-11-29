@@ -1,0 +1,13 @@
+{
+    // Enable your dictionary by adding it to the list of `dictionaries`
+    "dictionaries": ["custom-words"],
+
+    // Tell CSpell about your dictionary
+    "dictionaryDefinitions": [
+        {
+            "name": "custom-words",
+            "path": "./custom-words.txt",
+            "addWords": true
+        }
+    ]
+}

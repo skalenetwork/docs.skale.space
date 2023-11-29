@@ -9,7 +9,10 @@ export default defineConfig({
 		starlight({
 			title: "Developer Docs",
 			customCss: [
-				"./src/styles/overrides.css"
+				"./src/styles/hubs.css",
+				"./src/styles/overrides.css",
+				"./src/styles/mathml.css",
+				"./src/styles/tips.css"
 			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",
@@ -34,7 +37,52 @@ export default defineConfig({
 				},
 				{
 					label: "Learn",
-					autogenerate: { directory: "learn" },
+					items: [
+						{ label: "About SKALE Network", link: "/learn/about-skale-network"},
+						{ 
+							label: "SKALE Chain",
+							items: [
+								{ label: "Overview", link: "/learn/skale-chain-overview" },
+								{ label: "AppChain", link: "/learn/app-chain" },
+								{ label: "HubChain", link: "/learn/hub-chain" },
+								{ label: "Calypso Innovation Hub", link: "/learn/calypso" },
+								{ label: "Chaos Open Testnet", link: "/learn/chaos" },
+								{ label: "Europa Liquidity Hub", link: "/learn/europa" },
+								{ label: "Nebula Gaming Hub", link: "/learn/nebula" },
+								{ label: "Titan AI Hub", link: "/learn/titan" },
+							]
+						},
+						{ 
+							label: "Beginner",
+							items: [
+								{ label: "EVM Compatability", link: "/learn/beginner/evm-compatability" },
+								{ label: "Hybrid Architecture", link: "/learn/beginner/hybrid-architecture" },
+								{ label: "SKALE Chain Gas", link: "/learn/beginner/skale-chain-gas" },
+								{ label: "Zero Gas Fees", link: "/learn/beginner/zero-gas-fees" }
+							]
+						},
+						{
+							label: "Advanced",
+							items: [
+								{ label: "Block Rotation", link: "/learn/advanced/block-rotation" },
+								{ label: "Consensus", link: "/learn/advanced/consensus" },
+								{ label: "Consensus Deep Dive", link: "/learn/advanced/consensus-deep-dive" },
+								{ label: "Distributed Key Generation with BLS", link: "/learn/advanced/dkg-bls" },
+								{ label: "JSON-RPC Compatability", link: "/learn/advanced/json-rpc-compatability" },
+								{ label: "Precompiled Contracts", link: "/learn/advanced/precompiled-contracts" },
+								{ label: "Snapshots", link: "/learn/advanced/snapshots" },
+								{
+									label: "Topics",
+									items: [
+										{ label: "Intro to Elliptic Curve Cryptography", link: "/learn/advanced/topics/elliptic-curve-cryptography" },
+										{ label: "Intro to Threshold Schemes", link: "/learn/advanced/topics/threshold-schemes" }
+									]
+								}
+							]
+						},
+						{ label: "Mainnet Beta", link: "/learn/mainnet-beta" },
+						{ label: "FAQ", link: "/learn/faq"},
+					]
 				},
 				{
 					label: "Quick Start",
