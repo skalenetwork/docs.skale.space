@@ -87,6 +87,13 @@ export default defineConfig({
 				{
 					label: "Quick Start",
 					autogenerate: { directory: "quick-start" },
+					// items: [
+					// 	{ label: "Start Here", link: "/quick-start/index" },
+					// 	{ label: "Select a Chain", link: "/quick-start/select-a-chain" },
+					// 	{ label: "Acquire sFUEL (Gas)", link: "/quick-start/acquire-sfuel" },
+					// 	{ label: "Build on SKALE", link: "/quick-start/build" },
+					// 	{ label: "Go Live", link: "/quick-start/select-a-chain" },
+					// ]
 				},
 				{
 					label: "tools",
