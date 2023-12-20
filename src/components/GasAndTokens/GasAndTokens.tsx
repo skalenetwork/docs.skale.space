@@ -54,7 +54,7 @@ export default function GasAndTokens() {
 						<td>sFUEL</td>
 						<td>Native (Gas)</td>
 						<td>18</td>
-						<td>{formatEther(balances[0]?.toString())} sFUEL</td>
+						<td>{formatEther(balances[0]?.toString() ?? "0")} sFUEL</td>
 						<td>
 							<button>
 								Request Tokens

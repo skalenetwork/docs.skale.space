@@ -7,7 +7,7 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: "Developer Docs",
+			title: "",
 			customCss: [
 				"./src/styles/hubs.css",
 				"./src/styles/overrides.css",

@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useEffect } from "react";
 
 export default function Wallet({ alwaysShow }: { alwaysShow: boolean }) {
@@ -8,6 +8,7 @@ export default function Wallet({ alwaysShow }: { alwaysShow: boolean }) {
 
 	useEffect(() => {
 		if (address) localStorage.setItem("address", address);
+		else localStorage.removeItem("address");
 	}, [address]);
 
 	if (address !== undefined || alwaysShow) {

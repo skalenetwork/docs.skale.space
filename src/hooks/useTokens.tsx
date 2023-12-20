@@ -6,42 +6,33 @@ import { erc20ABI } from "wagmi";
 
 export default function useTokens() {
 
-	const erc20 = new Contract("0x0000000000000000000000000000000000000000", erc20ABI);
+	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20ABI));
 
 	const [chain, setChain] = useState<Chain | null>(null);
 	const [chainKey, setChainKey] = useState<string | null>(null);
 	const [address, setAddress ] = useState<string | null>(null);
-	const [balances, setBalances] = useState<any[]>([]);
+	const [balances, setBalances] = useState<bigint[]>([]);
 
 	const checkStorage = () => {
 		if (typeof localStorage !== undefined) {
 			const possibleChainKey = localStorage.getItem("selectedChainKey");
+
 			if (possibleChainKey) {
-				setChain((chains as any)[possibleChainKey as ChainKey]);
+				const possibleChain = (chains as any)[possibleChainKey as ChainKey];
+				if (chain?.name !== possibleChain) {
+					setChain(possibleChain);
+				}
+
 				setChainKey(possibleChainKey);
 			}
 
 			const possibleAddress = localStorage.getItem("address");
-			if (possibleAddress) setAddress(possibleAddress);
+			
+			if (possibleAddress) {
+				setAddress(possibleAddress);
+			}
 		}
 	}
-	
-	/** Check Storage Initial */
-	useEffect(() => {
-		checkStorage();
-	}, []);
-
-	
-	/** Check Store Interval Every 10 Seconds */
-	useEffect(() => {
-
-		const interval = setInterval(() => {
-			checkStorage();
-		}, 10000);
-
-		return () => clearInterval(interval);
-	}, []);
-	
 
 	const loadBalances = async () => {
 		if (!chain?.chainInfo || !chain.chainInfo.testnet.contracts) return;
@@ -61,32 +52,30 @@ export default function useTokens() {
 			]
 		});
 		
-		console.log("Multicall: ", multicall);		
 		const balancesFromMulticall = await multicall.aggregate3.staticCall(getBalancesEncoded);
-		console.log("Balances from Multicall: ", balancesFromMulticall);
 
 		setBalances([
 			await provider?.getBalance(address),
-			...balancesFromMulticall.map(({ returnData }: any, i) => {
+			...balancesFromMulticall.map(({ returnData }: any) => {
 				return erc20.interface.decodeFunctionResult('balanceOf', returnData)[0];
 			})
 		]);
 	}
 
-	/** Check Balances on Load */
 	useEffect(() => {
+		checkStorage();
 		loadBalances();
-	}, []);
-
-	/** Check Balances Inverval Every 10 Seconds */
+	}, [chain]);
+	
+	/** Check Store Interval Every 10 Seconds */
 	useEffect(() => {
-		const interval = setInterval(async() => {
-			await loadBalances();
-			console.log("Balances: ", balances);
-		}, 1000);
+		const interval = setInterval(() => {
+			checkStorage();
+			loadBalances();
+		}, 2500);
 
 		return () => clearInterval(interval);
-	}, [chain]);
+	}, []);
 
 	return {
 		chain,
