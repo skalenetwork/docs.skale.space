@@ -4,7 +4,15 @@ import { chains } from "../../config";
 import { ChainCard } from "../ChainCard";
 import type { ChainKey } from "../../config";
 
-export default function SelectChain() {
+export default function SelectChain({
+	showDetails,
+	blockClick,
+	text
+}: {
+	showDetails?: boolean,
+	blockClick?: boolean,
+	text?: string
+}) {
 
 	const [isLoaded, setIsLoaded] = useState<boolean>();
 	const [selectedChainKey, setSelectedChainKey] = useState<string | null>(null);
@@ -31,17 +39,17 @@ export default function SelectChain() {
 			<p>Checking for Chain</p>
 		);
 	}
-	console.log("KEy: ", chains);
+
 	if (selectedChainKey) {
 		return (
 			<div>
-				<h3>You have selected:</h3>
+				<h3>{text ?? "You have selected:"}</h3>
 				<br />
 				<ChainCard
 					chainKey={selectedChainKey}
 					chain={(chains as any)[selectedChainKey]}
 					onClick={() => {
-						if (confirm("Do you want to select a different chain?")) {
+						if (!blockClick && confirm("Do you want to select a different chain?")) {
 							selectChain(null);
 						}
 					}}

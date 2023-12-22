@@ -2,32 +2,44 @@
 title: Build
 description: Build on SKALE
 ---
-
+import { SelectChain } from "../../../components/SelectChain";
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Build
+<br />
+<SelectChain client:load text="Selected Chain" blockClick={true} showDetails={true} />
 
-// Description
+### Next Steps
 
+1. Deploy your contracts to your selected SKALE Testnet Chain
+2. Explore the [tools](#tools) below
+3. Join us in [Discord](https://discord.com/invite/gM5XBy6) to ask questions and share your work.
+
+### Tools
 <CardGrid>
-	<a style="text-decoration: none;"href="/quick-start/select-a-chain">
-		<Card title="1. Select a SKALE Chain">
-			Ready to start exploring and buidling on SKALE? Start by selecting a SKALE Chain
+	<a style="text-decoration: none;" href="#">
+		<Card title="Wallets">
+			Explore the various wallet options available throughout the SKALE Ecosystem
 		</Card>
 	</a>
-	<a style="text-decoration: none;"href="/quick-start/acquire-sfuel">
-		<Card title="2. Acquire sFUEL (Gas Token)">
-			Ready to build? Connect your wallet and grab some SKALE Fuel (Gas)
+	<a style="text-decoration: none;" href="#">
+		<Card title="Bridging">
+			Learn more about how to help facilitate bridging to or from a SKALE Chain
 		</Card>
 	</a>
-	<a style="text-decoration: none;"href="/quick-start/build">
-		<Card title="3. Build">
-			Learn more about the SKALE Specifics and ways to build or port your application.
+	<a style="text-decoration: none;" href="#">
+		<Card title="Data & Indexers">
+			Checkout the tools and options to help you utilize SKALE Chain data
 		</Card>
 	</a>
-	<a style="text-decoration: none;"href="/quick-start/go-live">
-		<Card title="4. Go-Live Process">
-			Ready to go-live? Learn about the processes to help take you to Mainnet
+	<a style="text-decoration: none;" href="#">
+		<Card title="Developer Tools">
+			Find the best tools to help you build and deploy dApps quickly
 		</Card>
 	</a>
 </CardGrid>
+<br />
+<a style="text-decoration: none;" href="#">
+	<Card title="Explore More Tools">
+		Checkout the rest of the tools available on SKALE
+	</Card>
+</a>
