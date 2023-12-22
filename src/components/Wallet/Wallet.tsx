@@ -4,12 +4,15 @@ import { useEffect } from "react";
 
 export default function Wallet({ alwaysShow }: { alwaysShow: boolean }) {
 
-	const { address } = useAccount();
+	const { address, isConnected } = useAccount();
 
 	useEffect(() => {
-		if (address) localStorage.setItem("address", address);
-		else localStorage.removeItem("address");
-	}, [address]);
+		if (address) {
+			localStorage.setItem("address", address);
+		} else {
+			localStorage.removeItem("address");
+		}
+	}, [isConnected, address]);
 
 	if (address !== undefined || alwaysShow) {
 	return <ConnectButton

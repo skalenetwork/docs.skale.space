@@ -4,7 +4,7 @@ import { chains, Multicall } from "../config";
 import { Contract, JsonRpcProvider, formatEther } from "ethers";
 import { erc20ABI } from "wagmi";
 
-export default function useTokens() {
+export default function useTokens({ setParentBalances }: { setParentBalances: any }) {
 
 	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20ABI));
 
@@ -54,24 +54,34 @@ export default function useTokens() {
 		
 		const balancesFromMulticall = await multicall.aggregate3.staticCall(getBalancesEncoded);
 
-		setBalances([
+		// setBalances([
+		// 	await provider?.getBalance(address),
+		// 	...balancesFromMulticall.map(({ returnData }: any) => {
+		// 		return erc20.interface.decodeFunctionResult('balanceOf', returnData)[0];
+		// 	})
+		// ]);
+
+		setParentBalances(
 			await provider?.getBalance(address),
 			...balancesFromMulticall.map(({ returnData }: any) => {
 				return erc20.interface.decodeFunctionResult('balanceOf', returnData)[0];
-			})
-		]);
+			}));
 	}
 
 	useEffect(() => {
 		checkStorage();
-		loadBalances();
+		new Promise(async() => {
+			await loadBalances();
+		})
 	}, [chain]);
 	
 	/** Check Store Interval Every 10 Seconds */
 	useEffect(() => {
 		const interval = setInterval(() => {
 			checkStorage();
-			loadBalances();
+			new Promise(async() => {
+				await loadBalances();
+			})
 		}, 2500);
 
 		return () => clearInterval(interval);

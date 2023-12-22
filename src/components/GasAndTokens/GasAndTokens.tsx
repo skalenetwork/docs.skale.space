@@ -1,15 +1,110 @@
-import useTokens from "../../hooks/useTokens";
-import { formatEther, formatUnits, parseUnits } from "ethers";
+import { useEffect, useState } from "react";
+import { formatEther, formatUnits, Contract, JsonRpcProvider } from "ethers";
 import "./styles.css";
+import type { Chain, ChainKey } from "../../config";
+import { chains, Multicall } from "../../config";
+import { erc20ABI } from "wagmi";
 
 export default function GasAndTokens() {
 
-	const {
-		address,
-		balances,
-		chain,
-		chainKey
-	} = useTokens();
+	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20ABI));
+	const [address, setAddress] = useState<string | null>(null);
+	const [chain, setChain] = useState<Chain | null>(null);
+	const [chainKey, setChainKey] = useState<string | null>(null);
+	const [balances, setBalances] = useState<bigint[]>([]);
+	const [provider, setProvider] = useState<{
+		key: string,
+		provider: JsonRpcProvider
+	 | null}>(null)
+
+	const checkStorage = () => {
+		if (typeof localStorage !== undefined) {
+			const possibleChainKey = localStorage.getItem("selectedChainKey");
+
+			if (possibleChainKey) {
+				const possibleChain = (chains as any)[possibleChainKey as ChainKey];
+				if (chain?.name !== possibleChain) {
+					setChain(possibleChain);
+				}
+
+				setChainKey(possibleChainKey);
+			} else {
+				setChainKey(null);
+				setChain(null);
+			}
+
+			const possibleAddress = localStorage.getItem("address");
+			if (possibleAddress) {
+				setAddress(possibleAddress);
+			} else {
+				setAddress(null);
+				setBalances([]);
+			}
+		}
+	}
+
+	const loadBalances = async () => {
+		if (!chain?.chainInfo || !chain.chainInfo.testnet.contracts) return;
+		if (address === null) return;
+
+		let _provider;
+		if (provider === null) {
+			_provider = new JsonRpcProvider(chain.chainInfo.testnet.rpcUrl);
+			setProvider({
+				key: chainKey,
+				provider: _provider
+			});
+		} else if (provider?.key !== chainKey) {
+			_provider = new JsonRpcProvider(chain.chainInfo.testnet.rpcUrl);
+			setProvider({
+				key: chainKey,
+				provider: _provider
+			});
+		} else {
+			_provider = provider.provider;
+		}
+		
+		const multicall = new Contract(Multicall.address, Multicall.abi, _provider);
+
+		const getBalancesEncoded = Array.from({ length: chain.chainInfo.testnet.contracts.length }, (_, i) => {
+			return [
+				chain.chainInfo?.testnet.contracts[i].address,
+				false,
+				erc20.interface.encodeFunctionData(
+					"balanceOf",
+					[address]
+				)
+			]
+		});
+		
+		const balancesFromMulticall = await multicall.aggregate3.staticCall(getBalancesEncoded);
+
+		setBalances([
+			await _provider?.getBalance(address),
+			...balancesFromMulticall.map(({ returnData }: any) => {
+				return erc20.interface.decodeFunctionResult('balanceOf', returnData)[0];
+			})
+		]);
+	}
+
+	useEffect(() => {
+		checkStorage();
+		loadBalances();
+	}, [address, chain]);
+	
+	/** Check Store Interval Every 10 Seconds */
+	useEffect(() => {
+		const interval = setInterval(() => {
+			checkStorage();
+			loadBalances();
+		}, 2500);
+
+		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
+		console.log("Balances: ", balances);
+	}, [address, balances])
 
 	if (!chain) {
 		return (
