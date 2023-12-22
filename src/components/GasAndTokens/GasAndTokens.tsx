@@ -102,10 +102,6 @@ export default function GasAndTokens() {
 		return () => clearInterval(interval);
 	}, []);
 
-	useEffect(() => {
-		console.log("Balances: ", balances);
-	}, [address, balances])
-
 	if (!chain) {
 		return (
 			<div>
