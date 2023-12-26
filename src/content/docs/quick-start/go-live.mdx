@@ -8,11 +8,22 @@ description: Go Live
 If you are preparing to go live on to SKALE Mainnet, then
 the following steps can help expedite the process.
 
-Showcase your Work
+### Showcase your Work
 
 First, start by heading over to the SKALE Network Discord channel.
 Once there, show of your project in the #showcase-your-work channel.
 This will allow members of the SKALE Community to give feedback and enable
 you to start showcasing your game.
 
-> More to come later
+### Check your Smart Contracts
+
+The SKALE Network is known by developers and users alike for its unique zero gas fee model.
+This core difference on SKALE Chains may cause a breaking change in your smart contract.
+
+:::danger
+If you are attempting to use *msg.value* to capture value in the form a token, this will not work on SKALE.
+:::
+
+For more information on how to migrate value capture from msg.value to ERC-20, checkout [this](https://hackmd.io/@TheGreatAxios/SJWksGU2i) guide from the community.
+
+
