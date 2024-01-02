@@ -7,12 +7,13 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: "",
+			title: "SKALE Docs",
 			customCss: [
 				"./src/styles/hubs.css",
 				"./src/styles/overrides.css",
 				"./src/styles/mathml.css",
-				"./src/styles/tips.css"
+				"./src/styles/tips.css",
+				"./node_modules/react-toastify/dist/ReactToastify.css"
 			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",

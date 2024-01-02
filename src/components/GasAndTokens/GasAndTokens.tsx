@@ -128,7 +128,7 @@ export default function GasAndTokens() {
 
 	return (
 		<div>
-			<h2>Available Tokens</h2>
+			<h3>Available Tokens</h3>
 			<p>Showing balances for: {address}</p>
 			<table>
 				<thead>

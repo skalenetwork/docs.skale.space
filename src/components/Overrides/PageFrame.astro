@@ -1,7 +1,7 @@
 ---
 import { MobileMenuToggle } from 'virtual:starlight/components';
 import type { Props } from '../props';
-
+import { ToastContainer } from 'react-toastify';
 const { hasSidebar, labels } = Astro.props;
 ---
 
@@ -20,16 +20,30 @@ const { hasSidebar, labels } = Astro.props;
 		)
 	}
 	<div class="main-frame"><slot /></div>
-	<footer>
+	<footer class="footer">
 		<p>&copy; 2023-Present Dirt Road Development, SKALE Labs</p>
-		<a target="_blank" href="https://skale.space/security">Security</a>
+		<a style="margin: 0 32px;" target="_blank" href="https://skale.space/security">Security</a>
 	</footer>
+	<ToastContainer
+	  position="bottom-right"
+	  autoClose={5000}
+	  hideProgressBar={false}
+	  newestOnTop={false}
+	  closeOnClick
+	  rtl={false}
+	  pauseOnFocusLoss
+	  draggable
+	  pauseOnHover
+	  theme="dark"
+	  client:load
+	/>
 </div>
 
 <style>
 	.page {
 		flex-direction: column;
 		min-height: 100vh;
+		height: auto;
 		position: relative;
 	}
 
@@ -86,16 +100,16 @@ const { hasSidebar, labels } = Astro.props;
 		padding-inline-start: var(--sl-content-inline-start);
 	}
 
-	footer {
+	.footer {
 		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
+		bottom: -50px;
+		left: 35%;
+		right: 35%;
 		height: 100px;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		justify-content: space-evenly;
+		justify-content: center;
 	}
 
 	@media (min-width: 50rem) {

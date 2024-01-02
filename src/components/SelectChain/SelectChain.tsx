@@ -2,6 +2,7 @@ import "./styles.css";
 import { useEffect, useState } from "react";
 import { chains } from "../../config";
 import { ChainCard } from "../ChainCard";
+import { ChainDetails } from "../ChainDetails";
 import type { ChainKey } from "../../config";
 
 export default function SelectChain({
@@ -54,6 +55,12 @@ export default function SelectChain({
 						}
 					}}
 				/>
+				{selectedChainKey !== "appChain" && (
+					<>
+						<ChainDetails chain={(chains as any)[selectedChainKey]} />
+						<br />
+					</>
+				)}
 			</div>
 		);
 	}

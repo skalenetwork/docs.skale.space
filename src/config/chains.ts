@@ -181,8 +181,8 @@ const chains = {
     	}
 	},
 	"appChain": {
-		"name": "Dedicated AppChain",
-		"description": "AppChains are perfect for enterprises looking to have their own public blockchain and for high throughput applications",
+		"name": "Dedicated SKALE Chain",
+		"description": "Dedicated SKALE Chains are perfect for enterprises looking to have their own public blockchain and for high throughput applications",
 		"logoUrl": "/",
 		"color": "#000",
 		"background": "#FFF",
