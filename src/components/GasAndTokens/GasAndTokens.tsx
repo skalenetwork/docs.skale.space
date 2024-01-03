@@ -4,6 +4,12 @@ import "./styles.css";
 import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
 import { erc20ABI } from "wagmi";
+import { toast } from "react-toastify";
+
+type Provider = {
+	key: string;
+	provider: JsonRpcProvider;
+}
 
 export default function GasAndTokens() {
 
@@ -12,10 +18,32 @@ export default function GasAndTokens() {
 	const [chain, setChain] = useState<Chain | null>(null);
 	const [chainKey, setChainKey] = useState<string | null>(null);
 	const [balances, setBalances] = useState<bigint[]>([]);
-	const [provider, setProvider] = useState<{
-		key: string,
-		provider: JsonRpcProvider
-	 | null}>(null)
+	const [provider, setProvider] = useState<Provider | null>(null);
+
+	const requestTokens = async(chainName: string, tokenAddress: string, toAddress: string, tokenSymbol: string) => {
+		toast("Token Faucet Coming Soon!");
+		// try {
+		// 	const res = await fetch("https://edge-distribution.vercel.app/api/request-tokens", {
+		// 		body: JSON.stringify({
+		// 			chain: chainName,
+		// 			address: toAddress,
+		// 			token: tokenAddress
+		// 		}),
+		// 		method: "POST"
+		// 	});
+
+		// 	toast.success(`${tokenSymbol} sent on ${chainName}`);
+		// } catch (err) {
+		// 	console.log("err: ", err);
+		// 	toast.error(`Error requesting ${tokenSymbol} on ${chainName}`);
+		// }
+
+
+	}
+
+	const requestSKALEFuel = async(chainName: string, toAddress: string) => {
+		toast("sFUEL Facuet Coming Soon!");
+	}
 
 	const checkStorage = () => {
 		if (typeof localStorage !== undefined) {
@@ -147,7 +175,13 @@ export default function GasAndTokens() {
 						<td>18</td>
 						<td>{formatEther(balances[0]?.toString() ?? "0")} sFUEL</td>
 						<td>
-							<button>
+							<button
+								className="sfuel-button"
+								onClick={async(e) => {
+									e.preventDefault();
+									await requestSKALEFuel(chainKey, address);
+								}}
+							>
 								Request Tokens
 							</button>
 						</td>
@@ -160,7 +194,11 @@ export default function GasAndTokens() {
 								<td>{contractInfo.decimals?.toString()}</td>
 								<td>{formatUnits(balances[index + 1]?.toString() ?? "0", contractInfo?.decimals ?? 18).toString()} {contractInfo.contractName}</td>
 								<td>
-									<button>
+									<button
+										className="request-token-button"
+										onClick={async(e) => {
+											await requestTokens(chainKey, contractInfo.address, address, contractInfo.contractName);
+										}}>
 										Request Tokens
 									</button>
 								</td>
