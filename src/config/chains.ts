@@ -198,7 +198,7 @@ const chains = {
 		"chainInfo": {
     		"testnet": {
     			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix",
-    			"chainId": 0,
+    			"chainId": 1351057110,
     			"contracts": [
     				{
     					address: "0x08f98Af60eb83C18184231591A8F89577E46A4B9",
