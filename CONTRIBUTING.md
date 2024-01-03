@@ -43,15 +43,15 @@ Developers interested in contributing should fork the main branch and checkout a
 
 **Available Types**
 
-- feature
-- fix
-- content
-- config
+-   feature
+-   fix
+-   content
+-   config
 
 **Examples**
 
-- thegreataxios/feature/add-navbar-component
-- thegreataxios/content/add-tutorial-on-bulding-unity-game
+-   thegreataxios/feature/add-navbar-component
+-   thegreataxios/content/add-tutorial-on-bulding-unity-game
 
 ## Creating Pull Requests
 
@@ -61,7 +61,7 @@ Once you make your changes, it is time to create your pull request to merge thes
 
 The format of the PR
 
-- Title: type(component): Description
+-   Title: type(component): Description
 
 > Example feat(tutorial): Create Tutorial for Unity Game
 

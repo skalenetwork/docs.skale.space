@@ -1,0 +1,59 @@
+---
+title: Build
+description: Build on SKALE
+---
+import { SelectChain } from "../../../components/SelectChain";
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+<br />
+<SelectChain client:load text="Selected Chain" blockClick={true} showDetails={true} />
+
+### Next Steps
+
+1. Deploy your contracts to your selected SKALE Testnet Chain
+2. Explore the [tools](#tools) below
+3. Join us in [Discord](https://discord.com/invite/gM5XBy6) to ask questions and share your work.
+
+{/*### SKALE Specifics*/}
+
+{/*#### sFUEL Distribution*/}
+
+{/* API Distribution, Proof of Work, Custodial Contract Distribution */}
+
+{/*#### User Onboarding (Web2)*/}
+
+{/* Stardust, Invisible Wallets */}
+
+{/*#### User Onboarding (Web3)*/}
+
+{/* Metaport, Portal, Meson.Fi */}
+
+### Tools
+<CardGrid>
+	<a style="text-decoration: none;" href="#">
+		<Card title="Wallets">
+			Explore the various wallet options available throughout the SKALE Ecosystem
+		</Card>
+	</a>
+	<a style="text-decoration: none;" href="#">
+		<Card title="Bridging">
+			Learn more about how to help facilitate bridging to or from a SKALE Chain
+		</Card>
+	</a>
+	<a style="text-decoration: none;" href="#">
+		<Card title="Data & Indexers">
+			Checkout the tools and options to help you utilize SKALE Chain data
+		</Card>
+	</a>
+	<a style="text-decoration: none;" href="#">
+		<Card title="Developer Tools">
+			Find the best tools to help you build and deploy dApps quickly
+		</Card>
+	</a>
+</CardGrid>
+<br />
+<a style="text-decoration: none;" href="#">
+	<Card title="Explore More Tools">
+		Checkout the rest of the tools available on SKALE
+	</Card>
+</a>

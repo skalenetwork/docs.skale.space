@@ -1,0 +1,34 @@
+---
+title: Select a Chain
+description: Select a Chain
+
+sidebar:
+  order: 1
+---
+import { ToastContainer } from "react-toastify";
+import { SelectChain } from "../../../components/SelectChain";
+import { GasAndTokens } from "../../../components/GasAndTokens";
+
+Select a chain from the options below to learn more about it. 
+If you don't feel it's the perfect fit, no worries, join us in [Discord]() for additional
+support on where to start building.
+
+<br />
+<SelectChain client:load />
+
+<GasAndTokens client:load />
+
+{/*<ToastContainer
+  position="bottom-right"
+  autoClose={5000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  pauseOnHover
+  theme="dark"
+  zIndex={1000000}
+  client:load
+/>*/}

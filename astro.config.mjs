@@ -7,17 +7,19 @@ export default defineConfig({
 	integrations: [
 		react(),
 		starlight({
-			title: "Developer Docs",
+			title: "SKALE Docs",
 			customCss: [
 				"./src/styles/hubs.css",
 				"./src/styles/overrides.css",
 				"./src/styles/mathml.css",
-				"./src/styles/tips.css"
+				"./src/styles/tips.css",
+				"./node_modules/react-toastify/dist/ReactToastify.css"
 			],
 			components: {
 				Badge: "./src/components/Overrides/Badge.astro",
 				Header: "./src/components/Overrides/Header.astro",
 				MobileMenuFooter: "./src/components/Overrides/MobileMenuFooter.astro",
+				PageFrame: "./src/components/Overrides/PageFrame.astro",
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
 			},
@@ -86,7 +88,7 @@ export default defineConfig({
 				},
 				{
 					label: "Quick Start",
-					autogenerate: { directory: "quick-start" },
+					autogenerate: { directory: "quick-start" }
 				},
 				{
 					label: "tools",

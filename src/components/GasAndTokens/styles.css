@@ -1,0 +1,15 @@
+table,
+tr {
+	width: 100%;
+}
+
+.request-token-button,
+.sfuel-button {
+	background: none;
+	border: none;
+
+	&:hover {
+		cursor: pointer;
+		background: grey;
+	}
+}
