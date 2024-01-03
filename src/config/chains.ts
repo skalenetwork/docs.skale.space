@@ -170,12 +170,12 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/parallel-stormy-spica",
-    			"chainId": 0,
+    			"chainId": 1350216234,
     			"contracts": []
     		},
     		"testnet": {
     			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-aware-gianfar",
-    			"chainId": 0,
+    			"chainId": 1517929550,
     			"contracts": []
     		},
     	}
