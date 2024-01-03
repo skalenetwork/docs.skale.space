@@ -35,7 +35,7 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
-    			"chainId": 0,
+    			"chainId": 1564830818,
     			"contracts": []
     		},
     		"testnet": {
@@ -68,7 +68,7 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/elated-tan-skat",
-    			"chainId": 0,
+    			"chainId": 2046399126,
     			"contracts": []
     		},
     		"testnet": {
@@ -137,11 +137,11 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/green-giddy-denebola",
-    			"chainId": 0,
+    			"chainId": 1482601649,
     			"contracts": []
     		},
     		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-chief-aware-gianfar",
+    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-faint-slimy-achird",
     			"chainId": 503129905,
     			"contracts": [
     				{
@@ -174,7 +174,7 @@ const chains = {
     			"contracts": []
     		},
     		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-chief-aware-gianfar",
+    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-aware-gianfar",
     			"chainId": 0,
     			"contracts": []
     		},
