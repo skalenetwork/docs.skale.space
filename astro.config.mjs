@@ -92,7 +92,67 @@ export default defineConfig({
 				},
 				{
 					label: "Tools",
-					autogenerate: { directory: "tools" },
+					items: [
+						{ label: "Overview", link: "/tools" },
+						{ label: "Explore", link: "/tools/explore" },
+						{
+							label: "Bridges",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/bridges" },
+							]
+						},
+						{
+							label: "Contracts",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/contracts" },
+							]
+						},
+						{
+							label: "Data",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/data" },
+							]
+						},
+						{
+							label: "Gaming SDKs",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/gaming" },
+							]
+						},
+						{
+							label: "Libaries",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/libaries" },
+							]
+						},
+						{
+							label: "Oracles",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/oracles" },
+							]
+						},
+						{
+							label: "SKALE",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/skale" },
+							]
+						},
+						{
+							label: "Wallets",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/wallets" },
+							]
+						}
+
+					]
 				},
 			],
 		}),
