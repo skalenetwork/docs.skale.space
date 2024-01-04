@@ -91,7 +91,7 @@ export default defineConfig({
 					autogenerate: { directory: "quick-start" }
 				},
 				{
-					label: "tools",
+					label: "Tools",
 					autogenerate: { directory: "tools" },
 				},
 			],
