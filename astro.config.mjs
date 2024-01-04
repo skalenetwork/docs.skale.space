@@ -1,10 +1,12 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
+import astroExpressiveCode from "astro-expressive-code";
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
+		astroExpressiveCode(),
 		react(),
 		starlight({
 			title: "SKALE Docs",
@@ -28,6 +30,7 @@ export default defineConfig({
 				dark: './src/assets/skale_logo_w.svg',
 				light: './src/assets/skale_logo_b.svg'
 			},
+			// expressiveCode: true,
 			social: {
 				discord: "https://discord.com/invite/gM5XBy6",
 				github: "https://github.com/skalenetwork"
@@ -107,6 +110,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/contracts" },
+								{ label: "Using Hardhat", link: "/tools/contracts/hardhat" }
 							]
 						},
 						{
