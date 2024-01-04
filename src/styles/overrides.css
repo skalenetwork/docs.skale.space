@@ -31,3 +31,7 @@
 .Toastify {
 	z-index: 100000000000000000000;
 }
+
+.card-grid a {
+	min-height: 200px !important;
+}
