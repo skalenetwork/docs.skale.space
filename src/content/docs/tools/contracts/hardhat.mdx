@@ -2,7 +2,6 @@
 title: Hardhat
 description: Intro to Hardhat
 ---
-import { SelectChain } from "../../../../components/SelectChain";
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 ## What is Hardhat?
@@ -15,36 +14,32 @@ Run the following in your command prompt:
 
 <Tabs>
 <TabItem label="Typescript">
-
 ```sh
-mkdir hardhat-skale && cd hardhat-skale && npm init -y && npx hardhat init
+mkdir hardhat-skale && cd hardhat-skale && npx hardhat init
 ```
+
+Select **Create a Typescript project** and press return (enter) three times.
 
 </TabItem>
 <TabItem label="JavaScript">
-
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l);
-  return true;
-};
+```sh
+mkdir hardhat-skale && cd hardhat-skale && npx hardhat init
 ```
+
+Select **Create a JavaScript project** and press return (enter) three times.
 </TabItem>
 </Tabs>
 
+### Add SKALE Chain
 
-From there, follow the prompts to setup your project with Typescript.
-
-<SelectChain />
-
+The next step...
 
 ## Deploy a Smart Contract
+
+// Deploy vs hardhat-deploy
 
 ## Verify a Smart Contract
 
 ## Extensions
-
-### Using Hardhat Deploy
 
 ### Using Contract Sizer
