@@ -1,0 +1,23 @@
+---
+import AdditionalDocs from "./ToolAdditionalDocs.astro";
+import Intro from "./ToolIntro.astro";
+const {
+    introParagraph,
+    toolName,
+    toolLink,
+    toolDocsLink
+} = Astro.props;
+---
+
+<div class="tool-layout">
+    <section>
+        <Intro
+            content={introParagraph}
+        />
+        <slot />
+        <AdditionalDocs
+            toolDocsLink={toolDocsLink}
+            toolName={toolName}
+        />
+    </section>
+</div>
