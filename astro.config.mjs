@@ -74,7 +74,7 @@ export default defineConfig({
 								{ label: "Consensus Deep Dive", link: "/learn/advanced/consensus-deep-dive" },
 								{ label: "Distributed Key Generation with BLS", link: "/learn/advanced/dkg-bls" },
 								{ label: "JSON-RPC Compatability", link: "/learn/advanced/json-rpc-compatability" },
-								{ label: "Precompiled Contracts", link: "/learn/advanced/precompiled-contracts" },
+								{ label: "Pre-compiled Contracts", link: "/learn/advanced/precompiled-contracts" },
 								{ label: "Snapshots", link: "/learn/advanced/snapshots" },
 								{
 									label: "Topics",
@@ -128,10 +128,10 @@ export default defineConfig({
 							]
 						},
 						{
-							label: "Libaries",
+							label: "Libraries",
 							collapsed: true,
 							items: [
-								{ label: "Overview", link: "/tools/libaries" },
+								{ label: "Overview", link: "/tools/libraries" },
 							]
 						},
 						{
