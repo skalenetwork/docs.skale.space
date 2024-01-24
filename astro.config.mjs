@@ -23,7 +23,7 @@ export default defineConfig({
 				MobileMenuFooter: "./src/components/Overrides/MobileMenuFooter.astro",
 				PageFrame: "./src/components/Overrides/PageFrame.astro",
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
-				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
+				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro"
 			},
 			favicon: '/favicon.png',
 			logo: {

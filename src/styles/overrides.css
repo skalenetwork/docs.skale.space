@@ -49,3 +49,7 @@ pre,
 	width: 1.75rem;
 	height: 1.75rem;
 }
+
+.site-title:where(.astro-m46x6ez3) span {
+	display: none;
+}
