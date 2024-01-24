@@ -32,7 +32,7 @@
 	z-index: 100000000000000000000;
 }
 
-.card-grid a {
+.card-grid a article {
 	min-height: 200px !important;
 }
 
