@@ -31,3 +31,25 @@
 .Toastify {
 	z-index: 100000000000000000000;
 }
+
+.card-grid a article {
+	min-height: 200px !important;
+}
+
+pre,
+.expressive-code figure .copy {
+	margin-top: 0 !important;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+}
+
+.expressive-code figure .copy button {
+	width: 1.75rem;
+	height: 1.75rem;
+}
+
+.site-title:where(.astro-m46x6ez3) span {
+	display: none;
+}

@@ -1,10 +1,12 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
+import astroExpressiveCode from "astro-expressive-code";
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
+		astroExpressiveCode(),
 		react(),
 		starlight({
 			title: "SKALE Docs",
@@ -21,7 +23,7 @@ export default defineConfig({
 				MobileMenuFooter: "./src/components/Overrides/MobileMenuFooter.astro",
 				PageFrame: "./src/components/Overrides/PageFrame.astro",
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
-				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro",
+				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro"
 			},
 			favicon: '/favicon.png',
 			logo: {
@@ -71,7 +73,7 @@ export default defineConfig({
 								{ label: "Consensus Deep Dive", link: "/learn/advanced/consensus-deep-dive" },
 								{ label: "Distributed Key Generation with BLS", link: "/learn/advanced/dkg-bls" },
 								{ label: "JSON-RPC Compatability", link: "/learn/advanced/json-rpc-compatability" },
-								{ label: "Precompiled Contracts", link: "/learn/advanced/precompiled-contracts" },
+								{ label: "Pre-compiled Contracts", link: "/learn/advanced/precompiled-contracts" },
 								{ label: "Snapshots", link: "/learn/advanced/snapshots" },
 								{
 									label: "Topics",
@@ -91,8 +93,69 @@ export default defineConfig({
 					autogenerate: { directory: "quick-start" }
 				},
 				{
-					label: "tools",
-					autogenerate: { directory: "tools" },
+					label: "Tools",
+					items: [
+						{ label: "Overview", link: "/tools" },
+						{ label: "Explore", link: "/tools/explore" },
+						{
+							label: "Bridges",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/bridges" },
+							]
+						},
+						{
+							label: "Contracts",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/contracts" },
+								{ label: "Using Hardhat", link: "/tools/contracts/hardhat" }
+							]
+						},
+						{
+							label: "Data",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/data" },
+							]
+						},
+						{
+							label: "Gaming SDKs",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/gaming" },
+							]
+						},
+						{
+							label: "Libraries",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/libraries" },
+							]
+						},
+						{
+							label: "Oracles",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/oracles" },
+							]
+						},
+						{
+							label: "SKALE",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/skale" },
+							]
+						},
+						{
+							label: "Wallets",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/wallets" },
+							]
+						}
+
+					]
 				},
 			],
 		}),
