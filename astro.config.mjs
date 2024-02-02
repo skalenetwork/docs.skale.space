@@ -117,6 +117,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/data" },
+								{ label: "Subsquid", link: "/tools/data/subsquid" },
 							]
 						},
 						{
