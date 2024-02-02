@@ -145,6 +145,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/skale" },
+								{ label: "sFUEL Station", link: "/tools/skale/sfuel-station" },
 							]
 						},
 						{
