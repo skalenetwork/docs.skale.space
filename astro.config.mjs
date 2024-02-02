@@ -117,6 +117,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/data" },
+								{ label: "Dune", link: "/tools/data/dune" }
+
 							]
 						},
 						{
