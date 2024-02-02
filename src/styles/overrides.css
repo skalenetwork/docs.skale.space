@@ -53,3 +53,13 @@ pre,
 .site-title:where(.astro-m46x6ez3) span {
 	display: none;
 }
+
+/*This was removing the line spaces everywhere, not just on the code snipets*/
+/*.content:where(.astro-ml6ntd6l) :not(a,strong,em,del,span,input,code) + :not(a,strong,em,del,span,input,code,:where(.not-content *)) {
+	margin-top: 0rem;
+}*/
+
+a:where(.astro-s3zckhgk):hover,
+a:where(.astro-s3zckhgk):focus {
+	background-color: #afc8ff30;
+}

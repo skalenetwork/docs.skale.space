@@ -138,6 +138,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/oracles" },
+								{ label: "Razor Network", link: "/tools/oracles/razor" },
+								{ label: "SKALE Connect", link: "/tools/oracles/skale-connect" },
 							]
 						},
 						{
