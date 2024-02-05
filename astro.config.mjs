@@ -131,6 +131,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/libraries" },
+								{ label: "Web3J", link: "/tools/libraries/web3j" },
 							]
 						},
 						{
