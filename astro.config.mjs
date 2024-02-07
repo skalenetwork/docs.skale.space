@@ -102,6 +102,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/bridges" },
+								{ label: "SKALE IMA", link: "/tools/bridges/skale-ima" },
+								{ label: "Meson.fi", link: "/tools/bridges/meson-fi" },
 							]
 						},
 						{
@@ -109,7 +111,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/contracts" },
-								{ label: "Using Hardhat", link: "/tools/contracts/hardhat" }
+								{ label: "Using Hardhat", link: "/tools/contracts/hardhat" },
+								{ label: "Multicall", link: "/tools/contracts/multicall" },
 							]
 						},
 						{
@@ -117,6 +120,9 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/data" },
+								{ label: "Dune", link: "/tools/data/dune" },
+								{ label: "Subsquid", link: "/tools/data/subsquid" },
+								{ label: "The Graph", link: "/tools/data/the-graph" },
 							]
 						},
 						{
@@ -124,6 +130,11 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/gaming" },
+								{ label: "Eidolon", link: "/tools/gaming/eidolon" },
+								{ label: "Emergence", link: "/tools/gaming/emergence" },
+								{ label: "Mirage", link: "/tools/gaming/mirage" },
+								{ label: "Web3.unity", link: "/tools/gaming/web3unity" },
+								{ label: "Web3.unreal", link: "/tools/gaming/web3unreal" },
 							]
 						},
 						{
@@ -131,6 +142,19 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/libraries" },
+								{ label: "Web3J", link: "/tools/libraries/web3j" },
+								{ label: "EthersV5", link: "/tools/libraries/ethersv5" },
+								{ label: "EthersV6", link: "/tools/libraries/ethersv6" },
+								{ label: "IMA.js", link: "/tools/libraries/imajs" },
+								{ label: "JSON-RPC Calls", link: "/tools/libraries/json-rpc-calls" },
+								{ label: "Kethereum", link: "/tools/libraries/kethereum" },
+								{ label: "Nethereum", link: "/tools/libraries/nethereum" },
+								{ label: "SKALE.js", link: "/tools/libraries/skalejs" },
+								{ label: "Thirdweb", link: "/tools/libraries/thirdweb" },
+								{ label: "Viem", link: "/tools/libraries/viem" },
+								{ label: "Web3dart", link: "/tools/libraries/web3dart" },
+								{ label: "Web3js", link: "/tools/libraries/web3js" },
+								{ label: "Web3swift", link: "/tools/libraries/web3swift" },
 							]
 						},
 						{
@@ -138,6 +162,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/oracles" },
+								{ label: "SKALE Connect", link: "/tools/oracles/skale-connect" },
+								{ label: "Razor", link: "/tools/oracles/razor" },
 							]
 						},
 						{
@@ -145,6 +171,12 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/skale" },
+								{ label: "sFUEL Station", link: "/tools/skale/sfuel-station" },
+								{ label: "Blockscout", link: "/tools/skale/blockscout" },
+								{ label: "SKALE Nodes", link: "/tools/skale/skale-nodes" },
+								{ label: "SKALE Proxy", link: "/tools/skale/skale-proxy" },
+								{ label: "Full Sync Node", link: "/tools/skale/full-sync-node" },
+								{ label: "Archive Node", link: "/tools/skale/archive-node" },
 							]
 						},
 						{
@@ -152,6 +184,20 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/wallets" },
+								{ label: "Bitski", link: "/tools/wallets/bitski" },
+								{ label: "Metamask", link: "/tools/wallets/metamask" },
+								{ label: "Coinbase", link: "/tools/wallets/coinbase" },
+								{ label: "Enkrypt", link: "/tools/wallets/enkrypt" },
+								{ label: "Invisible Signer", link: "/tools/wallets/invible-signer" },
+								{ label: "Ledger", link: "/tools/wallets/ledger" },
+								{ label: "Trezor", link: "/tools/wallets/trezor" },
+								{ label: "Magic", link: "/tools/wallets/magic" },
+								{ label: "Moon", link: "/tools/wallets/moon" },
+								{ label: "Portis", link: "/tools/wallets/portis" },
+								{ label: "Stardust", link: "/tools/wallets/stardust" },
+								{ label: "Thirdweb", link: "/tools/wallets/thirdweb" },
+								{ label: "Wallet Connect", link: "/tools/wallets/wallet-connect" },
+								{ label: "Web3Auth", link: "/tools/wallets/web3auth" },
 							]
 						}
 
