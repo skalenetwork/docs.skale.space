@@ -5,10 +5,19 @@ description: Intro to SKALE.js
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 
+(Maybe move to SKALE folder or under SKALE libraries)
+
 <ToolLayout
     introParagraph="SKALE.js is a community run project designed to offer abstraction over the core SKALE network smart contracts."
     toolName="SKALE.js"
     toolLink="https://github.com/Dirt-Road-Development/skale.js"
     toolDocsLink="https://github.com/Dirt-Road-Development/skale.js"
 >
+
+Some of the available packages are:
+- [@skaleproject/ima](https://www.npmjs.com/package/@skaleproject/ima): provide content to help using IMA, the SKALE native bridge
+- [@skaleproject/pow-ethers](https://www.npmjs.com/package/@skaleproject/pow-ethers): SKALE proof of work mechanism written with Ethers library
+- [@skaleproject/pow-web3](https://www.npmjs.com/package/@skaleproject/pow-web3): SKALE proof of work mechanism written with web3 library
+- [@skaleproject/utils](https://www.npmjs.com/package/@skaleproject/utils): package with utility scripts, such as, interaction with SKALE access_control predeployed contract
+
 </ToolLayout>

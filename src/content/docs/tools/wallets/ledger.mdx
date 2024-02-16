@@ -11,4 +11,39 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://developers.ledger.com/docs/transport/overview/"
     toolDocsLink="https://developers.ledger.com/docs/transport/overview/"
 >
+
+Ledger wallets are known for their emphasis on security, providing an offline storage solution to protect digital assets from online threats such as hacking and malware.
+
+For more information check the following link https://developers.ledger.com/docs/transport/overview/
+
+## Implementation Example
+
+**NPM Packages**
+
+If you want to use a Ledger Nano S/X/S Plus with the USB protocol
+
+```shell
+npm install @ledgerhq/hw-transport-webusb
+```
+If you want to use a Ledger Nano S/X/S Plus with the HID protocol
+
+```shell
+npm install @ledgerhq/hw-transport-webhid
+```
+
+**Implementation Code**
+
+```javascript
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
+import Eth from '@ledgerhq/hw-app-eth'
+
+const transport = await TransportWebUSB.create();
+const evm_ledger = new Eth(transport);
+
+const path = "m/44'/60'/0'/0/0";
+
+const result = await evm_ledger.getAddress(path, false, true);
+console.log('Ledger Wallet Address:', result.address);
+```
+
 </ToolLayout>

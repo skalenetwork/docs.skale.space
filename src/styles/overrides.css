@@ -54,7 +54,13 @@ pre,
 	display: none;
 }
 
-a:where(.astro-s3zckhgk):hover,
+
+.content:where(.astro-ml6ntd6l) code .ec-line{
+	margin-top: 0rem;
+}
+
+
+/*a:where(.astro-s3zckhgk):hover,
 a:where(.astro-s3zckhgk):focus {
 	background-color: #afc8ff30;
-}
+}*/

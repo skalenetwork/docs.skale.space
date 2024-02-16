@@ -11,4 +11,49 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://docs.nethereum.com/en/latest/"
     toolDocsLink="https://docs.nethereum.com/en/latest/ "
 >
+
+ It provides a set of APIs and utilities to facilitate communication with the Ethereum blockchain.
+
+The main features of this web3 library are:
+
+- JSON RPC / IPC Ethereum core methods
+- Simplified smart contract interaction for deployment, function calling, transaction and event filtering and decoding of topics
+- [Unity 3d](https://docs.nethereum.com/en/latest/unity3d-introduction/) integration
+- ABI to .Net type encoding and decoding, including attribute-based for complex object deserialisation
+- Libraries for standard contracts Token, [ENS](https://ens.domains/) and [Uport](https://www.uport.me/)
+- Key storage using Web3 storage standard, compatible with Geth and Parity.
+
+## Implementation Example
+
+The Nethereum.Unity library is a Nethereum specific Unity library and api which provides support for UnityWebRequest to interact with Ethereum using RPC over Http.
+
+All Nethreum realeases can be found [here](https://github.com/Nethereum/Nethereum/releases).
+
+The following example showcases how to get the current balance of a wallet.
+
+``` csharp
+using System.Collections;
+using UnityEngine;
+using Nethereum.Web3;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Unity.Rpc;
+
+  public IEnumerator GetWalletBalance()
+    {
+        string chain_rpc = "";
+        string wallet_address = "";
+
+        var balanceRequest = new EthGetBalanceUnityRequest(chain_rpc);
+        yield return balanceRequest.SendRequest(wallet_address, BlockParameter.CreateLatest());
+        var balance = Web3.Convert.FromWei(balanceRequest.Result.Value);
+
+        Debug.Log("Wallet Balance " + balance);
+    }
+```
+
+### Nethereum Playground
+
+In order to quickly experiment Nethereum library and it's capabilities, it was created a platform where developers can learn and run predefined examples that show how to make some requests. It can be useful to help developers deciding if Nethereum is a good fit for their project. 
+To try it out check https://playground.nethereum.com/.
+
 </ToolLayout>

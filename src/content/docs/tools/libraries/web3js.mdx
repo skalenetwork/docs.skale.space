@@ -11,4 +11,54 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://docs.web3js.org/"
     toolDocsLink="https://docs.web3js.org/"
 >
+
+Some of the features are:
+
+- Complete implementation of Ethereum's JSON-RPC client API over HTTP and IPC
+- Create accounts, process and sign transactions.
+- Get block and state information from Ethereum nodes.
+
+## Implementation Example
+
+**Package install**
+```shell
+npm install web3
+```
+
+**Function Call Contract**
+```typescript
+import Web3 from "web3";
+import {contract_abi,contract_adress} from "./contract";
+
+var web3 = new Web3("https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix");
+const pk = "wallet pk";
+const accountAddress = "wallet address";
+
+const contract = new web3.eth.Contract(contract_abi, contract_adress);
+
+const functionData = contract.methods._mintTest(accountAddress).encodeABI();
+
+async function callMintFunction() {
+  web3.eth.accounts.signTransaction( 
+    {
+      from: accountAddress,
+      to: contract_adress,
+      gas: 500000,
+      gasPrice: 100000,
+      data: functionData,
+    }, 
+    pk)
+    .then((signedTransaction) => {
+      return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction || "");
+    })
+    .then((receipt) => {
+      console.log("Transaction receipt:", receipt);
+    })
+    .catch((error) => {
+      console.error("Error sending transaction:", error);
+    });
+}
+callMintFunction();
+```
+
 </ToolLayout>

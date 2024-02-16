@@ -11,4 +11,44 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://docs.bitski.com/"
     toolDocsLink="https://docs.bitski.com/"
 >
+
+## Implementation Example
+
+**Package Install:**
+```shell
+npm install --save web3 bitski
+```
+
+```javascript
+import { Bitski } from 'bitski';
+import Web3 from 'web3';
+
+
+// Your setup information
+const endpoint = 'https://your.skale.endpoint'; // your SKALE Chain endpoint
+const skaleChainId = 123456                     // chainId of your SKALE Chain
+const testAPIKey = 'your_client_id';
+const callbackUrl = 'https://your.app/oath-callback.html';
+
+const bitski = new Bitski(
+    testAPIKey,
+    callbackUrl
+);
+
+const network = {
+    rpcUrl: endpoint,
+    chainId: skaleChainId,
+}
+
+// Setting network
+const provider = bitski.getProvider({ network });
+let web3 = new Web3(provider);
+
+function loginUser() {
+  bitski.signIn().then(() => {
+    console.log("sign in successful");
+  });
+}
+```
+
 </ToolLayout>

@@ -11,4 +11,180 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://thegraph.com/"
     toolDocsLink="https://thegraph.com/docs/en/"
 >
+
+<Tabs>
+<TabItem label="Graph Node Service">
+</TabItem>
+<TabItem label="Self Hosted Graph Node">
+You can reach out to the Graph community to request a Graph node, or you may run your own Graph node. These instructions assume you are using a Testnet or Mainnet SKALE Chain and are running your own graph node.
+
+:::tip[Note]
+For proper compatibility, you must point a Graph node to a SKALE Archive node.
+:::
+
+1. Install Prerequisites
+* docker
+* docker-compose
+* nodejs
+* npm
+* yarn
+* truffle
+
+2. Get a SKALE Endpoint
+Get the SKALE chain endpoint assigned to your project [here](https://testnet.portal.skale.space/chains) OR use your your own dedicated chain as available.
+
+3. Configure a Graph Node
+```shell
+git clone https://github.com/graphprotocol/graph-node/
+cd graph-node/docker
+```
+Then modify the `docker-compose.yml` file:
+```yml
+ethereum: 'skale:http://host.docker.internal:15000' <1>
+...
+extra_hosts:
+      - "host.docker.internal:host-gateway" <2>
+```
+(1) Replace with your SKALE Chain endpoint if not using the SKALE-IMA-SDK.
+(2) Add this if using `host.docker.internal` on a Linux machine.
+
+4. Start the Graph Node
+```shell
+docker-compose up -d 
+```
+To follow the container output, run `docker logs docker_graph-node_1 --follow`
+
+5. Prepare the Subgraph test
+In another terminal on the same machine, execute:
+```shell
+git clone https://github.com/skalenetwork/se-integrations/
+cd se-integrations/graph-protocol/
+```
+Modify the .env file. 
+```yml
+SKALE_CHAIN=https://YOURSKALECHAINIP:PORT
+ACCOUNT=yourAccountFromMetamask
+PRIVATE_KEY=<PRIVATE_KEY>
+CONTRACT_ADDRESS=<CONTRACT_ADDRESS> <1>
+```
+(1) You will add the contract address in step 7.
+
+6. Deploy Test contract
+```shell
+npm install
+truffle compile
+truffle migrate
+```
+
+7. Add deployed MyToken Contract address to subgraph.yaml
+```yaml
+...
+dataSources:
+  - kind: ethereum/contract
+    name: MyToken
+    network: skale <1>
+    source:
+      address: 'CONTRACT_ADDRESS' <2>
+      abi: MyToken
+...
+```
+(1) Change from `mainnet` to `skale` to match docker-compose.yml in graph-node.
+(2) Replace with deployed contract address.
+
+8. Add deployed MyToken contract address to .env file
+
+9. Execute yarn
+```shell
+yarn && yarn codegen
+```
+
+10. Create local Subgraph
+```shell
+yarn create-local
+```
+Expected output:
+```
+Created subgraph: skaleToken
+Done in 1.04s.
+```
+Expected output in Graph-node container:
+```shell
+Dec 17 23:18:38.892 INFO Received subgraph_create request, params: SubgraphCreateParams { name: SubgraphName("skaleToken") }, component: JsonRpcServer
+```
+
+11. Deploy to Local
+```shell
+yarn deploy-local
+```
+
+12. Verify graph-node terminal
+Expected output in graph-node container:
+```shell
+graph-node_1  | Apr 23 20:20:58.952 INFO Scanning blocks [0, 0], range_size: 1, subgraph_id: QmbWZiRDpGb95WkA1QH8UM3wsUMZeBmr6ZW2UJaMtGZADB, component: SubgraphInstanceManager > BlockStream
+```
+
+13. Execute graph test
+```shell
+truffle test --network skale test/myToken.test.forgraph.js
+```
+Expected output:
+```shell
+MyToken
+...
+    ✓ In the test (237ms)
+
+
+  1 passing (242ms)
+```
+
+14. Execute token test
+
+```shell
+truffle test --network skale test/myToken.test.js
+```
+Output:
+```shell
+...
+MyBalance
+  ✓ enough account balance
+
+MyToken
+  ✓ deploys a contract
+  ✓ has a default token value (1042ms)
+  ✓ can update token value (1042ms)
+
+
+4 passing (3s)
+```
+
+15. Check your GraphQL:
+
+http://localhost:8000/subgraphs/name/skaleToken/graphql
+
+16. Perform a test query:
+```
+{
+  myTokens(orderBy: tokenValue, orderDirection: asc) {
+    id
+    owner
+  }
+}
+```
+
+Expected output:
+```
+{
+  "data": {
+    "myTokens": [
+      {
+        "id": "0x2",
+        "owner": "..."
+      }...
+    ]
+  }
+}
+```
+</TabItem>
+</Tabs>
+
 </ToolLayout>

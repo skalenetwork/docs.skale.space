@@ -11,4 +11,166 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink=""
     toolDocsLink=""
 >
+
+Every time a user performs a transaction, the background wallet signs the transaction without the user having idea he just made a on-chain transaction.
+
+## Implementation Example
+
+This [codebase](https://github.com/skalenetwork/recipes/tree/recipe-api-background-signer/typescript) uses the Typescript language along with the Viem library to showcase a proof of concept on how to utilize background signers within an API or Server based environment. 
+
+This example also uses a sticky session per userId meaning that the randomly generated accounts are mapped 1:1 with a userId. This will persist only for the duration of the service liftetime. On application crash or restart new wallets will be created. To resolve these types of issues you can encrypt the private keys and store them in something like Redis to make a more sophisticated service that would also allow for multiple AZ usage.
+
+1. Custodian
+
+````typescript
+import { initializeCustodian } from "./utils";
+import { createClient } from "./utils";
+import { CUSTODIAN_PRIVATE_KEY, WSS_URL } from "./config";
+import { parseEther } from "viem";
+
+const DEFAULT_FILL_UP_VALUE: bigint = parseEther("0.00000002");
+
+class Custodian {
+    #nonce = 0;
+    #custodian;
+    #client;
+
+    constructor() {
+        this.#custodian = initializeCustodian(CUSTODIAN_PRIVATE_KEY as `0x${string}`);
+        this.#client = createClient(WSS_URL);
+    }
+
+    public get custodian() {
+        return this.#custodian;
+    }
+
+    public get client() {
+        return this.#client;
+    }
+
+    public async isValidCustodian() {
+        const balance = await this.#client.getBalance({
+            address: this.#custodian.account.address
+        });
+
+        if (balance < parseEther("0.00005")) {
+            throw new Error("Custodian Balance must be > 0.00005");
+        }
+
+        this.#nonce = await this.#client.getTransactionCount({
+            address: this.#custodian.account.address
+        });
+    }
+
+    public async distribute(to: `0x${string}`) {
+        const hash = await this.#custodian.sendTransaction({
+            to,
+            value: DEFAULT_FILL_UP_VALUE,
+            nonce: this.#nonce++
+        });
+        const tx = await this.#client.waitForTransactionReceipt({
+            hash
+        });
+    }
+}
+export default new Custodian();
+
+````
+
+2. Background Signers 
+
+````typescript
+import { WalletClient, getAddress, parseAbi } from "viem";
+import Custodian from "./custodian";
+import { createSigner } from "./utils";
+import { skaleChaosTestnet } from "viem/chains";
+import { Contract } from "./contract";
+
+class BackgroundSigners {
+    #custodian: typeof Custodian;
+    #signers: {[key: string]: WalletClient} = {};
+
+    constructor() {
+        this.#custodian = Custodian;
+    }
+
+    
+    public async getUser(userId: string) {
+        if (this.#signers[userId] === undefined) {
+            const signer = createSigner();
+            this.#signers[userId] = signer;
+            await this.#custodian.distribute(signer.account.address);
+            
+        }
+        
+        return this.#signers[userId].account?.address as `0x${string}`;
+    }
+
+    public async remove(userId: string) {
+        const account = this.#signers[userId].account;
+        if (!account) return;
+        this.#signers[userId].sendTransaction({
+            to: this.#custodian.custodian.account.address,
+            value: BigInt(1),
+            type: "legacy",
+            account,
+            chain: skaleChaosTestnet
+        });
+    }
+
+    public async backgroundSignerAction(userId: string, args: any[], functionName: "mint" | "burn") {
+        const account = this.#signers[userId].account;
+        if (!account) throw new Error("Account Not Found");
+
+        await this.#signers[userId].writeContract({
+            abi: Contract.abi,
+            address: getAddress(Contract.address),
+            functionName,
+            args,
+            account,
+            chain: skaleChaosTestnet
+        })
+    }
+}
+
+export default new BackgroundSigners();
+````
+
+3. API
+
+````typescript
+import { Router } from "express";
+import BackgroundSigners from "./background_signers";
+import { parseEther } from "viem";
+
+const router = Router();
+
+router.post("/mint", async (req, res) => {
+    const userId: string = req.body.userId;
+    const address = await BackgroundSigners.getUser(userId);
+    
+    try {
+        await BackgroundSigners.backgroundSignerAction(userId, [address, parseEther("1")], "mint");
+        return res.status(200).send("Minted Successfully");
+    } catch (err) {
+        return res.status(500).send("Error Minting");
+    }
+});
+
+router.post("/burn", async (req, res) => {
+    const userId: string = req.body.userId;
+    const address = await BackgroundSigners.getUser(userId);
+    
+    try {
+        await BackgroundSigners.backgroundSignerAction(userId, [parseEther("1")], "burn");
+        return res.status(200).send("Burned Successfully");
+    } catch (err) {
+        return res.status(500).send("Error Burning");
+    }
+});
+
+export default router;
+````
+
+
 </ToolLayout>

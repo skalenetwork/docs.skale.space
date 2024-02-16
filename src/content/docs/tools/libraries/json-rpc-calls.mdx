@@ -11,4 +11,44 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://docs.skale.network/technology/json-rpc-interface"
     toolDocsLink="https://docs.skale.network/technology/json-rpc-interface"
 >
+
+Some of the JSON-RPC methods supported by SKALE chains are:
+- eth_getBalance
+- eth_blockNumber
+- eth_getTransactionCount
+- eth_sendTransaction
+- eth_call
+
+## Implementation Example
+
+**Get Balance example**
+````typescript
+import axios from 'axios';
+
+const rpcEndpoint = 'YOUR SKALE RPC ENDPOINT';
+const senderAddress = '0x...';
+
+
+const requestData_balance = {
+    jsonrpc: '2.0',
+    method: 'eth_getBalance',
+    params: [senderAddress, 'latest'],
+    id: 1,
+  };
+
+
+async function JSON_RPC_CALL() {
+    try {
+        const response = await axios.post(rpcEndpoint,requestData_balance);
+        return console.log(response.data);
+      } catch (error) {
+        console.error(error);
+        return [[],[]];
+      }
+}
+
+JSON_RPC_CALL();
+````
+
+
 </ToolLayout>

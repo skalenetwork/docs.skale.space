@@ -11,4 +11,31 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://docs.walletconnect.com/getting-started"
     toolDocsLink="https://docs.walletconnect.com/getting-started"
 >
+
+## Implemention Example
+
+```shell
+npm install --save web3 @walletconnect/web3-provider
+```
+
+```javascript
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import Web3 from 'web3';
+
+
+// Your setup information
+const endpoint = 'https://your.skale.endpoint';             // your SKALE Chain endpoint
+const ethereumEndpoint = 'https://your.ethereum.endpoint'   // your Ethereum endpoint
+const skaleChainId = 123456                                 // chainId of your SKALE Chain
+
+const provider = new WalletConnectProvider({
+    rpc: {
+      skaleChainId: endpoint,
+      4: ethereumEndpoint
+    }
+  });
+  await provider.enable();
+  const web3 = new Web3(provider);
+```
+
 </ToolLayout>

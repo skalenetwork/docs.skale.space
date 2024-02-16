@@ -11,4 +11,44 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://web3auth.io/"
     toolDocsLink="https://web3auth.io/docs/connect-blockchain/skale"
 >
+
+Web3Auth's MPC-based wallet management infrastructure provides secure, non-custodial wallet management, where users maintain control of their cryptographic key pair. The login service only accesses a single share, preventing the provider from retrieving the user's wallet independently.
+
+## Implementation Example
+
+**NPM Packages**
+```shell
+npm install --save @web3auth/modal
+```
+
+**Client ID**
+Get your client ID under https://dashboard.web3auth.io/
+
+**Implementation code**
+```javascript
+import { Web3Auth } from "@web3auth/modal";
+import Web3 from "web3";
+
+const web3auth = new Web3Auth({
+  clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // get it from Web3Auth Dashboard
+  web3AuthNetwork: "sapphire_mainnet",
+  chainConfig: {
+    chainNamespace: "eip155",
+    chainId: "0x50877ed6",
+    rpcTarget: "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix",
+    // Avoid using public rpcTarget in production.
+    // Use services like Infura, Quicknode etc
+    displayName: "SKALE Chaos Testnet",
+    blockExplorer: "https://staging-fast-active-bellatrix.explorer.staging-v3.skalenodes.com/",
+    ticker: "sFUEL",
+    tickerName: "sFUEL",
+  },
+});
+await web3auth.initModal();
+
+const web3authProvider = await web3auth.connect();
+
+const web3 = new Web3(web3authProvider);
+```
+
 </ToolLayout>

@@ -142,7 +142,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/libraries" },
-								{ label: "Web3J", link: "/tools/libraries/web3j" },
+								{ label: "Web3j", link: "/tools/libraries/web3j" },
 								{ label: "EthersV5", link: "/tools/libraries/ethersv5" },
 								{ label: "EthersV6", link: "/tools/libraries/ethersv6" },
 								{ label: "IMA.js", link: "/tools/libraries/imajs" },
@@ -150,11 +150,12 @@ export default defineConfig({
 								{ label: "Kethereum", link: "/tools/libraries/kethereum" },
 								{ label: "Nethereum", link: "/tools/libraries/nethereum" },
 								{ label: "SKALE.js", link: "/tools/libraries/skalejs" },
-								{ label: "Thirdweb", link: "/tools/libraries/thirdweb" },
+								//{ label: "Thirdweb", link: "/tools/libraries/thirdweb" },
 								{ label: "Viem", link: "/tools/libraries/viem" },
 								{ label: "Web3dart", link: "/tools/libraries/web3dart" },
 								{ label: "Web3js", link: "/tools/libraries/web3js" },
 								{ label: "Web3swift", link: "/tools/libraries/web3swift" },
+								{ label: "Metaport", link: "/tools/libraries/metaport" },
 							]
 						},
 						{

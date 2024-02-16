@@ -11,4 +11,29 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
     toolLink="https://trezor.io/learn"
     toolDocsLink="https://trezor.io/learn"
 >
+
+## Implementation Example
+
+```shell
+npm install @trezor/connect
+```
+
+````javascript
+import TrezorApi from "trezor-connect";
+
+const supportedNetworkURLs = {
+  1351057110: "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix"
+};
+
+const defaultNetwork = 1;
+
+const Trezor = new TrezorConnector({
+  api: TrezorApi,
+  supportedNetworkURLs,
+  defaultNetwork,
+  manifestEmail: "test@gmail.com",
+  manifestAppUrl: "https://test.io/"
+});
+````
+
 </ToolLayout>
