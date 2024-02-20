@@ -1,0 +1,156 @@
+---
+title: Mobile Libraries
+description: Intro to Mobile Libraries
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
+
+<Tabs>
+<TabItem label="Web3Swift">
+<ToolLayout
+    introParagraph="This library implements the web3.js library in Swift. It enables interaction with EVM compatible blockchains."
+    toolName="Web3Swift"
+    toolLink="https://github.com/web3swift-team/web3swift"
+    toolDocsLink="https://github.com/web3swift-team/web3swift"
+>
+</ToolLayout>
+</TabItem>
+<TabItem label="Web3Dart">
+<ToolLayout
+	introParagraph="Library written in dart that enables interaction with EVM compatible blockchains."
+	toolName="Web3Dart"
+	toolLink="https://pub.dev/packages/web3dart"
+	toolDocsLink="https://pub.dev/packages/web3dart"
+>
+
+#### Some of the features of the library are:
+
+- Send signed transactions
+- Generate new wallets
+- Call functions on smart contracts and listen for contract events
+- Code generation based on smart contract ABI for easier interaction
+
+## Implementation Example
+
+**Install web3dart package**
+
+```shell
+dart pub add web3dart
+```
+
+**Contract Call**
+```dart
+// ignore_for_file: public_member_api_docs
+import 'dart:io';
+
+import 'package:http/http.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:path/path.dart' show join, dirname;
+import 'package:web_socket_channel/io.dart';
+
+//Private Key
+const String privateKey ='place your key';
+
+// SKALE Chaos Chain RPC
+// For other SKALE Testnet chains check https://testnet.portal.skale.space/chains
+const String rpcUrl = 'https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix';
+// selected SKALE Chain ID
+const int chainId = 1351057110;
+
+// ABI of ERC_721 example contract
+final File abiFile = File(join(dirname(Platform.script.path), 'nft_test_abi.json'));
+
+
+Future<void> main() async {
+  // start a client we can use to send transactions
+  final client = Web3Client(rpcUrl, Client());
+
+  final EthereumAddress mint_to_address = EthereumAddress.fromHex('Address to receive Mint');
+  // Contract adddress deployed on SKALE Chaos Hub
+  final EthereumAddress contract_address = EthereumAddress.fromHex('0xcAC71B8faB274429f79F76213fd3BC190041CAA4');
+  
+  //Credentials to sign tx
+  final credentials = EthPrivateKey.fromHex(privateKey);
+
+  //ABI file as string
+  final abiCode = await abiFile.readAsString();
+  
+  final contract = DeployedContract(ContractAbi.fromJson(abiCode, 'NFT_721'), contract_address);
+  //Selected contract function to call
+  final mintFunction = contract.function('_mintTest');
+
+  // Mint function call
+  //Note: The chainId needs to be passes otherwise it will throw the error: -32004 Invalid transaction signature.
+  final tx = await client.sendTransaction(
+    credentials,
+    Transaction.callContract(
+      contract: contract,
+      function: mintFunction,
+      parameters: [mint_to_address],
+    ),
+    chainId: chainId
+  );
+
+  // Transaction Receipt
+  final receipt = await client.addedBlocks().asyncMap((_) => client.getTransactionReceipt(tx)).firstWhere((receipt) => receipt != null);
+  print(receipt);
+
+  await client.dispose();
+}
+```
+
+**Run Dart Script**
+```shell
+dart web/main.dart 
+```
+
+</ToolLayout>
+</TabItem>
+<TabItem label="JSON-RPC Calls">
+<ToolLayout
+    introParagraph="When some platforms or frameworks don't have any quality web3 library or SDK, there's always the possibility to make the blockchain calls directly to the JSON-RPC methods supported by the chain."
+    toolName="JSON-RPC Calls"
+    toolLink="https://docs.skale.network/technology/json-rpc-interface"
+    toolDocsLink="https://docs.skale.network/technology/json-rpc-interface"
+>
+
+Some of the JSON-RPC methods supported by SKALE chains are:
+- eth_getBalance
+- eth_blockNumber
+- eth_getTransactionCount
+- eth_sendTransaction
+- eth_call
+
+## Implementation Example
+
+**Get Balance example**
+````typescript
+import axios from 'axios';
+
+const rpcEndpoint = 'YOUR SKALE RPC ENDPOINT';
+const senderAddress = '0x...';
+
+
+const requestData_balance = {
+    jsonrpc: '2.0',
+    method: 'eth_getBalance',
+    params: [senderAddress, 'latest'],
+    id: 1,
+  };
+
+
+async function JSON_RPC_CALL() {
+    try {
+        const response = await axios.post(rpcEndpoint,requestData_balance);
+        return console.log(response.data);
+      } catch (error) {
+        console.error(error);
+        return [[],[]];
+      }
+}
+
+JSON_RPC_CALL();
+````
+</ToolLayout>
+</TabItem>
+</Tabs>

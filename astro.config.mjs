@@ -142,7 +142,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/libraries" },
-								{ label: "Web3j", link: "/tools/libraries/web3j" },
+								/*{ label: "Web3j", link: "/tools/libraries/web3j" },
 								{ label: "EthersV5", link: "/tools/libraries/ethersv5" },
 								{ label: "EthersV6", link: "/tools/libraries/ethersv6" },
 								{ label: "IMA.js", link: "/tools/libraries/imajs" },
@@ -155,7 +155,11 @@ export default defineConfig({
 								{ label: "Web3dart", link: "/tools/libraries/web3dart" },
 								{ label: "Web3js", link: "/tools/libraries/web3js" },
 								{ label: "Web3swift", link: "/tools/libraries/web3swift" },
-								{ label: "Metaport", link: "/tools/libraries/metaport" },
+								{ label: "Metaport", link: "/tools/libraries/metaport" },*/
+								{ label: "Web Libraries", link: "/tools/libraries/web" },
+								{ label: "Backend Libraries", link: "/tools/libraries/backend" },
+								{ label: "Unity Libraries", link: "/tools/libraries/unity" },
+								{ label: "Mobile Libraries", link: "/tools/libraries/mobile" },
 							]
 						},
 						{
@@ -185,7 +189,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/wallets" },
-								{ label: "Bitski", link: "/tools/wallets/bitski" },
+								/*{ label: "Bitski", link: "/tools/wallets/bitski" },
 								{ label: "Metamask", link: "/tools/wallets/metamask" },
 								{ label: "Coinbase", link: "/tools/wallets/coinbase" },
 								{ label: "Enkrypt", link: "/tools/wallets/enkrypt" },
@@ -198,7 +202,11 @@ export default defineConfig({
 								{ label: "Stardust", link: "/tools/wallets/stardust" },
 								{ label: "Thirdweb", link: "/tools/wallets/thirdweb" },
 								{ label: "Wallet Connect", link: "/tools/wallets/wallet-connect" },
-								{ label: "Web3Auth", link: "/tools/wallets/web3auth" },
+								{ label: "Web3Auth", link: "/tools/wallets/web3auth" },*/
+								{ label: "Non-Custodial Wallets", link: "/tools/wallets/non-custodial" },
+								{ label: "Custodial Wallets", link: "/tools/wallets/custodial" },
+								{ label: "MPC Wallets", link: "/tools/wallets/mpc" },
+								{ label: "Wallets Aggregator", link: "/tools/wallets/aggregator" },
 							]
 						}
 
