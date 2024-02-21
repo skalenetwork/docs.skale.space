@@ -3,132 +3,18 @@ title: MPC Wallets
 description: Intro to MPC Wallets
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
-
+import {Content as ThirdWeb} from './mpc/thirdweb.mdx';
+import {Content as Web3Auth} from './mpc/web3auth.mdx';
+import {Content as Moon} from './mpc/moon.mdx';
 
 <Tabs>
 <TabItem label="ThirdWeb">
-<ToolLayout
-    introParagraph="Thirdweb provides a wallet solution that can accomodate different needs. Their connect wallet UI allows connecting with the common industry wallets (ex: Metamask, Coinbase, WalletConnect) as well as creating an MPC wallet with solcial logins."
-    toolName="Thirdweb"
-    toolLink="https://portal.thirdweb.com/wallets"
-    toolDocsLink="https://portal.thirdweb.com/wallets"
->
-
-## Implementation Example
-
-**Package Install**
-
-<Tabs>
-<TabItem label="NPM">
-```shell
-npm install @thirdweb-dev/react
-```
-</TabItem>
-<TabItem label="Yarn">
-```shell
-yarn add @thirdweb-dev/react
-```
-</TabItem>
-</Tabs>
-
-**Code**
-
-```javascript
-import {
-  ThirdwebProvider,
-  ConnectWallet,
-  metamaskWallet,
-  coinbaseWallet,
-  localWallet,
-  embeddedWallet,
-} from "@thirdweb-dev/react";
-
-export default function App() {
-  return (
-    <ThirdwebProvider
-      activeChain="nebula"
-      clientId="YOUR_CLIENT_ID"
-      locale={en()}
-      supportedWallets={[
-        metamaskWallet(),
-        coinbaseWallet({ recommended: true }),
-        localWallet(),
-        embeddedWallet({
-          auth: {
-            options: ["facebook", "google"],
-          },
-        }),
-      ]}
-    >
-      <ConnectWallet
-        theme={"dark"}
-        switchToActiveChain={true}
-        modalSize={"compact"}
-      />
-    </ThirdwebProvider>
-  );
-}
-```
-
-</ToolLayout>
+<ThirdWeb/>
 </TabItem>
 <TabItem label="Web3Auth">
-<ToolLayout
-    introParagraph="Pluggable wallet infrastructure for Web3 wallets and applications. It streamlines the onboarding of both mainstream and crypto native users in under a minute by providing experiences that they're most comfortable with."
-    toolName="Web3Auth"
-    toolLink="https://web3auth.io/"
-    toolDocsLink="https://web3auth.io/docs/connect-blockchain/skale"
->
-
-Web3Auth's MPC-based wallet management infrastructure provides secure, non-custodial wallet management, where users maintain control of their cryptographic key pair. The login service only accesses a single share, preventing the provider from retrieving the user's wallet independently.
-
-## Implementation Example
-
-**NPM Packages**
-```shell
-npm install --save @web3auth/modal
-```
-
-**Client ID**
-Get your client ID under https://dashboard.web3auth.io/
-
-**Implementation code**
-```javascript
-import { Web3Auth } from "@web3auth/modal";
-import Web3 from "web3";
-
-const web3auth = new Web3Auth({
-  clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // get it from Web3Auth Dashboard
-  web3AuthNetwork: "sapphire_mainnet",
-  chainConfig: {
-    chainNamespace: "eip155",
-    chainId: "0x50877ed6",
-    rpcTarget: "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix",
-    // Avoid using public rpcTarget in production.
-    // Use services like Infura, Quicknode etc
-    displayName: "SKALE Chaos Testnet",
-    blockExplorer: "https://staging-fast-active-bellatrix.explorer.staging-v3.skalenodes.com/",
-    ticker: "sFUEL",
-    tickerName: "sFUEL",
-  },
-});
-await web3auth.initModal();
-
-const web3authProvider = await web3auth.connect();
-
-const web3 = new Web3(web3authProvider);
-```
-
-</ToolLayout>
+<Web3Auth/>
 </TabItem>
 <TabItem label="Moon">
-<ToolLayout
-    introParagraph=""
-    toolName="Moon"
-    toolLink="https://usemoon.ai/"
-    toolDocsLink="https://usemoon.ai/"
->
-</ToolLayout>
+<Moon/>
 </TabItem>
 </Tabs>

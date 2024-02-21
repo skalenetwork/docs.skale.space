@@ -3,288 +3,31 @@ title: Web Libraries
 description: Intro to Web Libraries
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
+import {Content as Ethersv5} from './web/ethersv5.mdx';
+import {Content as Ethersv6} from './web/ethersv6.mdx';
+import {Content as Web3js} from './web/web3js.mdx';
+import {Content as Viem} from './web/viem.mdx';
+import {Content as SKALEjs} from './web/skalejs.mdx';
+import {Content as JSON_RPC_Calls} from './json-rpc-calls.mdx';
+
 
 <Tabs>
 <TabItem label="EthersV5">
-<ToolLayout
-    introParagraph="The ethers.js library is a comprehensive and concise library for engaging with the Ethereum Blockchain and its surrounding ecosystem."
-    toolName="EthersV5"
-    toolLink="https://docs.ethers.org/v5/"
-    toolDocsLink="https://docs.ethers.org/v5/"
->
-
-
-Some of the main features are:
-- Import and export JSON wallets (Geth, Parity and crowdsale)
-- Import and export BIP 39 mnemonic phrases (12 word backup phrases) and HD Wallets
-- Meta-classes create JavaScript objects from any contract ABI, including ABIv2 and Human-Readable ABI
-Connect to Ethereum nodes over JSON-RPC, INFURA, Etherscan, Alchemy or Metamask
-
-## Implementation Example
-
-**Package Install:**
-```shell
-npm install ethers@5.7.2
-```
-
-**Send Transaction**
-```typescript
-import { ethers } from 'ethers';
-import {contract_abi,contract_adress} from "./contract";
-import dotenv from 'dotenv'; 
-dotenv.config();
-
-const skale_provider = "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix";
-const provider = new ethers.providers.JsonRpcProvider(skale_provider);
-const pk = process.env.PRIVATE_KEY || "";
-const signer = new ethers.Wallet(pk, provider);
-
-const contract = new ethers.Contract(contract_adress, contract_abi, signer);
-
-// Send transaction to smart contract to update message
-
-async function ContractSendTx() {
-    const data = await contract.populateTransaction._mintTest(signer.address);
-    data.gasLimit = ethers.BigNumber.from(500000);
-    data.gasPrice = ethers.BigNumber.from(100000);
-    data.nonce = await provider.getTransactionCount(signer.address);
-
-    const approveTxSigned = await signer.signTransaction(data);
-    const submittedTx = await provider.sendTransaction(approveTxSigned);
-    const approveReceipt = await submittedTx.wait();
-    console.log(approveReceipt.transactionHash);
-
-}
-ContractSendTx();
-```
-
-</ToolLayout>
+<Ethersv5/>
 </TabItem>
 <TabItem label="EthersV6">
-<ToolLayout
-    introParagraph="The ethers.js library is a comprehensive and concise library for engaging with the Ethereum Blockchain and its surrounding ecosystem."
-    toolName="EthersV6"
-    toolLink="https://docs.ethers.org/v6/"
-    toolDocsLink="https://docs.ethers.org/v6/"
->
-
-Some of the main features are:
-- Import and export JSON wallets (Geth, Parity and crowdsale)
-- Import and export BIP 39 mnemonic phrases (12 word backup phrases) and HD Wallets
-- Meta-classes create JavaScript objects from any contract ABI, including ABIv2 and Human-Readable ABI
-Connect to Ethereum nodes over JSON-RPC, INFURA, Etherscan, Alchemy or Metamask
-
-The biggest difference between v5 and v6 is in the use of modern ES6 features. The major changes can been seen on:
-- [BigNumbers](https://docs.ethers.org/v6/migrating/#migrate-bigint)
-- [Contracts](https://docs.ethers.org/v6/migrating/#migrate-contracts)
-- [Importing](https://docs.ethers.org/v6/migrating/#migrate-importing)
-- [Providers](https://docs.ethers.org/v6/migrating/#migrate-providers)
-- [Signatures](https://docs.ethers.org/v6/migrating/#migrate-signatures)
-- [Transactions](https://docs.ethers.org/v6/migrating/#migrate-transactions)
-- [Utilities](https://docs.ethers.org/v6/migrating/#migrate-utils)
-- [Removed Items](https://docs.ethers.org/v6/migrating/#migrate-missing)
-
-## Implementation Example
-
-**Package Install:**
-```shell
-npm install ethers
-```
-
-**Full Example of Sending a Transaction**
-```typescript
-import { ethers } from 'ethers';
-import {contract_abi,contract_adress} from "./contract";
-import dotenv from 'dotenv'; 
-dotenv.config();
-
-const skale_provider = "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix";
-const provider = new ethers.JsonRpcProvider(skale_provider);
-const pk = process.env.PRIVATE_KEY || "";
-const signer = new ethers.Wallet(pk, provider);
-
-const contract = new ethers.Contract(contract_adress, contract_abi, signer);
-
-async function ContractSendTx() {
-    const data = await contract._mintTest.populateTransaction(signer.address);
-    data.gasLimit = ethers.toBigInt(500000);
-    data.gasPrice = ethers.toBigInt(100000);
-    data.nonce = await provider.getTransactionCount(signer.address);
-
-    const tx = await signer.sendTransaction(data)
-
-    console.log(tx.hash);
-
-}
-ContractSendTx();
-```
-
-</ToolLayout>
+<Ethersv6/>
 </TabItem>
-<TabItem label="Web3js">
-<ToolLayout
-    introParagraph="Set of Javascript libraries enabling interaction with a local or remote Ethereum node through HTTP, IPC, or WebSocket protocols."
-    toolName="Web3.js"
-    toolLink="https://docs.web3js.org/"
-    toolDocsLink="https://docs.web3js.org/"
->
-
-Some of the features are:
-
-- Complete implementation of Ethereum's JSON-RPC client API over HTTP and IPC
-- Create accounts, process and sign transactions.
-- Get block and state information from Ethereum nodes.
-
-## Implementation Example
-
-**Package install**
-```shell
-npm install web3
-```
-
-**Function Call Contract**
-```typescript
-import Web3 from "web3";
-import {contract_abi,contract_adress} from "./contract";
-
-var web3 = new Web3("https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix");
-const pk = "wallet pk";
-const accountAddress = "wallet address";
-
-const contract = new web3.eth.Contract(contract_abi, contract_adress);
-
-const functionData = contract.methods._mintTest(accountAddress).encodeABI();
-
-async function callMintFunction() {
-  web3.eth.accounts.signTransaction( 
-    {
-      from: accountAddress,
-      to: contract_adress,
-      gas: 500000,
-      gasPrice: 100000,
-      data: functionData,
-    }, 
-    pk)
-    .then((signedTransaction) => {
-      return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction || "");
-    })
-    .then((receipt) => {
-      console.log("Transaction receipt:", receipt);
-    })
-    .catch((error) => {
-      console.error("Error sending transaction:", error);
-    });
-}
-callMintFunction();
-```
-
-</ToolLayout>
+<TabItem label="Web3.js">
+<Web3js/>
 </TabItem>
 <TabItem label="Viem">
-<ToolLayout
-    introParagraph="Viem is a TypeScript interface for Ethereum that provides low-level stateless primitives for interacting with Ethereum."
-    toolName="Viem"
-    toolLink="https://viem.sh/"
-    toolDocsLink="https://viem.sh/"
->
-
-Some of the main features are:
-- Abstractions over the JSON-RPC API 
-- APIs for interacting with Smart Contracts
-- Utilities for working with ABIs
-
-## Implementation Example
-
-**Package Install**
-```shell
-npm i viem
-```
-
-**Send Transaction**
-```typescript
-import {createPublicClient, http,parseGwei } from "viem";
-import { privateKeyToAccount } from 'viem/accounts'
-import { skaleChaosTestnet } from "viem/chains";
-import {contract_abi,contract_adress} from "./contract";
-
-import dotenv from 'dotenv'; 
-dotenv.config();
-
-async function main() {
-	const client = createPublicClient({
-		chain: skaleChaosTestnet,
-		transport: http()
-	});
-
-	const pk = "0x";
-	const account=privateKeyToAccount(pk);
-
-	const signature = await account.signTransaction({
-		to:contract_adress,
-		gas:parseGwei('0.0005'),
-		gasPrice:parseGwei('0.0001'),
-		nonce: await client.getTransactionCount({address:account.address}),
-		data: '0xeefa7dfd0000000000000000000000002b3937fe6ef38cd4be0d9ceb05823087b716d689'
-	})
-
-	const hash = await client.sendRawTransaction({serializedTransaction:signature});
-	console.log(hash);
-}
-
-main()
-	.catch((err) => {
-		console.error(err);
-		process.exitCode = 1;
-	});
-```
-</ToolLayout>
+<Viem/>
 </TabItem>
 <TabItem label="JSON-RPC Calls">
-<ToolLayout
-    introParagraph="When some platforms or frameworks don't have any quality web3 library or SDK, there's always the possibility to make the blockchain calls directly to the JSON-RPC methods supported by the chain."
-    toolName="JSON-RPC Calls"
-    toolLink="https://docs.skale.network/technology/json-rpc-interface"
-    toolDocsLink="https://docs.skale.network/technology/json-rpc-interface"
->
-
-Some of the JSON-RPC methods supported by SKALE chains are:
-- eth_getBalance
-- eth_blockNumber
-- eth_getTransactionCount
-- eth_sendTransaction
-- eth_call
-
-## Implementation Example
-
-**Get Balance example**
-````typescript
-import axios from 'axios';
-
-const rpcEndpoint = 'YOUR SKALE RPC ENDPOINT';
-const senderAddress = '0x...';
-
-
-const requestData_balance = {
-    jsonrpc: '2.0',
-    method: 'eth_getBalance',
-    params: [senderAddress, 'latest'],
-    id: 1,
-  };
-
-
-async function JSON_RPC_CALL() {
-    try {
-        const response = await axios.post(rpcEndpoint,requestData_balance);
-        return console.log(response.data);
-      } catch (error) {
-        console.error(error);
-        return [[],[]];
-      }
-}
-
-JSON_RPC_CALL();
-````
-</ToolLayout>
+<JSON_RPC_Calls/>
+</TabItem>
+<TabItem label="SKALE.js">
+<SKALEjs/>
 </TabItem>
 </Tabs>

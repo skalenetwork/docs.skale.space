@@ -3,158 +3,20 @@ title: Backend Libraries
 description: Intro to Backend Libraries
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
+import {Content as Kethereum} from './backend/kethereum.mdx';
+import {Content as Web3j} from './backend/web3j.mdx';
+import {Content as JSON_RPC_Calls} from './json-rpc-calls.mdx';
 
 
 
 <Tabs>
 <TabItem label="Kethereum">
-<ToolLayout
-    introParagraph="Kethereum is a Kotlin library created for Ethereum. It opts for a non-monolithic structure, empowering users to selectively integrate modules and thereby maintain a lean library footprint."
-    toolName="Kethreum"
-    toolLink="https://github.com/komputing/KEthereum"
-    toolDocsLink="https://github.com/komputing/KEthereum"
->
-
-KEthereum gives the possibility to pick and choose the modules the developer need and keep the footprint of the library small this way. Some of the modules are:
-
-- **eip155**: TX signing with Simple replay attack protection
-- **blockscout**: BlockScout BlockExplorer helper functions
-- **ERC20**: Contract wrapper for the ERC20 Token standard
-- **wallet**: functions for keys from and to JSON wallet files
-
-## Implementation Example
-
-</ToolLayout>
+<Kethereum/>
 </TabItem>
-<TabItem label="Web3j">
-<ToolLayout
-	introParagraph="Web3j is a modular, reactive, type safe Java and Android library for working with Smart Contracts and integrating with clients (nodes) on the Ethereum network."
-	toolName="Web3j"
-	toolLink="https://docs.web3j.io/4.10.0/"
-	toolDocsLink="https://docs.web3j.io/4.10.0/"
->
-
-Some of the features are:
-
-- Complete implementation of Ethereum's [JSON-RPC](https://eth.wiki/json-rpc/API) client API over HTTP and IPC
-- Ethereum wallet support
-- Auto-generation of Java smart contract wrappers to create, deploy, transact with and call smart contracts from native Java code 
-- Support for ERC20 and ERC721 token standards
-
-## Implementation Example
-
- **Install Web3j CLI**
-
-```shell
-curl -L get.web3j.io | sh && source ~/.web3j/source.sh
-```
-
-**Create a project** 
-
-```shell
-web3j new
-```
-**Generate a Wallet**
-```shell
-web3j wallet create
-```
-
-**ERC721 Mint Example**
-
-```java
-package org.web3j;
-
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.generated.contracts.NFT_721;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.gas.StaticGasProvider;
-import java.math.BigInteger;
-
-
-public class Web3App {
-
-   //Can use this as the Node_URL
-   //public static String SKALE_Chaos_rpc = "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix";
-
-   private static final String nodeUrl = System.getenv().getOrDefault("WEB3J_NODE_URL", "<node_url>");
-   private static final String walletPassword = System.getenv().getOrDefault("WEB3J_WALLET_PASSWORD", "<wallet_password>");
-   private static final String walletPath = System.getenv().getOrDefault("WEB3J_WALLET_PATH", "<wallet_path>");
-
-   public static final BigInteger gasLimit = BigInteger.valueOf(5_000_000);
-   public static final BigInteger gasPrice = BigInteger.valueOf(1_000_00);
-
-   public static String address = "some address";
-
-   public static void main(String[] args) throws Exception {
-
-      Credentials credentials = WalletUtils.loadCredentials(walletPassword, walletPath);
-      Web3j web3j = Web3j.build(new HttpService(nodeUrl));
-
-      NFT_721 nft = NFT_721.deploy(web3j, credentials, new StaticGasProvider(gasPrice, gasLimit)).send();
-      System.out.println("Contract address: " + nft.getContractAddress());
-
-      TransactionReceipt mint_receipt = nft._mintTest(address).send();
-      System.out.println("Tx has "+ mint_receipt.getTransactionHash());
-     }
-}
-```
-
-**Run**
-```shell
-web3j run https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix <wallet_path> <wallet_password>
-```
-
-</ToolLayout>
+<TabItem label="Web3.j">
+<Web3j/>
 </TabItem>
 <TabItem label="JSON-RPC Calls">
-<ToolLayout
-    introParagraph="When some platforms or frameworks don't have any quality web3 library or SDK, there's always the possibility to make the blockchain calls directly to the JSON-RPC methods supported by the chain."
-    toolName="JSON-RPC Calls"
-    toolLink="https://docs.skale.network/technology/json-rpc-interface"
-    toolDocsLink="https://docs.skale.network/technology/json-rpc-interface"
->
-
-Some of the JSON-RPC methods supported by SKALE chains are:
-- eth_getBalance
-- eth_blockNumber
-- eth_getTransactionCount
-- eth_sendTransaction
-- eth_call
-
-## Implementation Example
-
-**Get Balance example**
-````typescript
-import axios from 'axios';
-
-const rpcEndpoint = 'YOUR SKALE RPC ENDPOINT';
-const senderAddress = '0x...';
-
-
-const requestData_balance = {
-    jsonrpc: '2.0',
-    method: 'eth_getBalance',
-    params: [senderAddress, 'latest'],
-    id: 1,
-  };
-
-
-async function JSON_RPC_CALL() {
-    try {
-        const response = await axios.post(rpcEndpoint,requestData_balance);
-        return console.log(response.data);
-      } catch (error) {
-        console.error(error);
-        return [[],[]];
-      }
-}
-
-JSON_RPC_CALL();
-````
-</ToolLayout>
+<JSON_RPC_Calls/>
 </TabItem>
 </Tabs>

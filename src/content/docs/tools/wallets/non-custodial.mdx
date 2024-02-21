@@ -3,259 +3,35 @@ title: Non-Custodial Wallets
 description: Intro to Non-Custodial Wallets
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
-
+import {Content as Metamask} from './non-custodial/metamask.mdx';
+import {Content as Bitski} from './non-custodial/bitski.mdx';
+import {Content as Coinbase} from './non-custodial/coinbase.mdx';
+import {Content as Enkrypt} from './non-custodial/enkrypt.mdx';
+import {Content as Ledger} from './non-custodial/ledger.mdx';
+import {Content as Portis} from './non-custodial/portis.mdx';
+import {Content as Trezor} from './non-custodial/trezor.mdx';
 
 
 <Tabs>
 <TabItem label="Metamask">
-<ToolLayout
-    introParagraph="Metamask is a Chromium (Chrome, Brave, and Edge) and Firefox browser add-on that provides a non-custodial Ethereum wallet. An end-user's private key is stored in an encrypted Vault data stored in the browser."
-    toolName="MetaMask"
-    toolLink="https://metamask.io/"
-    toolDocsLink="https://docs.metamask.io/wallet/"
->
-
-Metamask allows you to integrate your dApp with SKALE by setting the Network RPC endpoint for your users. 
-
-## Implementation Example
-
-```shell
-npm install --save web3
-```
-
-```javascript
-import Web3 from 'web3';
-
-let web3 = "";
-
-let switchToSKALE = {
-  chainId: "0x50877ed6", //decodes to 1351057110
-  chainName: "SKALEChaos Testnet",
-  rpcUrls: ["https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix"],
-  nativeCurrency: {
-    name: "SKALE FUEL",
-    symbol: "sFUEL",
-    decimals: 18
-  },
-  blockExplorerUrls: [
-    "https://staging-fast-active-bellatrix.explorer.staging-v3.skalenodes.com"
-  ]
-};
-
-web3 = window.web3;
-
-  if (window.ethereum) {
-    window.web3 = new Web3(window.ethereum);
-    try {
-      // Request account access if needed
-      await window.ethereum.enable();
-      console.log("MetaMask - Web3 Initialized!");
-
-      //Get user wallet accounts
-      window.web3.eth.getAccounts((error, accounts) => {
-        if (error) {
-          console.error(error);
-        }
-        console.log(accounts);
-
-        //request change to SKALE Network
-        window.ethereum
-          .request({
-            method: "wallet_addEthereumChain",
-            params: [switchToSKALE, accounts[0]]
-          })
-          .catch((error) => console.log(error.message));
-      });
-    } catch (error) {
-      // User denied account access...
-    }
-  }
-  // Legacy dapp browsers...
-  else if (window.web3) {
-    window.web3 = new Web3(web3.currentProvider);
-    console.log("MetaMask - Web3 Initialized!");
-  }
-  // Non-dapp browsers...
-  else {
-    console.log(
-      "Non-Web3 browser detected. You should consider trying MetaMask!"
-    );
-  }
-```
-
-</ToolLayout>
+<Metamask/>
 </TabItem>
 <TabItem label="Bitski">
-<ToolLayout
-    introParagraph="Bitski is a non-custodial OAuth-based Web3 wallet SDK. The Bitski SDK allows you to integrate your dApp with SKALE."
-    toolName="Bitski"
-    toolLink="https://docs.bitski.com/"
-    toolDocsLink="https://docs.bitski.com/"
->
-
-## Implementation Example
-
-**Package Install:**
-```shell
-npm install --save web3 bitski
-```
-
-```javascript
-import { Bitski } from 'bitski';
-import Web3 from 'web3';
-
-
-// Your setup information
-const endpoint = 'https://your.skale.endpoint'; // your SKALE Chain endpoint
-const skaleChainId = 123456                     // chainId of your SKALE Chain
-const testAPIKey = 'your_client_id';
-const callbackUrl = 'https://your.app/oath-callback.html';
-
-const bitski = new Bitski(
-    testAPIKey,
-    callbackUrl
-);
-
-const network = {
-    rpcUrl: endpoint,
-    chainId: skaleChainId,
-}
-
-// Setting network
-const provider = bitski.getProvider({ network });
-let web3 = new Web3(provider);
-
-function loginUser() {
-  bitski.signIn().then(() => {
-    console.log("sign in successful");
-  });
-}
-```
-</ToolLayout>
+<Bitski/>
 </TabItem>
 <TabItem label="Encrypt">
-<ToolLayout
-    introParagraph="The Enkrypt wallet is a multichain non-custodial wallet allowing users to easily manage tokens and access web3 application across multiple blockchains, like SKALE Network."
-    toolName="Enkrypt"
-    toolLink="https://www.enkrypt.com/"
-    toolDocsLink="https://www.enkrypt.com/"
->
-</ToolLayout>
+<Enkrypt/>
 </TabItem>
 <TabItem label="Ledger">
-<ToolLayout
-    introParagraph="It is a hardware wallet designed for secure cryptocurrency storage. It is a physical device that securely stores the user's private keys, which are essential for accessing and managing their cryptocurrencies."
-    toolName="Ledger"
-    toolLink="https://developers.ledger.com/docs/transport/overview/"
-    toolDocsLink="https://developers.ledger.com/docs/transport/overview/"
->
-
-Ledger wallets are known for their emphasis on security, providing an offline storage solution to protect digital assets from online threats such as hacking and malware.
-
-For more information check the following link https://developers.ledger.com/docs/transport/overview/
-
-## Implementation Example
-
-**NPM Packages**
-
-If you want to use a Ledger Nano S/X/S Plus with the USB protocol
-
-```shell
-npm install @ledgerhq/hw-transport-webusb
-```
-If you want to use a Ledger Nano S/X/S Plus with the HID protocol
-
-```shell
-npm install @ledgerhq/hw-transport-webhid
-```
-
-**Implementation Code**
-
-```javascript
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
-import Eth from '@ledgerhq/hw-app-eth'
-
-const transport = await TransportWebUSB.create();
-const evm_ledger = new Eth(transport);
-
-const path = "m/44'/60'/0'/0/0";
-
-const result = await evm_ledger.getAddress(path, false, true);
-console.log('Ledger Wallet Address:', result.address);
-```
-
-</ToolLayout>
+<Ledger/>
 </TabItem>
 <TabItem label="Portis">
-<ToolLayout
-    introParagraph="Portis is a non-custodial Web3 wallet SDK supported by a variety of `evergreen` browsers. The Portis SDK allows you to integrate your dApp with SKALE."
-    toolName="Portis"
-    toolLink="https://docs.portis.io/#/quick-start"
-    toolDocsLink="https://docs.portis.io/#/quick-start"
->
-
-## Implementation Example
-
-```shell
-npm install --save web3 @portis/web3
-```
-
-```javascript
-import Portis from '@portis/web3';
-import Web3 from 'web3';
-
-
-// Your setup information
-const endpoint = 'https://your.skale.endpoint'; // your SKALE Chain endpoint
-const skaleChainId = 123456                     // chainId of your SKALE Chain
-const testAPIKey = 'your_api_key';
-
-const mySKALEChain = {
-    nodeUrl: endpoint,
-    chainId: skaleChainId,
-    nodeProtocol: "rpc"
-}
-
-// Setting network
-const portis = new Portis(testAPIKey, mySKALEChain);
-let web3 = new Web3(portis.provider);
-```
-
-</ToolLayout>
+<Portis/>
 </TabItem>
 <TabItem label="Trezor">
-<ToolLayout
-    introParagraph="Trezor wallet is a hardware wallet designed for secure storage of cryptocurrencies. Similar to other hardware wallets, Trezor provides a physical device that stores the user's private keys offline, reducing the risk of exposure to online threats like hacking and malware."
-    toolName="Trezor"
-    toolLink="https://trezor.io/learn"
-    toolDocsLink="https://trezor.io/learn"
->
-
-## Implementation Example
-
-```shell
-npm install @trezor/connect
-```
-
-````javascript
-import TrezorApi from "trezor-connect";
-
-const supportedNetworkURLs = {
-  1351057110: "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix"
-};
-
-const defaultNetwork = 1;
-
-const Trezor = new TrezorConnector({
-  api: TrezorApi,
-  supportedNetworkURLs,
-  defaultNetwork,
-  manifestEmail: "test@gmail.com",
-  manifestAppUrl: "https://test.io/"
-});
-````
-
-</ToolLayout>
+<Trezor/>
+</TabItem>
+<TabItem label="Coinbase">
+<Coinbase/>
 </TabItem>
 </Tabs>
