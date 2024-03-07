@@ -15,7 +15,7 @@ Web3Auth's MPC-based wallet management infrastructure provides secure, non-custo
 
 ## Implementation Example
 
-**NPM Packages**
+**Package Install**
 ```shell
 npm install --save @web3auth/modal
 ```
@@ -23,7 +23,7 @@ npm install --save @web3auth/modal
 **Client ID**
 Get your client ID under https://dashboard.web3auth.io/
 
-**Implementation code**
+**Integration**
 ```javascript
 import { Web3Auth } from "@web3auth/modal";
 import Web3 from "web3";
@@ -34,11 +34,11 @@ const web3auth = new Web3Auth({
   chainConfig: {
     chainNamespace: "eip155",
     chainId: "0x50877ed6",
-    rpcTarget: "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix",
+    rpcTarget: "you_skale_chain_rpc",
     // Avoid using public rpcTarget in production.
     // Use services like Infura, Quicknode etc
-    displayName: "SKALE Chaos Testnet",
-    blockExplorer: "https://staging-fast-active-bellatrix.explorer.staging-v3.skalenodes.com/",
+    displayName: "skale chain name",
+    blockExplorer: "your_skale_chain_explorer",
     ticker: "sFUEL",
     tickerName: "sFUEL",
   },

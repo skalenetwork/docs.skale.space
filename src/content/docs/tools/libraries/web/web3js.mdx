@@ -21,16 +21,26 @@ Some of the features are:
 ## Implementation Example
 
 **Package install**
+<Tabs>
+<TabItem label="npm">
 ```shell
 npm install web3
 ```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add web3
+```
+</TabItem>
+</Tabs>
 
-**Function Call Contract**
+
+**Contract Call Example**
 ```typescript
 import Web3 from "web3";
 import {contract_abi,contract_adress} from "./contract";
 
-var web3 = new Web3("https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix");
+var web3 = new Web3("your skale rpc");
 const pk = "wallet pk";
 const accountAddress = "wallet address";
 

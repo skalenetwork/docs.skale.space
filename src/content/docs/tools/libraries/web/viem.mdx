@@ -20,15 +20,25 @@ Some of the main features are:
 ## Implementation Example
 
 **Package Install**
+<Tabs>
+<TabItem label="npm">
 ```shell
-npm i viem
+npm install viem
 ```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add viem
+```
+</TabItem>
+</Tabs>
 
-**Send Transaction**
+
+**Contract Call Example**
 ```typescript
 import {createPublicClient, http,parseGwei } from "viem";
 import { privateKeyToAccount } from 'viem/accounts'
-import { skaleChaosTestnet } from "viem/chains";
+import { skaleNebulaTestnet } from "viem/chains";
 import {contract_abi,contract_adress} from "./contract";
 
 import dotenv from 'dotenv'; 

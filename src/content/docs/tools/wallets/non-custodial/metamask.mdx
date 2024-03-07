@@ -15,26 +15,28 @@ Metamask allows you to integrate your dApp with SKALE by setting the Network RPC
 
 ## Implementation Example
 
+**Package Install**
 ```shell
 npm install --save web3
 ```
 
+**Integration**
 ```javascript
 import Web3 from 'web3';
 
 let web3 = "";
 
 let switchToSKALE = {
-  chainId: "0x50877ed6", //decodes to 1351057110
+  chainId: "your chain id", //decodes to 1351057110
   chainName: "SKALEChaos Testnet",
-  rpcUrls: ["https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix"],
+  rpcUrls: ["your_skale_network_rpc"],
   nativeCurrency: {
     name: "SKALE FUEL",
     symbol: "sFUEL",
     decimals: 18
   },
   blockExplorerUrls: [
-    "https://staging-fast-active-bellatrix.explorer.staging-v3.skalenodes.com"
+    "your_skale_network_explorer"
   ]
 };
 

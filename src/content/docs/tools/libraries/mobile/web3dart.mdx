@@ -21,13 +21,12 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 ## Implementation Example
 
-**Install web3dart package**
-
+**Package Install**
 ```shell
 dart pub add web3dart
 ```
 
-**Contract Call**
+**Contract Call Example**
 ```dart
 // ignore_for_file: public_member_api_docs
 import 'dart:io';
@@ -42,9 +41,9 @@ const String privateKey ='place your key';
 
 // SKALE Chaos Chain RPC
 // For other SKALE Testnet chains check https://testnet.portal.skale.space/chains
-const String rpcUrl = 'https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix';
+const String rpcUrl = 'your skale rpc';
 // selected SKALE Chain ID
-const int chainId = 1351057110;
+const int chainId = your_skale_chain_id;
 
 // ABI of ERC_721 example contract
 final File abiFile = File(join(dirname(Platform.script.path), 'nft_test_abi.json'));

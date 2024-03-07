@@ -30,19 +30,28 @@ The biggest difference between v5 and v6 is in the use of modern ES6 features. T
 
 ## Implementation Example
 
-**Package Install:**
+**Package Install**
+<Tabs>
+<TabItem label="npm">
 ```shell
 npm install ethers
 ```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add ethers
+```
+</TabItem>
+</Tabs>
 
-**Full Example of Sending a Transaction**
+**Contract Call Example**
 ```typescript
 import { ethers } from 'ethers';
 import {contract_abi,contract_adress} from "./contract";
 import dotenv from 'dotenv'; 
 dotenv.config();
 
-const skale_provider = "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix";
+const skale_provider = "your skale rpc";
 const provider = new ethers.JsonRpcProvider(skale_provider);
 const pk = process.env.PRIVATE_KEY || "";
 const signer = new ethers.Wallet(pk, provider);

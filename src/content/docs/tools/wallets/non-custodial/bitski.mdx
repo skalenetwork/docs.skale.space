@@ -13,18 +13,19 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 ## Implementation Example
 
-**Package Install:**
+**Package Install**
 ```shell
 npm install --save web3 bitski
 ```
 
+**Integration**
 ```javascript
 import { Bitski } from 'bitski';
 import Web3 from 'web3';
 
 
 // Your setup information
-const endpoint = 'https://your.skale.endpoint'; // your SKALE Chain endpoint
+const endpoint = 'your_skale_network_rpc'; // your SKALE Chain endpoint
 const skaleChainId = 123456                     // chainId of your SKALE Chain
 const testAPIKey = 'your_client_id';
 const callbackUrl = 'https://your.app/oath-callback.html';

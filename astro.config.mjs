@@ -102,8 +102,9 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/bridges" },
-								{ label: "SKALE IMA", link: "/tools/bridges/skale-ima" },
-								{ label: "Meson.fi", link: "/tools/bridges/meson-fi" },
+								{ label: "SKALE Native Bridge", link: "/tools/bridges/skale-native-brige" },
+								{ label: "Meson Finance", link: "/tools/bridges/meson-fi" },
+								{ label: "Layer Zero", link: "/tools/bridges/layer-zero" },
 							]
 						},
 						{
@@ -111,7 +112,7 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/contracts" },
-								{ label: "Using Hardhat", link: "/tools/contracts/hardhat" },
+								{ label: "Hardhat", link: "/tools/contracts/hardhat" },
 								{ label: "Multicall", link: "/tools/contracts/multicall" },
 							]
 						},
@@ -133,7 +134,6 @@ export default defineConfig({
 								{ label: "Eidolon", link: "/tools/gaming/eidolon" },
 								{ label: "Emergence", link: "/tools/gaming/emergence" },
 								{ label: "Mirage", link: "/tools/gaming/mirage" },
-								{ label: "Web3.unity", link: "/tools/gaming/web3unity" },
 								{ label: "Web3.unreal", link: "/tools/gaming/web3unreal" },
 							]
 						},

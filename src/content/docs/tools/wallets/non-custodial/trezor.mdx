@@ -13,15 +13,16 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 ## Implementation Example
 
+**Package Install**
 ```shell
 npm install @trezor/connect
 ```
-
+**Integration**
 ````javascript
 import TrezorApi from "trezor-connect";
 
 const supportedNetworkURLs = {
-  1351057110: "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix"
+  your_chain_id_numeber: "your_skale_network_rpc"
 };
 
 const defaultNetwork = 1;

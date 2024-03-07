@@ -21,14 +21,13 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 ## Implementation Example
 
- **Install Web3j CLI**
+ **Package Install**
 
 ```shell
 curl -L get.web3j.io | sh && source ~/.web3j/source.sh
 ```
 
 **Create a project** 
-
 ```shell
 web3j new
 ```
@@ -37,7 +36,7 @@ web3j new
 web3j wallet create
 ```
 
-**ERC721 Mint Example**
+**Contract Call Example**
 
 ```java
 package org.web3j;
@@ -53,9 +52,6 @@ import java.math.BigInteger;
 
 
 public class Web3App {
-
-   //Can use this as the Node_URL
-   //public static String SKALE_Chaos_rpc = "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix";
 
    private static final String nodeUrl = System.getenv().getOrDefault("WEB3J_NODE_URL", "<node_url>");
    private static final String walletPassword = System.getenv().getOrDefault("WEB3J_WALLET_PASSWORD", "<wallet_password>");
@@ -82,7 +78,7 @@ public class Web3App {
 
 **Run**
 ```shell
-web3j run https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix <wallet_path> <wallet_password>
+web3j run your_skale_rpc <wallet_path> <wallet_password>
 ```
 
 </ToolLayout>

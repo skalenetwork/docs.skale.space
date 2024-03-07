@@ -19,6 +19,8 @@ This [codebase](https://github.com/skalenetwork/recipes/tree/recipe-api-backgrou
 
 This example also uses a sticky session per userId meaning that the randomly generated accounts are mapped 1:1 with a userId. This will persist only for the duration of the service liftetime. On application crash or restart new wallets will be created. To resolve these types of issues you can encrypt the private keys and store them in something like Redis to make a more sophisticated service that would also allow for multiple AZ usage.
 
+**Integration**
+
 1. Custodian
 
 ````typescript

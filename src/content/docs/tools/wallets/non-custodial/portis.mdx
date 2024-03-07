@@ -13,17 +13,18 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 ## Implementation Example
 
+**Package Install**
 ```shell
 npm install --save web3 @portis/web3
 ```
-
+**Integration**
 ```javascript
 import Portis from '@portis/web3';
 import Web3 from 'web3';
 
 
 // Your setup information
-const endpoint = 'https://your.skale.endpoint'; // your SKALE Chain endpoint
+const endpoint = 'your_skale_network_rpc'; // your SKALE Chain endpoint
 const skaleChainId = 123456                     // chainId of your SKALE Chain
 const testAPIKey = 'your_api_key';
 
