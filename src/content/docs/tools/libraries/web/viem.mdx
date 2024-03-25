@@ -1,0 +1,74 @@
+---
+title: Viem
+description: Intro to Viem
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="Viem is a TypeScript interface for Ethereum that provides low-level stateless primitives for interacting with Ethereum."
+    toolName="Viem"
+    toolLink="https://viem.sh/"
+    toolDocsLink="https://viem.sh/"
+>
+
+Some of the main features are:
+- Abstractions over the JSON-RPC API 
+- APIs for interacting with Smart Contracts
+- Utilities for working with ABIs
+
+## Implementation Example
+
+**Package Install**
+<Tabs>
+<TabItem label="npm">
+```shell
+npm install viem
+```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add viem
+```
+</TabItem>
+</Tabs>
+
+
+**Contract Call Example**
+```typescript
+import {createPublicClient, http,parseGwei } from "viem";
+import { privateKeyToAccount } from 'viem/accounts'
+import { skaleNebulaTestnet } from "viem/chains";
+import {contract_abi,contract_adress} from "./contract";
+
+import dotenv from 'dotenv'; 
+dotenv.config();
+
+async function main() {
+	const client = createPublicClient({
+		chain: skaleChaosTestnet,
+		transport: http()
+	});
+
+	const pk = "0x";
+	const account=privateKeyToAccount(pk);
+
+	const signature = await account.signTransaction({
+		to:contract_adress,
+		gas:parseGwei('0.0005'),
+		gasPrice:parseGwei('0.0001'),
+		nonce: await client.getTransactionCount({address:account.address}),
+		data: '0xeefa7dfd0000000000000000000000002b3937fe6ef38cd4be0d9ceb05823087b716d689'
+	})
+
+	const hash = await client.sendRawTransaction({serializedTransaction:signature});
+	console.log(hash);
+}
+
+main()
+	.catch((err) => {
+		console.error(err);
+		process.exitCode = 1;
+	});
+```
+</ToolLayout>

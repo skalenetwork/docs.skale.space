@@ -1,0 +1,69 @@
+---
+title: EthersV5
+description: Intro to EthersV5
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="The ethers.js library is a comprehensive and concise library for engaging with the Ethereum Blockchain and its surrounding ecosystem."
+    toolName="EthersV5"
+    toolLink="https://docs.ethers.org/v5/"
+    toolDocsLink="https://docs.ethers.org/v5/"
+>
+
+
+Some of the main features are:
+- Import and export JSON wallets (Geth, Parity and crowdsale)
+- Import and export BIP 39 mnemonic phrases (12 word backup phrases) and HD Wallets
+- Meta-classes create JavaScript objects from any contract ABI, including ABIv2 and Human-Readable ABI
+Connect to Ethereum nodes over JSON-RPC, INFURA, Etherscan, Alchemy or Metamask
+
+## Implementation Example
+
+**Package Install**
+<Tabs>
+<TabItem label="npm">
+```shell
+npm install ethers@5.7.2
+```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add ethers@5.7.2
+```
+</TabItem>
+</Tabs>
+
+**Contract Call Example**
+```typescript
+import { ethers } from 'ethers';
+import {contract_abi,contract_adress} from "./contract";
+import dotenv from 'dotenv'; 
+dotenv.config();
+
+const skale_provider = "your skale rpc";
+const provider = new ethers.providers.JsonRpcProvider(skale_provider);
+const pk = process.env.PRIVATE_KEY || "";
+const signer = new ethers.Wallet(pk, provider);
+
+const contract = new ethers.Contract(contract_adress, contract_abi, signer);
+
+// Send transaction to smart contract to update message
+
+async function ContractSendTx() {
+    const data = await contract.populateTransaction._mintTest(signer.address);
+    data.gasLimit = ethers.BigNumber.from(500000);
+    data.gasPrice = ethers.BigNumber.from(100000);
+    data.nonce = await provider.getTransactionCount(signer.address);
+
+    const approveTxSigned = await signer.signTransaction(data);
+    const submittedTx = await provider.sendTransaction(approveTxSigned);
+    const approveReceipt = await submittedTx.wait();
+    console.log(approveReceipt.transactionHash);
+
+}
+ContractSendTx();
+```
+
+</ToolLayout>

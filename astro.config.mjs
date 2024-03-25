@@ -102,6 +102,9 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/bridges" },
+								{ label: "SKALE Native Bridge", link: "/tools/bridges/skale-native-brige" },
+								{ label: "Meson Finance", link: "/tools/bridges/meson-fi" },
+								{ label: "Layer Zero", link: "/tools/bridges/layer-zero" },
 							]
 						},
 						{
@@ -109,7 +112,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/contracts" },
-								{ label: "Using Hardhat", link: "/tools/contracts/hardhat" }
+								{ label: "Hardhat", link: "/tools/contracts/hardhat" },
+								{ label: "Multicall", link: "/tools/contracts/multicall" },
 							]
 						},
 						{
@@ -117,6 +121,9 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/data" },
+								{ label: "Dune", link: "/tools/data/dune" },
+								{ label: "Subsquid", link: "/tools/data/subsquid" },
+								{ label: "The Graph", link: "/tools/data/the-graph" },
 							]
 						},
 						{
@@ -124,6 +131,10 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/gaming" },
+								{ label: "Eidolon", link: "/tools/gaming/eidolon" },
+								{ label: "Emergence", link: "/tools/gaming/emergence" },
+								{ label: "Mirage", link: "/tools/gaming/mirage" },
+								{ label: "Web3.unreal", link: "/tools/gaming/web3unreal" },
 							]
 						},
 						{
@@ -131,6 +142,10 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/libraries" },
+								{ label: "Web Libraries", link: "/tools/libraries/web" },
+								{ label: "Backend Libraries", link: "/tools/libraries/backend" },
+								{ label: "Unity Libraries", link: "/tools/libraries/unity" },
+								{ label: "Mobile Libraries", link: "/tools/libraries/mobile" },
 							]
 						},
 						{
@@ -138,6 +153,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/oracles" },
+								{ label: "SKALE Connect", link: "/tools/oracles/skale-connect" },
+								{ label: "Razor", link: "/tools/oracles/razor" },
 							]
 						},
 						{
@@ -145,6 +162,12 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/skale" },
+								{ label: "sFUEL Station", link: "/tools/skale/sfuel-station" },
+								{ label: "Blockscout", link: "/tools/skale/blockscout" },
+								{ label: "SKALE Nodes", link: "/tools/skale/skale-nodes" },
+								{ label: "SKALE Proxy", link: "/tools/skale/skale-proxy" },
+								{ label: "Full Sync Node", link: "/tools/skale/full-sync-node" },
+								{ label: "Archive Node", link: "/tools/skale/archive-node" },
 							]
 						},
 						{
@@ -152,6 +175,10 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/wallets" },
+								{ label: "Non-Custodial Wallets", link: "/tools/wallets/non-custodial" },
+								{ label: "Custodial Wallets", link: "/tools/wallets/custodial" },
+								{ label: "MPC Wallets", link: "/tools/wallets/mpc" },
+								{ label: "Wallets Aggregator", link: "/tools/wallets/aggregator" },
 							]
 						}
 

@@ -1,0 +1,74 @@
+---
+title: Web3.js
+description: Intro to Web3.js
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="Set of Javascript libraries enabling interaction with a local or remote Ethereum node through HTTP, IPC, or WebSocket protocols."
+    toolName="Web3.js"
+    toolLink="https://docs.web3js.org/"
+    toolDocsLink="https://docs.web3js.org/"
+>
+
+Some of the features are:
+
+- Complete implementation of Ethereum's JSON-RPC client API over HTTP and IPC
+- Create accounts, process and sign transactions.
+- Get block and state information from Ethereum nodes.
+
+## Implementation Example
+
+**Package install**
+<Tabs>
+<TabItem label="npm">
+```shell
+npm install web3
+```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add web3
+```
+</TabItem>
+</Tabs>
+
+
+**Contract Call Example**
+```typescript
+import Web3 from "web3";
+import {contract_abi,contract_adress} from "./contract";
+
+var web3 = new Web3("your skale rpc");
+const pk = "wallet pk";
+const accountAddress = "wallet address";
+
+const contract = new web3.eth.Contract(contract_abi, contract_adress);
+
+const functionData = contract.methods._mintTest(accountAddress).encodeABI();
+
+async function callMintFunction() {
+  web3.eth.accounts.signTransaction( 
+    {
+      from: accountAddress,
+      to: contract_adress,
+      gas: 500000,
+      gasPrice: 100000,
+      data: functionData,
+    }, 
+    pk)
+    .then((signedTransaction) => {
+      return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction || "");
+    })
+    .then((receipt) => {
+      console.log("Transaction receipt:", receipt);
+    })
+    .catch((error) => {
+      console.error("Error sending transaction:", error);
+    });
+}
+callMintFunction();
+```
+
+</ToolLayout>

@@ -1,0 +1,97 @@
+---
+title: Layer Zero
+description: Intro to Layer Zero
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="LayerZero is an interoperability protocol designed to link blockchains, enabling developers to create fluid omnichain applications, tokens, and experiences. Utilizing immutable on-chain endpoints, a customizable Security Stack, and an open set of Executors, the protocol facilitates the transfer of censorship-resistant messages across chains."
+    toolName="Layer Zero"
+    toolLink="https://docs.layerzero.network/"
+    toolDocsLink="https://docs.layerzero.network/"
+>
+
+## Implementation Example
+
+The following example shows how to create and bridge an ERC-20 token between SKALE Europa testnet and Mumbai Testnet.
+
+For more information check the [github repository](https://github.com/TheGreatAxios/skale-layerzero-examples/tree/main) created by the SKALE team.
+
+**Run the command**
+```sh
+git clone https://github.com/TheGreatAxios/skale-layerzero-examples.git && cd skale-layerzero-examples/oft-example
+```
+
+**Package Install**
+```sh
+pnpm install
+```
+
+**Rename .env.example -> .env**
+**Choose your preferred means of setting up your deployer wallet/account**
+```sh
+MNEMONIC="test test test test test test test test test test test junk"
+or...
+PRIVATE_KEY="0xabc...def"
+```
+
+**To deploy you contracts run**
+
+:::tip[Note]
+Please deploy the contract in the chains you want to enable bridging 
+:::
+```sh
+npx hardhat lz:deploy
+```
+
+With the ERC-20 contracts deployed on the desired chains we can enable bridging those asserts.
+
+This is a two step process. The created examples are under the `scripts` folder and it shows the bridging tokens between two testnet chains Mumbai Testnet and SKALE Europa Testnet. 
+
+Once you've finished configuring your OFT, you can open the messaging channel and connect your OFT deployment to different chains by calling setPeer. 
+
+1. **Set Peer**
+
+<Tabs>
+<TabItem label="Generic Example">
+```sh
+npx hardhat setpeer --origin <origin_chain_name> --destination <destination_chain_name> --network <chain_where_tx_will_be_initiated>
+```
+</TabItem>
+<TabItem label="Set Peer on Europa">
+```sh
+npx hardhat setpeer --origin europa --destination mumbai --network europa   
+```
+</TabItem>
+<TabItem label="Set Peer on Mumbai">
+```sh
+npx hardhat setpeer --origin mumbai --destination europa --network mumbai   
+```
+</TabItem>
+</Tabs>
+
+2. **Bridge**
+
+After seting the peers you can now procced you bridging the tokens.
+
+<Tabs>
+<TabItem label="Generic Example">
+```sh
+npx hardhat bridge --origin <origin_chain_name> --destination <destination_chain_name> --amount <amount_to_bridge> --network <chain_where_tx_will_be_initiated>
+```
+</TabItem>
+<TabItem label="Bridge Europa to Mumbai">
+```sh
+npx hardhat bridge --origin europa --destination mumbai --amount 123 --network europa
+```
+</TabItem>
+<TabItem label="Bridge Mumbai to Europa">
+```sh
+npx hardhat bridge --origin mumbai --destination europa --amount 123 --network mumbai
+```
+</TabItem>
+</Tabs>
+
+</ToolLayout>
+
