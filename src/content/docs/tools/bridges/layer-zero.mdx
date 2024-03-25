@@ -54,14 +54,19 @@ Once you've finished configuring your OFT, you can open the messaging channel an
 1. **Set Peer**
 
 <Tabs>
+<TabItem label="Generic Example">
+```sh
+npx hardhat setpeer --origin <origin_chain_name> --destination <destination_chain_name> --network <chain_where_tx_will_be_initiated>
+```
+</TabItem>
 <TabItem label="Set Peer on Europa">
 ```sh
-npx hardhat run scripts/setPeer.ts --network europa
+npx hardhat setpeer --origin europa --destination mumbai --network europa   
 ```
 </TabItem>
 <TabItem label="Set Peer on Mumbai">
 ```sh
-npx hardhat run scripts/setPeer.ts --network mumbai
+npx hardhat setpeer --origin mumbai --destination europa --network mumbai   
 ```
 </TabItem>
 </Tabs>
@@ -71,14 +76,19 @@ npx hardhat run scripts/setPeer.ts --network mumbai
 After seting the peers you can now procced you bridging the tokens.
 
 <Tabs>
-<TabItem label="Bridge tokens from Europa to Mumbai">
+<TabItem label="Generic Example">
 ```sh
-npx hardhat run scripts/bridge.ts --network europa
+npx hardhat bridge --origin <origin_chain_name> --destination <destination_chain_name> --amount <amount_to_bridge> --network <chain_where_tx_will_be_initiated>
 ```
 </TabItem>
-<TabItem label="Bridge tokens from Mumbai to Europa">
+<TabItem label="Bridge Europa to Mumbai">
 ```sh
-npx hardhat run scripts/bridge.ts --network mumbai
+npx hardhat bridge --origin europa --destination mumbai --amount 123 --network europa
+```
+</TabItem>
+<TabItem label="Bridge Mumbai to Europa">
+```sh
+npx hardhat bridge --origin mumbai --destination europa --amount 123 --network mumbai
 ```
 </TabItem>
 </Tabs>

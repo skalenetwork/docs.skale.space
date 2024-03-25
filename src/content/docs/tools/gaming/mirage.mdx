@@ -17,4 +17,66 @@ The SDKs for both platforms are EVM compatible and have the following features:
 - Interaction with EVM-compatible blockchains
 - Interaction with smart contracts
 
+## Implementation Example
+
+<Tabs>
+<TabItem label="Unity">
+
+**Package Install**
+- On Package Manager select `Add package from git URL` and add the following:
+```
+https://github.com/Ankr-network/game-unity-sdk.git?path=Assets/MirageSDK
+```
+**Scene Creation**
+1. Go to Packages -> Examples -> Scenes -> Examples_WebGL.unity 
+2. Copy and paste that scene into your Assets folder
+
+**Assets Setup**
+1. (optional) Create a scriptable object with the following properties: contract address, contract ABI and SKALE chain RPC.
+2. Create a script to call the contract you deployed on one of the SKALE chains
+
+**Contract Call Example**
+```c#
+public class ERC721SKALE : UseCaseBodyUI
+{
+    public Contract contract;
+    private const string MintMethodName = "safeMint";
+    private IContract _erc721Contract;
+    private IEthHandler _eth;
+
+
+    private string[] contractArgs = new string[] { "0x...someAddress" };
+
+
+    public void ContractSetup()
+    {
+        var sdkInstance = MirageSDKFactory.GetMirageSDKInstance(contract.RPC);
+
+        _erc721Contract =
+            sdkInstance.GetContract(
+                contract.contractAddress,
+                contract.contractABI);
+        _eth = sdkInstance.Eth;
+
+    }
+
+    public async void SmartContractCall()
+    {
+        var receipt = await _erc721Contract.CallMethod(MintMethodName, contractArgs);
+        Debug.Log($"Receipt: {receipt}");
+
+        var trx = await _eth.GetTransaction(receipt);
+
+        Debug.Log($"Nonce: {trx.Nonce}");
+    }
+}
+```
+
+**ERC721SKALE script call**
+1. Call contract setupt method to initialize the contract instance
+2. Call the `SmartContractCall` function to perform the contract call
+
+</TabItem>
+</Tabs>
+
 </ToolLayout>
