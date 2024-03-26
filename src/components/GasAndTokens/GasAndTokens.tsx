@@ -3,7 +3,8 @@ import { formatEther, formatUnits, Contract, JsonRpcProvider } from "ethers";
 import "./styles.css";
 import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
-import { erc20ABI } from "wagmi";
+// import { erc20ABI } from "viem";
+import { erc20Abi } from "viem";
 import { toast } from "react-toastify";
 
 type Provider = {
@@ -13,7 +14,7 @@ type Provider = {
 
 export default function GasAndTokens() {
 
-	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20ABI));
+	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20Abi));
 	const [address, setAddress] = useState<string | null>(null);
 	const [chain, setChain] = useState<Chain | null>(null);
 	const [chainKey, setChainKey] = useState<string | null>(null);
