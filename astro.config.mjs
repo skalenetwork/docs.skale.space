@@ -96,7 +96,6 @@ export default defineConfig({
 					label: "Tools",
 					items: [
 						{ label: "Overview", link: "/tools" },
-						{ label: "Explore", link: "/tools/explore" },
 						{
 							label: "Bridges",
 							collapsed: true,
