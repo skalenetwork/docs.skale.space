@@ -57,14 +57,14 @@ export default function Wallet({ alwaysShow }: { alwaysShow: boolean }) {
 	// }, [expectedChainId]);
 
 	if (address !== undefined || alwaysShow) {
-	return <ConnectButton
-	      accountStatus="avatar"
-	      chainStatus="none"
-	      showBalance={{
-	        smallScreen: false,
-	        largeScreen: true,
-	      }}
-	    />
+		return <ConnectButton
+		      accountStatus="avatar"
+		      chainStatus="none"
+		      showBalance={{
+		        smallScreen: false,
+		        largeScreen: true,
+		      }}
+		    />
 	}
 
 	return <></>; 

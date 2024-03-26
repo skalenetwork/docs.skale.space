@@ -30,10 +30,6 @@ const connectors = connectorsForWallets(
     projectId: "36f43bfe942ce36937aa5abea9323839",
   }
 );
-// const config = createConfig({
-//   chains: chains,
-//   connectors
-// });
 
 const queryClient = new QueryClient();
 

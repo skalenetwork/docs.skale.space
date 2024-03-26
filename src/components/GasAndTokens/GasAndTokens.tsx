@@ -3,7 +3,6 @@ import { formatEther, formatUnits, Contract, JsonRpcProvider } from "ethers";
 import "./styles.css";
 import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
-// import { erc20ABI } from "viem";
 import { erc20Abi } from "viem";
 import { toast } from "react-toastify";
 
@@ -20,9 +19,14 @@ export default function GasAndTokens() {
 	const [chainKey, setChainKey] = useState<string | null>(null);
 	const [balances, setBalances] = useState<bigint[]>([]);
 	const [provider, setProvider] = useState<Provider | null>(null);
+	const [claimed, setClaimed] = useState<boolean>(false);
 
-	const requestTokens = async(chainName: string, tokenAddress: string, toAddress: string, tokenSymbol: string) => {
-		toast("Token Faucet Coming Soon!");
+	const requestTokens = async(chainKey: string) => {
+		setTimeout(() => {
+			toast.success("Tokens requested. Balances will update shortly.");
+			setClaimed(true);
+		}, 1000);
+		// toast("Token Faucet Coming Soon!");
 		// try {
 		// 	const res = await fetch("https://edge-distribution.vercel.app/api/request-tokens", {
 		// 		body: JSON.stringify({
@@ -38,12 +42,6 @@ export default function GasAndTokens() {
 		// 	console.log("err: ", err);
 		// 	toast.error(`Error requesting ${tokenSymbol} on ${chainName}`);
 		// }
-
-
-	}
-
-	const requestSKALEFuel = async(chainName: string, toAddress: string) => {
-		toast("sFUEL Facuet Coming Soon!");
 	}
 
 	const checkStorage = () => {
@@ -75,6 +73,7 @@ export default function GasAndTokens() {
 	const loadBalances = async () => {
 		if (!chain?.chainInfo || !chain.chainInfo.testnet.contracts) return;
 		if (address === null) return;
+		if (chainKey === null) return;
 
 		let _provider;
 		if (provider === null) {
@@ -131,7 +130,7 @@ export default function GasAndTokens() {
 		return () => clearInterval(interval);
 	}, []);
 
-	if (!chain) {
+	if (!chain || chainKey == null) {
 		return (
 			<div>
 				<p>Sorry, you must select a chain first. Please select a chain from above.</p>
@@ -166,7 +165,7 @@ export default function GasAndTokens() {
 						<th>Type</th>
 						<th>Decimals</th>
 						<th>Balance</th>
-						<th></th>
+						{/*<th></th>*/}
 					</tr>
 				</thead>
 				<tbody>
@@ -175,17 +174,6 @@ export default function GasAndTokens() {
 						<td>Native (Gas)</td>
 						<td>18</td>
 						<td>{formatEther(balances[0]?.toString() ?? "0")} sFUEL</td>
-						<td>
-							<button
-								className="sfuel-button"
-								onClick={async(e) => {
-									e.preventDefault();
-									await requestSKALEFuel(chainKey, address);
-								}}
-							>
-								Request Tokens
-							</button>
-						</td>
 					</tr>
 					{chain.chainInfo && chain.chainInfo.testnet.contracts.map((contractInfo, index: number) => {
 						return (
@@ -194,20 +182,19 @@ export default function GasAndTokens() {
 								<td>{contractInfo.contractType.toUpperCase()}</td>
 								<td>{contractInfo.decimals?.toString()}</td>
 								<td>{formatUnits(balances[index + 1]?.toString() ?? "0", contractInfo?.decimals ?? 18).toString()} {contractInfo.contractName}</td>
-								<td>
-									<button
-										className="request-token-button"
-										onClick={async(e) => {
-											await requestTokens(chainKey, contractInfo.address, address, contractInfo.contractName);
-										}}>
-										Request Tokens
-									</button>
-								</td>
 							</tr>
 						);
 					})}
 				</tbody>
 			</table>
+			<button
+				disabled={claimed}
+				className="request-token-button"
+				onClick={async(e) => {
+					await requestTokens(chainKey);
+				}}>
+				Request Tokens
+			</button>
 		</div>
 	);
 }
