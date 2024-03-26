@@ -1,4 +1,4 @@
-export type ChainKey = "none" | "calypso" | "europa" | "nebula" | "titan" | "appChain" | "chaos";
+export type ChainKey = "calypso" | "europa" | "nebula" | "titan";
 
 export type ChainInfo = {
 	chainId: number;
@@ -179,42 +179,6 @@ const chains = {
     			"contracts": []
     		},
     	}
-	},
-	"appChain": {
-		"name": "Dedicated SKALE Chain",
-		"description": "Dedicated SKALE Chains are perfect for enterprises looking to have their own public blockchain and for high throughput applications",
-		"logoUrl": "/",
-		"color": "#000",
-		"background": "#FFF",
-		"gradientBackground": "linear-gradient(270deg, #d3d3d3, #c0c0c0)"
-	},
-	"chaos": {
-		"name": "Chaos Testnet",
-		"description": "Still not sure? Checkout Chaos Testnet to start. (Hint: You can always switch later!)",
-		"logoUrl": "https://raw.githubusercontent.com/skalenetwork/skale-network/master/metadata/staging/logos/staging-fast-active-bellatrix.png",
-		"color": "#FFF",
-		"background": "#FFF",
-		"gradientBackground": "linear-gradient(227deg, rgb(65, 159, 91), rgb(26, 81, 40))",
-		"chainInfo": {
-    		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix",
-    			"chainId": 1351057110,
-    			"contracts": [
-    				{
-    					address: "0x08f98Af60eb83C18184231591A8F89577E46A4B9",
-    					contractName: "DAI",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
-    					address: "0x082081c8E607ca6C1c53aC093cAb3847ED59C0b0",
-    					contractName: "USDT",
-    					contractType: "erc20",
-    					decimals: 6
-    				}
-    			]
-    		},
-		}
 	},
 } satisfies {[key: string]: Chain};
 
