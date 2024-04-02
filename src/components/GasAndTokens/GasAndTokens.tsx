@@ -3,7 +3,7 @@ import { formatEther, formatUnits, Contract, JsonRpcProvider } from "ethers";
 import "./styles.css";
 import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
-import { erc20Abi } from "viem";
+import { erc20Abi, isAddress } from "viem";
 import { toast } from "react-toastify";
 
 type Provider = {
@@ -15,6 +15,7 @@ export default function GasAndTokens() {
 
 	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20Abi));
 	const [address, setAddress] = useState<string | null>(null);
+	const [requestUpdateAddress, setRequestUpdateAddress] = useState<boolean>(false);
 	const [chain, setChain] = useState<Chain | null>(null);
 	const [chainKey, setChainKey] = useState<string | null>(null);
 	const [balances, setBalances] = useState<bigint[]>([]);
@@ -26,22 +27,6 @@ export default function GasAndTokens() {
 			toast.success("Tokens requested. Balances will update shortly.");
 			setClaimed(true);
 		}, 1000);
-		// toast("Token Faucet Coming Soon!");
-		// try {
-		// 	const res = await fetch("https://edge-distribution.vercel.app/api/request-tokens", {
-		// 		body: JSON.stringify({
-		// 			chain: chainName,
-		// 			address: toAddress,
-		// 			token: tokenAddress
-		// 		}),
-		// 		method: "POST"
-		// 	});
-
-		// 	toast.success(`${tokenSymbol} sent on ${chainName}`);
-		// } catch (err) {
-		// 	console.log("err: ", err);
-		// 	toast.error(`Error requesting ${tokenSymbol} on ${chainName}`);
-		// }
 	}
 
 	const checkStorage = () => {
@@ -67,6 +52,14 @@ export default function GasAndTokens() {
 				setAddress(null);
 				setBalances([]);
 			}
+		}
+	}
+
+	const updateAddress = (address: `0x${string}`) => {
+		if (typeof localStorage !== undefined) {
+			localStorage.setItem("address", address);
+			setAddress(address);
+			setRequestUpdateAddress(false);
 		}
 	}
 
@@ -133,23 +126,32 @@ export default function GasAndTokens() {
 	if (!chain || chainKey == null) {
 		return (
 			<div>
-				<p>Sorry, you must select a chain first. Please select a chain from above.</p>
+				<p>Please select a chain first from the above.</p>
 			</div>
 		);
 	}
 
-	if (!address) {
+	if (!address || requestUpdateAddress) {
 		return (
-			<div>
-				<p>Sorry, you must connect a wallet first (see navigation).</p>
-			</div>
-		);
-	}
-
-	if (chainKey === "appChain") {
-		return (
-			<div>
-				<p>Sorry, the documentation does not support specific AppChains on testnet. Please visit the <a href="https://discord.com/invite/gM5XBy6">Discord</a> for support</p>
+			<div className="wallet-input">
+				<br />
+				<h3>Set Ethereum Address</h3>
+				<div style={{
+					display: "flex",
+					flexDirection: "column"
+				}}>
+					<label htmlFor="walletAddress">Your Ethereum Address</label>
+					<input
+						type="text"
+						name="walletAddress"
+						onChange={(e) => {
+							e.preventDefault();
+							if (isAddress(e.target.value)) {
+								updateAddress(e.target.value);
+							}
+						}}
+					/>
+				</div>
 			</div>
 		);
 	}
@@ -165,7 +167,6 @@ export default function GasAndTokens() {
 						<th>Type</th>
 						<th>Decimals</th>
 						<th>Balance</th>
-						{/*<th></th>*/}
 					</tr>
 				</thead>
 				<tbody>
@@ -187,14 +188,23 @@ export default function GasAndTokens() {
 					})}
 				</tbody>
 			</table>
-			<button
-				disabled={claimed}
-				className="request-token-button"
-				onClick={async(e) => {
-					await requestTokens(chainKey);
-				}}>
-				Request Tokens
-			</button>
+			<div>
+				<button
+					disabled={claimed}
+					className="request-token-button"
+					onClick={async(e) => {
+						await requestTokens(chainKey);
+					}}>
+					Request Tokens
+				</button>
+				<button
+					className="request-token-button"
+					onClick={(e) => {
+						setRequestUpdateAddress(true);
+					}}>
+					Change Address
+				</button>
+			</div>
 		</div>
 	);
 }

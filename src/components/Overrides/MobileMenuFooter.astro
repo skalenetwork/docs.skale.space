@@ -2,7 +2,6 @@
 import { ThemeSelect } from 'virtual:starlight/components';
 import Navigation from "../Navigation.astro";
 import type { Props } from '../props';
-import { WalletLayout } from '../WalletLayout';
 ---
 
 <div class="mobile-preferences sl-flex">
@@ -11,10 +10,6 @@ import { WalletLayout } from '../WalletLayout';
 	</div>
 	<div class="sl-flex">
 		<ThemeSelect {...Astro.props} />
-		<!-- <LanguageSelect {...Astro.props} /> -->
-	</div>
-	<div class="sl-flex">
-		<WalletLayout client:load />
 	</div>
 </div>
 

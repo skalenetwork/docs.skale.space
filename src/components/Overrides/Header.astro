@@ -10,7 +10,6 @@ import {
 } from 'virtual:starlight/components';
 
 import Navigation from "../Navigation.astro";
-import { WalletLayout } from '../WalletLayout';
 ---
 
 <div class="header sl-flex">
@@ -26,8 +25,6 @@ import { WalletLayout } from '../WalletLayout';
 			<SocialIcons {...Astro.props} />
 		</div>
 		<ThemeSelect {...Astro.props} />
-		<WalletLayout client:load />
-		<!-- <LanguageSelect {...Astro.props} /> -->
 	</div>
 </div>
 
