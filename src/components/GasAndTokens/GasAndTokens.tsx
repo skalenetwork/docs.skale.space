@@ -5,19 +5,18 @@ import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
 import { erc20Abi, isAddress } from "viem";
 import { toast } from "react-toastify";
-import calypsoAddresses from "../../../smart-contracts/ignition/deployments/chain-974399131/deployed_addresses.json";
-import europaAddresses from "../../../smart-contracts/ignition/deployments/chain-1444673419/deployed_addresses.json";
-import nebulaAddresses from "../../../smart-contracts/ignition/deployments/chain-37084624/deployed_addresses.json";
-import titanAddresses from "../../../smart-contracts/ignition/deployments/chain-1020352220/deployed_addresses.json";
-import { abi as DistributionManagerABI } from "../../../smart-contracts/artifacts/contracts/DistributionManager.sol/DistributionManager.json";
 import { mineGasForTransaction } from "./miner";
 import { Wallet } from "ethers";
 
+const DistributionManagerABI = [
+	"function withdraw(address to) external"
+];
+
 const DistributionManagerAddress: {[key in ChainKey]: string} = {
-	calypso: calypsoAddresses["DistributionManager#DistributionManager"],
-	europa: europaAddresses["DistributionManager#DistributionManager"],
-	nebula: nebulaAddresses["DistributionManager#DistributionManager"],
-	titan: titanAddresses["DistributionManager#DistributionManager"]
+	calypso: "0xD5E0cBcbd5a2Fd24718aF4c06Ae763B0a79AeFD1",
+	europa: "0xB8C3c6640ed68ED2c4E558E2e79C9fd152D91433",
+	nebula: "0xe8126F785F6CC2C2f3CcA39eB1d97809d9Ba36C1",
+	titan: "0xD5E0cBcbd5a2Fd24718aF4c06Ae763B0a79AeFD1"
 }
 
 type Provider = {
