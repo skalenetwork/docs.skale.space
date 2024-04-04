@@ -3,29 +3,47 @@ title: Go Live
 description: Go Live
 ---
 
-## The Go Live Process
+The go-live process for SKALE is unique compared to other EVM networks.
+As SKALE Chains are permissioned, you must be given to permission by a chain owner or operator to deploy.
+While all chains can have their own individual requirements; the below are the common checks that the majority
+of the SKALE Chains use including the core SKALE Hubs: Calypso, Europa, Nebula, and Titan.
 
-If you are preparing to go live on to SKALE Mainnet, then
-the following steps can help expedite the process.
+### Validate your Smart Contracts
 
-### Onboarding 
+#### Check #1 - Taking Payment/Valued Tokens
 
-### Showcase your Work
+SKALE is well known for its zero-gas fees. However, because the native 
+gas token sFUEL has no monetary value; it should never be used in situations where
+you are attempting to represent value.
 
-First, start by heading over to the SKALE Network Discord channel.
-Once there, show of your project in the #showcase-your-work channel.
-This will allow members of the SKALE Community to give feedback and enable
-you to start showcasing your game.
+This means that in Solidity you should NOT use msg.value and should instead utilize tokens of value in the 
+form of ERC-20 or some other way to represent value.
 
-### Check your Smart Contracts
+#### Check #2 - Check for Factories
 
-The SKALE Network is known by developers and users alike for its unique zero gas fee model.
-This core difference on SKALE Chains may cause a breaking change in your smart contract.
+As mentioned above, SKALE Chains are permissioned by default.
+This permission layer on SKALE offers very explicit rules for how it operates:
 
-:::danger
-If you are attempting to use *msg.value* to capture value in the form a token, this will not work on SKALE.
-:::
+1. It allows Externally Owned Accounts (EOAs) -- e.g. private keys -- to deploy smart contracts IF
+they have the DEPLOYER_ROLE on the ConfigController.
 
-For more information on how to migrate value capture from msg.value to ERC-20, checkout [this](https://hackmd.io/@TheGreatAxios/SJWksGU2i) guide from the community.
+2. It allows smart contracts to deploy other smart contracts without any sort of restrictions -- e.g factories.
 
+In order to ensure that the SKALE Chain you are looking to deploy to stays secure, the chain owners and operators 
+will request that your scripts and smart contracts only use contract factories that adhere to the following:
 
+   - The use of deterministic deployers, e.g <a href="https://github.com/Arachnid/deterministic-deployment-proxy">CREATE2Factory</a>, should be swapped out for <a href="https://github.com/payvint/skale-deterministic-deployment-proxy">SKALE Deterministic Deploy</a>.
+   - The use of contract creation factories for items like assets should ideally be locked down behind either authoritative actions/roles or limited in some other way. This
+   will reduce the chance of a factory contract being botted with zero gas fees.
+
+### Deploy to Testnet
+
+While individual dApp chains don't hold this requirement, if you plan on deploying to a SKALE Hub you should plan on showcasing your project on 
+testnet before requesting access to Mainnet. This will ensure that the chain operators have a chance to work with you to ensure that
+the chain you are looking to deploy on is the correct fit.
+
+### Showcase your Project & Request Review
+
+Once you are ready to go to Mainnet, head over to the <a href="https://discord.com/invite/gM5XBy6">Discord</a> and add your project in
+the #showcase-your-project. Once you add the **Request Review** tag the SKALE Developer DAO or the Chain Operator you have 
+tagged will step in to help you verify that everything is ready to proceed to Mainnet.
