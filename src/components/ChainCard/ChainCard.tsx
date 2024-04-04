@@ -1,3 +1,4 @@
+import type { Chain } from "../../config";
 import "./styles.css";
 
 type Props = {
@@ -21,7 +22,7 @@ export default function ChainCard({
 			}}
 			onClick={(e) => {
 				e.preventDefault();
-				onClick();
+				onClick?.();
 			}}
 		>
 			<div className="chain-left">

@@ -1,4 +1,4 @@
-export type ChainKey = "none" | "calypso" | "europa" | "nebula" | "titan" | "appChain" | "chaos";
+export type ChainKey = "calypso" | "europa" | "nebula" | "titan";
 
 export type ChainInfo = {
 	chainId: number;
@@ -26,7 +26,7 @@ export type Chain = {
 
 const chains = {
 	"calypso": {
-		"name": "Calypso Innovation Hub",
+		"name": "Calypso Hub",
 		"description": "An Innovation Hub focused on projects looking to use blockchain in new and unique ways",
 		"logoUrl": "https://raw.githubusercontent.com/skalenetwork/skale-network/master/metadata/mainnet/logos/honorable-steel-rasalhague.png",
 		"color": "#FFF",
@@ -39,17 +39,11 @@ const chains = {
     			"contracts": []
     		},
     		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar",
-    			"chainId": 344106930,
+    			"rpcUrl": "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
+    			"chainId": 974399131,
     			"contracts": [
     				{
-    					address: "0x7E1B8750C21AebC3bb2a0bDf40be104C609a9852",
-    					contractName: "SKL",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
-    					address: "0x49c37d0Bb6238933eEe2157e9Df417fd62723fF6",
+    					address: "0x2aebcdc4f9f9149a50422fff86198cb0939ea165",
     					contractName: "USDC",
     					contractType: "erc20",
     					decimals: 6
@@ -72,8 +66,8 @@ const chains = {
     			"contracts": []
     		},
     		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor",
-    			"chainId": 476158412,
+				"rpcUrl": "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
+    			"chainId": 1444673419,
     			"contracts": [
 	    			{
 	    				address: "0xD2Aaa00700000000000000000000000000000000",
@@ -81,47 +75,23 @@ const chains = {
 	    				contractType: "erc20",
 	    				decimals: 18
 	    			},
-					{
-    					address: "0xbA1E9BA7CDd4815Da6a51586bE56e8643d1bEAb6",
-    					contractName: "SKL",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
     				{
-    					address: "0xf06De9214B1Db39fFE9db2AebFA74E52f1e46e39",
-    					contractName: "Ruby",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
-    					address: "0x3595E2f313780cb2f23e197B8e297066fd410d30",
+    					address: "0x7aE734db73c57F3D16f5F141BAf6CfABD9E693bf",
     					contractName: "DAI",
     					contractType: "erc20",
     					decimals: 18
     				},
     				{
-    					address: "0xe0E2cb3A5d6f94a5bc2D00FAa3e64460A9D241E1",
+    					address: "0xbEE0FB0C095405A17c079Cd5C3cc89525e5A9a8C",
     					contractName: "USDP",
     					contractType: "erc20",
     					decimals: 18
     				},
     				{
-    					address: "0xa388F9783d8E5B0502548061c3b06bf4300Fc0E1",
-    					contractName: "USDT",
-    					contractType: "erc20",
-    					decimals: 6
-    				},
-    				{
-    					address: "0x5d42495D417fcd9ECf42F3EA8a55FcEf44eD9B33",
+    					address: "0x6CE77Fc7970F6984eF3E8748A3826972Ec409Fb9",
     					contractName: "USDC",
     					contractType: "erc20",
     					decimals: 6
-    				},
-    				{
-    					address: "0xf5E880E1066DDc90471B9BAE6f183D5344fd289F",
-    					contractName: "WBTC",
-    					contractType: "erc20",
-    					decimals: 8
     				}
     			]
     		},
@@ -141,17 +111,11 @@ const chains = {
     			"contracts": []
     		},
     		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-faint-slimy-achird",
-    			"chainId": 503129905,
+				"rpcUrl": "https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet",
+    			"chainId": 37084624,
     			"contracts": [
     				{
-    					address: "0x7F73B66d4e6e67bCdeaF277b9962addcDabBFC4d",
-    					contractName: "SKL",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
-    					address: "0x717d43399ab3a8aada669CDC9560a6BAfdeA9796",
+    					address: "0x5eaf4e5a908ba87abf3de768cb0da517db45db48",
     					contractName: "USDC",
     					contractType: "erc20",
     					decimals: 6
@@ -174,47 +138,18 @@ const chains = {
     			"contracts": []
     		},
     		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-aware-gianfar",
-    			"chainId": 1517929550,
-    			"contracts": []
-    		},
-    	}
-	},
-	"appChain": {
-		"name": "Dedicated SKALE Chain",
-		"description": "Dedicated SKALE Chains are perfect for enterprises looking to have their own public blockchain and for high throughput applications",
-		"logoUrl": "/",
-		"color": "#000",
-		"background": "#FFF",
-		"gradientBackground": "linear-gradient(270deg, #d3d3d3, #c0c0c0)"
-	},
-	"chaos": {
-		"name": "Chaos Testnet",
-		"description": "Still not sure? Checkout Chaos Testnet to start. (Hint: You can always switch later!)",
-		"logoUrl": "https://raw.githubusercontent.com/skalenetwork/skale-network/master/metadata/staging/logos/staging-fast-active-bellatrix.png",
-		"color": "#FFF",
-		"background": "#FFF",
-		"gradientBackground": "linear-gradient(227deg, rgb(65, 159, 91), rgb(26, 81, 40))",
-		"chainInfo": {
-    		"testnet": {
-    			"rpcUrl": "https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix",
-    			"chainId": 1351057110,
+				"rpcUrl": "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
+    			"chainId": 1020352220,
     			"contracts": [
-    				{
-    					address: "0x08f98Af60eb83C18184231591A8F89577E46A4B9",
-    					contractName: "DAI",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
-    					address: "0x082081c8E607ca6C1c53aC093cAb3847ED59C0b0",
-    					contractName: "USDT",
-    					contractType: "erc20",
-    					decimals: 6
-    				}
+	    			{
+	    				address: "0x10a30e73ab2da5328fc09b06443dde3e656e82f4",
+	    				contractName: "USDC",
+	    				contractType: "erc20",
+	    				decimals: 6
+	    			}
     			]
     		},
-		}
+    	}
 	},
 } satisfies {[key: string]: Chain};
 

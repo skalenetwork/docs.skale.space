@@ -3,8 +3,21 @@ import { formatEther, formatUnits, Contract, JsonRpcProvider } from "ethers";
 import "./styles.css";
 import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
-import { erc20ABI } from "wagmi";
+import { erc20Abi, isAddress } from "viem";
 import { toast } from "react-toastify";
+import { mineGasForTransaction } from "./miner";
+import { Wallet } from "ethers";
+
+const DistributionManagerABI = [
+	"function withdraw(address to) external"
+];
+
+const DistributionManagerAddress: {[key in ChainKey]: string} = {
+	calypso: "0xD5E0cBcbd5a2Fd24718aF4c06Ae763B0a79AeFD1",
+	europa: "0xB8C3c6640ed68ED2c4E558E2e79C9fd152D91433",
+	nebula: "0xe8126F785F6CC2C2f3CcA39eB1d97809d9Ba36C1",
+	titan: "0xD5E0cBcbd5a2Fd24718aF4c06Ae763B0a79AeFD1"
+}
 
 type Provider = {
 	key: string;
@@ -13,36 +26,44 @@ type Provider = {
 
 export default function GasAndTokens() {
 
-	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20ABI));
+	const [erc20] = useState(() => new Contract("0x0000000000000000000000000000000000000000", erc20Abi));
 	const [address, setAddress] = useState<string | null>(null);
+	const [requestUpdateAddress, setRequestUpdateAddress] = useState<boolean>(false);
 	const [chain, setChain] = useState<Chain | null>(null);
 	const [chainKey, setChainKey] = useState<string | null>(null);
 	const [balances, setBalances] = useState<bigint[]>([]);
 	const [provider, setProvider] = useState<Provider | null>(null);
+	const [claimed, setClaimed] = useState<boolean>(false);
 
-	const requestTokens = async(chainName: string, tokenAddress: string, toAddress: string, tokenSymbol: string) => {
-		toast("Token Faucet Coming Soon!");
-		// try {
-		// 	const res = await fetch("https://edge-distribution.vercel.app/api/request-tokens", {
-		// 		body: JSON.stringify({
-		// 			chain: chainName,
-		// 			address: toAddress,
-		// 			token: tokenAddress
-		// 		}),
-		// 		method: "POST"
-		// 	});
+	const requestTokens = async(chainKey: ChainKey) => {
+		toast("Token Request Initiated");
+		const provider = new JsonRpcProvider(chains[chainKey].chainInfo.testnet.rpcUrl);
+		const contract = new Contract(DistributionManagerAddress[chainKey], DistributionManagerABI, provider);
+		const wallet = Wallet.createRandom(provider);
+		const nonce = await provider.getTransactionCount(wallet.address);
+		const gasEstimate = BigInt(200_000);
+		const gasPrice = await mineGasForTransaction(nonce, 200_000, wallet.address);
+		
+		try {
+			const res = await wallet.sendTransaction({
+	            to: DistributionManagerAddress[chainKey],
+	            data: contract.interface.encodeFunctionData(
+	            	"withdraw",
+	            	[address]
+	            ),
+	            gasPrice: gasPrice.gasPrice,
+	            gasLimit: gasEstimate
+	        });
 
-		// 	toast.success(`${tokenSymbol} sent on ${chainName}`);
-		// } catch (err) {
-		// 	console.log("err: ", err);
-		// 	toast.error(`Error requesting ${tokenSymbol} on ${chainName}`);
-		// }
-
-
-	}
-
-	const requestSKALEFuel = async(chainName: string, toAddress: string) => {
-		toast("sFUEL Facuet Coming Soon!");
+			const toastLoadingId = toast.loading("Tx Processing");
+	        
+	        await res.wait(1);
+			toast.dismiss(toastLoadingId);
+			await loadBalances();
+			toast.success("Tokens Received Successfully");
+		} catch (err) {
+			toast.error("Error. Please Try Again");
+		}
 	}
 
 	const checkStorage = () => {
@@ -60,20 +81,21 @@ export default function GasAndTokens() {
 				setChainKey(null);
 				setChain(null);
 			}
+		}
+	}
 
-			const possibleAddress = localStorage.getItem("address");
-			if (possibleAddress) {
-				setAddress(possibleAddress);
-			} else {
-				setAddress(null);
-				setBalances([]);
-			}
+	const updateAddress = (address: `0x${string}`) => {
+		if (typeof localStorage !== undefined) {
+			localStorage.setItem("address", address);
+			setAddress(address);
+			setRequestUpdateAddress(false);
 		}
 	}
 
 	const loadBalances = async () => {
 		if (!chain?.chainInfo || !chain.chainInfo.testnet.contracts) return;
 		if (address === null) return;
+		if (chainKey === null) return;
 
 		let _provider;
 		if (provider === null) {
@@ -107,12 +129,14 @@ export default function GasAndTokens() {
 		
 		const balancesFromMulticall = await multicall.aggregate3.staticCall(getBalancesEncoded);
 
-		setBalances([
+		const newBalances = [
 			await _provider?.getBalance(address),
 			...balancesFromMulticall.map(({ returnData }: any) => {
 				return erc20.interface.decodeFunctionResult('balanceOf', returnData)[0];
 			})
-		]);
+		];
+		console.log("New Balances: ", newBalances);
+		setBalances(newBalances);
 	}
 
 	useEffect(() => {
@@ -130,26 +154,35 @@ export default function GasAndTokens() {
 		return () => clearInterval(interval);
 	}, []);
 
-	if (!chain) {
+	if (!chain || chainKey == null) {
 		return (
 			<div>
-				<p>Sorry, you must select a chain first. Please select a chain from above.</p>
+				<p>Please select a chain first from the above.</p>
 			</div>
 		);
 	}
 
-	if (!address) {
+	if (!address || requestUpdateAddress) {
 		return (
-			<div>
-				<p>Sorry, you must connect a wallet first (see navigation).</p>
-			</div>
-		);
-	}
-
-	if (chainKey === "appChain") {
-		return (
-			<div>
-				<p>Sorry, the documentation does not support specific AppChains on testnet. Please visit the <a href="https://discord.com/invite/gM5XBy6">Discord</a> for support</p>
+			<div className="wallet-input">
+				<br />
+				<h3>Set Ethereum Address</h3>
+				<div style={{
+					display: "flex",
+					flexDirection: "column"
+				}}>
+					<label htmlFor="walletAddress">Your Ethereum Address</label>
+					<input
+						type="text"
+						name="walletAddress"
+						onChange={(e) => {
+							e.preventDefault();
+							if (isAddress(e.target.value)) {
+								updateAddress(e.target.value);
+							}
+						}}
+					/>
+				</div>
 			</div>
 		);
 	}
@@ -165,7 +198,6 @@ export default function GasAndTokens() {
 						<th>Type</th>
 						<th>Decimals</th>
 						<th>Balance</th>
-						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -174,17 +206,6 @@ export default function GasAndTokens() {
 						<td>Native (Gas)</td>
 						<td>18</td>
 						<td>{formatEther(balances[0]?.toString() ?? "0")} sFUEL</td>
-						<td>
-							<button
-								className="sfuel-button"
-								onClick={async(e) => {
-									e.preventDefault();
-									await requestSKALEFuel(chainKey, address);
-								}}
-							>
-								Request Tokens
-							</button>
-						</td>
 					</tr>
 					{chain.chainInfo && chain.chainInfo.testnet.contracts.map((contractInfo, index: number) => {
 						return (
@@ -193,20 +214,28 @@ export default function GasAndTokens() {
 								<td>{contractInfo.contractType.toUpperCase()}</td>
 								<td>{contractInfo.decimals?.toString()}</td>
 								<td>{formatUnits(balances[index + 1]?.toString() ?? "0", contractInfo?.decimals ?? 18).toString()} {contractInfo.contractName}</td>
-								<td>
-									<button
-										className="request-token-button"
-										onClick={async(e) => {
-											await requestTokens(chainKey, contractInfo.address, address, contractInfo.contractName);
-										}}>
-										Request Tokens
-									</button>
-								</td>
 							</tr>
 						);
 					})}
 				</tbody>
 			</table>
+			<div>
+				<button
+					disabled={claimed}
+					className="request-token-button"
+					onClick={async(e) => {
+						await requestTokens(chainKey as ChainKey);
+					}}>
+					Request Tokens
+				</button>
+				<button
+					className="request-token-button"
+					onClick={(e) => {
+						setRequestUpdateAddress(true);
+					}}>
+					Change Address
+				</button>
+			</div>
 		</div>
 	);
 }
