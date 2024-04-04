@@ -5,6 +5,20 @@ import type { Chain, ChainKey } from "../../config";
 import { chains, Multicall } from "../../config";
 import { erc20Abi, isAddress } from "viem";
 import { toast } from "react-toastify";
+import calypsoAddresses from "../../../smart-contracts/ignition/deployments/chain-974399131/deployed_addresses.json";
+import europaAddresses from "../../../smart-contracts/ignition/deployments/chain-1444673419/deployed_addresses.json";
+import nebulaAddresses from "../../../smart-contracts/ignition/deployments/chain-37084624/deployed_addresses.json";
+import titanAddresses from "../../../smart-contracts/ignition/deployments/chain-1020352220/deployed_addresses.json";
+import { abi as DistributionManagerABI } from "../../../smart-contracts/artifacts/contracts/DistributionManager.sol/DistributionManager.json";
+import { mineGasForTransaction } from "./miner";
+import { Wallet } from "ethers";
+
+const DistributionManagerAddress: {[key in ChainKey]: string} = {
+	calypso: calypsoAddresses["DistributionManager#DistributionManager"],
+	europa: europaAddresses["DistributionManager#DistributionManager"],
+	nebula: nebulaAddresses["DistributionManager#DistributionManager"],
+	titan: titanAddresses["DistributionManager#DistributionManager"]
+}
 
 type Provider = {
 	key: string;
@@ -22,11 +36,35 @@ export default function GasAndTokens() {
 	const [provider, setProvider] = useState<Provider | null>(null);
 	const [claimed, setClaimed] = useState<boolean>(false);
 
-	const requestTokens = async(chainKey: string) => {
-		setTimeout(() => {
-			toast.success("Tokens requested. Balances will update shortly.");
-			setClaimed(true);
-		}, 1000);
+	const requestTokens = async(chainKey: ChainKey) => {
+		toast("Token Request Initiated");
+		const provider = new JsonRpcProvider(chains[chainKey].chainInfo.testnet.rpcUrl);
+		const contract = new Contract(DistributionManagerAddress[chainKey], DistributionManagerABI, provider);
+		const wallet = Wallet.createRandom(provider);
+		const nonce = await provider.getTransactionCount(wallet.address);
+		const gasEstimate = BigInt(200_000);
+		const gasPrice = await mineGasForTransaction(nonce, 200_000, wallet.address);
+		
+		try {
+			const res = await wallet.sendTransaction({
+	            to: DistributionManagerAddress[chainKey],
+	            data: contract.interface.encodeFunctionData(
+	            	"withdraw",
+	            	[address]
+	            ),
+	            gasPrice: gasPrice.gasPrice,
+	            gasLimit: gasEstimate
+	        });
+
+			const toastLoadingId = toast.loading("Tx Processing");
+	        
+	        await res.wait(1);
+			toast.dismiss(toastLoadingId);
+			await loadBalances();
+			toast.success("Tokens Received Successfully");
+		} catch (err) {
+			toast.error("Error. Please Try Again");
+		}
 	}
 
 	const checkStorage = () => {
@@ -43,14 +81,6 @@ export default function GasAndTokens() {
 			} else {
 				setChainKey(null);
 				setChain(null);
-			}
-
-			const possibleAddress = localStorage.getItem("address");
-			if (possibleAddress) {
-				setAddress(possibleAddress);
-			} else {
-				setAddress(null);
-				setBalances([]);
 			}
 		}
 	}
@@ -100,12 +130,14 @@ export default function GasAndTokens() {
 		
 		const balancesFromMulticall = await multicall.aggregate3.staticCall(getBalancesEncoded);
 
-		setBalances([
+		const newBalances = [
 			await _provider?.getBalance(address),
 			...balancesFromMulticall.map(({ returnData }: any) => {
 				return erc20.interface.decodeFunctionResult('balanceOf', returnData)[0];
 			})
-		]);
+		];
+		console.log("New Balances: ", newBalances);
+		setBalances(newBalances);
 	}
 
 	useEffect(() => {
@@ -193,7 +225,7 @@ export default function GasAndTokens() {
 					disabled={claimed}
 					className="request-token-button"
 					onClick={async(e) => {
-						await requestTokens(chainKey);
+						await requestTokens(chainKey as ChainKey);
 					}}>
 					Request Tokens
 				</button>
