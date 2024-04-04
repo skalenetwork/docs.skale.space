@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { mineGasForTransaction } from "./miner";
 import { Wallet } from "ethers";
 
+
 const DistributionManagerABI = [
 	"function withdraw(address to) external"
 ];
@@ -220,16 +221,17 @@ export default function GasAndTokens() {
 				</tbody>
 			</table>
 			<div>
-				<button
+				<button 
+					
 					disabled={claimed}
-					className="request-token-button"
+					className="request-token-button_2"
 					onClick={async(e) => {
 						await requestTokens(chainKey as ChainKey);
 					}}>
 					Request Tokens
 				</button>
 				<button
-					className="request-token-button"
+					className="request-token-button_2"
 					onClick={(e) => {
 						setRequestUpdateAddress(true);
 					}}>
