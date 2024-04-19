@@ -25,7 +25,7 @@ export default defineConfig({
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro"
 			},
-			favicon: '/favicon.png',
+			favicon: 'favicon.png',
 			logo: {
 				dark: './src/assets/skale_logo_w.svg',
 				light: './src/assets/skale_logo_b.svg'
