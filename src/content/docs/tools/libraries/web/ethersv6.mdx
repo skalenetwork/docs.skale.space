@@ -47,29 +47,32 @@ yarn add ethers
 **Contract Call Example**
 ```typescript
 import { ethers } from 'ethers';
-import {contract_abi,contract_adress} from "./contract";
-import dotenv from 'dotenv'; 
+import {abi} from "./contract";
+import {chains} from "./chains"
+import dotenv from 'dotenv';
 dotenv.config();
 
-const skale_provider = "your skale rpc";
+//Select which SKALE chain you want to use
+const selected_chain = chains.nebula;
+
+const skale_provider = selected_chain.chainInfo.testnet.rpcUrl;
 const provider = new ethers.JsonRpcProvider(skale_provider);
+
 const pk = process.env.PRIVATE_KEY || "";
 const signer = new ethers.Wallet(pk, provider);
 
-const contract = new ethers.Contract(contract_adress, contract_abi, signer);
+const contract = new ethers.Contract(selected_chain.chainInfo.testnet.contracts[0].address, abi, signer);
 
-async function ContractSendTx() {
-    const data = await contract._mintTest.populateTransaction(signer.address);
-    data.gasLimit = ethers.toBigInt(500000);
-    data.gasPrice = ethers.toBigInt(100000);
-    data.nonce = await provider.getTransactionCount(signer.address);
+// Send transaction to smart contract to update message
+async function ContractSendTx() {    
+    
+    const request = await contract.mintTest.populateTransaction(signer.address);
+    const tx = await signer.sendTransaction(request);
+    const receipt = await tx.wait();
 
-    const tx = await signer.sendTransaction(data)
-
-    console.log(tx.hash);
+    console.log(receipt);
 
 }
-ContractSendTx();
 ```
 
 </ToolLayout>

@@ -36,39 +36,42 @@ yarn add viem
 
 **Contract Call Example**
 ```typescript
-import {createPublicClient, http,parseGwei } from "viem";
+import { createWalletClient, custom,http ,createPublicClient} from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { skaleNebulaTestnet } from "viem/chains";
-import {contract_abi,contract_adress} from "./contract";
-
-import dotenv from 'dotenv'; 
+import {abi} from "./contract";
+import dotenv from 'dotenv';
 dotenv.config();
 
-async function main() {
-	const client = createPublicClient({
-		chain: skaleChaosTestnet,
-		transport: http()
-	});
+const publicClient = createPublicClient({
+    chain: skaleNebulaTestnet,
+    transport: http()
+  })
 
-	const pk = "0x";
-	const account=privateKeyToAccount(pk);
+const pk = process.env.PRIVATE_KEY || "";
+const account = privateKeyToAccount(`0x${pk}`);
 
-	const signature = await account.signTransaction({
-		to:contract_adress,
-		gas:parseGwei('0.0005'),
-		gasPrice:parseGwei('0.0001'),
-		nonce: await client.getTransactionCount({address:account.address}),
-		data: '0xeefa7dfd0000000000000000000000002b3937fe6ef38cd4be0d9ceb05823087b716d689'
-	})
+//Place here the contract address you deployed
+const contract_address = "0x4487AF7f18044A99927e81CC628F558F3D091419";
 
-	const hash = await client.sendRawTransaction({serializedTransaction:signature});
-	console.log(hash);
+const walletClient = createWalletClient({
+    chain: skaleNebulaTestnet,
+    transport: http(),
+  })
+
+
+// Send transaction to smart contract to update message
+async function ContractSendTx() {    
+    
+    const { request } = await publicClient.simulateContract({
+        address: contract_address,
+        abi: abi,
+        functionName: 'mintTest',
+        args: [account.address],
+        account
+      })
+    const tx =  await walletClient.writeContract(request)
+    console.log(tx);
 }
-
-main()
-	.catch((err) => {
-		console.error(err);
-		process.exitCode = 1;
-	});
 ```
 </ToolLayout>

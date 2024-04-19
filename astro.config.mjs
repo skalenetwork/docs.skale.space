@@ -50,7 +50,6 @@ export default defineConfig({
 								{ label: "AppChain", link: "/learn/app-chain" },
 								{ label: "HubChain", link: "/learn/hub-chain" },
 								{ label: "Calypso Innovation Hub", link: "/learn/calypso" },
-								{ label: "Chaos Open Testnet", link: "/learn/chaos" },
 								{ label: "Europa Liquidity Hub", link: "/learn/europa" },
 								{ label: "Nebula Gaming Hub", link: "/learn/nebula" },
 								{ label: "Titan AI Hub", link: "/learn/titan" },
