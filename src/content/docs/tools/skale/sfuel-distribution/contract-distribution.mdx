@@ -1,0 +1,75 @@
+---
+title: Smart Contract Distribution
+description: Smart Contract  Distribution
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
+Distribution through a smart contract is a good way to implement the distribution as well as other requirements/logic in more secure and decentralized manner.
+
+It's important to take in consideration that the sFUEL distribution should be handle carefully. This means sFUEL should be given in small amounts `(suggested amount: 0.00001 sFUEL)` and it's crucial to make sure no unauthorized address can drain all sFUEL given to the distribution contract.
+
+### Implementation Example
+
+```solidity 
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract sFUEL_Distribution is AccessControl{
+
+    bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+    bytes32 public constant WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
+
+    uint256 public amount = 0.00001 ether;
+
+    event sFUELDistributed(address indexed to, uint256 indexed amount);
+    event AmountUpdated(uint256 indexed originalAmount, uint256 indexed newAmount, address indexed signer);
+
+
+    constructor(){
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MANAGER_ROLE, msg.sender);
+    }
+
+    /**
+     * @dev function to receive Ether. msg.data must be empty
+     */
+    receive() external payable {}
+    
+    /**
+     * @dev fallback function is called when msg.data is not empty
+     */
+    fallback() external payable {}
+
+    /**
+        Get contract balance
+     */
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+
+    /**
+        Update amount to distribute to user
+     */
+    function updateAmount(uint256 _newAmount) external onlyRole(MANAGER_ROLE) {
+        require(_newAmount > 0, "sFUEL_Distribution: Invalid Amount");
+        uint256 originalAmount = amount;
+        amount = _newAmount;
+        emit AmountUpdated(originalAmount, amount, msg.sender);
+    }
+
+    /**
+        Manager accounts can request sFUEL distribution to users
+     */
+    function distribute(address to) external onlyRole(MANAGER_ROLE) {
+        require(!hasRole(WHITELIST_ROLE, to), "AlreadyWhitelisted");
+        require(getBalance() >= amount, "ContractOutOfSFuel");
+        require(to.balance < 0.000005 ether, "address rceiver has enough sFUEL");
+
+        payable(to).transfer(amount);
+
+        emit sFUELDistributed(to,amount);
+    }
+}
+```

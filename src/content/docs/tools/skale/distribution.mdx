@@ -1,0 +1,35 @@
+---
+title: sFUEL Distribution
+description: Distribtuion of the SKALE Native Gas Token
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+import {Content as API} from './sfuel-distribution/api-distribution.mdx';
+import {Content as POW} from './sfuel-distribution/pow-distribution.mdx';
+import {Content as Contract} from './sfuel-distribution/contract-distribution.mdx';
+
+
+SKALE Network has an unique economic model by having a gas token, sFUEL, with no economic value. This means that all SKALE chains require the gas token to perform transactions, however this token can't be purchased on a CEX or DEX due to its valueless nature.
+
+This model has several benefits but unlocks two main ones without compromising security of decentralization:
+- Large cost reductions to developers and users;
+- Possibility to provide a smooth and frictionless experience to the end user;
+
+Since the sFUEL can't be purchased, it requires it to be distributed to the end user. 
+In order to achieve the experience described above is important to all SKALE dApps implement a distribution mechanism that suits better their users and application flow.
+
+The following are the two most common distribution options found within the SKALE Ecosystem.
+
+<Tabs>
+<TabItem label="API Distribution">
+<API/>
+</TabItem>
+<TabItem label="POW Distribution">
+<POW/>
+</TabItem>
+<TabItem label="Contract Distribution">
+<Contract/>
+</TabItem>
+</Tabs>
+

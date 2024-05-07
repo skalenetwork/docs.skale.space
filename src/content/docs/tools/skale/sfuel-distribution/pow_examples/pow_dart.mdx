@@ -1,0 +1,169 @@
+---
+title: PoW Dart
+description: PoW Dart
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+##### 1. Random signer generation
+
+```dart
+import "dart:math";
+
+import "package:skale/src/pow/wallet.dart";
+import "package:web3dart/credentials.dart";
+
+class AnonymousParams extends WalletParams {
+  AnonymousParams(String rpcUrl, BigInt? difficulty)
+      : super(difficulty,
+            rpcUrl: rpcUrl,
+            privateKey: EthPrivateKey.createRandom(Random.secure()));
+}
+
+class AnonymousPow extends WalletPow {
+  AnonymousPow(AnonymousParams params) : super(params);
+}
+```
+
+##### 2. Request creation to call sFUEL distribution contract function
+
+```dart
+import "dart:math";
+import "dart:typed_data";
+
+import "package:http/http.dart";
+import "package:web3dart/credentials.dart";
+import "package:web3dart/web3dart.dart"
+    show EthPrivateKey, EtherAmount, EtherUnit, Transaction, Wallet, Web3Client;
+
+import "./miner.dart";
+
+class WalletParams extends SkalePowMinerParams {
+  final String rpcUrl;
+  final EthPrivateKey privateKey;
+
+  WalletParams(BigInt? difficulty,
+      {required this.rpcUrl, required this.privateKey})
+      : super(difficulty);
+}
+
+class TransactionParams {
+  EthereumAddress to;
+  Uint8List data;
+  int? gas;
+  Uint8List? bytes;
+
+  TransactionParams(
+      {required this.to, required this.data, this.gas, this.bytes});
+}
+
+class WalletPow extends SkalePowMiner {
+  late Wallet wallet;
+  late Web3Client client;
+
+  WalletPow(WalletParams params) : super(params) {
+    client = Web3Client(params.rpcUrl, Client());
+    wallet = Wallet.createNew(params.privateKey, "", Random.secure());
+  }
+
+  Future<String> send(TransactionParams params) async {
+    int nonce = await client.getTransactionCount(wallet.privateKey.address);
+
+    BigInt gasHash = await mineFreeGas(
+        params.gas ?? 100000, wallet.privateKey.address, nonce, params.bytes);
+
+    Transaction tx = Transaction(
+        from: wallet.privateKey.address,
+        to: params.to,
+        data: params.data,
+        gasPrice: EtherAmount.fromBigInt(EtherUnit.wei, gasHash));
+    
+    return await client.sendTransaction(wallet.privateKey, tx,
+        chainId: null, fetchChainIdFromNetworkId: true);
+  }
+}
+```
+
+##### 3. Unique Gas Price Generation
+
+```dart
+import 'dart:typed_data';
+
+import 'package:eth_sig_util/eth_sig_util.dart';
+import 'package:skale/src/utils/shared.dart';
+import 'package:web3dart/crypto.dart';
+import 'package:web3dart/web3dart.dart';
+
+class SkalePowMinerParams {
+  late BigInt difficulty;
+
+  SkalePowMinerParams(BigInt? optionalDifficulty) {
+    difficulty = optionalDifficulty ?? BigInt.one;
+  }
+}
+
+class SkalePowMiner {
+  BigInt difficulty = BigInt.one;
+
+  SkalePowMiner(SkalePowMinerParams? params) {
+    if (params != null) difficulty = params.difficulty;
+  }
+
+  Future<BigInt> mineGasForTransaction(
+      int nonce, int gas, EthereumAddress from, Uint8List? bytes) async {
+    return mineFreeGas(gas, from, nonce, bytes);
+  }
+
+  Future<BigInt> mineFreeGas(
+      int gasAmount, EthereumAddress from, int nonce, Uint8List? bytes) async {
+    final int gasAmountInt = gasAmount.toInt();
+    final BigInt nonceHash =
+        bytesToInt(AbiUtil.soliditySHA3(["uint256"], [nonce]));
+    final BigInt addressHash =
+        bytesToInt(AbiUtil.soliditySHA3(["address"], [from.addressBytes]));
+    final BigInt nonceAddressXOR = nonceHash ^ addressHash;
+    final BigInt maxNumber = getMaxNumber();
+    final BigInt divConstant = BigInt.from(maxNumber / difficulty);
+    BigInt candidate;
+
+    int iterations = 0;
+
+    while (true) {
+      candidate =
+          bytesToInt(padUint8ListTo32(bytes ?? randomBytes(32, secure: true)));
+      BigInt candidateHash =
+          bytesToInt(AbiUtil.soliditySHA3(["uint256"], [candidate]));
+      BigInt resultHash = nonceAddressXOR ^ candidateHash;
+      double externalGas = divConstant / resultHash;
+
+      if (externalGas >= gasAmountInt) {
+        break;
+      }
+
+      if (iterations++ % 2000 == 0) {
+          await Future.delayed(Duration.zero);
+      }
+    }
+
+    return candidate;
+  }
+}
+```
+
+##### 4. Call sFUEL distribution contract with unique Gas Price
+
+```dart
+import 'package:skale/skale.dart';
+import 'package:web3dart/credentials.dart';
+import 'package:web3dart/crypto.dart';
+
+Future<void> main() async {
+  AnonymousPow pow = AnonymousPow(AnonymousParams(
+      "https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar",
+      null));
+
+  await pow.send(TransactionParams(
+      to: EthereumAddress.fromHex("0xa9eC34461791162Cae8c312C4237C9ddd1D64336"),
+      data: hexToBytes(
+          "0x0c11dedd000000000000000000000000Da11eC5944D960008A3184Cc7F4A9C001b3B2Cff")));
+}
+```

@@ -1,0 +1,200 @@
+---
+title: PoW Typescript
+description: PoW Typescript
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs>
+<TabItem label="ethers">
+##### 1. Random signer generation
+```typescript
+import { JsonRpcProvider, Wallet } from "ethers";
+
+const provider = new JsonRpcProvider(chain?.chainInfo?.[isMainnet ? "mainnet" : "testnet"]?.rpcUrl);											
+const randomWallet = Wallet.createRandom(provider);
+```
+
+##### 2. Request creation to call sFUEL distribution contract function
+
+```typescript
+
+const nonce = await provider.getTransactionCount(randomWallet.address);
+
+const functionSignature = key === "europa" && isMainnet ? "0x6a627842" : "0x0c11dedd";
+
+const { duration, gasPrice } = await miner.mineGasForTransaction(nonce, 100_000, randomWallet.address);
+
+const request = {
+    to: chain?.chainInfo?.[isMainnet ? "mainnet" : "testnet"].proofOfWork,
+    data: `${functionSignature}000000000000000000000000${address.substring(2)}`,
+    gasLimit: 100_000,
+    gasPrice
+}
+```
+
+##### 3. Unique Gas Price Generation
+
+```typescript
+import { isHexString, getNumber, randomBytes, keccak256, toBeHex, toBigInt, ethers } from 'ethers'
+
+
+export default class Miner {
+
+	public static MAX_NUMBER = ethers.MaxUint256;
+
+  public async mineGasForTransaction(
+    nonce: string | number,
+    gas: string | number,
+    from: string
+  ): Promise<{
+  	duration: number;
+  	gasPrice: bigint;
+  }> {
+    let address = from
+    nonce = isHexString(nonce) ? getNumber(nonce) : (nonce as number)
+    gas = isHexString(gas) ? getNumber(gas) : (gas as number)
+    return await this.mineFreeGas(gas as number, address, nonce as number)
+  }
+
+  public async mineFreeGas(gasAmount: number, address: string, nonce: number): Promise<{
+  	duration: number;
+  	gasPrice: bigint;
+  }> {
+    let nonceHash = toBigInt(keccak256(toBeHex(nonce, 32)));
+    let addressHash = toBigInt(keccak256(address));
+    let nonceAddressXOR = nonceHash ^ addressHash;
+    let divConstant = Miner.MAX_NUMBER;
+    let candidate: Uint8Array;
+    let iterations = 0;
+    
+    const start = performance.now();
+    
+    while (true) {
+      candidate = randomBytes(32)
+      let candidateHash = toBigInt(keccak256(candidate));
+      let resultHash = nonceAddressXOR ^ candidateHash;
+      let externalGas = divConstant / resultHash;
+      
+      if (externalGas >= gasAmount) {
+        break;
+      }
+      // every 2k iterations, yield to the event loop
+      if (iterations++ % 1_000 === 0) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      }
+    }
+    
+    const end = performance.now();
+    
+    return {
+    	duration: start - end,
+    	gasPrice: toBigInt(candidate)
+    }
+  }
+}
+```
+
+##### 4. Call sFUEL distribution contract with unique Gas Price
+
+```typescript
+const response = await randomWallet.sendTransaction(request);
+
+await provider.waitForTransaction(response.hash, 1);
+
+await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+```
+</TabItem>
+<TabItem label="web3js">
+##### 1. Random signer generation
+```typescript
+import SkalePowMiner from "@skaleproject/pow";
+import BN from "bn.js";
+import Web3 from "web3";
+
+
+this.provider = new Web3(params.rpcUrl);
+
+let wallet = this.provider.eth.accounts.create();
+```
+
+##### 2. Request creation to call sFUEL distribution contract function
+```typescript
+const to = "0x_sfuel_contract_address";
+let nonce = await this.provider.eth.getTransactionCount(wallet.address);
+let gas: number = params.gas ?? 100000;
+const mineFreeGasResult = await this.miner.mineGasForTransaction(nonce, gas, wallet.address)
+const functionSignature = key === "europa" && isMainnet ? "0x6a627842" : "0x0c11dedd";
+
+
+const request = {
+    from: wallet.address,
+    to,
+    data: `${functionSignature}000000000000000000000000${address.substring(2)}`,
+    nonce,
+    gasPrice: mineFreeGasResult
+}
+```
+
+##### 3. Unique Gas Price Generation
+```typescript
+import BN from "bn.js";
+import { isHex, hexToNumber, soliditySha3 } from "web3-utils";
+import * as crypto from "crypto";
+
+interface Params {
+  difficulty?: BN;
+}
+
+export default class SkalePowMiner {
+  
+  public difficulty: BN = new BN(1);
+
+  constructor(params?: Params) {
+    if (params && params.difficulty) this.difficulty = params.difficulty;
+  }
+
+  public async mineGasForTransaction(nonce: string | number, gas: string | number, from: string, bytes?: string) : Promise<any> {
+    let address = from;
+    nonce = isHex(nonce) ? hexToNumber(nonce) : nonce as number;
+    gas = isHex(gas) ? hexToNumber(gas) : gas as number;
+    return await this.mineFreeGas(gas as number, address, nonce as number, bytes);
+  }
+
+  public async mineFreeGas(gasAmount: number, address: string, nonce: number, bytes?: string) {
+    let nonceHash = new BN((soliditySha3(nonce) as string).slice(2), 16);
+    let addressHash = new BN((soliditySha3(address) as string).slice(2), 16);
+    let nonceAddressXOR = nonceHash.xor(addressHash)
+    let maxNumber = new BN(2).pow(new BN(256)).sub(new BN(1));
+    let divConstant = maxNumber.div(this.difficulty);
+    let candidate: BN;
+    let _bytes: string;
+
+    let iterations = 0
+
+    while (true) {
+        _bytes = crypto.randomBytes(32).toString("hex");
+        candidate = new BN(bytes ?? _bytes, 16);
+        let candidateHash = new BN((soliditySha3(candidate) as string).slice(2), 16);
+        let resultHash = nonceAddressXOR.xor(candidateHash);
+        let externalGas = divConstant.div(resultHash).toNumber();
+        if (externalGas >= gasAmount) {
+            break;
+        }
+        // every 2k iterations, yield to the event loop
+        if (iterations++ % 2_000 === 0) {
+          await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        }
+    }
+    return candidate.toString();
+  }
+}
+```
+
+##### 4. Call sFUEL distribution contract with unique Gas Price
+```typescript
+const tx = await this.provider.eth.sendTransaction(request);
+
+```
+
+</TabItem>
+</Tabs>

@@ -2,9 +2,15 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
 import astroExpressiveCode from "astro-expressive-code";
+import remarkMath from 'remark-math';
+import rehypeMathjax from 'rehype-mathjax';
 
 // https://astro.build/config
 export default defineConfig({
+	markdown: {
+		remarkPlugins: [remarkMath],
+		rehypePlugins: [rehypeMathjax],
+	  },
 	integrations: [
 		astroExpressiveCode(),
 		react(),
@@ -161,6 +167,15 @@ export default defineConfig({
 							items: [
 								{ label: "Overview", link: "/tools/skale" },
 								{ label: "sFUEL Station", link: "/tools/skale/sfuel-station" },
+								{
+									label: "sFUEL Distribution",
+									items: [
+										{ label: "Overview", link: "/tools/skale/sfuel-distribution" },
+										{ label: "API Distribution", link: "/tools/skale/sfuel-distribution/api-distribution" },
+										{ label: "POW Distribution", link: "/tools/skale/sfuel-distribution/pow-distribution" },
+										{ label: "Contract Distribution", link: "/tools/skale/sfuel-distribution/contract-distribution"}
+									]
+								},
 								{ label: "Blockscout", link: "/tools/skale/blockscout" },
 								{ label: "SKALE Nodes", link: "/tools/skale/skale-nodes" },
 								{ label: "SKALE Proxy", link: "/tools/skale/skale-proxy" },

@@ -101,7 +101,7 @@ Currently only `eth_call` is supported.
 
 **oracle_checkResult**
 
-Checks whether an Oracle result has been derived. By default the result is signed by stem:[t+1] nodes, where stem:[t] is the maximum number of untruthful nodes. Each node signs using its ETH wallet ECDSA key.
+Checks whether an Oracle result has been derived. By default the result is signed by $t+1$ nodes, where $t$ is the maximum number of untruthful nodes. Each node signs using its ETH wallet ECDSA key.
 
 If no result has been derived, `ORACLE_RESULT_NOT_READY` is returned.
 Otherwise an error is returned.
@@ -117,7 +117,7 @@ The client is supposed to wait 1 second and try again.
 The result repeats JSON elements from the corresponding Oracle request, plus includes a set of additional elements:
 
 * `rslts: <array>`- string results
-* `sigs : <array>`- ECDSA signatures where stem:[t] signatures are not null.
+* `sigs : <array>`- ECDSA signatures where $t$ signatures are not null.
 
 *Example:*
 ```
@@ -202,7 +202,7 @@ The result repeats JSON elements from the corresponding Oracle request, plus inc
 1. A client submits a JSON RPC `oracle_submitRequest` GET or POST request to the SKALE chain containing the request specification.
 2. The SKALE daemon (skaled) distributes the request to all other nodes in the SKALE Chain and the client is presented with a receipt.
 3. Each of the 16 SKALE nodes performs the request, retrieves the data, and signs the result with it's ECDSA key.
-4. The Oracle result is returned when $t+1$ nodes sign the same result, where stem:[t] is the maximum number of untruthful nodes. On SKALE Chains $t$ is  $\[n\left(\frac{1}{3} \right)\]$.
+4. The Oracle result is returned when $t+1$ nodes sign the same result, where $t$ is the maximum number of untruthful nodes. On SKALE Chains $t$ is $n\left(\frac{1}{3}\right)$.
 
 **Request Formatting**
 
