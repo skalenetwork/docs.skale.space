@@ -37,28 +37,27 @@ yarn add ethers@5.7.2
 
 **Contract Call Example**
 ```typescript
-import { ethers } from 'ethers';
-import {abi} from "./contract";
-import {chains} from "./chains"
+import { ethers, BigNumber } from 'ethers';
+import { abi } from "./contract";
+import { chains } from "./chains"
 import dotenv from 'dotenv';
 dotenv.config();
 
 //Select the SKALE chain you want to use
-const selected_chain = chains.nebula;
+const selectedChain = chains.nebula;
 
-const skale_provider = selected_chain.chainInfo.testnet.rpcUrl;
-const provider = new ethers.providers.JsonRpcProvider(skale_provider);
+const provider = new ethers.providers.JsonRpcProvider(selectedChain.chainInfo.testnet.rpcUrl);
 
 const pk = process.env.PRIVATE_KEY || "";
 const signer = new ethers.Wallet(pk, provider);
 
-const contract = new ethers.Contract(selected_chain.chainInfo.testnet.contracts[0].address, abi, signer);
+const contract = new ethers.Contract(selectedChain.chainInfo.testnet.contracts[0].address, abi, signer);
 
 // Send transaction to smart contract to update message
 async function ContractSendTx() {
     const data = await contract.populateTransaction.mintTest(signer.address);
-    data.gasLimit = ethers.BigNumber.from(100000);
-    data.gasPrice = ethers.BigNumber.from(100000);
+    data.gasLimit = BigNumber.from(100000);
+    data.gasPrice = BigNumber.from(100000);
     data.nonce = await provider.getTransactionCount(signer.address);
 
     const approveTxSigned = await signer.signTransaction(data);

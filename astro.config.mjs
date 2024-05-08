@@ -2,15 +2,10 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
 import astroExpressiveCode from "astro-expressive-code";
-import remarkMath from 'remark-math';
-import rehypeMathjax from 'rehype-mathjax';
+
 
 // https://astro.build/config
 export default defineConfig({
-	markdown: {
-		remarkPlugins: [remarkMath],
-		rehypePlugins: [rehypeMathjax],
-	  },
 	integrations: [
 		astroExpressiveCode(),
 		react(),
