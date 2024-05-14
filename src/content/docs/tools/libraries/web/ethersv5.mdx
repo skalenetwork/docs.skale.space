@@ -63,8 +63,7 @@ async function ContractSendTx() {
     const approveTxSigned = await signer.signTransaction(data);
     const submittedTx = await provider.sendTransaction(approveTxSigned);
     const approveReceipt = await submittedTx.wait();
-    console.log(approveReceipt.transactionHash);
-
+    console.log(approveReceipt.transactionHash);    
 }
 
 ```

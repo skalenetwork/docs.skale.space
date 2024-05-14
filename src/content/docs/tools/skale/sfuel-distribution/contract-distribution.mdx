@@ -15,38 +15,39 @@ It's important to take in consideration that the sFUEL distribution should be ha
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-contract sFUELDistribution is AccessControl{
+contract NFT is ERC1155, AccessControl, ReentrancyGuard{
 
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
     bytes32 public constant WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
 
     uint256 public amount = 0.00001 ether;
+    uint256 public currentTokenID;
 
-    event sFUELDistributed(address indexed to, uint256 indexed amount);
+    event Whitelist(address indexed to);
     event AmountUpdated(uint256 indexed originalAmount, uint256 indexed newAmount, address indexed signer);
+    event Mint(address indexed to, uint256 tokenId);
+    event UpdateCurrentTokenId(uint256 indexed tokenId);
 
-
-    constructor(){
+    constructor(string memory _baseURI) ERC1155(_baseURI){
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MANAGER_ROLE, msg.sender);
+        currentTokenID = 0;
     }
 
-    /**
-     * @dev function to receive Ether. msg.data must be empty
-     */
-    receive() external payable {}
-    
-    /**
-     * @dev fallback function is called when msg.data is not empty
-     */
-    fallback() external payable {}
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
 
-    /**
-        Get contract balance
-     */
-    function getBalance() public view returns (uint) {
-        return address(this).balance;
+    function setBaseURI(string memory newBaseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setURI(newBaseURI);
     }
 
     /**
@@ -60,16 +61,42 @@ contract sFUELDistribution is AccessControl{
     }
 
     /**
-        Manager accounts can request sFUEL distribution to users
+        Update of the current tokenId
      */
-    function distribute(address to) external onlyRole(MANAGER_ROLE) {
-        require(!hasRole(WHITELIST_ROLE, to), "AlreadyWhitelisted");
-        require(getBalance() >= amount, "ContractOutOfSFuel");
-        require(to.balance < 0.000005 ether, "address rceiver has enough sFUEL");
-
-        payable(to).transfer(amount);
-
-        emit sFUELDistributed(to,amount);
+    function updateCurrentTokenId(uint256 newTokenId) external onlyRole(MANAGER_ROLE) {
+        currentTokenID = newTokenId;
+        emit UpdateCurrentTokenId(newTokenId);
     }
+
+    /**
+        Whitelists address to be allowed to mint. It also distributes sFUEL in order to perform the mint transaction
+     */
+    function whitelist(address to) external onlyRole(MANAGER_ROLE) {
+        require(!hasRole(WHITELIST_ROLE, to), "AlreadyWhitelisted");
+
+        if(to.balance < 0.000005 ether){
+            require(address(this).balance >= amount, "ContractOutOfSFuel");
+            payable(to).transfer(amount);
+            emit Whitelist(to);
+        }
+        _grantRole(WHITELIST_ROLE, to);
+
+    }
+
+    /**
+        Mint transaction with access control
+     */
+    function mint() public onlyRole(WHITELIST_ROLE) nonReentrant {
+        require(balanceOf(msg.sender, currentTokenID) == 0, "Address already owns a token");
+        _mint(msg.sender, currentTokenID, 1, "");
+        _revokeRole(WHITELIST_ROLE, msg.sender); 
+
+        emit Mint(msg.sender, currentTokenID);
+    }
+
+     /**
+     * @dev function to receive Ether. msg.data must be empty
+     */
+    receive() external payable {}
 }
 ```
