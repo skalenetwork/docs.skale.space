@@ -66,3 +66,8 @@ pre,
 .right-sidebar-panel:where(.astro-pb3aqygn) a:hover {
 	background-color: var(--sl-color-hover);
 }
+
+iframe {
+	aspect-ratio: 16/9;
+	width: 100%;
+}
