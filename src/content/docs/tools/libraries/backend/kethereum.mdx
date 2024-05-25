@@ -100,32 +100,38 @@ import org.kethereum.model.PrivateKey
 import org.kethereum.crypto.toECKeyPair
 
 import org.kethereum.rpc.EthereumRPCException
+import chains;
 
 fun main(args: Array<String>) {
 
-    val privateKey = PrivateKey(HexString("user_private_key"))
+    val privateKey = PrivateKey(HexString("your private key"))
     var keyPar = privateKey.toECKeyPair()
 
+    val selected_chain = chains[ChainKey.nebula];
+
+    val rpc_url = selected_chain!!.chainInfo!!.testnet!!.rpcUrl;
+
     val SKALE_CHAIN_RPC = listOf(
-        "your_skale_rpc",
-        "your_skale_rpc(can be repetead if you don't have a second)"
+        rpc_url,
+        rpc_url
     )
     //Your contract address
-    val CONTRACT_ADDRES = Address("0x_contract_address");
+    val CONTRACT_ADDRES = Address(selected_chain.chainInfo!!.testnet.contracts[0].address);
     //chain_id
     val chainID = ChainId(37084624)
 
-
     val rpc = getMin3RPC(SKALE_CHAIN_RPC)
     val txCount = rpc.getTransactionCount(keyPar.toAddress(), "latest");
+
+    val address_mint_receiver = "address without the 0x";
 
     val tx = createTransactionWithDefaults(
         chain = chainID,
         to= CONTRACT_ADDRES,
         from = keyPar.toAddress(),
-        gasLimit = BigInteger("1000000"),
+        gasLimit = BigInteger("100000"),
         gasPrice = BigInteger("100000"),
-        input = HexString("40d097c30000000000000000000000002b3937fe6ef38cd4be0d9ceb05823087b716d689").hexToByteArray(), //hex of your contract method and input params
+        input = HexString("d2fe5e92000000000000000000000000$address_mint_receiver").hexToByteArray(), //hex of your contract method and input params
         nonce = txCount,
         value = BigInteger("0")
     );

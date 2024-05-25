@@ -1,4 +1,5 @@
 /* Dark mode colors. */
+
 :root {
 	--sl-color-accent-low: #0d1f50;
 	--sl-color-accent: #1f4cff;
@@ -64,4 +65,9 @@ pre,
 
 .right-sidebar-panel:where(.astro-pb3aqygn) a:hover {
 	background-color: var(--sl-color-hover);
+}
+
+iframe {
+	aspect-ratio: 16/9;
+	width: 100%;
 }

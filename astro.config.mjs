@@ -3,6 +3,7 @@ import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
 import astroExpressiveCode from "astro-expressive-code";
 
+
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
@@ -50,7 +51,6 @@ export default defineConfig({
 								{ label: "AppChain", link: "/learn/app-chain" },
 								{ label: "HubChain", link: "/learn/hub-chain" },
 								{ label: "Calypso Innovation Hub", link: "/learn/calypso" },
-								{ label: "Chaos Open Testnet", link: "/learn/chaos" },
 								{ label: "Europa Liquidity Hub", link: "/learn/europa" },
 								{ label: "Nebula Gaming Hub", link: "/learn/nebula" },
 								{ label: "Titan AI Hub", link: "/learn/titan" },
@@ -162,6 +162,15 @@ export default defineConfig({
 							items: [
 								{ label: "Overview", link: "/tools/skale" },
 								{ label: "sFUEL Station", link: "/tools/skale/sfuel-station" },
+								{
+									label: "sFUEL Distribution",
+									items: [
+										{ label: "Overview", link: "/tools/skale/sfuel-distribution" },
+										{ label: "API Distribution", link: "/tools/skale/sfuel-distribution/api-distribution" },
+										{ label: "POW Distribution", link: "/tools/skale/sfuel-distribution/pow-distribution" },
+										{ label: "Contract Distribution", link: "/tools/skale/sfuel-distribution/contract-distribution"}
+									]
+								},
 								{ label: "Blockscout", link: "/tools/skale/blockscout" },
 								{ label: "SKALE Nodes", link: "/tools/skale/skale-nodes" },
 								{ label: "SKALE Proxy", link: "/tools/skale/skale-proxy" },

@@ -21,7 +21,7 @@ offers a similar benefit but for blockchain transactions. End-users interacting 
 gas fees (the cost associated with conducting a transaction on the Ethereum network) for their actions. These costs are
 already covered by the upfront payment made by the developers. Usage is metered (and DDoS attacks prevented) using chain-specific
 sFUEL tokens, which the developer can distribute to all users as they onboard and conduct transactions. There is no way
-to purchase sFUEL as it is freely distributed to users. See more on [sFUEL](/learn/beginner/skale-chain-fuel).
+to purchase sFUEL as it is freely distributed to users. See more on [sFUEL](/learn/beginner/skale-chain-gas).
 
 In summary, SKALE Network can be seen as providing 'cloud-like' services but specifically tailored for the blockchain world,
 where developers rent for network bandwidth, allowing their end-users to enjoy zero-cost gas fees for their transactions, much

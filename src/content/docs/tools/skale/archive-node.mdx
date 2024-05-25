@@ -16,13 +16,13 @@ This sets them apart from full nodes, which focus on recent blockchain states, a
 
 Archive nodes build archival blockchain data quickly and efficiently, and they’re useful for querying arbitrary historical data, like a user’s balances on a specific block. 
 
-#### General Steps
+## General Steps
 
 1. Provision a machine.
 2. Notify core team of IP/IPs range (`x.x.x.x:x.x.x.x`) and SKALE Chain for archive.
 3. Complete archive node setup.
 
-#### Recommended Machine Requirements
+## Recommended Machine Requirements
 
 * A Linux x86_64 machine
 * Ubuntu 20.04
@@ -31,7 +31,7 @@ Archive nodes build archival blockchain data quickly and efficiently, and they�
 * 100GB root storage
 * 2TB attached storage
 
-#### Node Network Requirements
+## Node Network Requirements
 
 * Ports 80, 443, 3009, and 10000–18192, and ICMP IPv4 should not be closed by any firewall software.
 
@@ -39,7 +39,7 @@ Archive nodes build archival blockchain data quickly and efficiently, and they�
 Firewall setup is a part of skale binary. Any custom configuration may break or reduce the security of the system.
 ::::
 
-#### Node Software Prerequisites
+## Node Software Prerequisites
 
 * 8GB Swap
 * docker
@@ -47,7 +47,7 @@ Firewall setup is a part of skale binary. Any custom configuration may break or 
 * iptables-persistent, btrfs-progs, lsof, lvm2, psmisc, and apt packages
 
 
-#### From Fresh Machine
+## From Fresh Machine
 
 ```shell
 sudo apt-get update
@@ -122,7 +122,7 @@ sudo skale sync-node init --archive --catchup --historic-state [ENV_FILE_PATH]
 . After the node is successfully inited, wait until chain container will download the snapshot and starts catchup blocks (usually 15–30 minutes).
 
 
-#### Setup SSL certs
+## Setup SSL certs
 
 Node SSL certificates support secure communication with chain endpoints. By default, each node of a SKALE Chain listens on HTTP and WS ports. If SSL certs exist on the node, then HTTPS and WSS ports are also turned on.
 
@@ -140,7 +140,7 @@ sudo skale ssl status
 
 Once certs are uploaded, HTTPS/WSS endpoints should become available for your chain.
 
-#### Update archive node
+## Update archive node
 
 Update archive SKALE node on current machine
 

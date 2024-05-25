@@ -138,9 +138,8 @@ const hre = require("hardhat");
 
 async function main() {
 
-  const gasLimit = 3000000;
   const myAddress = "0x_some_address"
-  const token = await hre.ethers.deployContract("MockContract", [myAddress], {gasLimit});
+  const token = await hre.ethers.deployContract("MockContract", [myAddress]);
 
   console.log(token.address);
 }

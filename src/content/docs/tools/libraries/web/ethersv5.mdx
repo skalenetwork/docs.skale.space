@@ -37,33 +37,35 @@ yarn add ethers@5.7.2
 
 **Contract Call Example**
 ```typescript
-import { ethers } from 'ethers';
-import {contract_abi,contract_adress} from "./contract";
-import dotenv from 'dotenv'; 
+import { ethers, BigNumber } from 'ethers';
+import { abi } from "./contract";
+import { chains } from "./chains"
+import dotenv from 'dotenv';
 dotenv.config();
 
-const skale_provider = "your skale rpc";
-const provider = new ethers.providers.JsonRpcProvider(skale_provider);
+//Select the SKALE chain you want to use
+const selectedChain = chains.nebula;
+
+const provider = new ethers.providers.JsonRpcProvider(selectedChain.chainInfo.testnet.rpcUrl);
+
 const pk = process.env.PRIVATE_KEY || "";
 const signer = new ethers.Wallet(pk, provider);
 
-const contract = new ethers.Contract(contract_adress, contract_abi, signer);
+const contract = new ethers.Contract(selectedChain.chainInfo.testnet.contracts[0].address, abi, signer);
 
 // Send transaction to smart contract to update message
-
 async function ContractSendTx() {
-    const data = await contract.populateTransaction._mintTest(signer.address);
-    data.gasLimit = ethers.BigNumber.from(500000);
-    data.gasPrice = ethers.BigNumber.from(100000);
+    const data = await contract.populateTransaction.mintTest(signer.address);
+    data.gasLimit = BigNumber.from(100000);
+    data.gasPrice = BigNumber.from(100000);
     data.nonce = await provider.getTransactionCount(signer.address);
 
     const approveTxSigned = await signer.signTransaction(data);
     const submittedTx = await provider.sendTransaction(approveTxSigned);
     const approveReceipt = await submittedTx.wait();
-    console.log(approveReceipt.transactionHash);
-
+    console.log(approveReceipt.transactionHash);    
 }
-ContractSendTx();
+
 ```
 
 </ToolLayout>
