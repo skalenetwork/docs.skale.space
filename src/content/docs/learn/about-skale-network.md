@@ -91,7 +91,7 @@ Are you looking to use a dApp or platform on SKALE? Checkout the new [SKALE Port
 
 ### Build a SKALE dApp
 
-If you are looking to build a dApp on SKALE, head over to the [Quick Start](./quick-start) to learn about more about building on SKALE.
+If you are looking to build a dApp on SKALE, head over to the [Quick Start](/quick-start) to learn about more about building on SKALE.
 
 ## Engage with the SKALE Network Community
 
