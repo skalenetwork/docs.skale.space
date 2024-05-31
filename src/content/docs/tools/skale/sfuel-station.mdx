@@ -23,7 +23,7 @@ Adding your chain to the sFUEL Station is a three-step process:
 
 1. Deploy an on-chain faucet. The on-chain faucet should at a minimum provide the functionality found on SKALE Proof-of-Work distribution, however, for a more robust contract that offers more control such as pausing, changing limits, and destruction; checkout the [sFUEL Distribution Contract](https://github.com/Dirt-Road-Development/sfuel-distribution-contract).
 
-2. Once the smart contract is deployed on your SKALE Chain, head over to the [sFUEL Station on Github](https://github.com/Dirt-Road-Development/sfuel-station). Fork the repository, clone the repo down, and open up the folder in your favourite editor or terminal. 
+2. Once the smart contract is deployed on your SKALE Chain, head over to the [sFUEL Station on Github](https://github.com/Dirt-Road-Development/sfuel-station). Fork the repository, clone the repo down, and open up the folder in your favorite editor or terminal. 
                           
 - Edit [pow.json](https://github.com/Dirt-Road-Development/sfuel-station/blob/master/src/config/pow.json) and add your chain information into the proper location. If you are using a testnet/staging chain, make sure to add it into the first array. If this is for a mainnet chain, add it to the second array. The details required are chainId, display name, rpc url, and the public object which should have an address field, a fnHash which is the function that will be called by Proof of Work, and then the max fuel amount which should match your smart contract. 
 

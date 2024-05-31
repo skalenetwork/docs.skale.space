@@ -3,7 +3,10 @@ title: SKALE Chain Overview
 description: Overview of a SKALE Chain
 ---
 
-A SKALE Chain is a Web3 Ethereum compatible elastic blockchain designed to make Web3 cloud computing easier for dApp developers. SKALE Chains provide EVM compute power, decentralized database storage, and other functionality to help not only power your dApps but allow them to scale in a cost-effective manner.
+Every chain in the SKALE Network -- SKALE Chain -- is like a mini-Ethereum.
+A SKALE Chain, or sChain for short, is designed to make accessing Web3 compute simpler and more cost-effective.
+You can access EVM compute power, decentralized database storage, and other
+functionality to help not only power your dApps but allow them to scale in a effectively with zero transaction fees.
 
 ## What makes a SKALE Chain
 

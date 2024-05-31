@@ -1,12 +1,12 @@
 ---
-title: Kethreum
-description: Intro to Kethreum
+title: KEthereum
+description: Intro to KEthereum
 ---
 import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 <ToolLayout
     introParagraph="Kethereum is a Kotlin library created for Ethereum. It opts for a non-monolithic structure, empowering users to selectively integrate modules and thereby maintain a lean library footprint."
-    toolName="Kethreum"
+    toolName="KEthereum"
     toolLink="https://github.com/komputing/KEthereum"
     toolDocsLink="https://github.com/komputing/KEthereum"
 >
@@ -116,7 +116,7 @@ fun main(args: Array<String>) {
         rpc_url
     )
     //Your contract address
-    val CONTRACT_ADDRES = Address(selected_chain.chainInfo!!.testnet.contracts[0].address);
+    val CONTRACT_ADDRESS = Address(selected_chain.chainInfo!!.testnet.contracts[0].address);
     //chain_id
     val chainID = ChainId(37084624)
 
@@ -127,7 +127,7 @@ fun main(args: Array<String>) {
 
     val tx = createTransactionWithDefaults(
         chain = chainID,
-        to= CONTRACT_ADDRES,
+        to= CONTRACT_ADDRESS,
         from = keyPar.toAddress(),
         gasLimit = BigInteger("100000"),
         gasPrice = BigInteger("100000"),
