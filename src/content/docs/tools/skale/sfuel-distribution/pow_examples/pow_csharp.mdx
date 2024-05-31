@@ -46,7 +46,7 @@ public class WalletPow
     public Miner miner_PoW;
     private Account account;
     private Web3 web3;
-    //Scriptable object created withn the chain details
+    // Scriptable object created within the chain details
     private Chains current_chain;
 
     public WalletPow(Account new_account, Chains chain)
@@ -150,11 +150,11 @@ public class Miner: MonoBehaviour
     public IEnumerator MineFreeGas(System.Action<string> callback,long gasAmount, string address,long nonce)
     {
 
-        BN bn_noce_hash = new BN(GetSoliditySha3(nonce),16);
+        BN bn_nonce_hash = new BN(GetSoliditySha3(nonce),16);
 
         BN bn_address_hash = new BN(GetSoliditySha3(address.HexToByteArray()), 16);
 
-        BN nonceAddressXOR = bn_noce_hash.Xor(bn_address_hash);
+        BN nonceAddressXOR = bn_nonce_hash.Xor(bn_address_hash);
 
         BN maxNumber = new BN(2).Pow(new BN(256)).Sub(new BN(1));
         BN DIFFICULTY = new BN(1);
