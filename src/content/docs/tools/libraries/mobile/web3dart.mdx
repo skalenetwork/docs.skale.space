@@ -59,9 +59,9 @@ Future<void> main() async {
 
   final EthereumAddress mint_to_address = EthereumAddress.fromHex('address to mint to');
 
-  String adddress = selected_SKALE_chain?.chainInfo?.testnet.contracts[0].address ?? "no address";
+  String address = selected_SKALE_chain?.chainInfo?.testnet.contracts[0].address ?? "no address";
 
-  final EthereumAddress contract_address = EthereumAddress.fromHex(adddress);
+  final EthereumAddress contract_address = EthereumAddress.fromHex(address);
   
   //Credentials to sign tx
   final credentials = EthPrivateKey.fromHex(privateKey);
