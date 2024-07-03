@@ -1,14 +1,9 @@
 ---
-title: Ready to Build? 
+title: SKALE Network Docs
 description: Start building on SKALE Network
 template: splash
 hero:
-  tagline: Build on SKALE with zero gas fees, instant finality, and top-tier DX
-  image:
-    alt: Welcome to SKALE
-    light: ../../assets/skale_logo_b.svg
-    dark: ../../assets/skale_token_w.svg
-    file: ../../assets/skale_token_w.svg
+  tagline: Build on the only Layer-1 Network with zero-gas fees, pooled security, and infinite sharding
   actions:
     - text: Build on SKALE
       link: /quick-start
@@ -18,30 +13,28 @@ hero:
       link: /learn/about-skale-network
       icon: open-book
 ---
-
+import "../../styles/home.css";
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Explore the Documentation
-
-Not sure where to go? No worries! We have selected a few of the most commonly visited areas of our docs for you to begin exploring!
-
 <CardGrid>
-	<a style="text-decoration: none; color: white;" href="/quick-start">
-		<Card title="Quick Start" icon="add-document">
-			Learn about moving your new or existing project to SKALE
+	<a id="home-deploy-icon-link" style="text-decoration: none; color: white;" href="/quick-start">
+		<Card title="Deploy to Testnet" icon="add-document">
+			Start deploying to a SKALE Testnet in minutes using all of your favorite EVM tools
 		</Card>
 	</a>
-	<a style="text-decoration: none; color: white;" href="/learn/about-skale-network">
+	<a id="home-learn-icon-link" style="text-decoration: none; color: white;" href="/learn/about-skale-network">
 		<Card title="Learn about SKALE" icon="information">
-			New to SKALE? <br />Learn more about the network here!
+			Whether you have heard of SKALE or not; there is always something to learn in the docs
 		</Card>
 	</a>
-	<Card title="Support" icon="discord">
-		If you are having trouble building on SKALE, get support in the community [Discord](https://discord.com/invite/gM5XBy6)
-	</Card>
-	<a href="/tools" style="text-decoration: none; color: white;">
-		<Card title="Tools" icon="puzzle">
-			Explore the tools offered across the SKALE Network and find the right fit for your project.
+	<a id="home-support-icon-link" style="text-decoration: none; color: white;" href="https://discord.com/invite/gM5XBy6" target="_blank">
+		<Card title="Support" icon="discord">
+			Introduce yourself to the community or get support right in the community Discord
+		</Card>
+	</a>
+	<a id="home-tools-icon-link" href="/builders/tools" style="text-decoration: none; color: white;">
+		<Card title="Tools" icon="forward-slash">
+			The open-source SKALE Netowrk has a variety of tools sure to fit your needs. Check them out here
 		</Card>
 	</a>
 </CardGrid>

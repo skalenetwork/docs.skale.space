@@ -1,7 +1,7 @@
 /* Dark mode colors. */
 
 :root {
-	--sl-color-accent-low: #0d1f50;
+	--sl-color-accent-low: hsl(224, 72%, 18%);
 	--sl-color-accent: #1f4cff;
 	--sl-color-accent-high: #afc8ff;
 	--sl-color-white: #ffffff;
