@@ -38,7 +38,21 @@ export default defineConfig({
 					label: "Builders",
 					items: [
 						{ label: "Overview", link: "/builders" },
-						{ label: "App Developers", link: "/builders/app-developers/overview" },
+						{ label: "App Developers", 
+							items:[
+								{ label: "Overview", link: "/builders/app-developers/overview" },
+							//	{ label: "sFUEL Station", link: "/builders/app-developers/sfuel-station" },
+								{
+									label: "sFUEL Distribution",
+									items: [
+										{ label: "Overview", link: "/builders/app-developers/sfuel-distribution" },
+										{ label: "API Distribution", link: "/builders/app-developers/sfuel-distribution/api-distribution" },
+										{ label: "POW Distribution", link: "/builders/app-developers/sfuel-distribution/pow-distribution" },
+										{ label: "Contract Distribution", link: "/builders/app-developers/sfuel-distribution/contract-distribution"}
+									]
+								},
+							]
+						},
 						{
 							label: "Chain Operators",
 							items: [
@@ -164,16 +178,6 @@ export default defineConfig({
 									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/skale" },
-										{ label: "sFUEL Station", link: "/builders/tools/skale/sfuel-station" },
-										{
-											label: "sFUEL Distribution",
-											items: [
-												{ label: "Overview", link: "/builders/tools/skale/sfuel-distribution" },
-												{ label: "API Distribution", link: "/builders/tools/skale/sfuel-distribution/api-distribution" },
-												{ label: "POW Distribution", link: "/builders/tools/skale/sfuel-distribution/pow-distribution" },
-												{ label: "Contract Distribution", link: "/builders/tools/skale/sfuel-distribution/contract-distribution"}
-											]
-										},
 										{ label: "Blockscout", link: "/builders/tools/skale/blockscout" },
 										{ label: "SKALE Nodes", link: "/builders/tools/skale/skale-nodes" },
 										{ label: "SKALE Proxy", link: "/builders/tools/skale/skale-proxy" },
