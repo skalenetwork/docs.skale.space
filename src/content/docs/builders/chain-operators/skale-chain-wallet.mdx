@@ -1,0 +1,51 @@
+---
+title: Managing SKALE Chain Wallet
+description: Understanding the SKALE Chain Wallet
+---
+
+import Mermaid from "../../../../components/Mermaid.astro";
+import MermaidInit from "../../../../components/MermaidInit.astro";
+
+<MermaidInit />
+
+The SKALE Network uses a "self-reimbursing" wallet system to make it easier for SKALE Chain Owners to reimburse certain node-related transactions that are executed on Ethereum. The use of self-recharging wallets is a requirement for testnet and mainnet.
+
+The Wallets contract in SKALE Manager manages this functionality.
+
+Each SKALE Chain owner manages a wallet. This wallet must contain a balance of ETH that's used to reimburse specific transactions performed by validator-nodes, including certain IMA messages.
+
+Transactions that are reimbursed by the SKALE Chain owner wallet are:
+
+{/* - Certain SKALE Chain distributed key generation operations, see [Validator self-recharging wallets](xref:validator-cli::self-recharging-wallets.adoc#self-recharging-wallets#_node_transactions). */}
+{/* - _Contingent_ reimbursement of bridge exits, see the section below [IMA Bridge](#ima-bridge). */}
+
+Anyone can fund the SKALE Chain wallet, but only the SKALE Chain owner may withdraw funds from the SKALE Chain wallet after the SKALE Chain deletion process has begun.
+
+## IMA Bridge
+
+If using the IMA bridge with Ethereum, the SKALE Chain owner and community must ensure the SKALE Chain owner ETH balance is sufficient to ensure proper bridge messaging and transaction gas reimbursement.
+
+<Mermaid code={`
+sequenceDiagram
+    participant IS as IMA Schain
+    participant SN as SKALE Node
+    participant CP as IMA Community Pool
+    participant IM as IMA Mainnet
+    participant SMW as SKALE Manager Wallets
+
+    IS ->> CP: User deposits ETH IMA Community Pool
+    IS ->> IM: User exits
+    SN ->> IM: Random SKALE node posts tx
+    CP ->> SN: Reimbursement from user's community pool
+    SMW -->> SN: Contingent reimbursement
+    
+`} />
+
+Each end-user reimburses validator-nodes for IMA messaging with Ethereum. This reimbursement is performed from the end-user's balance in the Community Pool contract on Ethereum mainnet. In the extraordinary situation where an end-user's Community Pool balance is insufficient, part or all of the costs will be provided by the SKALE Chain wallet to ensure proper transaction processing. When this happens, the end-user will be locked from further exits until the end-user reimburses their Community Pool ETH balance.
+
+{/* > **Note**
+> For details on the end-user IMA exit process to Ethereum, see [Funding Exits](xref:ima::funding-exits.adoc). */}
+
+The minimum recommended ETH balance in the SKALE Chain wallet for IMA messaging is (`MESSAGES_LENGTH * gasLimit * tx.gasPrice`) where global settings define `MESSAGES_LENGTH` as 10+1 and gasLimit as `1,000,000` gas. For example, if the Ethereum network gas cost is 200 Gwei, the SKALE Chain Wallet balance must contain (`11 * 1000000 * 200`) = 2.2 ETH. If the network gas cost > 200 Gwei and the SKALE Chain wallet balance is ≤ 2.2 ETH, IMA messages will pause until the gas costs are ≤ 200 Gwei, or the SKALE Chain wallet balance is > 2.2 ETH.
+
+Any community member can recharge the SKALE Chain wallet with additional ETH, or end-users may wait for the Ethereum network gas costs to decrease. Once the SKALE Chain wallet is recharged, stuck messages will resume. If there is a large queue, additional time will be required to clear the queue.

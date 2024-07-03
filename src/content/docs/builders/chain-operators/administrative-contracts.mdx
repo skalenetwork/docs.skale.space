@@ -1,0 +1,34 @@
+---
+title: Chain Operators Overview
+description: Overview for operators of SKALE Chains 
+---
+
+The following introduces the Default Contracts SKALE Chain owners can manage.
+
+> This does not include IMA or SKALE Manager contracts
+
+## Config Controller
+
+This is a pre-deployed contract that handles Chain configuration and [Access Control](./access-control).
+
+## Etherbase
+
+This is a pre-deployed contract that allows for operators to withdraw sFUEL.
+sFUEL consumed during a transaction is recyled to this contract.
+
+## Filestorage
+
+This is a pre-deployed contract that allows for files to be uploaded.
+Operators can reserve space for other addresses.
+
+## Marionette
+
+Marionette is the default owner of a SKALE Chain when setup with a multisig.
+Checkout the [Architecture](./architecture.mdx#who-is-the-skale-chain-owner) to learn more.
+
+## Multisig Wallet
+
+The Multisig Wallet is a pre-deployed multisignature wallet.
+This is the original [Gnosis MultisigWallet](https://github.com/gnosis/MultiSigWallet) contract that is deployed by
+default on all SKALE Chains. This contract allows the SKALE Chain owner to control
+Marionette on the SKALE Chain side, a.k.a with zero gas fees.
