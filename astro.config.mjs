@@ -124,7 +124,8 @@ export default defineConfig({
 							items: [
 								{ label: "Overview", link: "/tools/nfts" },
 								{ label: "Marketplaces", link: "/tools/nfts/marketplaces" },
-								{ label: "NFT Checkout", link: "/tools/nfts/nft-api" },
+								{ label: "NFT API", link: "/tools/nfts/nft-api" },
+								{ label: "NFT Mint", link: "/tools/nfts/nft-minting" },
 							
 							]
 						},
