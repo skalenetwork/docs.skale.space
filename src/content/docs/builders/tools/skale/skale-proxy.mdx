@@ -1,0 +1,94 @@
+---
+title: SKALE Proxy
+description: Intro to SKALE Proxy
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="To make it easier to connect to SKALE Chains, developers can use a reverse proxy to load balance transactions across a SKALE Chain's 16 individual node endpoints."
+    toolName="SKALE Proxy"
+    toolLink="https://github.com/skalenetwork/skale-proxy"
+    toolDocsLink="https://github.com/skalenetwork/skale-proxy"
+>
+
+The core team provides a basic reverse proxy for convenience to each of the mainnet and staging SKALE Chains. Developers and ecosystem contributors are encouraged to deploy and customize reverse proxy settings and methods for application optimization. 
+
+DApps may use a reference implementation of SKALE Proxy hosted by SKALE, but it's preferable to use your own setup.  
+When it comes to setting up your own SKALE Proxy, it is recommended to use [proxy-provision](https://github.com/skalenetwork/proxy-provision) as described below. 
+
+Alternatively, to experiment or deploy your own reverse proxy in a manual way, go to [SKALE Proxy repo](https://github.com/skalenetwork/skale-proxy).
+
+## SKALE Proxy Load Balancing
+
+The current skale-proxy deployed by the core team uses an Nginx load balancing method where requests are distributed between the 16 nodes based on the client's IP address. Should an individual endpoint be unavailable, the next available endpoint is used. Read more about this method here: https://nginx.org/en/docs/http/ngx_http_upstream_module.html#ip_hash. You can find alternative methods here: https://nginx.org/en/docs/http/load_balancing.html
+
+## Fallback
+
+If a reverse proxy fails, developers should employ a fallback policy that fits their needs. These policies may include, for example, a fallback to another reverse proxy or a fallback to any of the 16 direct individual endpoints.
+
+:::tip[Note]
+SKALE Network assumes a 1/3 tolerance of the nodes becoming Byzantine. Therefore, a fallback policy to the direct endpoints should assume that 1/3 of these endpoints may become unresponsive. 
+:::
+
+## Proxy-provision
+
+[Proxy-provision](https://github.com/skalenetwork/proxy-provision) is a convenient way to run skale-proxy in the cloud (AWS, DO, ...).
+
+### Node requirements
+
+Minimum requirements for machine in cloud:
+
+ * 4GB Ram
+ * 2 physical core CPU
+ * 50 GB storage
+ 
+Recommended requirements:
+
+ * 8GB Ram
+ * 4 physical core CPU
+ * 50 GB storage
+ 
+One of the main parameter for the reverse-proxy is a bandwidth, reverse-proxy is redirecting requests and not use as much computational power and storage. So it is necessary to have a good bandwidth and create a machine at the close location to the area of usage(Europe, Asia, US, ...)
+
+- Minimum requirements: bandwidth support for 300 req/s
+
+- Recommended requirements: bandwidth support for 1000 req/s
+
+### Setup
+
+1. Register machine in the cloud
+2. Do [installation steps](https://github.com/skalenetwork/proxy-provision#1-installation) on you working machine(different than registered machine at the step 1)
+3. Do [configuration steps](https://github.com/skalenetwork/proxy-provision#2-setup) (Example below)
+4. Copy `.ssh/authorized_keys` from registered machine on step 1 to `files/authorized_keys`
+5. Run `ansible-playbook -i inventory main.yaml`
+
+Example of `inventory` without block-explorer connecting to SKALE network on Ethereum:
+```
+[proxy]
+proxy-0 ansible_host='1.2.3.4'(IP address of registered machine at step 1) ansible_ssh_user='root'
+
+[all:vars]
+ansible_ssh_user='root' # username on machine(s) - e.g. ubuntu
+ansible_python_interpreter=/usr/bin/python3
+
+base_path='/root' # home path on the machine(s) - e.g. /home/ubuntu
+proxy_domain='example.skalenodes.com' # proxy domain name
+explorer_domain='' # explorer domain name (optional for proxy-only setup)
+chain_id='0x1' # Chain ID of the network where SM contracts are deployed - e.g. 0x1
+network_name='mainnet' # SKALE Network name - e.g. mainnet / staging / etc
+eth_endpoint='https://mainnet.infura.io/v3/INFURA-API-TOKEN' # Ethereum Mainnet endpoint
+
+main_website_url='https://skale.network/' # SKALE Website URL
+docs_website_url='https://docs.skale.network/docs/' # SKALE Docs Website URL
+networks='{}' # Legacy variable, keep as is
+abis_url='https://github.com/skalenetwork/skale-network/tree/master/releases/mainnet' # URL of SM contracts ABI
+
+cert_mode='certbot'  # 'certbot' - generate using certbot / custom - upload your own
+
+do_token='YOUR-DO-TOKEN' # optional - DigitalOcean token (for 'certbot' cert_mode)
+email='example@example.com' # optional - SSL cert email (for 'certbot' cert_mode)
+```
+And copy [abi](https://github.com/skalenetwork/skale-network/blob/master/releases/mainnet/skale-manager/1.9.2/skale-manager-1.9.2-mainnet-abi.json) to `files/abi.json`
+
+</ToolLayout>

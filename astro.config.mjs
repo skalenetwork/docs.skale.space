@@ -63,7 +63,127 @@ export default defineConfig({
 							
 						},
 						{ label: "Node Operators", link: "/builders/node-operators/overview" },
-						{ label: "Tools", link: "/tools" },
+						{
+							label: "Tools",
+							items: [
+								{ label: "Overview", link: "/builders/tools" },
+								{
+									label: "Wallets",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/wallets" },
+										{ label: "Non-Custodial Wallets", link: "/builders/tools/wallets/non-custodial" },
+										{ label: "Custodial Wallets", link: "/builders/tools/wallets/custodial" },
+										{ label: "MPC Wallets", link: "/builders/tools/wallets/mpc" },
+										{ label: "Wallets Aggregator", link: "/builders/tools/wallets/aggregator" },
+									]
+								},
+								{
+									label: "Libraries",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/libraries" },
+										{ label: "Web Libraries", link: "/builders/tools/libraries/web" },
+										{ label: "Backend Libraries", link: "/builders/tools/libraries/backend" },
+										{ label: "Unity Libraries", link: "/builders/tools/libraries/unity" },
+										{ label: "Mobile Libraries", link: "/builders/tools/libraries/mobile" },
+									]
+								},
+								{
+									label: "NFTs",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/nfts" },
+										{ label: "Marketplaces", link: "/builders/tools/nfts/marketplaces" },
+										{ label: "NFT API", link: "/builders/tools/nfts/nft-api" },
+										{ label: "NFT Mint", link: "/builders/tools/nfts/nft-minting" },
+									
+									]
+								},
+								{
+									label: "Gaming SDKs",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/gaming" },
+										{ label: "Eidolon", link: "/builders/tools/gaming/eidolon" },
+										{ label: "Emergence", link: "/builders/tools/gaming/emergence" },
+										{ label: "Mirage", link: "/builders/tools/gaming/mirage" },
+										{ label: "Web3.unreal", link: "/builders/tools/gaming/web3unreal" },
+									]
+								},
+								{
+									label: "Bridges",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/bridges" },
+										{ label: "SKALE Native Bridge", link: "/builders/tools/bridges/skale-native-brige" },
+										{ label: "Meson Finance", link: "/builders/tools/bridges/meson-fi" },
+										{ label: "Layer Zero", link: "/builders/tools/bridges/layer-zero" },
+									]
+								},
+								{
+									label: "Contracts",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/contracts" },
+										{ label: "Hardhat", link: "/builders/tools/contracts/hardhat" },
+										{ label: "Multicall", link: "/builders/tools/contracts/multicall" },
+									]
+								},
+								{
+									label: "Data",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "builders//tools/data" },
+										{ label: "Dune", link: "/builders/tools/data/dune" },
+										{ label: "Subsquid", link: "/builders/tools/data/subsquid" },
+										{ label: "The Graph", link: "/builders/tools/data/the-graph" },
+									]
+								},
+								{
+									label: "Oracles",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/oracles" },
+										{ label: "SKALE Connect", link: "/builders/tools/oracles/skale-connect" },
+										{ label: "Razor", link: "/builders/tools/oracles/razor" },
+									]
+								},
+								{
+									label: "Payments",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/payments" },
+										{ label: "On-Ramp", link: "/builders/tools/payments/on-ramp" },
+										{ label: "NFT Checkout", link: "/builders/tools/payments/nft-checkout" },
+									
+									]
+								},
+								{
+									label: "SKALE",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/skale" },
+										{ label: "sFUEL Station", link: "/builders/tools/skale/sfuel-station" },
+										{
+											label: "sFUEL Distribution",
+											items: [
+												{ label: "Overview", link: "/builders/tools/skale/sfuel-distribution" },
+												{ label: "API Distribution", link: "/builders/tools/skale/sfuel-distribution/api-distribution" },
+												{ label: "POW Distribution", link: "/builders/tools/skale/sfuel-distribution/pow-distribution" },
+												{ label: "Contract Distribution", link: "/builders/tools/skale/sfuel-distribution/contract-distribution"}
+											]
+										},
+										{ label: "Blockscout", link: "/builders/tools/skale/blockscout" },
+										{ label: "SKALE Nodes", link: "/builders/tools/skale/skale-nodes" },
+										{ label: "SKALE Proxy", link: "/builders/tools/skale/skale-proxy" },
+										{ label: "Full Sync Node", link: "/builders/tools/skale/full-sync-node" },
+										{ label: "Archive Node", link: "/builders/tools/skale/archive-node" },
+									]
+								}
+		
+							]
+						},
 						{
 							label: "Integrating SKALE",
 							link: "/builders/integration-guide",
@@ -126,128 +246,7 @@ export default defineConfig({
 				{
 					label: "Quick Start",
 					autogenerate: { directory: "quick-start" }
-				},
-				{
-					label: "Tools",
-					items: [
-						{ label: "Overview", link: "/tools" },
-						{
-							label: "Wallets",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/wallets" },
-								{ label: "Non-Custodial Wallets", link: "/tools/wallets/non-custodial" },
-								{ label: "Custodial Wallets", link: "/tools/wallets/custodial" },
-								{ label: "MPC Wallets", link: "/tools/wallets/mpc" },
-								{ label: "Wallets Aggregator", link: "/tools/wallets/aggregator" },
-							]
-						},
-						{
-							label: "Libraries",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/libraries" },
-								{ label: "Web Libraries", link: "/tools/libraries/web" },
-								{ label: "Backend Libraries", link: "/tools/libraries/backend" },
-								{ label: "Unity Libraries", link: "/tools/libraries/unity" },
-								{ label: "Mobile Libraries", link: "/tools/libraries/mobile" },
-							]
-						},
-						{
-							label: "NFTs",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/nfts" },
-								{ label: "Marketplaces", link: "/tools/nfts/marketplaces" },
-								{ label: "NFT API", link: "/tools/nfts/nft-api" },
-								{ label: "NFT Mint", link: "/tools/nfts/nft-minting" },
-							
-							]
-						},
-						{
-							label: "Gaming SDKs",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/gaming" },
-								{ label: "Eidolon", link: "/tools/gaming/eidolon" },
-								{ label: "Emergence", link: "/tools/gaming/emergence" },
-								{ label: "Mirage", link: "/tools/gaming/mirage" },
-								{ label: "Web3.unreal", link: "/tools/gaming/web3unreal" },
-							]
-						},
-						{
-							label: "Bridges",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/bridges" },
-								{ label: "SKALE Native Bridge", link: "/tools/bridges/skale-native-brige" },
-								{ label: "Meson Finance", link: "/tools/bridges/meson-fi" },
-								{ label: "Layer Zero", link: "/tools/bridges/layer-zero" },
-							]
-						},
-						{
-							label: "Contracts",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/contracts" },
-								{ label: "Hardhat", link: "/tools/contracts/hardhat" },
-								{ label: "Multicall", link: "/tools/contracts/multicall" },
-							]
-						},
-						{
-							label: "Data",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/data" },
-								{ label: "Dune", link: "/tools/data/dune" },
-								{ label: "Subsquid", link: "/tools/data/subsquid" },
-								{ label: "The Graph", link: "/tools/data/the-graph" },
-							]
-						},
-						{
-							label: "Oracles",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/oracles" },
-								{ label: "SKALE Connect", link: "/tools/oracles/skale-connect" },
-								{ label: "Razor", link: "/tools/oracles/razor" },
-							]
-						},
-						{
-							label: "Payments",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/payments" },
-								{ label: "On-Ramp", link: "/tools/payments/on-ramp" },
-								{ label: "NFT Checkout", link: "/tools/payments/nft-checkout" },
-							
-							]
-						},
-						{
-							label: "SKALE",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/skale" },
-								{ label: "sFUEL Station", link: "/tools/skale/sfuel-station" },
-								{
-									label: "sFUEL Distribution",
-									items: [
-										{ label: "Overview", link: "/tools/skale/sfuel-distribution" },
-										{ label: "API Distribution", link: "/tools/skale/sfuel-distribution/api-distribution" },
-										{ label: "POW Distribution", link: "/tools/skale/sfuel-distribution/pow-distribution" },
-										{ label: "Contract Distribution", link: "/tools/skale/sfuel-distribution/contract-distribution"}
-									]
-								},
-								{ label: "Blockscout", link: "/tools/skale/blockscout" },
-								{ label: "SKALE Nodes", link: "/tools/skale/skale-nodes" },
-								{ label: "SKALE Proxy", link: "/tools/skale/skale-proxy" },
-								{ label: "Full Sync Node", link: "/tools/skale/full-sync-node" },
-								{ label: "Archive Node", link: "/tools/skale/archive-node" },
-							]
-						}
-
-					]
-				},
+				}
 			],
 		}),
 	],

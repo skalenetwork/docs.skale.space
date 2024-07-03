@@ -1,0 +1,114 @@
+---
+title: POW Distribution
+description: POW  Distribution
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+import { Content as Csharp } from './pow_examples/pow_csharp.mdx';
+import { Content as Dart } from './pow_examples/pow_dart.mdx';
+import { Content as Javascript } from './pow_examples/pow_javascript.mdx';
+import { Content as Typescript } from './pow_examples/pow_typescript.mdx';
+import { Content as Python } from './pow_examples/pow_python.mdx';
+
+PoW or Proof-of-Work is a mechanism which allows SKALE chain owner to mine sufficient amount of sFUEL to any address to send transaction, if address doesn’t have enough amount of sFUEL.
+
+### PoW Usage
+
+1. The client generates a unique gasPrice value based on the transaction data
+2. The client sends transaction with a unique gasPrice value and the required gasAmount, which was calculated during the algorithm.
+3. GasPrice and gasAmount of this transaction will be checked on the SKALE chain side by the same check in the algorithm.
+4. Transaction is executed, even without sFUEL in the client’s account.
+
+### PoW algorithm
+
+1. The client generates a random 256-bit X by Formula which is equal a unique gasPrice value
+
+<math display="block">
+  <mi>X</mi>
+  <mo>=</mo>
+  <mi>sha3</mi>
+  <mo stretchy="false">(</mo>
+  <mi>address</mi>
+  <mo stretchy="false">)</mo>
+  <mo>⊕</mo>
+  <mi>sha3</mi>
+  <mo stretchy="false">(</mo>
+  <mi>nonce</mi>
+  <mo stretchy="false">)</mo>
+  <mo>⊕</mo>
+  <mi>sha3</mi>
+  <mo stretchy="false">(</mo>
+  <mi>gasPrice</mi>
+  <mo stretchy="false">)</mo>
+</math>
+
+    <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>freeGas</mi>
+  <mo>=</mo>
+  <mrow>
+    <mo>(</mo>
+    <mn>2</mn>
+    <msup>
+      <mn></mn>
+      <mn>256</mn>
+    </msup>
+    <mn>−1</mn>
+    <mo stretchy="false">)</mo>
+    <mo>/</mo>
+    <mi>X</mi>
+    <mo>/</mo>
+    <mi>difficulty</mi>
+  </mrow>
+</math>
+
+
+2. Check whether X is allow to run transaction
+
+<math display="block">
+  <mi>freeGas</mi>
+  <mo stretchy="false">(</mo>
+  <mi>X</mi>
+  <mo stretchy="false">)</mo>
+  <mo>&gt;</mo>
+  <mi>estimateGas</mi>
+  <mo stretchy="false">(</mo>
+  <mi>tx</mi>
+  <mo stretchy="false">)</mo>
+</math>
+
+        a. If not, then back to the first step
+
+        b. If the condition is met - send the transaction with gasPrice = X and gasAmount = freeGas(X) 
+
+### PoW sFUEL Distribution
+
+1. Get a wallet to sign transactions - a random generated one can be used since PoW based transactions don't require signer to have sFUEL
+2. Create a transaction to call sFUEL distribution contract function
+3. Unique gasPrice function generated - based on: signer address, signer nonce and gas
+4. Send transaction with the unique GasPrice
+
+##### Available On-Chain sFUEL Faucets
+
+| Chain | Mainnet Address | Testnet Address | Function Signature |
+| --------- | --------- | --------- | --------- |
+| Europa | [0x2B267A3e49b351DEdac892400a530ABb2f899d23](https://elated-tan-skat.explorer.mainnet.skalenodes.com/address/0x2B267A3e49b351DEdac892400a530ABb2f899d23) |[0x366727B410fE55774C8b0B5b5A6E2d74199a088A](https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/address/0x366727B410fE55774C8b0B5b5A6E2d74199a088A) | 0x0c11dedd |
+| Calypso | [0x02891b34B7911A9C68e82C193cd7A6fBf0c3b30A](https://honorable-steel-rasalhague.explorer.mainnet.skalenodes.com/address/0x02891b34B7911A9C68e82C193cd7A6fBf0c3b30A) | [0x62Fe932FF26e0087Ae383f6080bd2Ed481bA5A8A](https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/address/0x62Fe932FF26e0087Ae383f6080bd2Ed481bA5A8A) | 0x0c11dedd |
+| Nebula | [0x5a6869ef5b81DCb58EBF51b8F893c31f5AFE3Fa8](https://green-giddy-denebola.explorer.mainnet.skalenodes.com/address/0x5a6869ef5b81DCb58EBF51b8F893c31f5AFE3Fa8) | [0x000E9c53C4e2e21F5063f2e232d0AA907318dccb](https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/address/0x000E9c53C4e2e21F5063f2e232d0AA907318dccb) | 0x0c11dedd |
+| Titan | [0xa5C297dF8f8386E4b940D61EF9A8f2bB367a6fAB](https://parallel-stormy-spica.explorer.mainnet.skalenodes.com/address/0xa5C297dF8f8386E4b940D61EF9A8f2bB367a6fAB) | [0x08f98Af60eb83C18184231591A8F89577E46A4B9](https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/address/0x08f98Af60eb83C18184231591A8F89577E46A4B9) | 0x0c11dedd |
+
+### Implementation Example
+
+<Tabs>
+<TabItem label="Typescript">
+<Typescript/>
+</TabItem>
+<TabItem label="Javascript">
+<Javascript/>
+</TabItem>
+<TabItem label="C#">
+<Csharp/>
+</TabItem>
+<TabItem label="Dart">
+<Dart/>
+</TabItem>
+</Tabs>

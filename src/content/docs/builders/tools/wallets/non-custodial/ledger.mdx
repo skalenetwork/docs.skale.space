@@ -1,0 +1,47 @@
+---
+title: Ledger
+description: Intro to Ledger
+---
+import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="It is a hardware wallet designed for secure cryptocurrency storage. It is a physical device that securely stores the user's private keys, which are essential for accessing and managing their cryptocurrencies."
+    toolName="Ledger"
+    toolLink="https://developers.ledger.com/docs/transport/overview/"
+    toolDocsLink="https://developers.ledger.com/docs/transport/overview/"
+>
+
+Ledger wallets are known for their emphasis on security, providing an offline storage solution to protect digital assets from online threats such as hacking and malware.
+
+For more information check the following link https://developers.ledger.com/docs/transport/overview/
+
+## Implementation Example
+
+**Package Install**
+
+If you want to use a Ledger Nano S/X/S Plus with the USB protocol
+
+```shell
+npm install @ledgerhq/hw-transport-webusb
+```
+If you want to use a Ledger Nano S/X/S Plus with the HID protocol
+
+```shell
+npm install @ledgerhq/hw-transport-webhid
+```
+
+**Integration**
+```javascript
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
+import Eth from '@ledgerhq/hw-app-eth'
+
+const transport = await TransportWebUSB.create();
+const evm_ledger = new Eth(transport);
+
+const path = "m/44'/60'/0'/0/0";
+
+const result = await evm_ledger.getAddress(path, false, true);
+console.log('Ledger Wallet Address:', result.address);
+```
+
+</ToolLayout>
