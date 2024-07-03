@@ -10,19 +10,23 @@ type NavigationItems = NavigationItem[];
 
 export default [
 	{
-		label: "Develop",
-		url: "/developers"
+		label: "Builders",
+		url: "/builders",
+		items: []
 	},
 	{
 		label: "Learn",
-		url: "/learn/about-skale-network"
+		url: "/learn/about-skale-network",
+		items: []
 	},
 	{
 		label: "Quick Start",
-		url: "/quick-start"
+		url: "/quick-start",
+		items: []
 	},
 	{
 		label: "Tools",
-		url: "/tools"
+		url: "/tools",
+		items: []
 	},
 ] satisfies NavigationItems;
