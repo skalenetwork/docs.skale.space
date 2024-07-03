@@ -1,13 +1,10 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
-import astroExpressiveCode from "astro-expressive-code";
-
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
-		astroExpressiveCode(),
 		react(),
 		starlight({
 			title: "SKALE Docs",
@@ -26,6 +23,7 @@ export default defineConfig({
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
 				SidebarSublist: "./src/components/Overrides/SidebarSublist.astro"
 			},
+			expressiveCode: true,
 			favicon: '/favicon.png',
 			logo: {
 				dark: './src/assets/skale_logo_w.svg',
