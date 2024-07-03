@@ -3,34 +3,32 @@ title: Chain Operators Overview
 description: Overview for operators of SKALE Chains 
 ---
 
-import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+The following introduces the Default Contracts SKALE Chain owners can manage.
 
-The SKALE Network is a multi-chain network where "owning" or "operating" a SKALE Chain
-does not require the owner or operator to actually run the nodes. This is because the SKALE Network
-has validators to run the SKALE Chains.
+> This does not include IMA or SKALE Manager contracts
 
-The operator(s) of a SKALE Chain have special privleges that enable them to manage the chain and provide
-access and resources to others; whether in their team for a dedicated AppChain or for a 3rd party if a HubChain.
+## Config Controller
 
-<CardGrid>
-	<LinkCard
-		title="Architecture"
-		href="/builders/chain-operators/architecture"
-	/>
-    <LinkCard
-		title="Access Control"
-		href="/builders/chain-operators/access-control"
-	/>
-	<LinkCard
-		title="Adminstrative Contracts"
-		href="/builders/chain-operators/administrative-contracts"
-	/>
-	<LinkCard
-		title="Multisig Management"
-		href="/builders/chain-operators/multisig"
-	/>
-    <LinkCard
-		title="Submit Chain Metadata"
-		href="/builders/chain-operators/skale-chain-wallet"
-	/>
-</CardGrid>
+This is a pre-deployed contract that handles Chain configuration and [Access Control](./access-control).
+
+## Etherbase
+
+This is a pre-deployed contract that allows for operators to withdraw sFUEL.
+sFUEL consumed during a transaction is recyled to this contract.
+
+## Filestorage
+
+This is a pre-deployed contract that allows for files to be uploaded.
+Operators can reserve space for other addresses.
+
+## Marionette
+
+Marionette is the default owner of a SKALE Chain when setup with a multisig.
+Checkout the [Architecture](./architecture.mdx#who-is-the-skale-chain-owner) to learn more.
+
+## Multisig Wallet
+
+The Multisig Wallet is a pre-deployed multisignature wallet.
+This is the original [Gnosis MultisigWallet](https://github.com/gnosis/MultiSigWallet) contract that is deployed by
+default on all SKALE Chains. This contract allows the SKALE Chain owner to control
+Marionette on the SKALE Chain side, a.k.a with zero gas fees.
