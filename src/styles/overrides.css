@@ -14,6 +14,7 @@
 	--sl-color-black: #181818;
 	--sl-color-hover: #a4bff760;
 	--sl-color-header-hover: #afc8ff;
+	--sl-text-sm: 0.925rem;
 	--mermaid-text-color: var(--sl-color-white);
 }
 /* Light mode colors. */
@@ -32,6 +33,7 @@
 	--sl-color-black: #ffffff;
 	--sl-color-hover: #2151ff29;
 	--sl-color-header-hover: #2150ff;
+	--sl-text-sm: 0.925rem;
 	--mermaid-text-color: var(--sl-color-white);
 }
 

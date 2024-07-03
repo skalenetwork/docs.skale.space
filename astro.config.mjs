@@ -132,6 +132,50 @@ export default defineConfig({
 					items: [
 						{ label: "Overview", link: "/tools" },
 						{
+							label: "Wallets",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/wallets" },
+								{ label: "Non-Custodial Wallets", link: "/tools/wallets/non-custodial" },
+								{ label: "Custodial Wallets", link: "/tools/wallets/custodial" },
+								{ label: "MPC Wallets", link: "/tools/wallets/mpc" },
+								{ label: "Wallets Aggregator", link: "/tools/wallets/aggregator" },
+							]
+						},
+						{
+							label: "Libraries",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/libraries" },
+								{ label: "Web Libraries", link: "/tools/libraries/web" },
+								{ label: "Backend Libraries", link: "/tools/libraries/backend" },
+								{ label: "Unity Libraries", link: "/tools/libraries/unity" },
+								{ label: "Mobile Libraries", link: "/tools/libraries/mobile" },
+							]
+						},
+						{
+							label: "NFTs",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/nfts" },
+								{ label: "Marketplaces", link: "/tools/nfts/marketplaces" },
+								{ label: "NFT API", link: "/tools/nfts/nft-api" },
+								{ label: "NFT Mint", link: "/tools/nfts/nft-minting" },
+							
+							]
+						},
+						{
+							label: "Gaming SDKs",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/gaming" },
+								{ label: "Eidolon", link: "/tools/gaming/eidolon" },
+								{ label: "Emergence", link: "/tools/gaming/emergence" },
+								{ label: "Mirage", link: "/tools/gaming/mirage" },
+								{ label: "Web3.unreal", link: "/tools/gaming/web3unreal" },
+							]
+						},
+						{
 							label: "Bridges",
 							collapsed: true,
 							items: [
@@ -161,34 +205,22 @@ export default defineConfig({
 							]
 						},
 						{
-							label: "Gaming SDKs",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/gaming" },
-								{ label: "Eidolon", link: "/tools/gaming/eidolon" },
-								{ label: "Emergence", link: "/tools/gaming/emergence" },
-								{ label: "Mirage", link: "/tools/gaming/mirage" },
-								{ label: "Web3.unreal", link: "/tools/gaming/web3unreal" },
-							]
-						},
-						{
-							label: "Libraries",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/libraries" },
-								{ label: "Web Libraries", link: "/tools/libraries/web" },
-								{ label: "Backend Libraries", link: "/tools/libraries/backend" },
-								{ label: "Unity Libraries", link: "/tools/libraries/unity" },
-								{ label: "Mobile Libraries", link: "/tools/libraries/mobile" },
-							]
-						},
-						{
 							label: "Oracles",
 							collapsed: true,
 							items: [
 								{ label: "Overview", link: "/tools/oracles" },
 								{ label: "SKALE Connect", link: "/tools/oracles/skale-connect" },
 								{ label: "Razor", link: "/tools/oracles/razor" },
+							]
+						},
+						{
+							label: "Payments",
+							collapsed: true,
+							items: [
+								{ label: "Overview", link: "/tools/payments" },
+								{ label: "On-Ramp", link: "/tools/payments/on-ramp" },
+								{ label: "NFT Checkout", link: "/tools/payments/nft-checkout" },
+							
 							]
 						},
 						{
@@ -211,17 +243,6 @@ export default defineConfig({
 								{ label: "SKALE Proxy", link: "/tools/skale/skale-proxy" },
 								{ label: "Full Sync Node", link: "/tools/skale/full-sync-node" },
 								{ label: "Archive Node", link: "/tools/skale/archive-node" },
-							]
-						},
-						{
-							label: "Wallets",
-							collapsed: true,
-							items: [
-								{ label: "Overview", link: "/tools/wallets" },
-								{ label: "Non-Custodial Wallets", link: "/tools/wallets/non-custodial" },
-								{ label: "Custodial Wallets", link: "/tools/wallets/custodial" },
-								{ label: "MPC Wallets", link: "/tools/wallets/mpc" },
-								{ label: "Wallets Aggregator", link: "/tools/wallets/aggregator" },
 							]
 						}
 
