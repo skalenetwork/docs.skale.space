@@ -3,7 +3,10 @@ title: SKALE Chain Access Control
 description: Controlling access to a SKALE Chain
 ---
 
-SKALE Chains have several ways to manage access control, meaning who is capable of sending a transaction to the SKALE Chain or who is capable of deploying new contracts. There are several methods to manage access: distribution of sFUEL to SKALE Chain users and the ConfigController contract, which authorizes specific contracts to deploy new contracts (CREATE2), enables Multi Transaction Mode, and enables Free Contract Deployment. The next paragraph will describe the listed methods.
+SKALE Chains have several ways to manage access control, meaning who is capable of sending a transaction to the SKALE Chain or who
+is capable of deploying new contracts. There are several methods to manage access: distribution of sFUEL to SKALE Chain users and the
+ConfigController contract, which authorizes specific contracts to deploy new contracts and
+enables Free Contract Deployment. The next paragraph will describe the listed methods.
 
 > **Note**  
 > If you encounter a `Contract Creation Error: Out of gas` error when deploying a contract, this likely means that the address does not have deployer access. See [whitelisting an address](xref:_whitelist).
@@ -28,18 +31,6 @@ The predeployed ConfigController contract's address is `0xD200200000000000000000
   - `addToWhitelist(address addr)` - adds accounts that are allowed to deploy contracts
   - `removeFromWhitelist(address addr)` - removes accounts that are allowed to deploy contracts
 
-### Multi Transaction Mode (MTM)
-
-- Allows multiple transactions from the same account to be included in one block. It's implemented in the same way as it works on popular blockchain networks (Ethereum, Bitcoin). Also, you must be assigned as `MTM_ADMIN_ROLE` - only in this way can you run these methods. You can configure your own SKALE Chain to enable/disable this mode.
-
-  - `enableMTM()` - enables MTM on SKALE Chain
-  - `disableMTM()` - disables MTM on SKALE Chain
-
-> **Note**  
-> MTM functionality works, but it cannot be enabled/disabled yet from the config-controller (so when it's set, it's always enabled).
-
-The ABI for the ConfigController is available at the [release packages](https://github.com/skalenetwork/config-controller/releases).
-
 ## SKALE FUEL (sFUEL)
 
 The SKALE Chain owner (coinbase address) is the only account allocated sFUEL when the SKALE Chain is created (if using the SDK, you can add additional allocations during setup). The owner account is therefore responsible for distributing sFUEL to users.
@@ -60,7 +51,3 @@ When addresses use sFUEL to perform transactions, the sFUEL fee used to conduct 
 
 > **Note**  
 > To view Real ETH on SKALE Chains as transferred by the IMA bridge, you can use the _informational RPC ports_ for your endpoint. The port information is presented when the SKALE Chain deployment is complete.
-
-## IMA Access Control
-
-For details on IMA Bridge access control features, see [IMA Access Control](xref:ima::access-control.adoc).
