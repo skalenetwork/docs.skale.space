@@ -41,7 +41,27 @@ export default defineConfig({
 					items: [
 						{ label: "Overview", link: "/builders" },
 						{ label: "App Developers", link: "/builders/app-developers/overview" },
-						{ label: "Chain Operators", link: "/builders/chain-operators/overview" },
+						{
+							label: "Chain Operators",
+							items: [
+								{ label: "Overview", link: "/builders/chain-operators/overview" },
+								{ label: "Architecture", link: "/builders/chain-operators/architecture" },
+								{ label: "Access Control", link: "/builders/chain-operators/access-control" },
+								{ label: "Best Practices", link: "/builders/chain-operators/best-practices" },
+								{ label: "Administrative Contracts", link: "/builders/chain-operators/administrative-contracts" },
+								{ label: "Manage Multisig", link: "/builders/chain-operators/multisig" },
+								{ label: "SKALE Chain Wallet", link: "/builders/chain-operators/skale-chain-wallet" },
+								{
+									label: "Submit Chain Metadata",
+									link: "/builders/chain-operators/submit-metadata",
+									badge: {
+										text: "Guide",
+										variant: "note"
+									}
+								},
+							]
+							
+						},
 						{ label: "Node Operators", link: "/builders/node-operators/overview" },
 						{ label: "Tools", link: "/tools" },
 						{
