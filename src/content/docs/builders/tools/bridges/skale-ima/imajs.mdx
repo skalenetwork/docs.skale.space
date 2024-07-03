@@ -1,0 +1,138 @@
+---
+title: IMA.js
+description: Intro to IMA.js
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="IMA.JS is a Typescript/JavaScript library which implements client for SKALE Interchain Messaging Agent (IMA)."
+    toolName="IMA.js"
+    toolLink=""
+    toolDocsLink=""
+>
+
+(Maybe move to SKALE tab)
+
+## Implementation Example
+
+**Package Install**
+```shell
+npm install --save @skalenetwork/ima-js
+```
+
+**Initialization**
+
+There are 2 ways to use IMA.js library in your project:
+
+* As a single object that contains both Mainnet and Schain (SKALE chain) parts
+* Use Mainnet and Schain objects separately
+
+First approach is more convenient in general because single IMA object have simplified API for some functionality that
+requires both Mainnet and Schain interactions, but in this case you will need two `web3` objects to be available at the same time.  
+  
+Second approach is more flexible but requires more developer work in some cases.  
+
+**Working with a single IMA object**
+
+Import and init single IMA-JS object:  
+
+```javascript
+import { IMA } from '@skalenetwork/ima-js';
+
+import mainnetAbi from './mainnetAbi.json'; // your local sources
+import schainAbi from './schainAbi.json'; // your local sources
+
+const MAINNET_ENDPOINT = '[YOUR_ETHEREUM_MAINNET_ENDPOINT]';
+const SCHAIN_ENDPOINT = '[YOUR_SCHAIN_ENDPOINT]';
+
+const mainnetWeb3 = new Web3(MAINNET_ENDPOINT);
+const sChainWeb3 = new Web3(SCHAIN_ENDPOINT);
+
+let ima = new IMA(mainnetWeb3, sChainWeb3, mainnetAbi, sChainAbi);
+```
+
+Accessing Mainnet and Schain parts:
+
+* Mainnet: `ima.mainnet` - equals to `MainnetChain` object
+* sChain: `ima.schain` - equals to `Schain` object
+
+**Working with 2 separate objects**
+
+Import and init Mainnet object:
+
+```javascript
+import { MainnetChain } from '@skalenetwork/ima-js';
+import mainnetAbi from './mainnetAbi.json'; // your local sources
+
+const MAINNET_ENDPOINT = '[YOUR_ETHEREUM_MAINNET_ENDPOINT]';
+const mainnetWeb3 = new Web3(MAINNET_ENDPOINT);
+
+let mainnet = new MainnetChain(mainnetWeb3, mainnetAbi);
+```
+
+Import and init Schain object:
+
+```javascript
+import { SChain } from '@skalenetwork/ima-js';
+import schainAbi from './schainAbi.json'; // your local sources
+
+const SCHAIN_ENDPOINT = '[YOUR_SCHAIN_ENDPOINT]';
+const sChainWeb3 = new Web3(SCHAIN_ENDPOINT);
+
+let schain = new SChain(sChainWeb3, schainAbi);
+```
+**ETH and token transfers**
+
+Detailed documentation about ETH and token transfers using IMA-JS can be found here:  
+
+* [ETH transfers] `missing link`
+* [ERC20 token transfers] `missing link`
+* [ERC721 token transfers]  `missing link`
+* [ERC1155 token transfers] `missing link`
+
+**Signing transactions**
+
+There are 2 ways to sign a transaction in the current version of IMA-JS:
+
+* Signing directly with private key
+* Signing with an external provider (currently only Metamask is supported)
+
+**Signing with private key**
+
+To sing and send a transaction using local private key you should specify `privateKey` and `address` in the `txOpts` object:
+
+```javascript
+// init ima object
+
+const txOpts = {
+    address: "[ADDRESS]",
+    privateKey: "[PRIVATE_KEY]"
+}
+
+this.state.sChain.withdrawETH(
+    receiverAddress,
+    amountWei,
+    txOpts
+);
+```
+
+**Signing with Metamask**
+
+Just drop `privateKey` from the `txOpts` object to trigger external signing, keep `address` field:
+
+```javascript
+// init ima object
+
+const txOpts = {
+    address: "[ADDRESS]"
+}
+
+this.state.sChain.withdrawETH(
+    receiverAddress,
+    amountWei,
+    txOpts
+);
+```
+
+</ToolLayout>

@@ -1,0 +1,77 @@
+---
+title: EthersV6
+description: Intro to EthersV6
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="The ethers.js library is a comprehensive and concise library for engaging with the Ethereum Blockchain and its surrounding ecosystem."
+    toolName="EthersV6"
+    toolLink="https://docs.ethers.org/v6/"
+    toolDocsLink="https://docs.ethers.org/v6/"
+>
+
+Some of the main features are:
+- Import and export JSON wallets (Geth, Parity and crowdsale)
+- Import and export BIP 39 mnemonic phrases (12 word backup phrases) and HD Wallets
+- Meta-classes create JavaScript objects from any contract ABI, including ABIv2 and Human-Readable ABI
+Connect to Ethereum nodes over JSON-RPC, INFURA, Etherscan, Alchemy or Metamask
+
+The biggest difference between v5 and v6 is in the use of modern ES6 features. The major changes can been seen on:
+- [BigNumbers](https://docs.ethers.org/v6/migrating/#migrate-bigint)
+- [Contracts](https://docs.ethers.org/v6/migrating/#migrate-contracts)
+- [Importing](https://docs.ethers.org/v6/migrating/#migrate-importing)
+- [Providers](https://docs.ethers.org/v6/migrating/#migrate-providers)
+- [Signatures](https://docs.ethers.org/v6/migrating/#migrate-signatures)
+- [Transactions](https://docs.ethers.org/v6/migrating/#migrate-transactions)
+- [Utilities](https://docs.ethers.org/v6/migrating/#migrate-utils)
+- [Removed Items](https://docs.ethers.org/v6/migrating/#migrate-missing)
+
+## Implementation Example
+
+**Package Install**
+<Tabs>
+<TabItem label="npm">
+```shell
+npm install ethers
+```
+</TabItem>
+<TabItem label="yarn">
+```shell
+yarn add ethers
+```
+</TabItem>
+</Tabs>
+
+**Contract Call Example**
+```typescript
+import { ethers } from 'ethers';
+import { abi } from "./contract";
+import { chains } from "./chains"
+import dotenv from 'dotenv';
+dotenv.config();
+
+//Select which SKALE chain you want to use
+const selectedChain = chains.nebula;
+
+const provider = new ethers.JsonRpcProvider(selectedChain.chainInfo.testnet.rpcUrl);
+
+const pk = process.env.PRIVATE_KEY || "";
+const signer = new ethers.Wallet(pk, provider);
+
+const contract = new ethers.Contract(selectedChain.chainInfo.testnet.contracts[0].address, abi, signer);
+
+// Send transaction to smart contract to update message
+async function ContractSendTx() {    
+    
+    const request = await contract.mintTest.populateTransaction(signer.address);
+    const tx = await signer.sendTransaction(request);
+    const receipt = await tx.wait();
+
+    console.log(receipt);
+
+}
+```
+
+</ToolLayout>

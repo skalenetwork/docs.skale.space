@@ -23,10 +23,5 @@ export default [
 		label: "Quick Start",
 		url: "/quick-start",
 		items: []
-	},
-	{
-		label: "Tools",
-		url: "/tools",
-		items: []
-	},
+	}
 ] satisfies NavigationItems;
