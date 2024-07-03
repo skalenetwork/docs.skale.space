@@ -37,8 +37,23 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: "Developers",
-					autogenerate: { directory: "developers" },
+					label: "Builders",
+					items: [
+						{ label: "Overview", link: "/builders" },
+						{ label: "App Developers", link: "/builders/app-developers/overview" },
+						{ label: "Chain Operators", link: "/builders/chain-operators/overview" },
+						{ label: "Node Operators", link: "/builders/node-operators/overview" },
+						{ label: "Tools", link: "/tools" },
+						{
+							label: "Integrating SKALE",
+							link: "/builders/integration-guide",
+							badge: {
+								text: "Guide",
+								variant: "note"
+							}
+						},
+						
+					]
 				},
 				{
 					label: "Learn",
