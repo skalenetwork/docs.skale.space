@@ -1,6 +1,10 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
+    "paths": {
+      "virtual:starlight/components/*": ["./node_modules/@astrojs/starlight/dist/components/*"],
+      "virtual:starlight/scheme/*": ["./node_modules/@astrojs/starlight/dist/schema/*"]
+    },
     "plugins": [
       {
         "name": "@astrojs/ts-plugin"
