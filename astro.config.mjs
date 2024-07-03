@@ -44,7 +44,14 @@ export default defineConfig({
 						{ label: "Chain Operators", link: "/builders/chain-operators/overview" },
 						{ label: "Node Operators", link: "/builders/node-operators/overview" },
 						{ label: "Tools", link: "/tools" },
-						{ label: "Wallets & CEXs", link: "/builders/app-developers/overview" },
+						{
+							label: "Integrating SKALE",
+							link: "/builders/integration-guide",
+							badge: {
+								text: "Guide",
+								variant: "note"
+							}
+						},
 						
 					]
 				},
