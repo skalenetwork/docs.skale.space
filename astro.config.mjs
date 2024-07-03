@@ -41,7 +41,7 @@ export default defineConfig({
 						{ label: "App Developers", 
 							items:[
 								{ label: "Overview", link: "/builders/app-developers/overview" },
-								{ label: "sFUEL Station", link: "/builders/app-developers/sfuel-station" },
+							//	{ label: "sFUEL Station", link: "/builders/app-developers/sfuel-station" },
 								{
 									label: "sFUEL Distribution",
 									items: [
