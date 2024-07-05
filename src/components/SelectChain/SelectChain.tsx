@@ -44,23 +44,29 @@ export default function SelectChain({
 	if (selectedChainKey) {
 		return (
 			<div>
-				<h3>{text ?? "You have selected:"}</h3>
-				<br />
-				<ChainCard
-					chainKey={selectedChainKey}
-					chain={(chains as any)[selectedChainKey]}
-					onClick={() => {
-						if (!blockClick && confirm("Do you want to select a different chain?")) {
-							selectChain(null);
-						}
-					}}
-				/>
+				{/* <h5>{text ?? `You have selected the ${(chains as any)[selectedChainKey].name}`}</h5> */}
+				{/* <br /> */}
 				{selectedChainKey !== "appChain" && (
 					<>
 						<ChainDetails chain={(chains as any)[selectedChainKey]} />
 						<br />
 					</>
 				)}
+				<button
+					onClick={() => {
+						if (!blockClick && confirm("Do you want to select a different chain?")) {
+							selectChain(null);
+						}
+					}}
+					style={{
+						color: "var(--sl-color-white",
+						background: "none",
+						borderRadius: "8px"
+					}}>
+						Click here to select a diferent chain
+				</button>
+				<br />
+				<br />
 			</div>
 		);
 	}
