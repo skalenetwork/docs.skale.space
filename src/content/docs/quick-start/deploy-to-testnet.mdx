@@ -1,0 +1,71 @@
+---
+title: Deploy to Testnet
+description: Attain resources and begin deploying to a SKALE Testnet
+
+sidebar:
+  order: 1
+---
+import { ToastContainer } from "react-toastify";
+import { SelectChain } from "../../../components/SelectChain";
+import { GasAndTokens } from "../../../components/GasAndTokens";
+import { LinkCard, CardGrid } from "@astrojs/starlight/components";
+
+## Guide to deploying to SKALE Testnet
+
+To start, select a chain from the options below.
+One of the chains probably aligns with a "category" your dApp falls into. If you don't feel their is a good fit,
+no worries, join us in [Discord](https://discord.com/invite/gM5XBy6) for additional support on where to start building or
+select the Calypso Hub.
+
+<br />
+<SelectChain client:load />
+<GasAndTokens client:load />
+
+## Deploy to SKALE
+
+Now that you have:
+
+- An RPC Endpoint
+- Some gas tokens e.g sFUEL
+- Some ERC-20 tokens (commonly used)
+
+You can begin deploying to SKALE! If you have deployed to another EVM network in the past,
+you can use the same tools and just change the network to the details listed above.
+
+If this is your first time deploying to an EVM network we have listed some popular deployment resources here:
+
+### Popular Deployment Tools
+<CardGrid>
+		<LinkCard
+			title="Foundry"
+			href="https://book.getfoundry.sh"
+			description="For developers familiar with Rust"
+		/>
+		<LinkCard
+			title="Hardhat"
+			href="https://hardhat.org"
+			description="For developers familiar with JavaScript"
+		/>
+		<LinkCard
+			title="OpenZeppelin Wizard"
+			href="https://wizard.openzeppelin.com"
+			description="For developers with limited Solidity experience"
+		/>
+		<LinkCard
+			title="Remix IDE"
+			href="https://remix.ethereum.org"
+			description="For developers with limited programming experience"
+		/>
+</CardGrid>
+
+### Building for SKALE
+
+We hope that you were able to successfully deploy your smart contracts to your SKALE Chain of choice.
+If you had any trouble please join us in [Discord](https://discord.com/invite/gM5XBy6). If you deployed succesfully, head
+onto the next step and learn more about **Building for SKALE**.
+
+<LinkCard
+	title="Next Step: Build for SKALE"
+	description="Learn more about how to build for SKALE"
+	href="/quick-start/building-for-skale"
+/>

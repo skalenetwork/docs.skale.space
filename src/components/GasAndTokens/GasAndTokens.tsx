@@ -354,8 +354,8 @@ export default function GasAndTokens() {
 	if (!address || requestUpdateAddress) {
 		return (
 			<div className="wallet-input">
-				<br />
-				<h3>Set Ethereum Address</h3>
+				<h4>Need Gas or Testnet Tokens?</h4>
+				<p>Add your Ethereum Address into the field</p>
 				<div style={{
 					display: "flex",
 					flexDirection: "column"
@@ -378,7 +378,7 @@ export default function GasAndTokens() {
 
 	return (
 		<div>
-			<h3>Available Tokens</h3>
+			<h4>Available Tokens</h4>
 			<p>Showing balances for: {address}</p>
 			<table>
 				<thead>
@@ -410,7 +410,9 @@ export default function GasAndTokens() {
 			</table>
 			<div>
 				<button 
-					
+					style={{
+						marginRight: "8px"
+					}}
 					disabled={claimed}
 					className="request-token-button_2"
 					onClick={async(e) => {

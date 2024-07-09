@@ -1,43 +1,30 @@
 ---
-title: Start Here
+title: Introduction
 description: Start Building on SKALE in minutes
-
 sidebar:
-  order: 0
+  order: 1
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { ToastContainer } from "react-toastify";
+import { SelectChain } from "../../../components/SelectChain";
+import { GasAndTokens } from "../../../components/GasAndTokens";
+import { LinkCard } from '@astrojs/starlight/components';
 
-Welcome to SKALE!
+## SKALE Network Overview
 
-This **Quick Start** section focuses on helping you build or bring your application
-to SKALE by working with you through a step-by-step process.
+SKALE is a Layer-1 network offering zero-gas fees and pool secured with limitless sharding.
+SKALE also offers an additional security anchor by having key management contracts, the default
+bridge and the network utility token all on the Ethereum Mainnet.
 
-## The Process
+You can learn more about SKALE [here](/learn/about-skale-network).
 
-Not sure where to go? No worries! We have selected the key parts of the process
-for you to jump between. Jump ahead to a section or keep scrolling to learn more about 
-selecting a SKALE Chain.
+### Next Step: Deploy to Testnet
 
-<CardGrid stagger>
-	<a style="text-decoration: none;"href="https://skale-notion-manager.onrender.com/dapp/form" target="_blank">
-		<Card title="1. Complete Onboarding Form">
-			Provide some key information to unlock support from the SKALE Community!
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/quick-start/select-a-chain">
-		<Card title="2. Select a SKALE Chain">
-			Select a SKALE Chain and grab some testnet tokens and gas
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/quick-start/build">
-		<Card title="3. Build">
-			Learn more about the SKALE Specifics and ways to build or port your application.
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/quick-start/go-live">
-		<Card title="4. Go-Live Process">
-			Ready to go-live? Learn about the processes to help take you to Mainnet
-		</Card>
-	</a>
-</CardGrid>
+The following pages guide you through deploying to a SKALE Testnet.
+Once you are done building and deploying on SKALE Testnet you can follow the go-live tests.
+
+<LinkCard
+	title="Next Step: Deploy to Testnet"
+	description="Select your testnet chain and start deploying in minutes"
+	href="/quick-start/deploy-to-testnet"
+/>

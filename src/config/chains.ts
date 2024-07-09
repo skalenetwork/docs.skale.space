@@ -3,6 +3,7 @@ export type ChainKey = "calypso" | "europa" | "nebula" | "titan";
 export type ChainInfo = {
 	chainId: number;
 	rpcUrl: string;
+	explorerUrl: string;
 	contracts: {
 		address: string;
 		contractName: string;
@@ -35,11 +36,13 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
+				"explorerUrl": "https://honorable-steel-rasalhague.explorer.mainnet.skalenodes.com",
     			"chainId": 1564830818,
     			"contracts": []
     		},
     		"testnet": {
     			"rpcUrl": "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
+				"explorerUrl": "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com",
     			"chainId": 974399131,
     			"contracts": [
     				{
@@ -62,11 +65,13 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/elated-tan-skat",
+				"explorerUrl": "https://elated-tan-skat.explorer.mainnet.skalenodes.com",
     			"chainId": 2046399126,
     			"contracts": []
     		},
     		"testnet": {
 				"rpcUrl": "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
+				"explorerUrl": "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com",
     			"chainId": 1444673419,
     			"contracts": [
 	    			{
@@ -107,11 +112,13 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/green-giddy-denebola",
+				"explorerUrl": "https://green-giddy-denebola.explorer.mainnet.skalenodes.com",
     			"chainId": 1482601649,
     			"contracts": []
     		},
     		"testnet": {
 				"rpcUrl": "https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet",
+				"explorerUrl": "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com",
     			"chainId": 37084624,
     			"contracts": [
     				{
@@ -134,11 +141,13 @@ const chains = {
     	"chainInfo": {
     		"mainnet": {
     			"rpcUrl": "https://mainnet.skalenodes.com/v1/parallel-stormy-spica",
+				"explorerUrl": "https://parallel-stormy-spica.explorer.mainnet.skalenodes.com",
     			"chainId": 1350216234,
     			"contracts": []
     		},
     		"testnet": {
 				"rpcUrl": "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
+				"explorerUrl": "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com",
     			"chainId": 1020352220,
     			"contracts": [
 	    			{
