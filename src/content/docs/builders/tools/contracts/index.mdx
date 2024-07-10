@@ -6,18 +6,18 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from "@astrojs/starlight/components";
 
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/contracts/hardhat">
-		<Card title="Hardhat">
-			Development environment for EVM blockchains
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/contracts/multicall">
-		<Card title="Multicall">
-			Multicall smart contract deployed on SKALE Chains
-		</Card>
-	</a>
+	<LinkCard
+		title="Hardhat"
+		href="/builders/tools/contracts/hardhat"
+		description="Contract development environment for EVM blockchains"
+	/>
+	<LinkCard
+		title="Multicall"
+		href="/builders/tools/contracts/multicall"
+		description="Multicall smart contract deployed on SKALE Chains"
+	/>
 </CardGrid>

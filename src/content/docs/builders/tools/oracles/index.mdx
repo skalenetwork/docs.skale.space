@@ -6,18 +6,18 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard , CardGrid } from "@astrojs/starlight/components";
 
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/oracles/skale-connect">
-		<Card title="SKALE Connect">
-			SKALE Native Oracle
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/oracles/razor">
-		<Card title="Razor">
-			Decentralized Oracle offering price-feeds data
-		</Card>
-	</a>
+	<LinkCard
+		title="SKALE Connect"
+		href="/builders/tools/oracles/skale-connect"
+		description="SKALE Native Oracle"
+	/>
+	<LinkCard
+		title="Razor"
+		href="/builders/tools/oracles/razor"
+		description="Decentralized Oracle offering price-feeds data"
+	/>
 </CardGrid>

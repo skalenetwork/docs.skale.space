@@ -6,23 +6,23 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
 
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/data/dune">
-		<Card title="Dune">
-			SKALE Network data on Dune dashboards
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/data/subsquid">
-		<Card title="Subsquid">
-			Query node framework
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/data/the-graph">
-		<Card title="The Graph">
-			Indexing protocol
-		</Card>
-	</a>
+	<LinkCard
+		title="Dune"
+		href="/builders/tools/data/dune"
+		description="SKALE Network data on Dune dashboards"
+	/>
+	<LinkCard
+		title="Subsquid"
+		href="/builders/tools/data/subsquid"
+		description="Query node framework"
+	/>
+	<LinkCard
+		title="The Graph"
+		href="/builders/tools/data/the-graph"
+		description="Indexing protocol"
+	/>
 </CardGrid>

@@ -1,32 +1,32 @@
 ---
-title: Gaming
+title: Gaming SDKs
 description: Tools on SKALE
 
 sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/gaming/eidolon">
-		<Card title="Eidolon">
-			SKALE Unity SDK. Already prepared to accommodate all SKALE developers needs
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/gaming/mirage">
-		<Card title="Mirage">
-			Web3 Unity and Unreal SDK
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/gaming/emergence">
-		<Card title="Emergence">
-			Web3 Unity and Unreal SDK
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/gaming/web3unreal">
-		<Card title="Web3unreal">
-			Web3 Unreal SDK
-		</Card>
-	</a>
+	<LinkCard
+		title="Eidolon"
+		href="/builders/tools/gaming/eidolon"
+		description="Unity SDK built by SKALE"
+	/>
+	<LinkCard
+		title="Mirage"
+		href="/builders/tools/gaming/mirage"
+		description="Unity and Unreal SDK"
+	/>
+	<LinkCard
+		title="Emergence"
+		href="/builders/tools/gaming/emergence"
+		description="Unity and Unreal SDK"
+	/>
+	<LinkCard
+		title="Web3unreal"
+		href="/builders/tools/gaming/web3unreal"
+		description="Unreal SDK"
+	/>
 </CardGrid>

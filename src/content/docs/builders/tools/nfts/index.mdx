@@ -6,18 +6,23 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from "@astrojs/starlight/components";
 
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/nfts/marketplaces">
-		<Card title="Marketplace">
-			NFT marketplaces compatible with SKALE
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/nfts/nft-api">
-		<Card title="NFT API">
-			NFT APIs available on SKALE
-		</Card>
-	</a>
+	<LinkCard
+		title="Marketplace"
+		href="/builders/tools/nfts/marketplaces"
+		description="NFT marketplaces compatible with SKALE"
+	/>
+	<LinkCard
+		title="NFT API"
+		href="/builders/tools/nfts/nft-api"
+		description="NFT APIs available on SKALE"
+	/>
+	<LinkCard
+		title="NFT Mint"
+		href="/builders/tools/nfts/nft-minting"
+		description="SKALE dApps for NFT Minting"
+	/>
 </CardGrid>

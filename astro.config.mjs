@@ -138,9 +138,9 @@ export default defineConfig({
 									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/bridges" },
-										{ label: "SKALE Native Bridge", link: "/builders/tools/bridges/skale-native-brige" },
+										{ label: "SKALE Native Bridge", link: "/builders/tools/bridges/skale-native-bridge" },
 										{ label: "Meson Finance", link: "/builders/tools/bridges/meson-fi" },
-										{ label: "Layer Zero", link: "/builders/tools/bridges/layer-zero" },
+										{ label: "LayerZero", link: "/builders/tools/bridges/layer-zero" },
 									]
 								},
 								{
@@ -156,19 +156,10 @@ export default defineConfig({
 									label: "Data",
 									collapsed: true,
 									items: [
-										{ label: "Overview", link: "builders//tools/data" },
+										{ label: "Overview", link: "builders/tools/data" },
 										{ label: "Dune", link: "/builders/tools/data/dune" },
 										{ label: "Subsquid", link: "/builders/tools/data/subsquid" },
 										{ label: "The Graph", link: "/builders/tools/data/the-graph" },
-									]
-								},
-								{
-									label: "Oracles",
-									collapsed: true,
-									items: [
-										{ label: "Overview", link: "/builders/tools/oracles" },
-										{ label: "SKALE Connect", link: "/builders/tools/oracles/skale-connect" },
-										{ label: "Razor", link: "/builders/tools/oracles/razor" },
 									]
 								},
 								{
@@ -179,6 +170,15 @@ export default defineConfig({
 										{ label: "On-Ramp", link: "/builders/tools/payments/on-ramp" },
 										{ label: "NFT Checkout", link: "/builders/tools/payments/nft-checkout" },
 									
+									]
+								},
+								{
+									label: "Oracles",
+									collapsed: true,
+									items: [
+										{ label: "Overview", link: "/builders/tools/oracles" },
+										{ label: "SKALE Connect", link: "/builders/tools/oracles/skale-connect" },
+										{ label: "Razor", link: "/builders/tools/oracles/razor" },
 									]
 								},
 								/*{

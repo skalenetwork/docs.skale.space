@@ -4,6 +4,7 @@ description: Distribution of the SKALE Native Gas Token
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
 SKALE Network has an unique economic model by having a gas token, sFUEL, with no economic value. This means that all SKALE chains require the gas token to perform transactions, however it can't be purchased on a CEX or DEX due to its valueless nature. Instead, the gas token needs to be distributed to the user.
 
@@ -17,6 +18,6 @@ The following are the most common distribution options found within the SKALE Ec
 
 | Distribution Type | Security | Speed | Requirements | Distribution Location |
 | --------- | --------- | --------- | --------- | --------- |
-| [API](/builders/app-developers/sfuel-distribution/api-distribution) | centralized | 3s - 4s | server | backend |
-| [Proof-of-Work](/builders/app-developers/sfuel-distribution/pow-distribution) | decentralized | 5s - 10s | none | smart contract |
-| [Smart Contract](/builders/app-developers/sfuel-distribution/contract-distribution) | decentralized | 3s - 4s | server | smart contract |
+| <LinkCard title="API" href="/builders/app-developers/sfuel-distribution/api-distribution"/>| centralized | 3s - 4s | server | backend |
+| <LinkCard title="Proof-of-Work" href="/builders/app-developers/sfuel-distribution/pow-distribution"/>| decentralized | 5s - 10s | none | smart contract |
+| <LinkCard title="Smart Contract" href="/builders/app-developers/sfuel-distribution/contract-distribution"/>| decentralized | 3s - 4s | server | smart contract |
