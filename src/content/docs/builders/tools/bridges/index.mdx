@@ -6,18 +6,28 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
 
+Bridges play a crucial role in expanding the functionality and connectivity of various blockchain ecosystems. 
+
+This piece of technology increases flexibility and efficiency by allowing decentralized applications to leverage the strengths of multiple blockchains, fostering greater innovation and collaboration within the blockchain ecosystem.
+
+The SKALE Ecosystem has different bridging solutions available to all dApps.
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/bridges/skale-native-bridge">
-		<Card title="SKALE Native Bridge">
-			SKALE Native Cross-chain Messaging Protocol 
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/bridges/meson-fi">
-		<Card title="Meson Finance">
-			Stable coin bridge. Connects SKALE to more than 35 different chains
-		</Card>
-	</a>
+	<LinkCard
+		title="SKALE IMA"
+		href="/builders/tools/bridges/skale-native-bridge"
+		description="SKALE Native Bridge"
+	/>
+	<LinkCard
+		title="Meson Finance"
+		href="/builders/tools/bridges/meson-fi"
+		description="Bridge conecting SKALE to over 35 different chains"
+	/>
+	<LinkCard
+		title="LayerZero"
+		href="/builders/tools/bridges/layer-zero"
+		description="Cross-Chain messaging protocol"
+	/>
 </CardGrid>

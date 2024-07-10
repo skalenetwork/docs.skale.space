@@ -6,28 +6,31 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import {LinkCard ,CardGrid } from "@astrojs/starlight/components";
+
+There are currently multiple types of wallets available, each designed to meet the diverse needs of different users. 
+
+The SKALE chains provide comprehensive support for these various wallet solutions, ensuring that both developers and users have access to the tools that best suit their requirements.
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/wallets/non-custodial">
-		<Card title="Non-Custodial Wallets">
-			Non-custodial wallets SKALE compatible
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/wallets/custodial">
-		<Card title="Custodial Wallets">
-			Custodial wallets SKALE compatible
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/wallets/mpc">
-		<Card title="MPC Wallets">
-			MPC wallets SKALE compatible
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/wallets/aggregator">
-		<Card title="Aggregator">
-			Wallets aggregator tools SKALE compatible
-		</Card>
-	</a>
-
+	<LinkCard
+		title="Non-Custodial"
+		href="/builders/tools/wallets/non-custodial"
+		description="Users control private keys and manage their own security"
+		/>
+	<LinkCard
+		title="Custodial"
+		href="/builders/tools/wallets/custodial"
+		description="Third-party manages the private keys, providing a simpler user experience"
+	/>
+	<LinkCard
+		title="MPC"
+		href="/builders/tools/wallets/mpc"
+		description="Wallets utilizing distributed key management to enhance security and recovery"
+	/>
+	<LinkCard
+		title="Wallet Aggregators"
+		href="/builders/tools/wallets/aggregator"
+		description="Wallet aggregators allow for a variety of wallet connections"
+	/>
 </CardGrid>

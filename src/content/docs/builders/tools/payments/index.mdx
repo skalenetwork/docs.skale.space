@@ -6,18 +6,19 @@ sidebar:
   order: 0
 ---
 
-import { Card, CardGrid } from "@astrojs/starlight/components";
+import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
 
+There's differen way developers can utilize payments in their dApps. The SKALE chains have different providers to cover all those situations. 
 
 <CardGrid>
-	<a style="text-decoration: none;"href="/tools/payments/on-ramp">
-		<Card title="On-Ramp">
-			On-Ramp providers on SKALE Chains
-		</Card>
-	</a>
-	<a style="text-decoration: none;"href="/tools/payments/nft-checkout">
-		<Card title="NFT Checkout">
-			The SKALE NFT Checkout providers 
-		</Card>
-	</a>
+	<LinkCard
+		title="On-Ramp"
+		href="/builders/tools/payments/on-ramp"
+		description="On-Ramp providers on SKALE Chains"
+	/>
+	<LinkCard
+		title="NFT Checkout"
+		href="/builders/tools/payments/nft-checkout"
+		description="SKALE NFT Checkout providers"
+	/>
 </CardGrid>
