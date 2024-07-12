@@ -3,6 +3,7 @@ title: SKALE Connect
 description: SKALE Connect
 ---
 import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
 	introParagraph="SKALE Connect allows developers to access any external data source using the decentralized power of your SKALE Chain. If your dApp needs market data, weather temperatures, or Ethereum data, SKALE Connect provides a simple way to deliver this data to your Dapp."
@@ -12,6 +13,7 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 >
 
 ## Theory
+
 
 **Oracle Methods**
 
@@ -196,128 +198,132 @@ The result repeats JSON elements from the corresponding Oracle request, plus inc
 
 ## Hands On
 
-**How it works**
+
+##### How it works
 
 1. A client submits a JSON RPC `oracle_submitRequest` GET or POST request to the SKALE chain containing the request specification.
 2. The SKALE daemon (skaled) distributes the request to all other nodes in the SKALE Chain and the client is presented with a receipt.
 3. Each of the 16 SKALE nodes performs the request, retrieves the data, and signs the result with it's ECDSA key.
 4. The Oracle result is returned when <math display="inline"><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></math>  nodes sign the same result, where <math display="inline"><mi>t</mi></math> is the maximum number of untruthful nodes. On SKALE Chains <math display="inline"><mi>t</mi></math> is <math display="inline"> <mrow> <mi>n</mi><mo>(</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>)</mo></mrow></math>.
 
-**Request Formatting**
+<Steps>
 
-To make a JSON-RPC request, send an HTTP POST request with a `Content-Type: application/json` header. The JSON request data should contain 4 fields:
+1. ##### Request Formatting
 
-- `jsonrpc: <string>`, set to `"2.0"`
-- `id: <number>`, a unique client-generated identifying integer
-- `method: <string>`, a string containing the method to be invoked
-- `params: <array>`, a JSON array of ordered parameter values
+	To make a JSON-RPC request, send an HTTP POST request with a `Content-Type: application/json` header. The JSON request data should contain 4 fields:
 
-The response output will be a JSON object with the following fields:
+	- `jsonrpc: <string>`, set to `"2.0"`
+	- `id: <number>`, a unique client-generated identifying integer
+	- `method: <string>`, a string containing the method to be invoked
+	- `params: <array>`, a JSON array of ordered parameter values
 
-- `jsonrpc: <string>`, matching the request specification
-- `id: <number>`, matching the request identifier
-- `result: <array|number|object|string>`, requested data or success confirmation
+	The response output will be a JSON object with the following fields:
 
-Requests can be sent in batches by sending an array of JSON-RPC request objects as the data for a single POST.
+	- `jsonrpc: <string>`, matching the request specification
+	- `id: <number>`, matching the request identifier
+	- `result: <array|number|object|string>`, requested data or success confirmation
 
-**Example**
+	Requests can be sent in batches by sending an array of JSON-RPC request objects as the data for a single POST.
 
-Below is shown how to make a request to the SKALE Connect. The full example, in Javascript, requests from the SKALE Calypso Testnet the balanceOf a NFT present on the  Ethereum Goerli Network.
+2. ##### Request Example
 
-```javascript
-require("dotenv").config();
-const {
-	chain
-} = require("./config.json");
-const { ethers } = require("ethers");
-const deployment = require("./smart-contracts/deployments/deployments-4.json");
-const claimAbi = require("./smart-contracts/artifacts/contracts/Claim.sol/Claim.json");
-const {generateOracleRequest} = require("./oracle");
+	Below is shown how to make a request to the SKALE Connect. The full example, in Javascript, requests from the SKALE Calypso Testnet the balanceOf a NFT present on the  Ethereum Goerli Network.
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+	```javascript
+	require("dotenv").config();
+	const {
+		chain
+	} = require("./config.json");
+	const { ethers } = require("ethers");
+	const deployment = require("./smart-contracts/deployments/deployments-4.json");
+	const claimAbi = require("./smart-contracts/artifacts/contracts/Claim.sol/Claim.json");
+	const {generateOracleRequest} = require("./oracle");
 
-async function main() {
+	const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-	if (!PRIVATE_KEY) throw new Error("Private Key Not Found");
+	async function main() {
 
-	const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
-	const signer = new ethers.Wallet(PRIVATE_KEY).connect(provider);
+		if (!PRIVATE_KEY) throw new Error("Private Key Not Found");
 
-	console.log(1);
+		const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
+		const signer = new ethers.Wallet(PRIVATE_KEY).connect(provider);
 
-	const mainnetNFT = new ethers.Contract(deployment.mainnetNFT.address, deployment.mainnetNFT.abi);
-	const claim = new ethers.Contract(deployment.claim.address, claimAbi.abi, signer);
+		console.log(1);
+
+		const mainnetNFT = new ethers.Contract(deployment.mainnetNFT.address, deployment.mainnetNFT.abi);
+		const claim = new ethers.Contract(deployment.claim.address, claimAbi.abi, signer);
 
 
-	const request = {
-		"cid": 1,
-		"uri": "eth://",
-		"encoding": "json",
-		"ethApi": "eth_call",
-		"params": [{
-			"from": ethers.ZeroAddress,
-			"to": mainnetNFT.target,
-			"data": mainnetNFT.interface.encodeFunctionData(
-				"balanceOf",
-				[signer.address]
-			),
-			"gas": "0xfffff"
-		},
-		"latest"],
+		const request = {
+			"cid": 1,
+			"uri": "eth://",
+			"encoding": "json",
+			"ethApi": "eth_call",
+			"params": [{
+				"from": ethers.ZeroAddress,
+				"to": mainnetNFT.target,
+				"data": mainnetNFT.interface.encodeFunctionData(
+					"balanceOf",
+					[signer.address]
+				),
+				"gas": "0xfffff"
+			},
+			"latest"],
+		}
+
+		const requestStr = JSON.stringify(request);
+		const oracleResponse = await generateOracleRequest(requestStr.slice(1, requestStr.length - 1));
+		const res = oracleResponse["result"];
+		const paramsStartIndex = res.toString().search(/params/) + 8;
+		const paramsEndIndex = res.toString().search(/time/) - 2;
+
+
+		const parsedResult = JSON.parse(res);
+
+		const claimTransactionHash = await claim.claim([
+			parsedResult["cid"],
+			parsedResult["uri"],
+			parsedResult["encoding"],
+			parsedResult["ethApi"],
+			oracleResponse["result"].slice(paramsStartIndex, paramsEndIndex),
+			[],
+			[],
+			"",
+			parsedResult["time"],
+			parsedResult["rslts"],
+			parsedResult["sigs"].map((sig) => {
+				console.log(sig);
+				if (sig === null) {
+					return {
+						v: 0,
+						r: ethers.ZeroHash,
+						s: ethers.ZeroHash
+					}
+				} else {
+					let splitVals = sig.split(":");
+					return {
+						v: splitVals[0] == 0 ? 27 : 28,
+						r: ethers.zeroPadValue("0x" + (splitVals[1].length % 2 == 0 ? splitVals[1] : "0" + splitVals[1]), 32),
+						s: ethers.zeroPadValue("0x" + (splitVals[2].length % 2 == 0 ? splitVals[2] : "0" + splitVals[2]), 32)
+					}
+				}
+			})
+		], {
+			gasLimit: BigInt(140000000),
+			gasPrice: await provider.getFeeData().gasPrice
+		});
+		console.log("Claim Transaction Hash: ", claimTransactionHash);
+		const resultClaim = await claimTransactionHash.wait();
+		console.log("Result claim:", resultClaim);
 	}
 
-	const requestStr = JSON.stringify(request);
-	const oracleResponse = await generateOracleRequest(requestStr.slice(1, requestStr.length - 1));
-	const res = oracleResponse["result"];
-	const paramsStartIndex = res.toString().search(/params/) + 8;
-	const paramsEndIndex = res.toString().search(/time/) - 2;
-
-
-	const parsedResult = JSON.parse(res);
-
-	const claimTransactionHash = await claim.claim([
-		parsedResult["cid"],
-		parsedResult["uri"],
-		parsedResult["encoding"],
-		parsedResult["ethApi"],
-		oracleResponse["result"].slice(paramsStartIndex, paramsEndIndex),
-		[],
-		[],
-		"",
-		parsedResult["time"],
-		parsedResult["rslts"],
-		parsedResult["sigs"].map((sig) => {
-			console.log(sig);
-			if (sig === null) {
-				return {
-					v: 0,
-					r: ethers.ZeroHash,
-					s: ethers.ZeroHash
-				}
-			} else {
-				let splitVals = sig.split(":");
-				return {
-					v: splitVals[0] == 0 ? 27 : 28,
-					r: ethers.zeroPadValue("0x" + (splitVals[1].length % 2 == 0 ? splitVals[1] : "0" + splitVals[1]), 32),
-					s: ethers.zeroPadValue("0x" + (splitVals[2].length % 2 == 0 ? splitVals[2] : "0" + splitVals[2]), 32)
-				}
-			}
+	main()
+		.catch((err) => {
+			process.exitCode = 1;
+			console.error(err);
 		})
-	], {
-		gasLimit: BigInt(140000000),
-		gasPrice: await provider.getFeeData().gasPrice
-	});
-	console.log("Claim Transaction Hash: ", claimTransactionHash);
-	const resultClaim = await claimTransactionHash.wait();
-	console.log("Result claim:", resultClaim);
-}
 
-main()
-	.catch((err) => {
-		process.exitCode = 1;
-		console.error(err);
-	})
-
-```
+	```
+</Steps>
 
 </ToolLayout>

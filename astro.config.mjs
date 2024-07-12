@@ -148,7 +148,9 @@ export default defineConfig({
 									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/contracts" },
+										{ label: "OpenZepplin", link: "/builders/tools/contracts/openzeppelin" },
 										{ label: "Hardhat", link: "/builders/tools/contracts/hardhat" },
+										{ label: "Remix", link: "/builders/tools/contracts/remix" },
 										{ label: "Multicall", link: "/builders/tools/contracts/multicall" },
 									]
 								},

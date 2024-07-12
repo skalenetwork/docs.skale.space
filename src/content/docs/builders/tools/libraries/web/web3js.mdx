@@ -4,6 +4,7 @@ description: Intro to Web3.js
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="Set of Javascript libraries enabling interaction with a local or remote Ethereum node through HTTP, IPC, or WebSocket protocols."
@@ -20,63 +21,65 @@ Some of the features are:
 
 ## Implementation Example
 
-**Package install**
-<Tabs>
-<TabItem label="npm">
-```shell
-npm install web3
-```
-</TabItem>
-<TabItem label="yarn">
-```shell
-yarn add web3
-```
-</TabItem>
-</Tabs>
+<Steps>
+1. ##### Package install
+    <Tabs>
+    <TabItem label="npm">
+    ```shell
+    npm install web3
+    ```
+    </TabItem>
+    <TabItem label="yarn">
+    ```shell
+    yarn add web3
+    ```
+    </TabItem>
+    </Tabs>
 
 
-**Contract Call Example**
-```typescript
-import Web3 from "web3";
-import { abi } from "./contract";
-import { chains } from "./chains"
-import dotenv from 'dotenv';
-dotenv.config();
+2. ##### Contract Call
+    ```typescript
+    import Web3 from "web3";
+    import { abi } from "./contract";
+    import { chains } from "./chains"
+    import dotenv from 'dotenv';
+    dotenv.config();
 
-//Select which SKALE chain to use
-const selectedChain = chains.nebula;
+    //Select which SKALE chain to use
+    const selectedChain = chains.nebula;
 
-var web3 = new Web3(selectedChain.chainInfo.testnet.rpcUrl);
+    var web3 = new Web3(selectedChain.chainInfo.testnet.rpcUrl);
 
-const pk = process.env.PRIVATE_KEY || "";
+    const pk = process.env.PRIVATE_KEY || "";
 
-const accountAddress = web3.eth.accounts.privateKeyToAccount(`0x${pk}`)
+    const accountAddress = web3.eth.accounts.privateKeyToAccount(`0x${pk}`)
 
-const contract = new web3.eth.Contract(abi, selectedChain.chainInfo.testnet.contracts[0].address);
+    const contract = new web3.eth.Contract(abi, selectedChain.chainInfo.testnet.contracts[0].address);
 
-const functionData = contract.methods.mintTest(accountAddress.address).encodeABI();
+    const functionData = contract.methods.mintTest(accountAddress.address).encodeABI();
 
-// Send transaction to smart contract to update message
-async function ContractSendTx() {
-    web3.eth.accounts.signTransaction( 
-        {
-          from: accountAddress.address,
-          to: contract_address,
-          gas: 100000,
-          gasPrice: 100000,
-          data: functionData,
-        }, 
-        pk)
-        .then((signedTransaction) => {
-          return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction || "");
-        })
-        .then((receipt) => {
-          console.log("Transaction receipt:", receipt);
-        })
-        .catch((error) => {
-          console.error("Error sending transaction:", error);
-        });
-}
-```
+    // Send transaction to smart contract to update message
+    async function ContractSendTx() {
+        web3.eth.accounts.signTransaction( 
+            {
+              from: accountAddress.address,
+              to: contract_address,
+              gas: 100000,
+              gasPrice: 100000,
+              data: functionData,
+            }, 
+            pk)
+            .then((signedTransaction) => {
+              return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction || "");
+            })
+            .then((receipt) => {
+              console.log("Transaction receipt:", receipt);
+            })
+            .catch((error) => {
+              console.error("Error sending transaction:", error);
+            });
+    }
+    ```
+</Steps>
 
 </ToolLayout>

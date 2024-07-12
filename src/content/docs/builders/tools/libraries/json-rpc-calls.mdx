@@ -4,6 +4,7 @@ description: Intro to JSON-RPC Calls
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="When some platforms or frameworks don't have any quality web3 library or SDK, there's always the possibility to make the blockchain calls directly to the JSON-RPC methods supported by the chain."
@@ -21,7 +22,7 @@ Some of the JSON-RPC methods supported by SKALE chains are:
 
 ## Implementation Example
 
-**Get Balance example**
+##### Get Balance
 ````typescript
 import axios from 'axios';
 

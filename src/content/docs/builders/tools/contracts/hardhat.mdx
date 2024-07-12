@@ -4,6 +4,7 @@ description: Intro to Hardhat
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
 	introParagraph="Hardhat is an EVM developer environment helping developers quickly and easily create, test, and deploy smart contracts. Hardhat is also home to a vibrant community offering a number of different plugins."
@@ -14,149 +15,154 @@ import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
 ## Setup for a SKALE Chain
 
-1. **Run the following in your command prompt**
-```sh
-mkdir hardhat-skale && cd hardhat-skale && npx hardhat init
-```
+<Steps>
 
-2. **Setup hardhat.config file with all SKALE testnets**
-```javascript
-require("@nomicfoundation/hardhat-toolbox");
-require("@nomiclabs/hardhat-etherscan");
-const dotenv = require("dotenv");
-dotenv.config();
+1. ##### Hardhat project setup
+    ```sh
+    mkdir hardhat-skale && cd hardhat-skale && npx hardhat init
+    ```
 
-module.exports = {
-  solidity: {
-    version: "0.8.19",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 50,
+2. ##### hardhat.config setup
+    ```javascript
+    require("@nomicfoundation/hardhat-toolbox");
+    require("@nomiclabs/hardhat-etherscan");
+    const dotenv = require("dotenv");
+    dotenv.config();
+
+    module.exports = {
+      solidity: {
+        version: "0.8.19",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 50,
+          },
+        },
       },
-    },
-  },
-  networks:{
-    nebula: {
-      url: "https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet",
-      chainId: 37084624, // Replace with the correct chainId for the "nebula" network
-      accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-    },
-    calypso: {
-      url: "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
-      chainId: 974399131, // Replace with the correct chainId for the "calypso" network
-      accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-    },
-    europa: {
-      url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
-      chainId: 1444673419, // Replace with the correct chainId for the "europa" network
-      accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-    },
-    titan: {
-      url: "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
-      chainId: 1020352220, // Replace with the correct chainId for the "titan" network
-      accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
+      networks:{
+        nebula: {
+          url: "https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet",
+          chainId: 37084624, // Replace with the correct chainId for the "nebula" network
+          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
+        },
+        calypso: {
+          url: "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
+          chainId: 974399131, // Replace with the correct chainId for the "calypso" network
+          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
+        },
+        europa: {
+          url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
+          chainId: 1444673419, // Replace with the correct chainId for the "europa" network
+          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
+        },
+        titan: {
+          url: "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
+          chainId: 1020352220, // Replace with the correct chainId for the "titan" network
+          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
+        }
+      },
+      etherscan: {
+        apiKey: {
+          nebula: "does not matter as long it has a non empty string",
+          calypso: "does not matter as long it has a non empty string",
+          europa: "does not matter as long it has a non empty string",
+          titan: "does not matter as long it has a non empty string",
+        },
+        customChains: [
+          {
+            network: "nebula",
+            chainId: 37084624, 
+            urls: {
+              apiURL:
+                "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/api",
+              browserURL:
+                "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/",
+            },
+          },
+          {
+            network: "calypso",
+            chainId: 974399131,
+            urls: {
+              apiURL:
+                "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/api",
+              browserURL:
+                "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/",
+            },
+          },
+          {
+            network: "europa",
+            chainId: 1444673419, 
+            urls: {
+              apiURL:
+                "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
+              browserURL:
+                "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/",
+            },
+          },
+          {
+            network: "titan",
+            chainId: 1020352220,
+            urls: {
+              apiURL:
+                "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/api",
+              browserURL:
+                "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/",
+            },
+          },
+        ],
+      },
+    };
+    ```
+
+3. ##### Create a smart contract - contracts/MockContract.sol
+    ```solidity
+    // SPDX-License-Identifier: MIT
+    pragma solidity ^0.8.19;
+
+    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+    contract MockContract is ERC721 {
+        uint256 private _nextTokenId;
+
+        constructor(address initialOwner)
+            ERC721("MyToken", "MTK")
+        {}
+
+        function safeMint(address to) public {
+            uint256 tokenId = _nextTokenId++;
+            _safeMint(to, tokenId);
+        }
     }
-  },
-  etherscan: {
-    apiKey: {
-      nebula: "does not matter as long it has a non empty string",
-      calypso: "does not matter as long it has a non empty string",
-      europa: "does not matter as long it has a non empty string",
-      titan: "does not matter as long it has a non empty string",
-    },
-    customChains: [
-      {
-        network: "nebula",
-        chainId: 37084624, // Replace with the correct chainId for the "opbnb" network
-        urls: {
-          apiURL:
-            "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/api",
-          browserURL:
-            "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/",
-        },
-      },
-      {
-        network: "calypso",
-        chainId: 974399131, // Replace with the correct chainId for the "opbnb" network
-        urls: {
-          apiURL:
-            "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/api",
-          browserURL:
-            "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/",
-        },
-      },
-      {
-        network: "europa",
-        chainId: 1444673419, // Replace with the correct chainId for the "opbnb" network
-        urls: {
-          apiURL:
-            "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
-          browserURL:
-            "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/",
-        },
-      },
-      {
-        network: "titan",
-        chainId: 1020352220, // Replace with the correct chainId for the "opbnb" network
-        urls: {
-          apiURL:
-            "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/api",
-          browserURL:
-            "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/",
-        },
-      },
-    ],
-  },
-};
-```
+    ```
+4. ##### Create a deploy script - scripts/deploy.js
 
-3. **Create a smart contract under contracts folder**
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+    ```javascript
+    const hre = require("hardhat");
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+    async function main() {
 
-contract MockContract is ERC721 {
-    uint256 private _nextTokenId;
+      const myAddress = "0x_some_address"
+      const token = await hre.ethers.deployContract("MockContract", [myAddress]);
 
-    constructor(address initialOwner)
-        ERC721("MyToken", "MTK")
-    {}
-
-    function safeMint(address to) public {
-        uint256 tokenId = _nextTokenId++;
-        _safeMint(to, tokenId);
+      console.log(token.address);
     }
-}
-```
-4. **Create a deploy script under scripts folder**
 
-```javascript
-const hre = require("hardhat");
+    main().catch((error) => {
+      console.error(error);
+      process.exitCode = 1;
+    });
+    ```
 
-async function main() {
+5. ##### Deploy contract
+    ```sh
+    npx hardhat run scripts/deploy.js --network <network name you defined on hardhat.config> 
+    ```
 
-  const myAddress = "0x_some_address"
-  const token = await hre.ethers.deployContract("MockContract", [myAddress]);
+6. ##### Verify contract
+    ```sh
+    npx hardhat verify --network <network name> <deployed contract address> <contract deployed constructor arguments>
+    ```
 
-  console.log(token.address);
-}
+</Steps>
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
-```
-
-5. **Run the command prompt to call the deploying script**
-```sh
-npx hardhat run scripts/deploy.js --network <network name you defined on hardhat.config> 
-```
-
-6. **Command prompt to verify contract**
-```sh
-npx hardhat verify --network <network name> <deployed contract address> <contract deployed constructor arguments>
-```
 </ToolLayout>

@@ -4,6 +4,7 @@ description: Intro to EthersV5
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="The ethers.js library is a comprehensive and concise library for engaging with the Ethereum Blockchain and its surrounding ecosystem."
@@ -21,51 +22,52 @@ Connect to Ethereum nodes over JSON-RPC, INFURA, Etherscan, Alchemy or Metamask
 
 ## Implementation Example
 
-**Package Install**
-<Tabs>
-<TabItem label="npm">
-```shell
-npm install ethers@5.7.2
-```
-</TabItem>
-<TabItem label="yarn">
-```shell
-yarn add ethers@5.7.2
-```
-</TabItem>
-</Tabs>
+<Steps>
+1. ##### Package Install
+    <Tabs>
+    <TabItem label="npm">
+    ```shell
+    npm install ethers@5.7.2
+    ```
+    </TabItem>
+    <TabItem label="yarn">
+    ```shell
+    yarn add ethers@5.7.2
+    ```
+    </TabItem>
+    </Tabs>
 
-**Contract Call Example**
-```typescript
-import { ethers, BigNumber } from 'ethers';
-import { abi } from "./contract";
-import { chains } from "./chains"
-import dotenv from 'dotenv';
-dotenv.config();
+2. ##### Contract Call
+    ```typescript
+    import { ethers, BigNumber } from 'ethers';
+    import { abi } from "./contract";
+    import { chains } from "./chains"
+    import dotenv from 'dotenv';
+    dotenv.config();
 
-//Select the SKALE chain you want to use
-const selectedChain = chains.nebula;
+    //Select the SKALE chain you want to use
+    const selectedChain = chains.nebula;
 
-const provider = new ethers.providers.JsonRpcProvider(selectedChain.chainInfo.testnet.rpcUrl);
+    const provider = new ethers.providers.JsonRpcProvider(selectedChain.chainInfo.testnet.rpcUrl);
 
-const pk = process.env.PRIVATE_KEY || "";
-const signer = new ethers.Wallet(pk, provider);
+    const pk = process.env.PRIVATE_KEY || "";
+    const signer = new ethers.Wallet(pk, provider);
 
-const contract = new ethers.Contract(selectedChain.chainInfo.testnet.contracts[0].address, abi, signer);
+    const contract = new ethers.Contract(selectedChain.chainInfo.testnet.contracts[0].address, abi, signer);
 
-// Send transaction to smart contract to update message
-async function ContractSendTx() {
-    const data = await contract.populateTransaction.mintTest(signer.address);
-    data.gasLimit = BigNumber.from(100000);
-    data.gasPrice = BigNumber.from(100000);
-    data.nonce = await provider.getTransactionCount(signer.address);
+    // Send transaction to smart contract to update message
+    async function ContractSendTx() {
+        const data = await contract.populateTransaction.mintTest(signer.address);
+        data.gasLimit = BigNumber.from(100000);
+        data.gasPrice = BigNumber.from(100000);
+        data.nonce = await provider.getTransactionCount(signer.address);
 
-    const approveTxSigned = await signer.signTransaction(data);
-    const submittedTx = await provider.sendTransaction(approveTxSigned);
-    const approveReceipt = await submittedTx.wait();
-    console.log(approveReceipt.transactionHash);    
-}
+        const approveTxSigned = await signer.signTransaction(data);
+        const submittedTx = await provider.sendTransaction(approveTxSigned);
+        const approveReceipt = await submittedTx.wait();
+        console.log(approveReceipt.transactionHash);    
+    }
 
-```
-
+    ```
+</Steps>
 </ToolLayout>

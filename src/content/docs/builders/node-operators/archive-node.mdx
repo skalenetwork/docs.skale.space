@@ -4,6 +4,7 @@ description: Intro to Archive Node
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="Within the realm of nodes, there are distinct types tailored for specific purposes. For instance, archive nodes specialize in storing comprehensive historical data of the blockchain and providing it upon request."
@@ -74,52 +75,55 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 Before proceeding, notify the core team of the IP address of your archive node. It's suggested to use an elastic IP for the whitelisted IP address.
 :::
 
-1. Download sync-node-cli tool
-```shell
-VERSION_NUM=2.3.0-sync-node.1 && sudo -E bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-`uname -s`-`uname -m`-sync >  /usr/local/bin/skale"
-```
+<Steps>
+1. ##### Download sync-node-cli tool
+    ```shell
+    VERSION_NUM=2.3.0-sync-node.1 && sudo -E bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-`uname -s`-`uname -m`-sync >  /usr/local/bin/skale"
+    ```
 
-2. Verify checksum 
-```shell
-# sha512sum /usr/local/bin/skale
+2. ##### Verify checksum 
+    ```shell
+    # sha512sum /usr/local/bin/skale
 
-b35d88fba1269f859a996a1fefd9520e30f965c092d3ba716f8d7dd88694b821dc225641f75a60cef2364d0fbeb986d314f592fe4b4238c716acf0834d2d6146  /home/ubuntu/dist/skale-2.3.0-sync-node.1-Linux-x86_64-sync
-```
+    b35d88fba1269f859a996a1fefd9520e30f965c092d3ba716f8d7dd88694b821dc225641f75a60cef2364d0fbeb986d314f592fe4b4238c716acf0834d2d6146  /home/ubuntu/dist/skale-2.3.0-sync-node.1-Linux-x86_64-sync
+    ```
 
-3. Apply executable permissions to the downloaded binary:
-```shell
-chmod +x /usr/local/bin/skale
-```
+3. ##### Apply executable permissions to the downloaded binary:
+    ```shell
+    chmod +x /usr/local/bin/skale
+    ```
 
-4. Test the installation
-```shell
-sudo skale --help
-```
+4. ##### Test the installation
+    ```shell
+    sudo skale --help
+    ```
 
-5. Prepare `.env` file:
-```shell
-CONTAINER_CONFIGS_STREAM="2.2.1-sync"
-ENDPOINT=[YOUR GETH/INFURA ENDPOINT]
-IMA_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/IMA/1.5.0/mainnet/abi.json
-MANAGER_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.9.3/skale-manager-1.9.3-mainnet-abi.json
-DISK_MOUNTPOINT=[The second disk /dev/sdb or /dev/xvdb (this is an example. You just need to use your 2TB block device)]
-DOCKER_LVMPY_STREAM="1.0.2-stable.0"
-ENFORCE_BTRFS=True/False
-ENV_TYPE="mainnet"
-SCHAIN_NAME=[SCHAIN NAME FOR YOUR ARCHIVE NODE]
-```
+5. ##### Prepare `.env` file:
+    ```shell
+    CONTAINER_CONFIGS_STREAM="2.2.1-sync"
+    ENDPOINT=[YOUR GETH/INFURA ENDPOINT]
+    IMA_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/IMA/1.5.0/mainnet/abi.json
+    MANAGER_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.9.3/skale-manager-1.9.3-mainnet-abi.json
+    DISK_MOUNTPOINT=[The second disk /dev/sdb or /dev/xvdb (this is an example. You just need to use your 2TB block device)]
+    DOCKER_LVMPY_STREAM="1.0.2-stable.0"
+    ENFORCE_BTRFS=True/False
+    ENV_TYPE="mainnet"
+    SCHAIN_NAME=[SCHAIN NAME FOR YOUR ARCHIVE NODE]
+    ```
 
-:::tip[Warning]
-ENFORCE_BTRFS=True formats your attached device as btrfs even if there is another filesystem. Backup the storage before running the command.
-:::
+    :::tip[Warning]
+    ENFORCE_BTRFS=True formats your attached device as btrfs even if there is another filesystem. Backup the storage before running the command.
+    :::
 
-6. Init archive node:
-```shell
-sudo skale sync-node init --archive --catchup --historic-state [ENV_FILE_PATH]
-```
+6. ##### Init archive node:
+    ```shell
+    sudo skale sync-node init --archive --catchup --historic-state [ENV_FILE_PATH]
+    ```
 
-. Wait until your archive node will be inited.
-. After the node is successfully inited, wait until chain container will download the snapshot and starts catchup blocks (usually 15–30 minutes).
+    . Wait until your archive node will be inited.
+    . After the node is successfully inited, wait until chain container will download the snapshot and starts catchup blocks (usually 15–30 minutes).
+
+</Steps>
 
 
 ## Setup SSL certs

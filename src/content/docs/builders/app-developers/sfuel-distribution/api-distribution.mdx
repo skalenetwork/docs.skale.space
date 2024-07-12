@@ -4,6 +4,7 @@ description: API Distribution
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 This distribution method is an application owned distribution method as opposed to an on-chain distribution. The API facilitates sFUEL distribution to users by exposing an API endpoint through a public or private endpoint.
 
@@ -11,60 +12,64 @@ The default infrastructure option showed in the documentation is public by defau
 
 ### Implementation Example
 
-##### 1. Create project folder
+<Steps>
+1. ##### Create project folder
 
-Open up your terminal and start by cloning the Github Repo
+    Open up your terminal and start by cloning the Github Repo
 
-In order to create a project using Node.js and NPM. You can verify that you have Node.js installed by running:
+    In order to create a project using Node.js and NPM. You can verify that you have Node.js installed by running:
 
-```sh
-node -v
-```
+    ```sh
+    node -v
+    ```
 
-You should see a number such as 18.12.0 OR a response saying that the command node is not recognized. If you see the former, continue, else head over to [the Node.js website](https://nodejs.org/en) and install Node.js on your computer.
+    You should see a number such as 18.12.0 OR a response saying that the command node is not recognized. If you see the former, continue, else head over to [the Node.js website](https://nodejs.org/en) and install Node.js on your computer.
 
-Once you have Node installed, proceed to the project creation.
+    Once you have Node installed, proceed to the project creation.
 
-```sh
-git clone -b starter-api-distribution-nodejs https://github.com/skalenetwork/recipes.git
-```
+    ```sh
+    git clone -b starter-api-distribution-nodejs https://github.com/skalenetwork/recipes.git
+    ```
 
-##### 2. Install Dependencies
+2. ##### Install Dependencies
 
-Run the following in your terminal to install the project dependencies
+    Run the following in your terminal to install the project dependencies
 
-<Tabs>
-<TabItem label="npm">
-```sh
-npm install
-```
-</TabItem>
-<TabItem label="yarn">
-```sh
-yarn install
-```
-</TabItem>
-</Tabs>
+    <Tabs>
+    <TabItem label="npm">
+    ```sh
+    npm install
+    ```
+    </TabItem>
+    <TabItem label="yarn">
+    ```sh
+    yarn install
+    ```
+    </TabItem>
+    </Tabs>
 
-##### 3. Add Environment Variables
+3. ##### Add Environment Variables
 
-Run the following in your terminal
+    Run the following in your terminal
 
-```sh
-cp .env.example .env
-```
-Add an Ethereum private key to your .env file and change the RPC to match your SKALE Chain. The default RPC_URL is set to the Chaos Testnet.
+    ```sh
+    cp .env.example .env
+    ```
+    Add an Ethereum private key to your .env file and change the RPC to match your SKALE Chain. The default RPC_URL is set to the Chaos Testnet.
 
-##### 4. Run the API
+4. ##### Run the API
 
-To run the API locally and hot-reload when changes occur, run:
+    To run the API locally and hot-reload when changes occur, run:
 
-```sh
-yarn dev
-```
+    ```sh
+    yarn dev
+    ```
 
-To run the API without hot-reload, run:
-```sh
-yarn start
-```
+    To run the API without hot-reload, run:
+    ```sh
+    yarn start
+    ```
+
+</Steps>
+
 
