@@ -3,6 +3,7 @@ title: Web3Auth
 description: Intro to Web3Auth
 ---
 import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="Pluggable wallet infrastructure for Web3 wallets and applications. It streamlines the onboarding of both mainstream and crypto native users in under a minute by providing experiences that they're most comfortable with."
@@ -15,39 +16,41 @@ Web3Auth's MPC-based wallet management infrastructure provides secure, non-custo
 
 ## Implementation Example
 
-**Package Install**
-```shell
-npm install --save @web3auth/modal
-```
+<Steps>
+1. ##### Package Install
+    ```shell
+    npm install --save @web3auth/modal
+    ```
 
-**Client ID**
-Get your client ID under https://dashboard.web3auth.io/
+2. ##### Client ID
+    Get your client ID under https://dashboard.web3auth.io/
 
-**Integration**
-```javascript
-import { Web3Auth } from "@web3auth/modal";
-import Web3 from "web3";
+3. ##### Integration
+    ```javascript
+    import { Web3Auth } from "@web3auth/modal";
+    import Web3 from "web3";
 
-const web3auth = new Web3Auth({
-  clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // get it from Web3Auth Dashboard
-  web3AuthNetwork: "sapphire_mainnet",
-  chainConfig: {
-    chainNamespace: "eip155",
-    chainId: "0x50877ed6",
-    rpcTarget: "you_skale_chain_rpc",
-    // Avoid using public rpcTarget in production.
-    // Use services like Infura, Quicknode etc
-    displayName: "skale chain name",
-    blockExplorer: "your_skale_chain_explorer",
-    ticker: "sFUEL",
-    tickerName: "sFUEL",
-  },
-});
-await web3auth.initModal();
+    const web3auth = new Web3Auth({
+      clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // get it from Web3Auth Dashboard
+      web3AuthNetwork: "sapphire_mainnet",
+      chainConfig: {
+        chainNamespace: "eip155",
+        chainId: "0x50877ed6",
+        rpcTarget: "you_skale_chain_rpc",
+        // Avoid using public rpcTarget in production.
+        // Use services like Infura, Quicknode etc
+        displayName: "skale chain name",
+        blockExplorer: "your_skale_chain_explorer",
+        ticker: "sFUEL",
+        tickerName: "sFUEL",
+      },
+    });
+    await web3auth.initModal();
 
-const web3authProvider = await web3auth.connect();
+    const web3authProvider = await web3auth.connect();
 
-const web3 = new Web3(web3authProvider);
-```
+    const web3 = new Web3(web3authProvider);
+    ```
+</Steps>
 
 </ToolLayout>

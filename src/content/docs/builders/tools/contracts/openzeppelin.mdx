@@ -1,0 +1,63 @@
+---
+title: OpenZepplin
+description: Intro to OpenZepplin
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
+import { Image } from 'astro:assets';
+import openzeppelin from '../../../../../assets/openzeppelin-wizard.png';
+
+<ToolLayout
+	introParagraph="OpenZeppelin is renowned for its smart contracts, which adhere to industry standards and ensure robust security through comprehensive audits. These features give developers a high level of confidence and reliability when using OpenZeppelin for their projects."
+	toolName="OpenZepplin"
+	toolLink="https://docs.openzeppelin.com/contracts/5.x/"
+	toolDocsLink="https://docs.openzeppelin.com/contracts/5.x/"
+>
+
+OpenZeppelin contracts implement widely recognized industry standards, such as ERC-721 or ERC-20. Their extensive contracts variety and rigorous security audits make them an excellent starting point for all dApp developers.
+
+### Implementation Example
+
+<Steps>
+
+1. ##### Package Install
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm install @openzeppelin/contracts
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add @openzeppelin/contracts
+        ```
+        </TabItem>
+    </Tabs>
+
+2. ##### Contract import
+
+    ```solidity
+    pragma solidity ^0.8.20;
+
+    import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+    contract MyCollectible is ERC721 {
+        constructor() ERC721("MyCollectible", "MCO") {
+        }
+    }
+    ```
+</Steps>
+
+### OpenZeppelin Wizard
+
+OpenZeppelin Wizard is a user-friendly tool that allows developers to quickly generate secure and standardized smart contracts. By offering an intuitive interface and customizable options, it simplifies the process of creating contracts
+
+<Image src={openzeppelin} alt="OpenZeppelin Wizard"/>
+
+This tool is perfect for beginner web3 developers, allowing them to create, deploy, and interact with a smart contract in under two minutes. Additionally, the platform ensures adherence to proper smart contract programming practices.
+
+To test it please go to the [OpenZeppelin Wizard platform](https://wizard.openzeppelin.com/).
+
+</ToolLayout>

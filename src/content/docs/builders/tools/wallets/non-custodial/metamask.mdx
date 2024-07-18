@@ -3,6 +3,7 @@ title: MetaMask
 description: Intro to MetaMask
 ---
 import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="Metamask is a Chromium (Chrome, Brave, and Edge) and Firefox browser add-on that provides a non-custodial Ethereum wallet. An end-user's private key is stored in an encrypted Vault data stored in the browser."
@@ -15,70 +16,72 @@ Metamask allows you to integrate your dApp with SKALE by setting the Network RPC
 
 ## Implementation Example
 
-**Package Install**
-```shell
-npm install --save web3
-```
+<Steps>
+1. ##### Package Install
+    ```shell
+    npm install --save web3
+    ```
 
-**Integration**
-```javascript
-import Web3 from 'web3';
+2. ##### Integration
+    ```javascript
+    import Web3 from 'web3';
 
-let web3 = "";
+    let web3 = "";
 
-let switchToSKALE = {
-  chainId: "your chain id", //decodes to 1351057110
-  chainName: "SKALE Chain name",
-  rpcUrls: ["your_skale_network_rpc"],
-  nativeCurrency: {
-    name: "SKALE FUEL",
-    symbol: "sFUEL",
-    decimals: 18
-  },
-  blockExplorerUrls: [
-    "your_skale_network_explorer"
-  ]
-};
+    let switchToSKALE = {
+      chainId: "your chain id", //decodes to 1351057110
+      chainName: "SKALE Chain name",
+      rpcUrls: ["your_skale_network_rpc"],
+      nativeCurrency: {
+        name: "SKALE FUEL",
+        symbol: "sFUEL",
+        decimals: 18
+      },
+      blockExplorerUrls: [
+        "your_skale_network_explorer"
+      ]
+    };
 
-web3 = window.web3;
+    web3 = window.web3;
 
-  if (window.ethereum) {
-    window.web3 = new Web3(window.ethereum);
-    try {
-      // Request account access if needed
-      await window.ethereum.enable();
-      console.log("MetaMask - Web3 Initialized!");
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        try {
+          // Request account access if needed
+          await window.ethereum.enable();
+          console.log("MetaMask - Web3 Initialized!");
 
-      //Get user wallet accounts
-      window.web3.eth.getAccounts((error, accounts) => {
-        if (error) {
-          console.error(error);
+          //Get user wallet accounts
+          window.web3.eth.getAccounts((error, accounts) => {
+            if (error) {
+              console.error(error);
+            }
+            console.log(accounts);
+
+            //request change to SKALE Network
+            window.ethereum
+              .request({
+                method: "wallet_addEthereumChain",
+                params: [switchToSKALE, accounts[0]]
+              })
+              .catch((error) => console.log(error.message));
+          });
+        } catch (error) {
+          // User denied account access...
         }
-        console.log(accounts);
-
-        //request change to SKALE Network
-        window.ethereum
-          .request({
-            method: "wallet_addEthereumChain",
-            params: [switchToSKALE, accounts[0]]
-          })
-          .catch((error) => console.log(error.message));
-      });
-    } catch (error) {
-      // User denied account access...
-    }
-  }
-  // Legacy dapp browsers...
-  else if (window.web3) {
-    window.web3 = new Web3(web3.currentProvider);
-    console.log("MetaMask - Web3 Initialized!");
-  }
-  // Non-dapp browsers...
-  else {
-    console.log(
-      "Non-Web3 browser detected. You should consider trying MetaMask!"
-    );
-  }
-```
+      }
+      // Legacy dapp browsers...
+      else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+        console.log("MetaMask - Web3 Initialized!");
+      }
+      // Non-dapp browsers...
+      else {
+        console.log(
+          "Non-Web3 browser detected. You should consider trying MetaMask!"
+        );
+      }
+    ```
+</Steps>
 
 </ToolLayout>

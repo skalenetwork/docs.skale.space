@@ -4,6 +4,7 @@ description: Intro to Mirage SDK
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
 
 <ToolLayout
     introParagraph="The Mirage platform serves as a gateway to a comprehensive suite of proven solutions tailored for the development, enhancement, scalability, support, and publication of Web3 games."
@@ -22,59 +23,62 @@ The SDKs for both platforms are EVM compatible and have the following features:
 <Tabs>
 <TabItem label="Unity">
 
-**Package Install**
-- On Package Manager select `Add package from git URL` and add the following:
-```
-https://github.com/Ankr-network/game-unity-sdk.git?path=Assets/MirageSDK
-```
-**Scene Creation**
-1. Go to Packages -> Examples -> Scenes -> Examples_WebGL.unity 
-2. Copy and paste that scene into your Assets folder
+<Steps>
+1. ##### Package Install
+    On Package Manager select `Add package from git URL` and add the following:
+    ```
+    https://github.com/Ankr-network/game-unity-sdk.git?path=Assets/MirageSDK
+    ```
+2. ##### Scene Creation
+    1. Go to Packages -> Examples -> Scenes -> Examples_WebGL.unity 
+    2. Copy and paste that scene into your Assets folder
 
-**Assets Setup**
-1. (optional) Create a scriptable object with the following properties: contract address, contract ABI and SKALE chain RPC.
-2. Create a script to call the contract you deployed on one of the SKALE chains
+3. ##### Assets Setup
+    1. (optional) Create a scriptable object with the following properties: contract address, contract ABI and SKALE chain RPC.
+    2. Create a script to call the contract you deployed on one of the SKALE chains
 
-**Contract Call Example**
-```c#
-public class NFTMint : UseCaseBodyUI
-{
-    public Contract contract;
-    private const string MintMethodName = "safeMint";
-    private IContract _erc721Contract;
-    private IEthHandler _eth;
-
-
-    private string[] contractArgs = new string[] { "0x...someAddress" };
-
-
-    public void ContractSetup()
+4. ##### Contract Call
+    ```c#
+    public class NFTMint : UseCaseBodyUI
     {
-        var sdkInstance = MirageSDKFactory.GetMirageSDKInstance(contract.RPC);
+        public Contract contract;
+        private const string MintMethodName = "safeMint";
+        private IContract _erc721Contract;
+        private IEthHandler _eth;
 
-        _erc721Contract =
-            sdkInstance.GetContract(
-                contract.contractAddress,
-                contract.contractABI);
-        _eth = sdkInstance.Eth;
 
+        private string[] contractArgs = new string[] { "0x...someAddress" };
+
+
+        public void ContractSetup()
+        {
+            var sdkInstance = MirageSDKFactory.GetMirageSDKInstance(contract.RPC);
+
+            _erc721Contract =
+                sdkInstance.GetContract(
+                    contract.contractAddress,
+                    contract.contractABI);
+            _eth = sdkInstance.Eth;
+
+        }
+
+        public async void SmartContractCall()
+        {
+            var receipt = await _erc721Contract.CallMethod(MintMethodName, contractArgs);
+            Debug.Log($"Receipt: {receipt}");
+
+            var trx = await _eth.GetTransaction(receipt);
+
+            Debug.Log($"Nonce: {trx.Nonce}");
+        }
     }
+    ```
 
-    public async void SmartContractCall()
-    {
-        var receipt = await _erc721Contract.CallMethod(MintMethodName, contractArgs);
-        Debug.Log($"Receipt: {receipt}");
+5. ##### NFTMint call
+    1. Call contract setup method to initialize the contract instance
+    2. Call the `SmartContractCall` function to perform the contract call
 
-        var trx = await _eth.GetTransaction(receipt);
-
-        Debug.Log($"Nonce: {trx.Nonce}");
-    }
-}
-```
-
-**NFTMint script call**
-1. Call contract setup method to initialize the contract instance
-2. Call the `SmartContractCall` function to perform the contract call
+</Steps>
 
 </TabItem>
 </Tabs>

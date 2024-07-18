@@ -75,3 +75,10 @@ iframe {
 	aspect-ratio: 16/9;
 	width: 100%;
 }
+
+.center-image-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}

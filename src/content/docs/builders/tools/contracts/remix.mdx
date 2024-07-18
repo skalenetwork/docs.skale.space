@@ -1,0 +1,81 @@
+---
+title: Remix
+description: Intro to Remix
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Image } from 'astro:assets';
+import remixCompile from '../../../../../assets/remix-compile.png';
+import remixWallet from '../../../../../assets/remix-deploy.png';
+import remixBtnDeploy from '../../../../../assets/remix-dply-btn.png';
+
+
+<ToolLayout
+	introParagraph="Remix is a comprehensive toolset designed for contract development, suitable for users of all knowledge levels. It also serves as a learning lab for teaching and experimenting with EVM blockchains."
+	toolName="Remix"
+	toolLink="https://remix.ethereum.org/"
+	toolDocsLink="https://remix-ide.readthedocs.io/en/latest/#"
+>
+
+With Remix, you can choose an environment to work from: either compiling your contracts using a sandbox blockchain in your browser (JavaScript VM), or using Injected Web3 that hands off the interface to a provider such as MetaMask, that in turn connects to your SKALE Chain endpoint.
+
+</ToolLayout>
+
+### Implementation Example
+
+Click this [link](https://remix.ethereum.org/?#code=Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVApwcmFnbWEgc29saWRpdHkgXjAuOC4yNDsKCgpjb250cmFjdCBIZWxsb1NLQUxFIHsKICAgIHN0cmluZyBwdWJsaWMgc3RvcmVkTmFtZTsKCiAgICBmdW5jdGlvbiBzZXROYW1lKHN0cmluZyBtZW1vcnkgbmFtZSkgcHVibGljIHsKICAgICAgICBzdG9yZWROYW1lID0gbmFtZTsKICAgIH0KCiAgICBmdW5jdGlvbiBzYXlIZWxsbygpIHB1YmxpYyB2aWV3IHJldHVybnMgKHN0cmluZyBtZW1vcnkpIHsKICAgICAgICByZXR1cm4gc3RyaW5nKGFiaS5lbmNvZGVQYWNrZWQoIkhlbGxvICIsIHN0b3JlZE5hbWUsICIhIikpOwogICAgfQp9) to load the following Hello World contract into the Remix IDE:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+
+contract HelloSKALE {
+    string public storedName;
+
+    function setName(string memory name) public {
+        storedName = name;
+    }
+
+    function sayHello() public view returns (string memory) {
+        return string(abi.encodePacked("Hello ", storedName, "!"));
+    }
+}
+```
+
+<Steps>
+
+1. #### Contract Compilation 
+
+    <Image src={remixCompile} alt="Remix Contrac Compilation"/>
+
+        **1.** Select the `Solidy compiler` tab
+        
+        **2.** Select the `Compile` button
+
+    :::note[Developer Tip]
+    On Advanced Configurations please select an EVM Version equal or lower to `Paris`
+    :::
+
+2. #### Wallet Setup
+
+    <Image src={remixWallet} alt="Remix Contract Deployment"/>
+
+        **1.** Select the `Deploy & run transactions` tab
+        
+        **2.** Under environment select `Injected Provider` option
+
+        :::note[Note]
+        If required please go to [SKALE Portal](https://testnet.portal.skale.space/chains) and connect your wallet to the SKALE Chain you want
+        
+
+
+3. #### Contract Deployement
+
+    <Image src={remixBtnDeploy} alt="Remix Contract Deployment"/>
+    Select the deploy button to have your contract available on the selected SKALE Chain
+
+
+
+</Steps>

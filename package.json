@@ -48,6 +48,7 @@
     "@astrojs/react": "^3.6.0",
     "@astrojs/starlight": "^0.24.5",
     "@astrojs/ts-plugin": "^1.8.0",
+    "@pagefind/linux-x64": "^1.1.0",
     "astro": "^4.11.4",
     "ethers": "^6.13.1",
     "react-toastify": "^10.0.5",
