@@ -1,0 +1,106 @@
+---
+title: Dynamic
+description: Intro to Dynamic
+---
+import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<ToolLayout
+    introParagraph="Dynamic provides login flows tailored for crypto-native users, straightforward onboarding processes for all other users, and a comprehensive suite of developer tools extending beyond authentication."
+    toolName="Dynamic"
+    toolLink="https://docs.dynamic.xyz/adding-dynamic/adding-the-sdk"
+    toolDocsLink="https://docs.dynamic.xyz/adding-dynamic/adding-the-sdk"
+>
+
+Dynamic offers various types of wallets for users, including:
+- [Embedded Wallets](https://docs.dynamic.xyz/wallets/embedded-wallets/dynamic-embedded-wallets): non-custodial wallets with social login;
+- [Crypto-native Wallets](https://docs.dynamic.xyz/wallets/advanced-wallets/branded-wallets-overview): well known non-custodial industry wallets like Metamask;
+- [Account abstraction Wallets](https://docs.dynamic.xyz/account-abstraction/add-account-abstraction): dynamic integrates with multiple account abstraction providers;
+
+## Implementation Example
+
+<Steps>
+1. ##### Package Install
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm install @dynamic-labs/sdk-react-core
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add @dynamic-labs/sdk-react-c
+        ```
+        </TabItem>
+    </Tabs>
+
+2. ##### Integration
+
+    ```typescript
+        import { DynamicContextProvider,DynamicWidget } from '@dynamic-labs/sdk-react-core';
+
+        //Set your SKALE chain here
+        const evmNetworks = [
+        {
+            blockExplorerUrls: ['https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/'],
+            chainId: 37084624,
+            chainName: '[S] Nebula Gaming Hub',
+            iconUrls: ['https://raw.githubusercontent.com/skalenetwork/skale-network/master/metadata/mainnet/icons/green-giddy-denebola.svg'],
+            name: 'Nebula',
+            nativeCurrency: {
+            decimals: 18,
+            name: 'sFUEL',
+            symbol: 'sFUEL',
+            },
+            networkId: 37084624,
+
+            rpcUrls: ['https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet'],
+            vanityName: 'Nebula Testnet',
+        }
+        ];
+
+        function App() {
+        return (
+            <DynamicContextProvider
+            settings={{
+                environmentId: "Get your environment ID here https://app.dynamic.xyz/",
+                overrides: { evmNetworks },
+            }}
+            >
+            <DynamicWidget />
+            </DynamicContextProvider>
+        );
+        }
+        export default App;
+    ```
+</Steps>
+
+<Aside type="caution" title="Watch out!">
+If you are seeing an error like `Module not found: Can't resolve 'rpc-websockets/dist/lib/client.cjs'` or `Class extends value /static/media/client.98866d6736d9f36d61b8.cjs is not a constructor or null` when trying to use the SDK, you can fix this by adding the following to your `package.json` file:
+
+For more information please visit [here](https://docs.dynamic.xyz/troubleshooting/react/cannot-resolve-rpc-websockets#cannot-resolve-rpc-websockets).
+<Tabs>
+        <TabItem label="npm">
+        ```json
+            "overrides": {
+                "rpc-websockets": "7.10.0",
+                "@solana/web3.js": "1.91.6",
+            },
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```json
+            "resolutions": {
+                "rpc-websockets": "7.10.0",
+                "@solana/web3.js": "1.91.6",
+            },
+        ```
+        </TabItem>
+</Tabs>
+
+</Aside>
+
+</ToolLayout>
