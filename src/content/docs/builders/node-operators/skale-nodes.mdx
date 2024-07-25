@@ -5,12 +5,7 @@ description: Intro to SKALE Nodes
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="The SKALE Network consists of a large pool of validator nodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These nodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager."
-    toolName="SKALE Nodes"
-    toolLink=""
-    toolDocsLink=""
->
+The SKALE Network consists of a large pool of validator nodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These nodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager.
 
 Each SKALE Chain comprises a collective of randomly appointed virtualized subnodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Nodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via virtualized subnodes. This multiplex capability is made possible via a containerized subnode architecture deployed on each node in the network. Each node is virtualized and can participate as a validator via this subnode architecture for an independent number of sidechains.
 
@@ -53,5 +48,3 @@ This request contains both the required network deposit as well as node metadata
 Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective node as a 'full node' or a 'fractional node' by assigning different sizes of SKALE Chains to the prospective node. Full nodes have all their resources utilized for a single SKALE Chain, while fractional nodes participate in multiple sidechains (multi-tenancy).
 
 [General Hardware Requirements](https://docs.skale.network/network/v2.2.x/#_prerequisites)
-
-</ToolLayout>

@@ -5,12 +5,7 @@ description: Intro to SKALE Proxy
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="To make it easier to connect to SKALE Chains, developers can use a reverse proxy to load balance transactions across a SKALE Chain's 16 individual node endpoints."
-    toolName="SKALE Proxy"
-    toolLink="https://github.com/skalenetwork/skale-proxy"
-    toolDocsLink="https://github.com/skalenetwork/skale-proxy"
->
+To make it easier to connect to SKALE Chains, developers can use a reverse proxy to load balance transactions across a SKALE Chain's 16 individual node endpoints.
 
 The core team provides a basic reverse proxy for convenience to each of the mainnet and staging SKALE Chains. Developers and ecosystem contributors are encouraged to deploy and customize reverse proxy settings and methods for application optimization. 
 
@@ -90,5 +85,3 @@ do_token='YOUR-DO-TOKEN' # optional - DigitalOcean token (for 'certbot' cert_mod
 email='example@example.com' # optional - SSL cert email (for 'certbot' cert_mode)
 ```
 And copy [abi](https://github.com/skalenetwork/skale-network/blob/master/releases/mainnet/skale-manager/1.9.2/skale-manager-1.9.2-mainnet-abi.json) to `files/abi.json`
-
-</ToolLayout>
