@@ -4,6 +4,7 @@ description: Intro to Non-Custodial Wallets
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import {Content as Metamask} from './non-custodial/metamask.mdx';
+import {Content as Metakeep} from './non-custodial/metakeep.mdx';
 import {Content as Bitski} from './non-custodial/bitski.mdx';
 import {Content as Coinbase} from './non-custodial/coinbase.mdx';
 import {Content as Enkrypt} from './non-custodial/enkrypt.mdx';
@@ -16,12 +17,15 @@ import {Content as Trezor} from './non-custodial/trezor.mdx';
 <TabItem label="Metamask">
 <Metamask/>
 </TabItem>
+<TabItem label="Metakeep">
+<Metakeep/>
+</TabItem>
 <TabItem label="Bitski">
 <Bitski/>
 </TabItem>
-<TabItem label="Encrypt">
+{/*<TabItem label="Encrypt">
 <Enkrypt/>
-</TabItem>
+</TabItem>*/}
 <TabItem label="Ledger">
 <Ledger/>
 </TabItem>

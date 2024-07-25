@@ -6,12 +6,7 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 import { Steps } from "@astrojs/starlight/components";
 
-<ToolLayout
-    introParagraph="The Full-Sync Node is an available software implementation of a read-only SKALE Node that can help decrease the load on the core nodes of your chain."
-    toolName="Full Sync Node"
-    toolLink=""
-    toolDocsLink=""
->
+The Full-Sync Node is an available software implementation of a read-only SKALE Node that can help decrease the load on the core nodes of your chain.
 
 Applications are commonly read-heavy compared to writes, meaning they pull data from the chain more often than push them. For applications that contain many reads, a full-sync node can help increase chain stability and speed by reducing the number of actions the core nodes on the chain must do, leaving them with a more extraordinary ability to handle transactions.
 
@@ -149,5 +144,3 @@ You can just update a file with environment variables used during `skale sync-no
 ### Maintenance
 
 Maintenance commands are not available for a sync node. 
-
-</ToolLayout>

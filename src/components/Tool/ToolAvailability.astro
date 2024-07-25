@@ -1,0 +1,14 @@
+---
+const { availability = "Works on All SKALE Chains"} = Astro.props;
+import { Badge } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+const availabilityArray = availability.split(',').map(item => item.trim());
+
+---
+
+<Aside title="Available on:">
+    {availabilityArray.map((item, index) => (
+        <Badge text={item} variant="tip" size="small" key={index} />
+    ))}
+</Aside>
