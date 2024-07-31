@@ -1,0 +1,9 @@
+---
+import AskCookbook from "@cookbookdev/docsbot/react"
+// API key is public so it's fine to just hardcode it here.
+const COOKBOOK_PUBLIC_API_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmE5N2I3MmNhMjA3NDg1NDU1ODlhZjQiLCJpYXQiOjE3MjIzODMyMTgsImV4cCI6MjAzNzk1OTIxOH0.OfO3mhUiunAxHwhfeyi1egjALWP-se-8wYh1hYyx9us"
+---
+
+<!-- Cookbook Onboard (AI Assistant).  -->
+<AskCookbook apiKey={COOKBOOK_PUBLIC_API_KEY} client:only="react" />
