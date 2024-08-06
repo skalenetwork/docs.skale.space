@@ -91,7 +91,6 @@ export default defineConfig({
 								{ label: "Overview", link: "/builders/tools" },
 								{
 									label: "Wallets",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/wallets" },
 										{ label: "Non-Custodial Wallets", link: "/builders/tools/wallets/non-custodial" },
@@ -102,7 +101,6 @@ export default defineConfig({
 								},
 								{
 									label: "Libraries",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/libraries" },
 										{ label: "Web Libraries", link: "/builders/tools/libraries/web" },
@@ -113,7 +111,6 @@ export default defineConfig({
 								},
 								{
 									label: "NFTs",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/nfts" },
 										{ label: "Marketplaces", link: "/builders/tools/nfts/marketplaces" },
@@ -124,7 +121,6 @@ export default defineConfig({
 								},
 								{
 									label: "Gaming SDKs",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/gaming" },
 										{ label: "Eidolon", link: "/builders/tools/gaming/eidolon" },
@@ -135,7 +131,6 @@ export default defineConfig({
 								},
 								{
 									label: "Bridges",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/bridges" },
 										{ label: "SKALE Native Bridge", link: "/builders/tools/bridges/skale-native-bridge" },
@@ -145,7 +140,6 @@ export default defineConfig({
 								},
 								{
 									label: "Contracts",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/contracts" },
 										{ label: "OpenZepplin", link: "/builders/tools/contracts/openzeppelin" },
@@ -156,7 +150,6 @@ export default defineConfig({
 								},
 								{
 									label: "Data",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "builders/tools/data" },
 										{ label: "Dune", link: "/builders/tools/data/dune" },
@@ -166,7 +159,6 @@ export default defineConfig({
 								},
 								{
 									label: "Payments",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/payments" },
 										{ label: "On-Ramp", link: "/builders/tools/payments/on-ramp" },
@@ -176,7 +168,6 @@ export default defineConfig({
 								},
 								{
 									label: "Oracles",
-									collapsed: true,
 									items: [
 										{ label: "Overview", link: "/builders/tools/oracles" },
 										{ label: "SKALE Connect", link: "/builders/tools/oracles/skale-connect" },

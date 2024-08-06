@@ -32,6 +32,17 @@ let items = isNested ? sublist : sublist.filter((item: any) => {
 		}
 	}
 });
+
+
+const isGroupOpen = (group: any): boolean => {
+	if (group.isCurrent) return true;
+	for (const entry of group.entries) {
+		if (entry.isCurrent) return true;
+		if (entry.type === 'group' && isGroupOpen(entry)) return true;
+	}
+	return false;
+};
+
 ---
 
 <ul class:list={{ 'top-level': !isNested }}>
@@ -57,10 +68,7 @@ let items = isNested ? sublist : sublist.filter((item: any) => {
 							)}
 						</a>
 					) : (
-						<details
-							// open={entry.isCurrent || !entry.collapsed}
-							open={true}
-						>
+						<details open={isGroupOpen(entry)} >
 							<summary>
 								<span class="large">{entry.label}</span>
 								<Icon name="right-caret" class="caret" size="1.25rem" />
