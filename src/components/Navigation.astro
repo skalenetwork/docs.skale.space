@@ -2,12 +2,14 @@
 import type { Props } from '@astrojs/starlight/props';
 import NavigationConfig from "../config/navigation";
 import NavigationItem from "./NavigationItem.astro";
+import AskCookbook from "./AskCookbook.astro"
 ---
 
 <nav class="navigation-items">
 	{NavigationConfig.map((item) => {
 		return <NavigationItem {...item} />
 	})}
+	<AskCookbook/>
 </nav>
 
 <style>
