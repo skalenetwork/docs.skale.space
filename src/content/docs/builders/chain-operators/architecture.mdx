@@ -5,6 +5,7 @@ description: Architecture of SKALE Chain Management
 
 import Mermaid from "../../../../components/Mermaid.astro";
 import MermaidInit from "../../../../components/MermaidInit.astro";
+import { Aside } from '@astrojs/starlight/components';
 
 <MermaidInit />
 
@@ -23,7 +24,9 @@ various purposes including DeFi, NFT Marketplaces, or 3rd-party bridges.
 
 In addition, it is important for chain owners to understand that every chain in the SKALE Network is connected to Ethereum by default.
 
-> Chain operations can occur fully from the Ethereum side, while a few key operations are not available to the SKALE Chain Multisig.
+<Aside>
+Chain operations can occur fully from the Ethereum side, while a few key operations are not available to the SKALE Chain Multisig.
+</Aside>
 
 ## Default Contracts
 
