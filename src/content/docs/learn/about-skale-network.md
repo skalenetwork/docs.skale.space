@@ -75,13 +75,13 @@ Every SKALE Chain is identical in capability. This includes areas like throughpu
 
 Dedicated SKALE Chains or AppChains are SKALE Chains in use by one application only. AppChains are great for high performance projects doing hundreds of transactions per second or for enterprises looking for their own dedicated location for blockchain compute.
 
-[Learn more here](/learn/beginner/app-chain)
+[Learn more here](/learn/app-chain)
 
 ### HubChain
 
 SKALE Hubs or HubChains are community-operated SKALE Chains that function as shared compute environments and Web3 service-layers divided by their specific use-case. A HubChain is a great place for new projects to access a smaller amount of EVM compute or work with existing projects and partners to quickly get up and running.
 
-[Learn more here](/learn/beginner/hub-chain)
+[Learn more here](/learn/hub-chain)
 
 ## Access a SKALE Chain
 
