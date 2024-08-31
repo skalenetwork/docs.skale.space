@@ -3,6 +3,7 @@ title: Go Live
 description: Go Live
 ---
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
 
 The go-live process for SKALE is unique compared to other EVM networks.
 As SKALE Chains are permissioned, you must be given to permission by a chain owner or operator to deploy.
@@ -15,10 +16,12 @@ of the SKALE Chains use including the core SKALE Hubs: Calypso, Europa, Nebula, 
 
    Please fill out the onboarding form to help provide key information that will be used throughout the review process.
 
-   <a
-      href="#"
-   >Onboarding Form</a>
-   
+
+	<LinkCard
+		title="Onboarding Form"
+		href="#"
+	/>
+
 2. ### Validate your Smart Contracts
 
    #### Taking Payment/Valued Tokens
