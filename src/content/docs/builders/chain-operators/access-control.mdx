@@ -3,13 +3,17 @@ title: SKALE Chain Access Control
 description: Controlling access to a SKALE Chain
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
+
 SKALE Chains have several ways to manage access control, meaning who is capable of sending a transaction to the SKALE Chain or who
 is capable of deploying new contracts. There are several methods to manage access: distribution of sFUEL to SKALE Chain users and the
 ConfigController contract, which authorizes specific contracts to deploy new contracts and
 enables Free Contract Deployment. The next paragraph will describe the listed methods.
 
-> **Note**  
-> If you encounter a `Contract Creation Error: Out of gas` error when deploying a contract, this likely means that the address does not have deployer access. See [whitelisting an address](xref:_whitelist).
+<Aside>
+If you encounter a `Contract Creation Error: Out of gas` error when deploying a contract, this likely means that the address does not have deployer access. See [whitelisting an address](xref:_whitelist).
+</Aside>
 
 ## Config Controller
 
@@ -37,8 +41,9 @@ The SKALE Chain owner (coinbase address) is the only account allocated sFUEL whe
 
 The total amount of sFUEL allocation is set in the genesis block of each SKALE Chain and therefore can't be changed once a chain is deployed.
 
-> **Note**  
-> sFUEL, unlike ETH, has no value, but like ETH, is used to meter transaction usage on SKALE Chains.
+<Aside>
+sFUEL, unlike ETH, has no value, but like ETH, is used to meter transaction usage on SKALE Chains.
+</Aside>
 
 SKALE Chain owners can apply a variety of methods to distribute sFUEL to users:
 - Direct transaction from the owner to an address
@@ -46,8 +51,10 @@ SKALE Chain owners can apply a variety of methods to distribute sFUEL to users:
 
 When addresses use sFUEL to perform transactions, the sFUEL fee used to conduct the transaction is recirculated back to the coinbase address.
 
-> **Important**  
-> SKALE Chain owners should select how and how much sFUEL to distribute to addresses. How much might depend on various factors such as the number of addresses to distribute to and the sFUEL transaction fees performed by these addresses.
+<Aside type="caution" title="Important">  
+SKALE Chain owners should select how and how much sFUEL to distribute to addresses. How much might depend on various factors such as the number of addresses to distribute to and the sFUEL transaction fees performed by these addresses.
+</Aside>
 
-> **Note**  
-> To view Real ETH on SKALE Chains as transferred by the IMA bridge, you can use the _informational RPC ports_ for your endpoint. The port information is presented when the SKALE Chain deployment is complete.
+<Aside> 
+To view Real ETH on SKALE Chains as transferred by the IMA bridge, you can use the _informational RPC ports_ for your endpoint. The port information is presented when the SKALE Chain deployment is complete.
+</Aside>
