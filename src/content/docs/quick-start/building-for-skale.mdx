@@ -10,13 +10,13 @@ The following page goes through a number of key topics about SKALE to help you b
 
 ### EVM Compatability
 
-The SKALE Netowrk is a Layer-1 blockchain network that contains many individual SKALE Chains.
-Every SKALE Chain is fully EVM compatible meaning that all of your favorite tools on Etheruem,
+The SKALE Network is a Layer-1 blockchain network that contains many individual SKALE Chains.
+Every SKALE Chain is fully EVM compatible meaning that all of your favorite tools on Ethereum,
 your existing smart contracts, and all of your scripts should work out of the box.
 
 ### Zero Gas Fees
 
-SKALE is known for it's zero gas fee model, but developers are often unware of the strategic decisions
+SKALE is known for it's zero gas fee model, but developers are often unaware of the strategic decisions
 made at the chain level to make that happen. Every SKALE Chain contains a native token called SKALE Fuel (sFUEL).
 **sFUEL** is almost identical to **Ether** on Ethereum with the largest difference being that sFUEL by default has
 no monetary value or available market.
@@ -26,7 +26,7 @@ no monetary value or available market.
 It is quite common for dApps to use various mechanisms to represent value on chains.
 It is common to see many dApps use the native gas token of a chain -- Ether for example --
 to allow for payment. With sFUEL holding no monetary value, it means that alternative forms of value must be used.
-The most common way is to use ERC-20 tokens to represnet value.
+The most common way is to use ERC-20 tokens to represent value.
 
 :::note[Developer Tip]
 See the [community guide](https://hackmd.io/@TheGreatAxios/SJWksGU2i) on how to use
@@ -44,7 +44,7 @@ unique when it comes to SKALE.
 	<TabItem label="Non-Custodial">
 		<Steps>
 			1. User downloads a wallet
-			2. User visits CEX or Fiat onramp
+			2. User visits CEX or Fiat on-ramp
 			3. *Optional* - User bridges to new network
 			4. User pays fees and clicks and manually approves every transaction
 		</Steps>
@@ -92,7 +92,7 @@ costs since the gas is always free.
 			1. User logs in to application
 			2. An MPC, custodial, or background wallet is created 
 			3. User uses application
-			4. dApp pays the gas fees via paymaster -- _no varaible costs for dApp_
+			4. dApp pays the gas fees via paymaster -- _no variable costs for dApp_
 		</Steps>
 	</TabItem>
 </Tabs>
@@ -104,7 +104,7 @@ costs since the gas is always free.
 SKALE Chains are well known for being incredibly fast.
 While the overall throughput of a SKALE Chain averages around 400 transactions per second (TPS); 
 it is the finality that makes a big difference. SKALE Chains themselves are not Layer-2's and are not
-rollups of any kind. This means you don't have to wait for any sort of finality on Ethereum to ensure finality on SKALE.
+roll-ups of any kind. This means you don't have to wait for any sort of finality on Ethereum to ensure finality on SKALE.
 
 SKALE Chains also cannot fork. With the validators working together using a leaderless consensus protocol; you only
 need to wait for the block that transactions are in to be published to the chain, a.k.a **1 block**, to ensure that things are final.
