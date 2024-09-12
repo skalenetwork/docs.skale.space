@@ -1,7 +1,7 @@
 {
-  "name": "skale-quick-start",
+  "name": "@skalenetwork/docs",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     {
       "name": "Sawyer Cutler",
@@ -14,7 +14,7 @@
       "url": "https://skale.space"
     }
   ],
-  "description": "SKALE Documentation Experiment",
+  "description": "SKALE Network Documentation",
   "keywords": [
     "skale",
     "docs",
@@ -28,7 +28,7 @@
   "homepage": "https://docs.skale.dirtroad.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Dirt-Road-Development/shiny-otco-giggle"
+    "url": "https://github.com/skalenetwork/docs.skale.space"
   },
   "license": "MIT",
   "scripts": {
