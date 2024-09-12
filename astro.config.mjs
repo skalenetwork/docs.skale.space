@@ -204,6 +204,18 @@ export default defineConfig({
 					items: [
 						{ label: "Overview", link: "/ecosystem" },
 						{
+							label: "Delegators",
+							items: [
+								{ label: "Overview", link: "/ecosystem/delegators/overview" }
+							]
+						},
+						{
+							label: "Governance",
+							items: [
+								{ label: "Overview", link: "/ecosystem/governance/overview" }
+							]
+						},
+						{
 							label: "Validators",
 							items: [
 								{ label: "Overview", link: "/ecosystem/validators/overview" }
