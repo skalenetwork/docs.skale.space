@@ -1,5 +1,5 @@
 {
-  "name": "hardhat-project",
+  "name": "skale-testnet-faucet-contracts",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "dotenv": "^16.4.5",

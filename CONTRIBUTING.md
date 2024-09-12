@@ -1,24 +1,15 @@
 # Contributing Guide
 
-Welcome! Thanks for viewing the guide to contributing. As an open source project, we appreciate contributors of any size, from anyone regardless of skill level or experience. The following document will guide you through how to setup the documentation in your local repository as well as
+Welcome! Thank you for being interested in contributing to the SKALE Network documentation.
+Please read on for more information on how to update the docs
 
 ## Setup + Install
 
-First, fork the repo on GitHub, then clone your fork:
-
-```shell
-
-# Using HTTP
-git clone https://github.com/Dirt-Road-Development/shiny-octo-giggle.git && cd shiny-octo-giggle
-
-# Using SSH
-git clone git@github.com:Dirt-Road-Development/shiny-octo-giggle.git && cd shiny-octo-giggle
-```
-
+First, fork the repo on GitHub, then clone your fork.
 Once cloned, install all dependencies in the root of the project:
 
 ```shell
-npm install
+npm install -f
 ```
 
 You are now ready to make changes and contribute!
@@ -43,10 +34,11 @@ Developers interested in contributing should fork the main branch and checkout a
 
 **Available Types**
 
--   feature
--   fix
--   content
--   config
+    -   feature
+    -   bug
+    -   content
+    -   config
+    -   cleanup
 
 **Examples**
 
