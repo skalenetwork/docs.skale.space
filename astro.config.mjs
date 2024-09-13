@@ -89,46 +89,6 @@ export default defineConfig({
 							items: [
 								{ label: "Overview", link: "/builders/tools" },
 								{
-									label: "Wallets",
-									items: [
-										{ label: "Overview", link: "/builders/tools/wallets" },
-										{ label: "Non-Custodial Wallets", link: "/builders/tools/wallets/non-custodial" },
-										{ label: "Custodial Wallets", link: "/builders/tools/wallets/custodial" },
-										{ label: "MPC Wallets", link: "/builders/tools/wallets/mpc" },
-										{ label: "Wallets Aggregator", link: "/builders/tools/wallets/aggregator" },
-									]
-								},
-								{
-									label: "Libraries",
-									items: [
-										{ label: "Overview", link: "/builders/tools/libraries" },
-										{ label: "Web Libraries", link: "/builders/tools/libraries/web" },
-										{ label: "Backend Libraries", link: "/builders/tools/libraries/backend" },
-										{ label: "Unity Libraries", link: "/builders/tools/libraries/unity" },
-										{ label: "Mobile Libraries", link: "/builders/tools/libraries/mobile" },
-									]
-								},
-								{
-									label: "NFTs",
-									items: [
-										{ label: "Overview", link: "/builders/tools/nfts" },
-										{ label: "Marketplaces", link: "/builders/tools/nfts/marketplaces" },
-										{ label: "NFT API", link: "/builders/tools/nfts/nft-api" },
-										{ label: "NFT Mint", link: "/builders/tools/nfts/nft-minting" },
-									
-									]
-								},
-								{
-									label: "Gaming SDKs",
-									items: [
-										{ label: "Overview", link: "/builders/tools/gaming" },
-										{ label: "Eidolon", link: "/builders/tools/gaming/eidolon" },
-										{ label: "Emergence", link: "/builders/tools/gaming/emergence" },
-										{ label: "Mirage", link: "/builders/tools/gaming/mirage" },
-										{ label: "Web3.unreal", link: "/builders/tools/gaming/web3unreal" },
-									]
-								},
-								{
 									label: "Bridges",
 									items: [
 										{ label: "Overview", link: "/builders/tools/bridges" },
@@ -157,11 +117,32 @@ export default defineConfig({
 									]
 								},
 								{
-									label: "Payments",
+									label: "Gaming SDKs",
 									items: [
-										{ label: "Overview", link: "/builders/tools/payments" },
-										{ label: "On-Ramp", link: "/builders/tools/payments/on-ramp" },
-										{ label: "NFT Checkout", link: "/builders/tools/payments/nft-checkout" },
+										{ label: "Overview", link: "/builders/tools/gaming" },
+										{ label: "Eidolon", link: "/builders/tools/gaming/eidolon" },
+										{ label: "Emergence", link: "/builders/tools/gaming/emergence" },
+										{ label: "Mirage", link: "/builders/tools/gaming/mirage" },
+										{ label: "Web3.unreal", link: "/builders/tools/gaming/web3unreal" },
+									]
+								},
+								{
+									label: "Libraries",
+									items: [
+										{ label: "Overview", link: "/builders/tools/libraries" },
+										{ label: "Web Libraries", link: "/builders/tools/libraries/web" },
+										{ label: "Backend Libraries", link: "/builders/tools/libraries/backend" },
+										{ label: "Unity Libraries", link: "/builders/tools/libraries/unity" },
+										{ label: "Mobile Libraries", link: "/builders/tools/libraries/mobile" },
+									]
+								},
+								{
+									label: "NFTs",
+									items: [
+										{ label: "Overview", link: "/builders/tools/nfts" },
+										{ label: "Marketplaces", link: "/builders/tools/nfts/marketplaces" },
+										{ label: "NFT API", link: "/builders/tools/nfts/nft-api" },
+										{ label: "NFT Mint", link: "/builders/tools/nfts/nft-minting" },
 									
 									]
 								},
@@ -173,6 +154,26 @@ export default defineConfig({
 										{ label: "Razor", link: "/builders/tools/oracles/razor" },
 									]
 								},
+								{
+									label: "Payments",
+									items: [
+										{ label: "Overview", link: "/builders/tools/payments" },
+										{ label: "On-Ramp", link: "/builders/tools/payments/on-ramp" },
+										{ label: "NFT Checkout", link: "/builders/tools/payments/nft-checkout" },
+									
+									]
+								},
+								{
+									label: "Wallets",
+									items: [
+										{ label: "Overview", link: "/builders/tools/wallets" },
+										{ label: "Non-Custodial Wallets", link: "/builders/tools/wallets/non-custodial" },
+										{ label: "Custodial Wallets", link: "/builders/tools/wallets/custodial" },
+										{ label: "MPC Wallets", link: "/builders/tools/wallets/mpc" },
+										{ label: "Wallets Aggregator", link: "/builders/tools/wallets/aggregator" },
+									]
+								},
+
 								/*{
 									label: "SKALE",
 									collapsed: true,
