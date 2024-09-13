@@ -15,6 +15,11 @@ export default [
 		items: []
 	},
 	{
+		label: "Ecosystem",
+		url: "/ecosystem",
+		items: []
+	},
+	{
 		label: "Learn",
 		url: "/learn/about-skale-network",
 		items: []

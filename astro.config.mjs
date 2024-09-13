@@ -41,7 +41,6 @@ export default defineConfig({
 						{ label: "App Developers", 
 							items:[
 								{ label: "Overview", link: "/builders/app-developers/overview" },
-							//	{ label: "sFUEL Station", link: "/builders/app-developers/sfuel-station" },
 								{
 									label: "sFUEL Distribution",
 									items: [
@@ -198,6 +197,30 @@ export default defineConfig({
 							}
 						},
 						
+					]
+				},
+				{
+					label: "Ecosystem",
+					items: [
+						{ label: "Overview", link: "/ecosystem" },
+						{
+							label: "Delegators",
+							items: [
+								{ label: "Overview", link: "/ecosystem/delegators/overview" }
+							]
+						},
+						{
+							label: "Governance",
+							items: [
+								{ label: "Overview", link: "/ecosystem/governance/overview" }
+							]
+						},
+						{
+							label: "Validators",
+							items: [
+								{ label: "Overview", link: "/ecosystem/validators/overview" }
+							]
+						}
 					]
 				},
 				{
