@@ -38,8 +38,9 @@ export default defineConfig({
 					label: "Builders",
 					items: [
 						{ label: "Overview", link: "/builders" },
-						{ label: "App Developers", 
-							items:[
+						{
+							label: "App Developers",
+							items: [
 								{ label: "Overview", link: "/builders/app-developers/overview" },
 								{
 									label: "sFUEL Distribution",
@@ -47,7 +48,7 @@ export default defineConfig({
 										{ label: "Overview", link: "/builders/app-developers/sfuel-distribution" },
 										{ label: "API Distribution", link: "/builders/app-developers/sfuel-distribution/api-distribution" },
 										{ label: "POW Distribution", link: "/builders/app-developers/sfuel-distribution/pow-distribution" },
-										{ label: "Contract Distribution", link: "/builders/app-developers/sfuel-distribution/contract-distribution"}
+										{ label: "Contract Distribution", link: "/builders/app-developers/sfuel-distribution/contract-distribution" }
 									]
 								},
 							]
@@ -73,10 +74,11 @@ export default defineConfig({
 									}
 								},
 							]
-							
+
 						},
-						{ label: "Node Operators", 
-							items:[
+						{
+							label: "Node Operators",
+							items: [
 								{ label: "Overview", link: "/builders/node-operators/overview" },
 								{ label: "SKALE Nodes", link: "/builders/node-operators/skale-nodes" },
 								{ label: "SKALE Proxy", link: "/builders/node-operators/skale-proxy" },
@@ -143,7 +145,7 @@ export default defineConfig({
 										{ label: "Marketplaces", link: "/builders/tools/nfts/marketplaces" },
 										{ label: "NFT API", link: "/builders/tools/nfts/nft-api" },
 										{ label: "NFT Mint", link: "/builders/tools/nfts/nft-minting" },
-									
+
 									]
 								},
 								{
@@ -160,7 +162,7 @@ export default defineConfig({
 										{ label: "Overview", link: "/builders/tools/payments" },
 										{ label: "On-Ramp", link: "/builders/tools/payments/on-ramp" },
 										{ label: "NFT Checkout", link: "/builders/tools/payments/nft-checkout" },
-									
+
 									]
 								},
 								{
@@ -186,7 +188,7 @@ export default defineConfig({
 										{ label: "Archive Node", link: "/builders/tools/skale/archive-node" },
 									]
 								}*/
-		
+
 							]
 						},
 						{
@@ -197,7 +199,7 @@ export default defineConfig({
 								variant: "note"
 							}
 						},
-						
+
 					]
 				},
 				{
@@ -219,7 +221,8 @@ export default defineConfig({
 						{
 							label: "Validators",
 							items: [
-								{ label: "Overview", link: "/ecosystem/validators/overview" }
+								{ label: "Overview", link: "/ecosystem/validators/overview" },
+								{ label: "Swap Limit Fix", link: "/ecosystem/validators/swap-limit-fix" }
 							]
 						}
 					]
@@ -227,8 +230,8 @@ export default defineConfig({
 				{
 					label: "Learn",
 					items: [
-						{ label: "About SKALE Network", link: "/learn/about-skale-network"},
-						{ 
+						{ label: "About SKALE Network", link: "/learn/about-skale-network" },
+						{
 							label: "SKALE Chain",
 							items: [
 								{ label: "Overview", link: "/learn/skale-chain-overview" },
@@ -240,7 +243,7 @@ export default defineConfig({
 								{ label: "Titan AI Hub", link: "/learn/titan" },
 							]
 						},
-						{ 
+						{
 							label: "Beginner",
 							items: [
 								{ label: "EVM Compatability", link: "/learn/beginner/evm-compatability" },
@@ -269,7 +272,7 @@ export default defineConfig({
 							]
 						},
 						{ label: "Mainnet Beta", link: "/learn/mainnet-beta" },
-						{ label: "FAQ", link: "/learn/faq"},
+						{ label: "FAQ", link: "/learn/faq" },
 					]
 				},
 				{
