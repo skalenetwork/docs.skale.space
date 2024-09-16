@@ -55,7 +55,15 @@ Follow these steps to enable swap limiting capability:
 
 1. Log into the node as a user that you used to setup the node (user should have sudo privileges).
 
-2. Turn off your SKALE Node:
+2. Make a backup of your node and move backup archive to another machine:
+
+   ```bash
+   skale node backup [BACKUP_FOLDER_PATH] [ENV_FILE]
+   ```
+
+   Check out [node-cli backup docs](https://github.com/skalenetwork/node-cli?tab=readme-ov-file#node-backup) for more details.
+
+3. Turn off your SKALE Node:
 
    ```bash
    skale node turn-off
