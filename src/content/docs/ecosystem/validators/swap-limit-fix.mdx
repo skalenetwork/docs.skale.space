@@ -2,6 +2,9 @@
 title: SKALE Node Swap Limit Fix
 description: SKALE Node Swap Limit Fix for validators
 ---
+import { Steps } from "@astrojs/starlight/components";
+import { Aside } from '@astrojs/starlight/components';
+
 
 ## Introduction
 
@@ -47,11 +50,17 @@ WARNING: No swap limit support
 
 ## Fixing the Swap Limit Issue
 
-> **Note:** If you will encounter with any issues during the following steps, please stop and contact SKALE team.  
+<Aside>
+If you will encounter with any issues during the following steps, please stop and contact SKALE team.
+</Aside>
 
-> **Warning:** If your node is running on Google Cloud, commands may differ. Please check discussions on [Stack Exchange](https://unix.stackexchange.com/a/495058) or contact SKALE team.
+<Aside type="caution" title="Warning">
+If your node is running on Google Cloud, commands may differ. Please check discussions on [Stack Exchange](https://unix.stackexchange.com/a/495058) or contact SKALE team.
+</Aside>
 
 Follow these steps to enable swap limiting capability:
+
+<Steps>
 
 1. Log into the node as a user that you used to setup the node (user should have sudo privileges).
 
@@ -106,3 +115,5 @@ Follow these steps to enable swap limiting capability:
    ```
 
    No warning should be displayed.
+
+</Steps>
