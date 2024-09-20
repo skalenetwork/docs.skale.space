@@ -10,7 +10,7 @@ const { sublist, isNested } = Astro.props;
  * @name items
  * @description If Top level, check if entries contains a current item in which case return just that
  * @description Use this to make each "directroy" of the content/docs folder feel like it's own subsection of docs
- * 
+ *
  * Note - Temporary hack until multiple sidebars is officially added to Astro
  */
 let items = isNested ? sublist : sublist.filter((item: any) => {
@@ -22,6 +22,11 @@ let items = isNested ? sublist : sublist.filter((item: any) => {
 					if (e2.type === "group") {
 						for (const e3 of e2.entries) {
 							if (e3.isCurrent) return item;
+							if (e3.type === "group") {
+						      for (const e4 of e3.entries) {
+								if (e4.isCurrent) return item;
+							  }
+							}
 						}
 					}
 					if (e2.isCurrent) return item;
