@@ -1,0 +1,47 @@
+---
+title: SKALE 3.0.2 upgrade
+description: SKALE node upgrade steps from 3.0.1 to 3.0.2
+---
+import { Steps } from "@astrojs/starlight/components";
+
+
+## Upgrade steps from 3.0.1 to 3.0.2
+
+<Steps>
+
+1. Download new node-cli binary
+
+    ```bash
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.4.1/skale-2.4.1-Linux-x86_64 > /usr/local/bin/skale
+    ```
+
+2. Verify checksum using sha512sum command
+
+    ```bash
+    sha512sum /usr/local/bin/skale
+    ```
+    Expected checksum
+
+    ```bash
+    c0e2f735bd9bd3094449233ee02f767ac5b3a447781347133f8e7f30b0a1cec04653027e3fdd0518c6f85c8441fda5e49142266ef9dcd2259a2fffbf48bd6b08
+    ```
+
+3. Make node-cli executable
+
+    ```bash
+    chmod +x /usr/local/bin/skale
+    ```
+
+4. Update the following parameters to the new values.
+
+    ```bash
+    CONTAINER_CONFIGS_STREAM=3.0.2
+    ```
+
+5. Execute update
+
+    ```bash
+    skale node update .env --yes
+    ```
+
+</Steps>
