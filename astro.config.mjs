@@ -223,7 +223,12 @@ export default defineConfig({
 							items: [
 								{ label: "Overview", link: "/ecosystem/validators/overview" },
 								{ label: "Swap Limit Fix", link: "/ecosystem/validators/swap-limit-fix" },
-                                { label: 'Releases', items: [ { label: "3.0.2 Upgrade", link: "/ecosystem/validators/releases/3-0-2-upgrade" } ] }
+                                { 
+                                    label: 'Releases', 
+                                    items: [ 
+                                        { label: "3.0.2 Upgrade", link: "/ecosystem/validators/releases/3-0-2-upgrade" } 
+                                    ] 
+                                }
 							]
 						}
 					]
