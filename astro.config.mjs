@@ -388,10 +388,6 @@ export default defineConfig({
 									link: "/ecosystem/validators/overview",
 								},
 								{
-									label: "Swap Limit Fix",
-									link: "/ecosystem/validators/swap-limit-fix",
-								},
-								{
 									label: "Node CLI",
 									items: [
 										{
@@ -416,6 +412,14 @@ export default defineConfig({
 											],
 										},
 									],
+								},
+								{
+									label: "Swap Limit Fix",
+									link: "/ecosystem/validators/swap-limit-fix",
+								},
+								{
+									label: "Troubleshooting",
+									link: "/ecosystem/validators/troubleshooting",
 								},
 								{
 									label: "Validator CLI",
