@@ -396,7 +396,15 @@ export default defineConfig({
 									items: [
 										{
 											label: "Overview",
-											link: "/ecosysytem/validators/node-cli/overview",
+											link: "/ecosystem/validators/node-cli/overview",
+										},
+										{
+											label: "Changing Node IP",
+											link: "/ecosystem/validators/node-cli/changing-node-ip",
+										},
+										{
+											label: "Node SSL Setup",
+											link: "/ecosystem/validators/node-cli/node-ssl-setup",
 										},
 										{
 											label: "Releases",
