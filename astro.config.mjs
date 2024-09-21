@@ -392,6 +392,24 @@ export default defineConfig({
 									link: "/ecosystem/validators/swap-limit-fix",
 								},
 								{
+									label: "Node CLI",
+									items: [
+										{
+											label: "Overview",
+											link: "/ecosysytem/validators/node-cli/overview",
+										},
+										{
+											label: "Releases",
+											items: [
+												{
+													label: "v2.0",
+													link: "/ecosystem/validators/node-cli/releases/v2-0",
+												},
+											],
+										},
+									],
+								},
+								{
 									label: "Validator CLI",
 									items: [
 										{
