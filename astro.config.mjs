@@ -226,7 +226,8 @@ export default defineConfig({
                                 { 
                                     label: 'Releases', 
                                     items: [ 
-                                        { label: "3.0.2 Upgrade", link: "/ecosystem/validators/releases/3-0-2-upgrade" } 
+                                        { label: "3.0.2 Upgrade", link: "/ecosystem/validators/releases/3-0-2-upgrade" },
+                                        { label: "3.0.3 Upgrade", link: "/ecosystem/validators/releases/3-0-3-upgrade" } 
                                     ] 
                                 }
 							]
