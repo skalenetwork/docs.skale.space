@@ -444,6 +444,19 @@ export default defineConfig({
 									],
 								},
 								{
+									label: "Watchdog",
+									items: [
+										{
+											label: "Overview",
+											link: "/ecosystem/validators/watchdog/overview"	
+										},
+										{
+											label: "APIs",
+											link: "/ecosystem/validators/watchdog/apis"
+										}
+									]
+								},
+								{
 									label: "Releases",
 									items: [
 										{
