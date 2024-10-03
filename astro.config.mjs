@@ -414,12 +414,20 @@ export default defineConfig({
 									],
 								},
 								{
+									label: "Compliance Requirements",
+									link: "/ecosystem/validators/compliance-requirements"
+								},
+								{
 									label: "Swap Limit Fix",
 									link: "/ecosystem/validators/swap-limit-fix",
 								},
 								{
 									label: "Troubleshooting",
 									link: "/ecosystem/validators/troubleshooting",
+								},
+								{
+									label: "Validator Setup",
+									link: "/ecosystem/validators/validator-setup"
 								},
 								{
 									label: "Validator CLI",
