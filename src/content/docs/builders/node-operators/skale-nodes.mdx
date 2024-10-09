@@ -7,7 +7,7 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 
 The SKALE Network consists of a large pool of validator nodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These nodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager.
 
-Each SKALE Chain comprises a collective of randomly appointed virtualized subnodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Nodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via virtualized subnodes. This multiplex capability is made possible via a containerized subnode architecture deployed on each node in the network. Each node is virtualized and can participate as a validator via this subnode architecture for an independent number of sidechains.
+Each SKALE Chain comprises a collective of randomly appointed virtualized subnodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Nodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via virtualized subnodes. This multiplex capability is made possible via a containerized subnode architecture deployed on each node in the network. Each node is virtualized and can participate as a validator via this subnode architecture for an independent number of SKALE Chains.
 
 The subnode virtualization is enabled via an innovative containerized architecture that provides industrial-grade performance and optionality for decentralized application developers – performance and flexibility that’s similar to traditional centralized cloud and microservice systems. Containers are divided into several main components encapsulated via a dockerized Linux OS, allowing each node to be hosted in an OS-agnostic manner.
 
@@ -45,6 +45,6 @@ SKALE Admin evaluates the prospective node to ensure that it’s upholding netwo
 
 This request contains both the required network deposit as well as node metadata collected by the SKALE Daemon (for example IP address, port, public key, etc.).
 
-Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective node as a 'full node' or a 'fractional node' by assigning different sizes of SKALE Chains to the prospective node. Full nodes have all their resources utilized for a single SKALE Chain, while fractional nodes participate in multiple sidechains (multi-tenancy).
+Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective node as a 'full node' or a 'fractional node' by assigning different sizes of SKALE Chains to the prospective node. Full nodes have all their resources utilized for a single SKALE Chain, while fractional nodes participate in multiple SKALE Chains (multi-tenancy).
 
 [General Hardware Requirements](https://docs.skale.network/network/v2.2.x/#_prerequisites)

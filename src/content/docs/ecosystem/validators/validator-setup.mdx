@@ -1,0 +1,781 @@
+---
+title: Validator Setup
+description: Setup Process for new SKALE Validator
+---
+import { Step, Steps, Aside } from "@astrojs/starlight/components";
+import { PostRegistrationChecklist } from "../../../../components/PostRegistrationChecklist";
+
+<Steps>
+
+1. ## Setup Validator
+    
+    <Aside type="note">Due date 20th day of each month</Aside>
+
+    ### 1.1 Prepare
+
+    #### 1.1.1 Obtain Ethereum Software Wallet or Hardware wallet
+
+    Get a Ledger, Hardware or Software wallet ready like Metamask/Portis/Bitski/Torus/myetherwallet.
+    Specific setup instructions will follow.
+
+    This wallet will be used for receiving delegation, bounties, and self delegating.
+
+    #### 1.1.2 Fund Validator Wallet with ETH
+
+    Be ready to have some ETH to accept delegations and link your validator node.
+    Remember these are transactions with SKALE Manager on Ethereum, and therefore require ETH.
+
+    *Minimum ETH: 1.0*
+
+    #### 1.1.3 Get SKALE Manager contract ABIs from SKALE
+
+    [https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.11.0/skale-manager-1.11.0-mainnet-abi.json](https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.11.0/skale-manager-1.11.0-mainnet-abi.json)
+
+    #### 1.1.4 Fund SRW Wallet with ETH
+
+    Be ready to fund ETH in your self-recharging wallet (SRW). See [Self-recharging wallet documentation](/ecosystem/validators/validator-cli/self-recharding-wallets).
+
+    *Minimum ETH*: <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mn>0.5</mn><mo>&#x2219;</mo><mi>node</mi><mo>&#xA0;</mo><mi>count</mi></mrow></math>
+
+    #### 1.1.5 Decide your commission fee
+
+    Decide on your commission fee. This cannot be changed once it is set. To set a new commission fee, you'll have to register a new validator.
+    This new validator would have to link nodes and accept delegations for it (old validator nodes and delegations cannot be rolled into a
+    new validator commission fee).
+
+    _Reference Documents_
+    - [Validator & Token Economics](https://skale.network/blog/validator-economics)
+    - [Tokenomics](https://skale.network/tokenomics)
+
+    ### 1.2 Register Validator
+
+    SKALE Validator CLI is the validator client interface for registering a new validator into network or handling additional
+    delegation services where validators can self delegate or token holders can delegate to a validator. These are the type of
+    operations that can be done with the Validator CLI:
+
+    - Register Validator (Set Commission Rate or Minimum delegation amount)
+    - Accept pending delegations
+    - Link all validator node addresses to a validator wallet address
+    - Request or cancel a delegation
+
+    [See the SKALE Validator CLI documentation](/ecosystem/validators/validator-cli/overview)
+
+    This document contains instructions on how to get started with the SKALE Validator CLI.
+
+    <Aside type="note">
+        Validator CLI doesn't have to be installed in the same server as the node-cli. This can be set up on Mac or Linux.
+        This does not need to be included in every node. Setting up once per validator organization is sufficient.
+    </Aside>
+
+    #### 1.2.1 Install SKALE Validator CLI
+
+    ##### Download the SKALE Validator CLI binary
+
+    `VERSION_NUM` is a version identifier
+
+    ```shell
+    VERSION_NUM=[VERSION_NUM] && sudo -E bash -c "curl -L https://github.com/skalenetwork/validator-cli/releases/download/$VERSION_NUM/sk-val-$VERSION_NUM-`uname -s`-`uname -m` >  /usr/local/bin/sk-val"
+    ```
+
+    ##### Apply executable permissions to the binary
+
+    ```shell
+    chmod +x /usr/local/bin/sk-val
+    ```
+
+    ##### Set SKALE Manager contracts info and set the endpoint
+
+    ```shell
+    sk-val init -e [ENDPOINT] -c [ABI] --wallet [software/ledger]
+    ```
+
+    Required arguments:
+
+    - `--endpoint/-e` - RPC endpoint of the node in the network where SKALE manager is deployed (http or https). Example is https://my.geth.node.ip/..
+
+    - `--contracts-url/-c` - URL to SKALE Manager contracts ABI and addresses
+
+    - `-w/--wallet` - Type of the wallet that will be used for signing transactions (software or ledger)
+
+    #### 1.2.2 Setup wallet
+
+    ##### Software wallet
+
+    If you want to use software wallet you need to save private key into a file.
+
+    Replace `[YOUR PRIVATE KEY]` with your wallet private key
+
+    ```shell
+    echo [YOUR PRIVATE KEY] > ./pk.txt
+    ```
+
+    ##### Ledger  wallet
+
+    If you want to use ledger you should install ETH ledger application and  initialize device with `setup-ledger` command.
+
+    ```shell
+    sk-val wallet setup-ledger --address-index [ADDRESS_INDEX] --keys-type [KEYS_TYPE]
+    ```
+
+    Required arguments:
+
+    -   `--address-index` - Index of the address to use (starting from `0`)
+    -   `--keys-type` - Type of the Ledger keys (live or legacy)
+
+    <Aside type="note" title="Important">
+    Make sure you enabled blind signing on ETH application settings. Otherwise transactions won't work
+    </Aside>
+    
+    #### 1.2.3 Register as a new SKALE validator
+
+    <Aside type="caution" title="Warning">
+    DON'T REGISTER A NEW VALIDATOR IF YOU ALREADY HAVE ONE! check : `sk-val validator ls`. For additional node set up, please go to Step 3.
+    </Aside>
+
+    ```shell
+    sk-val validator register -n [NAME] -d [DESCRIPTION] -c [COMMISSION_RATE] --min-delegation [MIN_DELEGATION]
+    ```
+
+    Required arguments:
+
+    -   `--name/-n` - Validator name
+    -   `--description/-d` - Validator description (preferably organization info)
+    -   `--commission-rate/-c` - Commission rate (percent %)
+    -   `--min-delegation` - Validator minimum delegation amount
+
+    Optional arguments:
+
+    -   `--pk-file` - Path to file with private key (only for `software` wallet type)
+    -   `--gas-price` - Gas price value in Gwei for transaction (if not specified doubled average network value will be used)
+    -   `--yes` - Confirmation flag
+
+    ### 1.3 Make sure that your validator is added to the trusted list
+
+    To ensure that your validator is added to trusted contact SKALE team.
+
+    <Aside type="note" title="Important">
+    This is a temporary process, which will be removed as the community matures.
+    </Aside>
+2. ## Setup SGX
+
+    <Aside type="note">
+    Due date: 23rd of each month
+    </Aside>
+
+    ### 2.1 Overview
+
+    SGX is a secure storage for BLS private key shares, which are used in consensus to sign new blocks.
+    SGX is also used for private key shares.
+
+    SKALE DKG uses Intel® SGX server to store account and BLS keys and all the data related to DKG process
+    and it also uses the random number generator provided by Intel® SGX. For more information,
+    please check [here](/learn/advanced/dkg-bls).
+
+    Clients connect to the server, authenticate to it using TLS 1.0 protocol with client certificates, and then
+    issue requests to the server to generate crypto keys and perform cryptographic operations. The keys are
+    generated inside the secure SGX enclave and never leave the enclave unencrypted.
+
+    ### 2.2 Configure server
+
+    To be able to set up an SGXWallet, validators are required to have SGX compatible servers. Before installing SGXWallet, validators must make sure that SGX is enabled in the server.
+
+    #### 2.2.1 Server Requirements
+
+    - Ubuntu 20.04 (focal)
+    - SGX-enabled Intel processor
+    - At least 8 GB
+    - Swap size equals to half (1/2) of RAM size
+
+    ### 2.3 Configure Network
+
+    It's required to setup VPN between nodes and SGX server. Ports 1026-1031 should  open only to SKALE Nodes, not public ports should be accessible by node.
+
+    <Aside type="note">
+    SGXWallet can support up to <strong>5</strong> SKALE nodes. If you have more, you should setup additional server.
+    </Aside>
+
+    ### 2.4 Install and Configure Packages 
+
+    Before running SGXWallet install the following packages
+
+    **Install general tools:**
+
+    ```shell
+    sudo apt-get install -y build-essential make cmake gcc g++ yasm  python libprotobuf10 flex bison automake libtool texinfo libgcrypt20-dev libgnutls28-dev
+    ```
+
+    **Install Docker:**
+
+    ```shell
+    sudo apt-get install -y docker
+    ```
+
+    **Install docker.io:**
+
+    ```shell
+    sudo apt-get install -y docker.io
+    ```
+
+    **Install docker-compose:**
+
+    ```shell
+    sudo apt-get install -y docker-compose
+    ```
+
+    **Install cpuid and libelf-dev packages:**
+
+    ```shell
+    sudo apt-get install -y libelf-dev cpuid
+    ```
+
+    **Verify your processor supports Intel SGX with:**
+
+    ```shell
+    cpuid | grep SGX:
+    ```
+
+    <Aside type="caution" title="Important">
+    After installing docker make sure that `live-restore` option
+    is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
+    </Aside>
+
+    **Disable automatic updates**
+
+    It's recommended to only update the SGXWallet server if there are critical security fixes. This is because SGXWallet is based on new low
+    level technology, and kernel updates may break the system. Currently SGX is tested on 4.15-\* kernels. It's best to avoid minor version updates too.
+
+    To make sure `apt update` won't update the kernel you should use apt-mark hold command:
+
+    ```shell
+    sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
+    ```
+
+    Also if you configured unattended upgrades, you should make sure kernel won't update automatically. To do this, add the following lines to `/etc/apt/apt.conf.d/50unattended-upgrades` file:
+
+    ```shell
+    Unattended-Upgrade::Package-Blacklist {
+            "linux-generic";
+            "linux-image-generic";
+            "linux-headers-generic";
+    };
+    ```
+
+    **Output**
+
+    ```shell
+    SGX: Software Guard Extensions supported = true
+    ```
+
+    ### 2.5 Download SGXWallet source code
+
+    #### 2.5.1 Clone SGXWallet Repository
+
+    Clone SGX Wallet Repository to your SGX compatible Server:
+
+    ```shell
+    git clone https://github.com/skalenetwork/sgxwallet/
+    cd sgxwallet
+    git checkout tags/ADD_VERSION_TAG
+    ```
+
+    #### 2.5.2 Enable SGX
+
+    **SGX Wallet repository includes the sgx_enable utility. To enable SGX run:**
+
+    ```shell
+    sudo ./sgx_enable
+    ```
+
+    Note: if you aren't using Ubuntu 18.04 (not recommended), you may need to rebuild the sgx-software-enable utility before use by typing:
+
+    ```shell
+    cd sgx-software-enable;
+    make
+    cd ..
+    ```
+
+    **Install SGX Library:**
+
+    ```shell
+    cd scripts
+    sudo ./sgx_linux_x64_driver_2.5.0_2605efa.bin
+    cd ..
+    ```
+
+    **System Reboot:**
+
+    <Aside type="note">
+    Reboot your machine after driver install!
+    </Aside>
+
+    **Check driver installation:**
+    To check that isgx device is properly installed run this command:
+
+    ```shell
+    ls /dev/isgx
+    ```
+
+    If you don't see the isgx device, you need to troubleshoot your driver installation from [here](https://github.com/skalenetwork/sgxwallet/blob/develop/docs/enabling-sgx.md).
+
+    **Another way to verify Intel SGX is enabled in BIOS:**
+
+    <Aside type="note">
+    **_If you already executed the previous steps please move to STEP 3_**
+    </Aside>
+
+    Enter BIOS by pressing the BIOS key during boot. The BIOS key varies by manufacturer and could be F10, F2, F12, F1, DEL, or ESC.
+
+    Usually Intel SGX is disabled by default.
+
+    To enable:
+
+    find the Intel SGX feature in BIOS Menu (it's usually under the "Advanced" or "Security" menu)
+    Set SGX in BIOS as enabled (preferably) or software-controlled.
+    save your BIOS settings and exit BIOS.
+    Enable "software-controlled" SGX
+    Software-controlled means that SGX needs to be enabled by running a utility.
+
+    ### 2.6 Update docker-compose.yaml
+
+    Open run_sgx directory
+
+    ```shell
+    cd sgxwallet/run_sgx;
+    ```
+
+    On some machines, the SGX device isn't **/dev/mei0** but a different device, such as **/dev/bs0** or **/dev/sg0**. In this case please edit docker-compose.yml on your machine to specify the correct device to use:
+
+    ```shell
+    vi docker-compose.yml
+    ```
+
+    make sure `image` is skalenetwork/sgxwallet:&lt;`SGX_VERSION`> in docker-compose and it will look like:
+
+    ```shell
+    version: '3'
+    services:
+      sgxwallet:
+        image: skalenetwork/sgxwallet:<SGX_VERSION>
+        ports:
+          - "1026:1026"
+          - "1027:1027"
+          - "1028:1028"
+          - "1029:1029"
+        devices:
+          - "/dev/isgx"
+          - "/dev/sg0"
+        volumes:
+          - ./sgx_data:/usr/src/sdk/sgx_data
+          -  /dev/urandom:/dev/random
+        logging:
+          driver: json-file
+          options:
+            max-size: "10m"
+            max-file: "4"
+        restart: unless-stopped
+        command: -s -y -V
+        healthcheck:
+          test: ["CMD", "ls", "/dev/isgx", "/dev/"]
+    ```
+
+
+
+    ### 2.7 Spin up SGXWallet Container
+
+    **Start SGX Wallet Containers**
+    To run the server as a daemon:
+
+    ```shell
+    sudo docker-compose up -d
+    ```
+
+    ### 2.8 Securely save generated backup key
+
+    The backup key is automatically stored in *sgx_data* directory.
+
+    The filename of the key is sgx_wallet_backup_key.txt, and is generated the first time the SGX wallet is started.
+
+    <Aside type="caution" title="Important">
+    **This key must be securely recorded and stored.**
+    Be sure to store this key in a safe place, then go into a docker container and securely remove it with the following command:
+    </Aside>
+
+    ```shell
+    docker exec -it <SGX_CONTAINER_NAME> bash && apt-get install secure-delete && srm -vz backup_key.txt
+    ```
+
+    <Aside type="note">
+    You should enable SSL/TLS for your SGX node. Make sure you finalize this before you move on to your next step.
+    </Aside>
+
+
+    ### 2.9 Backup sgx data
+
+    It's strongly recommended to backup sgx data regularly. The guide can be found [here](https://github.com/skalenetwork/sgxwallet/blob/stable/docs/backup-procedure.md).
+
+3. ## Node Setup
+
+    <Aside type="note">
+    Due date: 23rd of each month
+    </Aside>
+
+    After Setting up SGX Wallet and create certifications, validators can download the SKALE Node CLI executables register and maintain your SKALE node.
+    This process downloads docker container images from docker hub and spins up SKALE Node functionalities. Some base containers such as SKALE Admin,
+    Bounty, TransactionManager will be created during installation for each node.
+
+    This document contains instructions on how to setup node using SKALE Node CLI.
+
+    ### 3.1 Prepare Server
+
+    Node server should follow compliance requirements which will be checked during installing SKALE node software.
+    Please make sure:
+
+    **General requirements**
+
+    - A Linux x86_64 machine
+    - Ubuntu 20.04 (focal)
+    - Separate not mounted block device - 2 Tb
+    - 8 physical cores
+    - 32GB RAM
+    - 16GB Swap
+
+    More information can be found here: [Compliance requirements](/ecosystem/validators/compliance-requirements)
+
+    ### 3.2 Install Packages
+
+    Before setting up node you should make sure that the following software is installed:
+
+    - docker
+    - docker-compose (preferably 1.27.4)
+    - iptables-persistent 
+    - lvm2 
+
+    <Aside type="note" title="Important">
+    After docker installation make sure that the `live-restore` option is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
+    </Aside>
+    
+    <Aside>
+    You can install iptables-persistent using the following commands:
+    </Aside>
+
+    ```shell
+    echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+    echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+    sudo apt install iptables-persistent -y
+    ```
+
+    <Aside type="note" title="Important">
+    You should carefully control any automatic updates. In general avoid updates to the Linux kernel, docker, docker-compose, btrfs-progs.
+    And take care when updating lvm2, iptables, iptables-persistent, and python. Please see the [FAQ - Node update procedure for more information](/ecosystem/validators/faq#node-update-procedure).
+    </Aside>
+
+    If you have any concerns or questions, please don't hesitate to reach out to SKALE Team leads on http://skale.chat/[Discord].
+
+    ### 3.3 Download Node CLI binary
+
+    ### 3.4 Download the Executable
+
+    ```shell
+    sudo -E bash -c "curl -L {node-cli} >  /usr/local/bin/skale"
+    ```
+
+    ### 3.5 Apply executable permissions to the downloaded binary:
+
+    ```shell
+    chmod +x /usr/local/bin/skale
+    ```
+
+    ### 3.6 Test the Installation
+
+    ```shell
+    sudo skale --help
+    ```
+
+    <Aside type="note" title="Important">
+    You should run node-cli commands using sudo
+    </Aside>
+
+    More information can be found [here](/ecosystem/validators/node-cli/overview).
+
+
+    ### 3.7 Configure .env
+
+    Configuration parameters are passed to Node CLI through .env file. It should contain the following variables:
+
+    -   `CONTAINERS_CONFIG_STREAM` - git branch with containers versions config
+    -   `DISK_MOUNTPOINT` - Attached storage block device 
+    -   `DOCKER_LVMPY_STREAM` - git branch of docker lvmpy volume driver for schains
+    -   `ENDPOINT` - RPC endpoint of the node in the network where SKALE manager is deployed (`http` or `https`)
+    -   `FILEBEAT_HOST` - URL to the Filebeat log server
+    -   `IMA_CONTRACTS_ABI_URL` - URL to IMA contracts ABI and addresses
+    -   `IMA_ENDPOINT` - IMA endpoint to connect (should be the same as `ENDPOINT`).
+    -   `MANAGER_CONTRACTS_ABI_URL` - URL to SKALE Manager contracts ABI and addresses
+    -   `SGX_SERVER_URL` - URL to SGX server in the network (i.e. http(s)://host:port, do not add a trailing "/" after the port number )
+    -   `ENV_TYPE` - network type (mainnet/testnet)
+
+
+    `ENDPOINT`, `IMA_ENDPOINT`, `SGX_SERVER_URL`, `DISK_MOUNTPOINT` are server dependent. Other options depend on the network type.
+
+    For the `{ENV_TYPE}` network .env will look like:
+
+    ```.env
+    CONTAINER_CONFIGS_STREAM=3.0.1
+    DOCKER_LVMPY_STREAM=1.0.2-stable.0
+    FILEBEAT_HOST=filebeat.mainnet.skalenodes.com:5000
+    MANAGER_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.11.0/skale-manager-1.11.0-mainnet-abi.json
+    IMA_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/IMA/1.5.0/mainnet/abi.json
+    ENV_TYPE=mainnet
+    DISK_MOUNTPOINT=[DISK_MOUNTPOINT]
+    IMA_ENDPOINT=[IMA_ENDPOINT]
+    ENDPOINT=[ENDPOINT]
+    SGX_SERVER_URL=[SGX_SERVER_URL] # Do not add a trailing "/" after the port number.
+    ```
+
+    It's possible to configure Telegram based alert system by providing the following options:
+
+    - `TG_API_KEY` - Telegram API key
+    - `TG_CHAT_ID` - Telegram chat ID
+
+    ### 3.8 Initialize node
+
+    To install node on your server you should run `skale node init`. It will create necessary configuration files and run base services and containers. 
+
+    ```shell
+    sudo skale node init .env 
+    ```
+
+    **Example Output:**
+
+    ```shell
+    48914619bcd3: Pull complete
+    db7a07cce60c: Pull complete
+    d285532a5ada: Pull complete
+    8646278c4014: Pull complete
+    3a12d6e582e7: Pull complete
+    0a3d98d81a07: Pull complete
+    43b3a182ba00: Pull complete
+    Creating monitor_filebeat          ... done
+    Creating skale_transaction-manager ... done
+    Creating skale_watchdog            ... done
+    Creating skale_admin               ... done
+    Creating skale_bounty              ... done
+    Creating skale_api                 ... done
+    ```
+
+    You can verify installation procedure by running: 
+
+    ```shell
+    sudo skale wallet info
+
+    ```
+
+    **Output:**
+
+    ```shell
+    Address: <your-skale-node-wallet-address>
+    ETH balance: 1.0 ETH
+    SKALE balance: 0 SKALE
+
+    ```
+
+    The common problem is network misconfiguration between the node and SGXWallet. You can recheck connection status using `skale health sgx`:
+
+    ```shell
+    sudo skale health sgx
+
+    ```
+
+    **Output:**
+
+    ```shell
+    SGX server status:
+    ┌────────────────┬──────────────────────────┐
+    │ SGX server URL │ <sgx-url>                │
+    ├────────────────┼──────────────────────────┤
+    │ Status         │ CONNECTED                │
+    └────────────────┴──────────────────────────┘
+
+    ```
+
+    ### 3.9 Setup SSL Certificates
+
+    #### 3.9.1 Setup IP Redirects
+
+    You will need to setup redirects from each node IP to the node domain.
+
+    #### 3.9.2 Issue SSL Certificates
+
+    You will need SSL certs issued by one of the Trusted CAs. Once you've decided on the certificate issuer you have several
+    options - issue a separate certificate for each subdomain (node-0.awesome-validator.com, node-1.awesome-validator.com) or
+    issue a single Wildcard SSL for all nodes (\*.awesome-validator.com). As a result, you should have 2 main files saved and
+    copied to the respective nodes:
+
+    - Certificate file (for example, fullchain.pem or cert.pem)
+    - Private key file (for example, privkey.pem, pk.pem)
+
+    #### 3.9.3 Upload certificates to the SKALE Node
+
+    Once you copied the certificate and private key file, all you have to do is to run the following command:
+
+    ```shell
+    sudo skale ssl upload -c $PATH_TO_CERT_FILE -k $PATH_TO_KEY_FILE
+    ```
+
+    #### 3.9.4 SSL Status
+
+    Status of the SSL certificates on the node
+
+    ```shell
+    sudo skale ssl status
+    ```
+
+    For more details, please see [Node SSL docs](/ecosystem/validators/node-cli/node-ssl-setup).
+
+
+    ### 3.10 Fund Node wallet with ETH
+
+    Some of the node operations send ETH mainnet transaction (e.g. chain creation). So the node wallet should have at least 1 ETH
+
+    To get the address you should run `skale wallet info` command.
+
+    <Aside type="note">
+    Spent ETH is reimbursed after the transaction was completed.
+    </Aside>
+
+
+    ### 3.11 Sign Validator ID using SGXWallet
+
+    Using *validator-cli* check your validator ID:
+
+    ```shell
+    sk-val validator ls
+    ```
+
+    Get your SKALE node signature by running Node CLI command. 
+
+    ```shell
+    sudo skale node signature [VALIDATOR_ID]
+
+    ```
+
+    **Output:**
+
+    ```shell
+    Signature: <your-signature>
+    ```
+
+    ### 3.12 Link SKALE wallet address to your validator account using Validator CLI
+
+    To successfully register new node you should bind node address and validator entity using *validator-cli* `link-address`:
+
+    ```shell
+     sk-val validator link-address [NODE_ADDRESS] [SIGNATURE]
+    ```
+
+    <Aside type="note">
+    You can find node address by executing `skale wallet info` command
+    </Aside>
+
+    Optional arguments:
+
+    - `--pk-file` - Path to file with private key (only for `software` wallet type)
+    - `--gas-price` - Gas price value in Gwei for transaction (if not specified doubled average network value will be used)
+    - `--yes` - Confirmation flag
+
+    ### 3.13 Backup Node
+
+    We strongly recommend to regularly backup node data. The critical information stored `~/.skale` directory.
+
+    The `skale node backup` command archives the data which you can download and store somewhere else.
+
+    To restore the node you should use `skale node restore`
+
+    More information can be found xref:node-cli::index.adoc#_node_backup[here].
+
+    ### 3.14 Accept Delegations
+
+    Every delegation need to be accepted. You can do it using `sk-val validator accept-delegation` command:
+
+    ```shell
+    sk-val validator accept-delegation --delegation-id [DELEGATION-ID] 
+    ```
+
+    Required arguments:
+
+    - `--delegation-id` - Delegation id to accept
+
+    Optional arguments:
+
+    - `--pk-file` - Path to file with private key (only for software wallet type)
+    - `--gas-price` - Gas price value in Gwei for transaction (if not specified doubled average network value will be used)
+    - `--yes` - Confirmation flag
+
+    You can get [DELEGATION-ID] by running `sk-val validator delegations`:
+
+    ```shell
+    sk-val validator delegations [VALIDATOR_ID]
+    ```
+
+    You will see your pending delegation (`PENDING` status)  as well as already accepted ones (`DELEGATED` status).
+
+    <Aside type="note">
+    To register the node validator must meet the Minimum Staking Requirement (MSR) of 20,000,000 SKL.
+    </Aside>
+
+4. ## Register Node in SKALE Network
+
+    ### 4.1 Register Node with Node CLI
+
+    <Aside type="note" title="Important">
+    Before proceeding, you will need to have at least  **1 ETH**. Also amount of delegated skale tokens need to be more or equal to minimum staking amount.
+    </Aside>
+
+    To register with the network, you will need to provide the following:
+
+    -  Node name
+    -  Machine public IP
+    -  Domain name
+
+    ```shell
+    sudo skale node register --name [NODE_NAME] --ip [NODE_IP] --domain [DOMAIN_NAME]
+
+    ```
+
+    Optional arguments:
+
+    - `--port` - beginning of the port range that will be used for skale schains (`10000` by default)
+
+    **Output:**
+
+    ```shell
+    Node registered in SKALE manager. For more info run: skale node info
+    ```
+
+    ### 4.2 Check Node Status
+
+    You can check the status of your node, and ensure that it's properly registered with the SKALE Network.
+
+    ```shell
+    sudo skale node info
+    ```
+
+    **Output:**
+
+    ```shell
+    # Node info
+    Name: <Node name>
+    ID: <Node ID>
+    IP: <IP of Machine>
+    Public IP: <Public IP of Machine>
+    Port: <Node port>
+    Domain name: <Node domain name>
+    Status: Active
+    ```
+
+5. ## Post Registration Checks
+    <Aside type="note">
+        The checkboxes below will save to local storage so you can use this as a checklist.
+    </Aside>
+    <br />
+    <PostRegistrationChecklist client:load />
+</Steps>
