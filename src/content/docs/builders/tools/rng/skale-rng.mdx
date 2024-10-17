@@ -1,0 +1,84 @@
+---
+title: SKALE RNG
+description: SKALE RNG
+---
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
+
+<ToolLayout
+	introParagraph="Each SKALE chain offers a freely accessible Random Number Generator that relies on the inherent randomness of the chain's consensus mechanism."
+	toolName="SKALE RNG"
+	toolLink="https://www.npmjs.com/package/@dirtroad/skale-rng"
+	toolDocsLink="https://www.npmjs.com/package/@dirtroad/skale-rng"
+>
+
+
+Each SKALE Chain includes a built-in random number generator (RNG) that produces a new random number with every block. This RNG is derived from the threshold signature shares of at least 11 out of 16 SKALE nodes supporting the chain.
+
+SKALE chain consensus is asynchronous and leaderless, with blocks signed by a minimum of 11 out of 16 nodes. The signatures are combined in a way that prevents any single node from influencing the final outcome, ensuring the randomness cannot be tampered with or manipulated by any individual entity.
+
+Steps to achieve the random number: 
+<Steps>
+1. Signatures for the current block are retrieved.
+2. The BLAKE3 hash of the signatures is created.
+3. The resulting hex RNG is presented.
+</Steps>
+
+
+## Implementation Example
+
+<Steps>
+
+1. #### Code to retrieve the random bytes
+
+    The code bellow showcases how to use the precompiled RNG. It showcases how to access the `getBlockRandom`precompiled at the address `0x18`.
+
+    ```solidity
+        pragma solidity ^0.8.13;
+
+        contract A {
+
+        function getRandom() public view returns (bytes32 addr) {
+            assembly {
+                let freemem := mload(0x40)
+                let start_addr := add(freemem, 0)
+                if iszero(staticcall(gas(), 0x18, 0, 0, start_addr, 32)) {
+                    invalid()
+                }
+                addr := mload(freemem)
+            }
+        }
+    }
+    ```
+
+2. #### Returned random bytes
+
+    Running the `getRandom()` function several times returns something similar to the following example. Each different result corresponds to a new block: 
+
+    ```sh 
+    0:bytes32: addr 0xb01da4532b80108eee3d00d48d6c617869eabfa39acbb58b7fd44e8369331501
+    0:bytes32: addr 0x48e4af915a9cf211474c11fec16dd40164a1d6d82dec93a646b4b776261a9fe5
+    0:bytes32: addr 0x7d95dd4d341e6bf27ce37e1dc531319daa1dfd75efe4a5f1b1de1f3062425155
+    0:bytes32: addr 0x80494d5289618a28ca5ed57803404a4c3b379699d81ae1badf408fb8341c8ef7
+    0:bytes32: addr 0xfd66a3c359c1c73f285f881105bb8ef5185cc04d5c8c7360c4386f0673ecc98b
+    0:bytes32: addr 0xb95f1c2be3b13371115b8e6431461a24e960f0bb9881420993528ce68b019f75
+    ```
+
+3. #### Converting random bytes into uin256
+
+    The random bytes returned by the `getRandom()` function can be handled in different ways depending on the use case. One of the most common cases is generating a simple random uint256. 
+
+    To achieve the random uint256 its only required to cast the random bytes into a uint256:
+
+    ```solidity
+    function getRandomNumber() public view returns (uint256) {
+        return uint256(getRandom());
+    }
+    ```
+4. #### Examples
+
+    For more examples, like generating a random number within a specific range or generating two random numbers from the same block, check out the documentation at: https://docs.dirtroad.dev/skale/skale-rng/.
+</Steps>
+
+
+</ToolLayout>
