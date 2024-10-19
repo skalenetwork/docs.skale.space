@@ -4,6 +4,9 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
+	redirects: {
+		"/quick-start/select-a-chain": "/quick-start/deploy-to-testnet"
+	},
 	integrations: [
 		react(),
 		starlight({
