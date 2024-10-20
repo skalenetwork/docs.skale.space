@@ -81,22 +81,16 @@ const chains = {
 	    				decimals: 18
 	    			},
     				{
-    					address: "0x7aE734db73c57F3D16f5F141BAf6CfABD9E693bf",
-    					contractName: "DAI",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
-    					address: "0xbEE0FB0C095405A17c079Cd5C3cc89525e5A9a8C",
-    					contractName: "USDP",
-    					contractType: "erc20",
-    					decimals: 18
-    				},
-    				{
     					address: "0x6CE77Fc7970F6984eF3E8748A3826972Ec409Fb9",
     					contractName: "USDC",
     					contractType: "erc20",
     					decimals: 6
+    				},
+    				{
+    					address: "0x6c71319b1F910Cf989AD386CcD4f8CC8573027aB",
+    					contractName: "SKL",
+    					contractType: "erc20",
+    					decimals: 18
     				}
     			]
     		},
