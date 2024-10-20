@@ -312,6 +312,19 @@ export default defineConfig({
 									],
 								},
 								{
+									label: "RNG",
+									items: [
+										{
+											label: "Overview",
+											link: "/builders/tools/rng",
+										},
+										{
+											label: "SKALE RNG",
+											link: "/builders/tools/rng/skale-rng",
+										}
+									],
+								},
+								{
 									label: "Wallets",
 									items: [
 										{
