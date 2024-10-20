@@ -202,10 +202,10 @@ const DistributionManagerABI = [
 ];
 
 const DistributionManagerAddress: {[key in ChainKey]: string} = {
-	calypso: "0xD5E0cBcbd5a2Fd24718aF4c06Ae763B0a79AeFD1",
-	europa: "0xB8C3c6640ed68ED2c4E558E2e79C9fd152D91433",
-	nebula: "0xe8126F785F6CC2C2f3CcA39eB1d97809d9Ba36C1",
-	titan: "0xD5E0cBcbd5a2Fd24718aF4c06Ae763B0a79AeFD1"
+	calypso: "0x91b26672E06C5d3f24Aeda15F41Cc7102f31C9C6",
+	europa: "0x605d09E0b2a72317401eD4c90Fafc91BA39fe373",
+	nebula: "0x9D3366b770475dcD549364F72a8fC3e3a6A1d4C3",
+	titan: "0xa8d3d09Aa7c17599a6cd78f27164A02976c1490D"
 }
 
 type Provider = {

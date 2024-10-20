@@ -55,7 +55,7 @@ contract DistributionManager is AccessControl, ReentrancyGuard {
 
         // Withdraw ETH if necessary
         if (address(this).balance >= sfuelThreshold) {
-            (bool sent,) = to.call{ value: sfuelThreshold }("");
+            (bool sent,) = payable(to).call{ value: sfuelThreshold }("");
             require(sent, "Failed to send Ether");
         }
 
