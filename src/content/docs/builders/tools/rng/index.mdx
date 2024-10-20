@@ -1,5 +1,5 @@
 ---
-title: RNG
+title: Random Number Generation (RNG)
 description: RNG on SKALE
 
 sidebar:
@@ -8,7 +8,14 @@ sidebar:
 
 import { LinkCard , CardGrid } from "@astrojs/starlight/components";
 
-Random number generation has various applications, such as in gaming projects, where it can be used to randomly determine rewards, or in cryptography, where it plays a role in generating seed phrases as starting points for BIP39 algorithms. 
+Random Number Generation (RNG) has many applications in software development [both Web2 and Web3].
+It can be used to support generation of secure credentials, support with decision making, 
+and allow games to have elements of randomness that create far more engaging experiences.
+
+Random number generation, often referred to as VRF (Verifiable Random Function) due to
+the popular Chainlink VRF functionality is very common with developers building in blockchain.
+
+SKALE Chains all come with the RNG endpoint available directly in Solidity with zero gas fees.
 
 <CardGrid>
 	<LinkCard
