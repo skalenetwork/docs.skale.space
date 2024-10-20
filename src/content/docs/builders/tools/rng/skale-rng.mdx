@@ -13,17 +13,20 @@ import { Steps } from "@astrojs/starlight/components";
 >
 
 
-Each SKALE Chain includes a built-in random number generator (RNG) that produces a new random number with every block. This RNG is derived from the threshold signature shares of at least 11 out of 16 SKALE nodes supporting the chain.
+Each SKALE Chain includes a built-in random number generator (RNG) that produces
+a new random number with every block. This RNG is derived from the threshold signature
+shares of at least 11 out of 16 SKALE nodes supporting the chain.
 
-SKALE chain consensus is asynchronous and leaderless, with blocks signed by a minimum of 11 out of 16 nodes. The signatures are combined in a way that prevents any single node from influencing the final outcome, ensuring the randomness cannot be tampered with or manipulated by any individual entity.
+SKALE chain consensus is asynchronous and leaderless, with blocks signed by a minimum of 11 out of 16 nodes.
+The signatures are combined in a way that prevents any single node from influencing the final outcome,
+ensuring the randomness cannot be tampered with or manipulated by any individual entity.
 
-Steps to achieve the random number: 
+Steps to achieve the random number:
 <Steps>
 1. Signatures for the current block are retrieved.
 2. The BLAKE3 hash of the signatures is created.
 3. The resulting hex RNG is presented.
 </Steps>
-
 
 ## Implementation Example
 
@@ -31,7 +34,7 @@ Steps to achieve the random number:
 
 1. #### Code to retrieve the random bytes
 
-    The code bellow showcases how to use the precompiled RNG. It showcases how to access the `getBlockRandom`precompiled at the address `0x18`.
+    The code bellow showcases how to use the pre-compiled RNG. It showcases how to access the `getBlockRandom` precompiled at the address `0x18`.
 
     ```solidity
         pragma solidity ^0.8.13;
@@ -64,7 +67,7 @@ Steps to achieve the random number:
     0:bytes32: addr 0xb95f1c2be3b13371115b8e6431461a24e960f0bb9881420993528ce68b019f75
     ```
 
-3. #### Converting random bytes into uin256
+3. #### Converting random bytes into uint256
 
     The random bytes returned by the `getRandom()` function can be handled in different ways depending on the use case. One of the most common cases is generating a simple random uint256. 
 
@@ -76,9 +79,31 @@ Steps to achieve the random number:
     }
     ```
 4. #### Examples
-
     For more examples, like generating a random number within a specific range or generating two random numbers from the same block, check out the documentation at: https://docs.dirtroad.dev/skale/skale-rng/.
 </Steps>
-
-
 </ToolLayout>
+
+## Libraries
+
+[SKALE RNG by Dirt Road Development](https://docs.dirtroad.dev/skale/skale-rng) is an NPM library available for free
+and fully MIT licensed that offers developers both the RNG endpoint pre-packaged as well as a number of helper functions
+to quickly help developers build on SKALE.
+
+### Using SKALE RNG
+
+```solidity
+pragma solidity ^0.8.13;
+
+import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+contract SomeContract is RNG {
+
+    function _getRandomNumber() {
+        uint256 num = getRandomNumber();
+    }
+
+    function _getRandomNumberInRange() {
+        uint256 num = getRandomRange(5); // Num between 0 and 5
+    }
+}
+```
