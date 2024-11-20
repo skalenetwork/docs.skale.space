@@ -14,7 +14,7 @@ Creation of AppChains can be complicated in most instances. This is because outs
 3. Balance the above two items with decentralization, speed, and stability
 4. Handle security in a decentralized manner
 
-SKALE Chains can be created quickly with no additional work or setup required from dApp developers thanks to the combination of the pooled-security model of validator nodes and SKALE Manager contracts on the Ethereum Mainnet that are used by the nodes to manage orchestration of a new SKALE Chain. Developers can focus on their dApps, and not on creating a complex system that will balance speed, security, and decentralization.
+SKALE Chains can be created quickly with no additional work or setup required from dApp developers thanks to the combination of the pooled-security model of validator supernodes and SKALE Manager contracts on the Ethereum Mainnet that are used by the supernodes to manage orchestration of a new SKALE Chain. Developers can focus on their dApps, and not on creating a complex system that will balance speed, security, and decentralization.
 
 ## Customization
 
