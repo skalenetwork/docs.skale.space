@@ -51,6 +51,31 @@ export default defineConfig({
 									link: "/builders/app-developers/overview",
 								},
 								{
+									label: "Bridge",
+									items: [
+										{
+											label: "Overview",
+											link: "/builders/app-developers/bridge/overview"
+										},
+										{
+											label: "IMA Deep Dive",
+											link: "/builders/app-developers/bridge/ima-deep-dive"
+										},
+										{
+											label: "Message Layer",
+											items: []
+										},
+										{
+											label: "Bridge Layer",
+											items: []
+										},
+										{
+											label: "Contract APIs",
+											items: []
+										}
+									]
+								},
+								{
 									label: "sFUEL Distribution",
 									items: [
 										{
