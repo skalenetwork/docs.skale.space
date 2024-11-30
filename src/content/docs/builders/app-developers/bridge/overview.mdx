@@ -14,7 +14,32 @@ popular ERCs standards.
 
 ## Relation to Ethereum
 
-IMA is backed by Ethereum mainnet and SKALE Chain security mechanisms - It uses your SKALE Chain’s 16 randomly selected validator nodes to sign and verify messages between the Ethereum mainnet and your SKALE Chain using BLS threshold signatures and Trusted-Execution Environments (TEE). It uses smart contracts running on Ethereum to manage the locking and unlocking of the deposit box on the mainnet. And, each of the 16 nodes supporting your SKALE Chain each has 20 million SKL tokens staked.
+IMA is backed by Ethereum mainnet and SKALE Chain security mechanisms - It uses your SKALE Chain’s
+16 randomly selected validator nodes to sign and verify messages between the Ethereum mainnet and your
+SKALE Chain using BLS threshold signatures and Trusted-Execution Environments (TEE). It uses smart contracts
+running on Ethereum to manage the locking and unlocking of the deposit box on the mainnet. And, each of the
+16 nodes supporting your SKALE Chain each has 20 million SKL tokens staked.
 
-For more details on the SKALE IMA Bridge and how it addresses security, decentralization, transfer speed, preservation of custody, cost efficiency, and customization, see our post here https://skale.network/blog/introduction-of-the-skale-ima-bridge/
+## Intro to IMA Design
+
+SKALE's IMA system comes with two default levels.
+The lowest level of the system is purely a messaging protocol.
+The messaging protocol communicates through two key contracts: MessageProxy (on Ethereum Mainnet)
+and MessageProxyForSchain (on each SKALE Chain). These two contracts
+allow arbitrary data to be moved in between Ethereum Mainnet and a SKALE Chain or vice versa
+while the collateralized SKALE Supernodes use the IMA Agent software to listen for and then post
+the messages to the target chain.
+
+The second level of the default system is the bridging system.
+While IMA is often referred to as a bridge by default, the bridging
+contracts are actually build on top of the lower level Messaging contracts.
+
+The network has ERC-20, ERC-721, and ERC-1155 default tokens bridges.
+Each of these standards makes use of a set of two smart contracts: a Deposit Box and a Token Manager.
+
+The Deposit Box lives on Ethereum Mainnet while the Token Manager lives on each SKALE Chain
+as a predeployed and upgradeable smart contract.
+
+Explore the [IMA deep dive](./ima-deep-dive) for more information!
+
 
