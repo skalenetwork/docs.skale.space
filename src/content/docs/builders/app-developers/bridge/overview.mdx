@@ -3,22 +3,18 @@ title: Overview of SKALE Bridge
 description: IMA is the native SKALE Bridge and Messaging Protocol
 ---
 
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
+SKALE Network has has its own native messaging and bridging protocol called
+Interchain Messaging Agent or IMA for short. IMA connects each and every SKALE
+Chain to the Ethereum Mainnet as well as each SKALE Chain to every other SKALE Chain.
 
-## Header
+It is a fully modular system where the base messaging layer has the ability to transfer
+any arbitrary data between two chains -- whether Ethereum to SKALE, vice versa, or SKALE to SKALE --
+while also having a number of prebuilt modules on top of it which facilitate token movement for
+popular ERCs standards.
 
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
-LoremLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem IpsusmLorem Ipsusm
+## Relation to Ethereum
+
+IMA is backed by Ethereum mainnet and SKALE Chain security mechanisms - It uses your SKALE Chain’s 16 randomly selected validator nodes to sign and verify messages between the Ethereum mainnet and your SKALE Chain using BLS threshold signatures and Trusted-Execution Environments (TEE). It uses smart contracts running on Ethereum to manage the locking and unlocking of the deposit box on the mainnet. And, each of the 16 nodes supporting your SKALE Chain each has 20 million SKL tokens staked.
+
+For more details on the SKALE IMA Bridge and how it addresses security, decentralization, transfer speed, preservation of custody, cost efficiency, and customization, see our post here https://skale.network/blog/introduction-of-the-skale-ima-bridge/
+
