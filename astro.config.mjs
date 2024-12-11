@@ -490,6 +490,10 @@ export default defineConfig({
 										{
 											label: "3.0.3 Upgrade",
 											link: "/ecosystem/validators/releases/3-0-3-upgrade"
+										}, 
+										{
+											label: "3.1.0 Upgrade",
+											link: "/ecosystem/validators/releases/3-1-0-upgrade"
 										} 
 									],
 								},
