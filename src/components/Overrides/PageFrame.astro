@@ -2,24 +2,32 @@
 import MobileMenuToggle from 'virtual:starlight/components/MobileMenuToggle';
 import type { Props } from '@astrojs/starlight/props';
 import { ToastContainer } from 'react-toastify';
-const { hasSidebar } = Astro.props;
----
+import Banner from '../Banner.astro';
 
+const { hasSidebar } = Astro.props;
+
+const showBanner = true; // Set to true or false
+---
 <div class="page sl-flex">
-	<header class="header"><slot name="header" /></header>
+	{showBanner && <Banner showBanner={showBanner} />}
+	<header class={`header ${!showBanner ? 'header-no-banner' : ''}`}>
+		<slot name="header"/>
+	</header>
 	{
 		hasSidebar && (
 			<nav class="sidebar">
 				<MobileMenuToggle {...Astro.props} />
 				<div id="starlight__sidebar" class="sidebar-pane">
-					<div class="sidebar-content sl-flex">
+					<div class={`sidebar-content sl-flex ${showBanner ? 'sidebar-content-no-banner' : ''}`}>
 						<slot name="sidebar" />
 					</div>
 				</div>
 			</nav>
 		)
 	}
-	<div class="main-frame"><slot /></div>
+	<div class={`main-frame ${!showBanner ? 'main-frame-no-banner' : ''}`}>
+		<slot />
+	</div>
 	<footer class="footer">
 		<p>&copy; 2023-Present SKALE Labs</p>
 	</footer>
@@ -47,20 +55,40 @@ const { hasSidebar } = Astro.props;
 	}
 
 	.header {
-		z-index: var(--sl-z-index-navbar);
-		position: fixed;
+		z-index: 20; 
+		position: fixed; 
+		top: 2.5rem;
 		inset-inline-start: 0;
-		inset-block-start: 0;
-		width: 100%;
-		height: var(--sl-nav-height);
+		width: 100%; 
+		height: var(--sl-nav-height); 
 		border-bottom: 1px solid var(--sl-color-hairline-shade);
 		padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
-		padding-inline-end: var(--sl-nav-pad-x);
 		background-color: var(--sl-color-bg-nav);
 	}
 
-	:global([data-has-sidebar]) .header {
-		padding-inline-end: calc(var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--sl-menu-button-size));
+	.header-no-banner {
+		top: 0;
+	}
+
+	.main-frame {
+		padding-top: calc(var(--sl-nav-height) + 2.5rem);
+		padding-inline-start: var(--sl-content-inline-start);
+	}
+
+	.main-frame-no-banner {
+		padding-top: var(--sl-nav-height);
+	}
+
+	.footer {
+		position: absolute;
+		bottom: -50px;
+		left: 35%;
+		right: 35%;
+		height: 100px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.sidebar-pane {
@@ -75,10 +103,6 @@ const { hasSidebar } = Astro.props;
 		overflow-y: auto;
 	}
 
-	:global([aria-expanded='true']) ~ .sidebar-pane {
-		--sl-sidebar-visibility: visible;
-	}
-
 	.sidebar-content {
 		height: 100%;
 		min-height: max-content;
@@ -87,28 +111,12 @@ const { hasSidebar } = Astro.props;
 		gap: 1rem;
 	}
 
-	@media (min-width: 50rem) {
-		.sidebar-content::after {
-			content: '';
-			padding-bottom: 1px;
-		}
+	.sidebar-content-no-banner {
+		padding-top: var(--sl-nav-height);
 	}
 
-	.main-frame {
-		padding-top: calc(var(--sl-nav-height) + var(--sl-mobile-toc-height));
-		padding-inline-start: var(--sl-content-inline-start);
-	}
-
-	.footer {
-		position: absolute;
-		bottom: -50px;
-		left: 35%;
-		right: 35%;
-		height: 100px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center;
+	:global([data-has-sidebar]) .header {
+		padding-inline-end: calc(var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--sl-menu-button-size));
 	}
 
 	@media (min-width: 50rem) {
