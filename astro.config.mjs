@@ -2,12 +2,11 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
 import routes from "./routes/index.mjs";
+import redirects from "./routes/redirects.mjs";
 
 // https://astro.build/config
 export default defineConfig({
-	redirects: {
-		"/quick-start/select-a-chain": "/quick-start/deploy-to-testnet"
-	},
+	redirects: redirects,
 	integrations: [
 		react(),
 		starlight({
@@ -39,7 +38,7 @@ export default defineConfig({
 				discord: "https://discord.com/invite/gM5XBy6",
 				github: "https://github.com/skalenetwork",
 			},
-			sidebar: routes
+			sidebar: routes,
 		}),
 	],
 });

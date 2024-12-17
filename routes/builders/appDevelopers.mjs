@@ -26,5 +26,9 @@ export default {
                 },
             ],
         },
+        {
+            label: "sFUEL Station",
+            link: "/builders/app-developers/sfuel-station"
+        }
     ],
 }
