@@ -14,6 +14,10 @@ export default {
             link: "/learn/advanced/consensus-deep-dive",
         },
         {
+            label: "DDoS Protection",
+            link: "/learn/advanced/ddos-protection"
+        },
+        {
             label: "Distributed Key Generation with BLS",
             link: "/learn/advanced/dkg-bls",
         },
