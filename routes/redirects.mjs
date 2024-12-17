@@ -1,6 +1,7 @@
 export default {
     "/quick-start/select-a-chain": "/quick-start/deploy-to-testnet",
     "/build/sfuel": "/builders/app-developers/sfuel-distribution",
+    "/tools": "builders/tools",
     "/validators/validator-cli": "ecosystem/validators/validator-cli/overview",
     "/ecosystem/validators/faq": "ecosystem/validators/overview",
     "/ecosystem/validators/validator-cli": "ecosystem/validators/validator-cli/overview",
