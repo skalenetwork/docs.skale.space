@@ -86,3 +86,7 @@ iframe {
 main:where(.astro-bguv2lll) {
 	padding-top: 1rem;
 }
+
+nav:where(.astro-doynk5tl) {
+	top: auto;
+}
