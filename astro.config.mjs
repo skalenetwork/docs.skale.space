@@ -27,6 +27,7 @@ export default defineConfig({
 				Sidebar: "./src/components/Overrides/Sidebar.astro",
 				SidebarSublist:
 					"./src/components/Overrides/SidebarSublist.astro",
+				MobileMenuToggle: "./src/components/Overrides/MobileMenuToggle.astro",
 			},
 			expressiveCode: true,
 			favicon: "/favicon.png",

@@ -82,3 +82,11 @@ iframe {
 	align-items: center;
 	height: 100%;
 }
+
+main:where(.astro-bguv2lll) {
+	padding-top: 1rem;
+}
+
+nav:where(.astro-doynk5tl) {
+	top: auto;
+}
