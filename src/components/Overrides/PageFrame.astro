@@ -1,5 +1,5 @@
 ---
-import MobileMenuToggle from 'virtual:starlight/components/MobileMenuToggle';
+import MobileMenuToggle from './MobileMenuToggle.astro';
 import type { Props } from '@astrojs/starlight/props';
 import { ToastContainer } from 'react-toastify';
 import Banner from '../Banner.astro';
@@ -16,7 +16,7 @@ const showBanner = true;
 	{
 		hasSidebar && (
 			<nav class="sidebar">
-				<MobileMenuToggle {...Astro.props} />
+				<MobileMenuToggle showBanner={showBanner} {...Astro.props} />
 				<div id="starlight__sidebar" class="sidebar-pane">
 					<div class={`sidebar-content sl-flex ${showBanner ? 'sidebar-content-no-banner' : ''}`}>
 						<slot name="sidebar" />
@@ -55,7 +55,7 @@ const showBanner = true;
 	}
 
 	.header {
-		z-index: 20; 
+		z-index: var(--sl-z-index-navbar); 
 		position: fixed; 
 		top: 2.5rem;
 		inset-inline-start: 0;
@@ -66,29 +66,8 @@ const showBanner = true;
 		background-color: var(--sl-color-bg-nav);
 	}
 
-	.header-no-banner {
-		top: 0;
-	}
-
-	.main-frame {
-		padding-top: calc(var(--sl-nav-height) + 2.5rem);
-		padding-inline-start: var(--sl-content-inline-start);
-	}
-
-	.main-frame-no-banner {
-		padding-top: var(--sl-nav-height);
-	}
-
-	.footer {
-		position: absolute;
-		bottom: -50px;
-		left: 35%;
-		right: 35%;
-		height: 100px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center;
+	:global([data-has-sidebar]) .header {
+		padding-inline-end: calc(var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--sl-menu-button-size));
 	}
 
 	.sidebar-pane {
@@ -103,6 +82,40 @@ const showBanner = true;
 		overflow-y: auto;
 	}
 
+	:global([aria-expanded='true']) ~ .sidebar-pane {
+		--sl-sidebar-visibility: visible;
+	}
+
+
+	.header-no-banner {
+		top: 0;
+	}
+
+	.main-frame {
+		padding-top: calc(var(--sl-nav-height) + 2.5rem);
+		padding-inline-start: var(--sl-content-inline-start);
+	}
+
+	.main-frame-no-banner {
+		padding-top: var(--sl-nav-height);
+	}
+
+	.sidebar-no-banner {
+		top: calc((var(--sl-nav-height) + var(--sl-menu-button-size)) / 1.7);
+	}
+
+	.footer {
+		position: absolute;
+		bottom: -50px;
+		left: 35%;
+		right: 35%;
+		height: 100px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	}
+
 	.sidebar-content {
 		height: 100%;
 		min-height: max-content;
@@ -115,9 +128,6 @@ const showBanner = true;
 		padding-top: var(--sl-nav-height);
 	}
 
-	:global([data-has-sidebar]) .header {
-		padding-inline-end: calc(var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--sl-menu-button-size));
-	}
 
 	@media (min-width: 50rem) {
 		:global([data-has-sidebar]) .header {
