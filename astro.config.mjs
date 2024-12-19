@@ -118,8 +118,8 @@ export default defineConfig({
 									link: "/builders/node-operators/overview",
 								},
 								{
-									label: "SKALE Nodes",
-									link: "/builders/node-operators/skale-nodes",
+									label: "SKALE Supernodes",
+									link: "/builders/node-operators/skale-supernodes",
 								},
 								{
 									label: "SKALE Proxy",

@@ -54,7 +54,10 @@ These smart contracts control network functions such as chain creation, validato
 
 Network users such as validators, delegators, and dApp Developers exchange SKL tokens to provide stake and access network services.
 
-The [SKALE validator community represents over 45 independent operators](https://skale.space/blog/validator-list-for-skale) running over 150 Supernodes, and the SKALE Mainnet has been live for over 300 days without interruption.
+The [SKALE validator community represents over 45 independent operators](https://skale.space/blog/validator-list-for-skale) running over 112 Supernodes, 896 Nodes, and the SKALE Mainnet has been live for over 300 days without interruption.
+
+<iframe src="https://dune.com/embeds/2771528/7069649/" style="width: 300px; height: 150px; display: inline-block; margin-right: 10px;"></iframe>
+<iframe src="https://dune.com/embeds/2771528/7069653/" style="width: 300px; height: 150px; display: inline-block;"></iframe>
 
 SKALE Network uses a [unique combination of technologies and cryptographic-based approaches](https://skale.space/blog/technical-highlights) to achieve scalability, security, interoperability, and progressive decentralization:
 

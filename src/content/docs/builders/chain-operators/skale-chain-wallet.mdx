@@ -12,7 +12,7 @@ The SKALE Network uses a "self-reimbursing" wallet system to make it easier for 
 
 The Wallets contract in SKALE Manager manages this functionality.
 
-Each SKALE Chain owner manages a wallet. This wallet must contain a balance of ETH that's used to reimburse specific transactions performed by validator-nodes, including certain IMA messages.
+Each SKALE Chain owner manages a wallet. This wallet must contain a balance of ETH that's used to reimburse specific transactions performed by validator supernodes, including certain IMA messages.
 
 Transactions that are reimbursed by the SKALE Chain owner wallet are:
 
@@ -41,7 +41,7 @@ sequenceDiagram
     
 `} />
 
-Each end-user reimburses validator-nodes for IMA messaging with Ethereum. This reimbursement is performed from the end-user's balance in the Community Pool contract on Ethereum mainnet. In the extraordinary situation where an end-user's Community Pool balance is insufficient, part or all of the costs will be provided by the SKALE Chain wallet to ensure proper transaction processing. When this happens, the end-user will be locked from further exits until the end-user reimburses their Community Pool ETH balance.
+Each end-user reimburses validator supernodes for IMA messaging with Ethereum. This reimbursement is performed from the end-user's balance in the Community Pool contract on Ethereum mainnet. In the extraordinary situation where an end-user's Community Pool balance is insufficient, part or all of the costs will be provided by the SKALE Chain wallet to ensure proper transaction processing. When this happens, the end-user will be locked from further exits until the end-user reimburses their Community Pool ETH balance.
 
 {/* > **Note**
 > For details on the end-user IMA exit process to Ethereum, see [Funding Exits](xref:ima::funding-exits.adoc). */}

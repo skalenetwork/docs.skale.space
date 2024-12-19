@@ -1,6 +1,6 @@
 ---
-title: SKALE Node Swap Limit Fix
-description: SKALE Node Swap Limit Fix for validators
+title: SKALE Supernode Swap Limit Fix
+description: SKALE Supernode Swap Limit Fix for validators
 ---
 
 import { Steps } from "@astrojs/starlight/components";
@@ -9,7 +9,7 @@ import { Aside } from '@astrojs/starlight/components';
 
 ## Introduction
 
-This guide provides instructions for SKALE validators to fix swap limit issues on their nodes. We need to enable swap limiting capability so sChain containers can use swap properly.
+This guide provides instructions for SKALE validators to fix swap limit issues on their supernodes. We need to enable swap limiting capability so sChain containers can use swap properly.
 
 ## Background
 
@@ -18,7 +18,7 @@ For more details, refer to the [Docker documentation on resource constraints](ht
 
 ## Checking Current Setup (Optional)
 
-You can check the current memory allocation for your sChain containers (if your node has sChains) using the following command:
+You can check the current memory allocation for your sChain containers (if your supernode has sChains) using the following command:
 
 ```bash
 docker inspect skale_schain_[SCHAIN-NAME] | grep Memory
@@ -56,16 +56,16 @@ If you will encounter with any issues during the following steps, please stop an
 </Aside>
 
 <Aside type="caution" title="Warning">
-If your node is running on Google Cloud, commands may differ. Please check discussions on [Stack Exchange](https://unix.stackexchange.com/a/495058) or contact SKALE team.
+If your supernode is running on Google Cloud, commands may differ. Please check discussions on [Stack Exchange](https://unix.stackexchange.com/a/495058) or contact SKALE team.
 </Aside>
 
 Follow these steps to enable swap limiting capability:
 
 <Steps>
 
-1. Log into the node as a user that you used to setup the node (user should have sudo privileges).
+1. Log into the supernode as a user that you used to setup the supernode (user should have sudo privileges).
 
-2. Make a backup of your node and move backup archive to another machine:
+2. Make a backup of your supernode and move backup archive to another machine:
 
    ```bash
    skale node backup [BACKUP_FOLDER_PATH] [ENV_FILE]
@@ -73,43 +73,43 @@ Follow these steps to enable swap limiting capability:
 
    Check out [node-cli backup docs](https://github.com/skalenetwork/node-cli?tab=readme-ov-file#node-backup) for more details.
 
-3. Turn off your SKALE Node:
+3. Turn off your SKALE Supernode:
 
    ```bash
    skale node turn-off
    ```
 
-   Wait for the node to turn off gracefully.
+   Wait for the supernode to turn off gracefully.
 
-3. Edit the `/etc/default/grub` file. Add or edit the `GRUB_CMDLINE_LINUX` line to include the following key-value pairs:
+4. Edit the `/etc/default/grub` file. Add or edit the `GRUB_CMDLINE_LINUX` line to include the following key-value pairs:
 
    ```
    GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"
    ```
 
-4. Update GRUB:
+5. Update GRUB:
 
    ```bash
    sudo update-grub
    ```
 
-5. Reboot the machine:
+6. Reboot the machine:
 
    ```bash
    sudo reboot
    ```
 
-6. After the machine has rebooted, turn your SKALE Node back on:
+7. After the machine has rebooted, turn your SKALE Supernode back on:
 
    ```bash
    skale node turn-on [ENV_FILEPATH]
    ```
 
-   Replace `[ENV_FILEPATH]` with the path to your environment file (the same you used for node updates).
+   Replace `[ENV_FILEPATH]` with the path to your environment file (the same you used for supernode updates).
 
    For more details on this process, you can refer to this [Unix Stack Exchange thread](https://unix.stackexchange.com/questions/342735/docker-warning-no-swap-limit-support).
 
-7. After the node is turned on, check if the swap limit is enabled:
+8. After the supernode is turned on, check if the swap limit is enabled:
 
    ```bash
    docker info
