@@ -43,8 +43,8 @@ that handles the recording, consensus, verification, and storage of transactions
 consolidating or rolling results to Layer 1.
 
 Yet each SKALE Chain is built atop Ethereum, which is a Layer 1 blockchain, for security (BLS and DKG), block
-and message signing, and validator-node orchestration (creation of nodes, rotation of nodes in a chain, and
-administration of validators and nodes). These approaches enable SKALE Chains, like other Layer 2s, to harness
+and message signing, and validator-node orchestration (creation of supernodes, rotation of nodes in a chain, and
+administration of validators and supernodes). These approaches enable SKALE Chains, like other Layer 2s, to harness
 the security provisions of Ethereum, a Layer 1 blockchain.
 
 This hybrid architecture implies that SKALE Chains can swiftly process transactions with the efficiency of

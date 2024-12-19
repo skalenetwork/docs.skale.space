@@ -1,6 +1,6 @@
 ---
 title: Self Recharging Wallets
-description: Deep dive into self-recharging capabilities of node wallets
+description: Deep dive into self-recharging capabilities of supernode wallets
 ---
 
 import { Aside } from "@astrojs/starlight/components";
@@ -9,53 +9,53 @@ import { Aside } from "@astrojs/starlight/components";
 
 There are several types of wallets in the SKALE Network.  These include:
 
-1. Wallets Controlled by the validator, node operator, and SKALE Chain owner.
+1. Wallets Controlled by the validator, supernode operator, and SKALE Chain owner.
 These wallets may be software or hardware wallets.
 2. Self-Recharging wallets can be for validators and for the SKALE Chain owner.
 
 ## Node Transactions & Reimbursement
 
-The following table explores what node transactions are reimbursed and by who.
+The following table explores what supernode transactions are reimbursed and by who.
 
 | Transaction      | Reimbursed By       | Description of Transaction                                                                                                                            |
 |------------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| getBounty()    | Validator            | Called every month by each node to request bounty.                                                                                                   |
-| nodeExit()     | Validator            | To remove a node from the network due to hardware failure or unmet MSR.                                                                              |
-| complaint()    | Validator            | Performed in DKG failure mode when a node lodges a general DKG complaint against a malicious node who may have failed to send data.                  |
-| complaintBadData() | Validator       | Performed in DKG failure mode when a node discovers that malicious data has been sent and requires verification data to validate.                     |
-| preResponse()  | Validator            | Performed in DKG failure mode, when a node sends a verification vector and secret key shares ahead of the final `response()` result.                 |
-| response()     | Validator            | Performed in DKG failure mode when a node sends a response to a `complaint()` to prove it's not malicious based on the data it sends in `preResponse()`. |
-| broadcast()    | SKALE Chain Owner    | Performed during SKALE Chain creation when distributed key generation process begins. Nodes broadcast their secret key contributions to all other nodes. |
-| alright()      | SKALE Chain Owner    | Performed during SKALE Chain creation when distributed key generation is in-process. Nodes send receipts of secret key contributions.                |
+| getBounty()    | Validator            | Called every month by each supernode to request bounty.                                                                                                   |
+| nodeExit()     | Validator            | To remove a supernode from the network due to hardware failure or unmet MSR.                                                                              |
+| complaint()    | Validator            | Performed in DKG failure mode when a supernode lodges a general DKG complaint against a malicious supernode who may have failed to send data.                  |
+| complaintBadData() | Validator       | Performed in DKG failure mode when a supernode discovers that malicious data has been sent and requires verification data to validate.                     |
+| preResponse()  | Validator            | Performed in DKG failure mode, when a supernode sends a verification vector and secret key shares ahead of the final `response()` result.                 |
+| response()     | Validator            | Performed in DKG failure mode when a supernode sends a response to a `complaint()` to prove it's not malicious based on the data it sends in `preResponse()`. |
+| broadcast()    | SKALE Chain Owner    | Performed during SKALE Chain creation when distributed key generation process begins. Supernodes broadcast their secret key contributions to all other supernodes. |
+| alright()      | SKALE Chain Owner    | Performed during SKALE Chain creation when distributed key generation is in-process. Supernodes send receipts of secret key contributions.                |
 
 ## Replenishment
 
-Self-recharging validator wallets can be replenished in ETH by anyone with the wallet's contract address and the `ValidatorId` or `sChainId`. This functionality allows anyone to ensure the continued ETH funding and operation of validator nodes and SKALE Chains.
+Self-recharging validator wallets can be replenished in ETH by anyone with the wallet's contract address and the `ValidatorId` or `sChainId`. This functionality allows anyone to ensure the continued ETH funding and operation of validator supernodes and SKALE Chains.
 
 If the _self-recharging_...
 
-- _validator balance_ runs out of ETH, then the nodes' wallets are first spent until transactions revert.
+- _validator balance_ runs out of ETH, then the supernodes' wallets are first spent until transactions revert.
 - _SKALE Chain Owner balance_ runs out of ETH, then transactions will revert.
 
 Node wallets connected to the self-recharging validator wallet are replenished automatically at the end of each transaction based on the best estimate of the gas consumed in the transaction.
 
 <Aside type="caution" >
-If the validator self-recharging wallet is out of ETH, then node wallets start using their own ETH until the node balance is 0. Suppose the validator self-recharging wallet has 0 balance at the same time that the node wallet balance is 0. In that case, validators are then responsible for recharging both the validator self-recharging wallet and the node wallets with 0 balance.
+If the validator self-recharging wallet is out of ETH, then supernode wallets start using their own ETH until the supernode balance is 0. Suppose the validator self-recharging wallet has 0 balance at the same time that the supernode wallet balance is 0. In that case, validators are then responsible for recharging both the validator self-recharging wallet and the supernode wallets with 0 balance.
 </Aside>
 
 <Aside type="danger" >
-If a node's `getBounty` transaction reverts and can't complete the transaction before the end of the month, the validator-delegators will receive less bounty. Validators must ensure sufficient balance and a working endpoint to connect with Ethereum mainnet.
+If a supernode's `getBounty` transaction reverts and can't complete the transaction before the end of the month, the validator-delegators will receive less bounty. Validators must ensure sufficient balance and a working endpoint to connect with Ethereum mainnet.
 </Aside>
 
 <Aside type="note" >
-There is no easy way to know the EVM's refund counter's value from inside the EVM. Thus, refunds may offset the transaction's final net cost, and node balances may slightly increase over time. This process will be reviewed and improved over time.
+There is no easy way to know the EVM's refund counter's value from inside the EVM. Thus, refunds may offset the transaction's final net cost, and supernode balances may slightly increase over time. This process will be reviewed and improved over time.
 </Aside>
 
 ## Using a Self-Recharging Wallet
 
 When a new validator is registered, a self-recharging wallet is automatically deployed. The validator's private key has withdraw access to this wallet. Validators can use this private key to close the self-recharging wallet should the validator leave the network.
 
-As a validator links nodes to their validator ID, these linked nodes will automatically request reimbursement from the validator's self-recharging wallet for those transactions. If a node is unlinked from the validator, this node will no longer request reimbursement from the validator's self-recharging wallet.
+As a validator links supernodes to their validator ID, these linked supernodes will automatically request reimbursement from the validator's self-recharging wallet for those transactions. If a supernode is unlinked from the validator, this supernode will no longer request reimbursement from the validator's self-recharging wallet.
 
 Existing validators will automatically be added to the Wallet contract and will start using them once this feature is deployed to mainnet.
 

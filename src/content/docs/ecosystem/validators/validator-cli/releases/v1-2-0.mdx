@@ -30,14 +30,14 @@ import { Aside, Steps } from '@astrojs/starlight/components';
 ## CLI Usage
 
 ## Initialize Validator CLI
-Download SKALE Manager contracts info and set the node of the network
+Download SKALE Manager contracts info and set the supernode of the network
 
 ```shell
 sk-val init
 ```
 
 **Required Arguments**
-- `--endpoint/-e` is the RPC endpoint of the node in the network where SKALE Manager is deployed [http or https]
+- `--endpoint/-e` is the RPC endpoint of the supernode in the network where SKALE Manager is deployed [http or https]
 - `--contracts-url/-c` is the URL to SKALE Manager contracts ABI and addresses
 - `-w/--wallet` is the type of the wallet that will be used to sign transactions. Must be of type software, sgx, or hardware.
 
@@ -167,7 +167,7 @@ sk-val validator linked-addresses [ADDRESS]
 
 ### Link Address
 
-Links a node address to the validator account.
+Links a supernode address to the validator account.
 
 ```shell
 sk-val validator link-address [ADDRESS] [NODE_SIGNATURE] --pk-file ./pk.txt
@@ -175,7 +175,7 @@ sk-val validator link-address [ADDRESS] [NODE_SIGNATURE] --pk-file ./pk.txt
 
 **Required Parameters**
 1. `ADDRESS` is the Ethereum address that will be linked
-2. `NODE_SIGNATURE` is the signature of the node that you can get using the `skale node signature` command from the SKALE Node CLI
+2. `NODE_SIGNATURE` is the signature of the supernode that you can get using the `skale node signature` command from the SKALE Node CLI
 
 **Optional Arguments**
 - `--pk-file` is a path to a file with private key (only supported for *software* wallet type)
@@ -184,7 +184,7 @@ sk-val validator link-address [ADDRESS] [NODE_SIGNATURE] --pk-file ./pk.txt
 
 ### Unlink Address
 
-Unlinks a node address from the validator account.
+Unlinks a supernode address from the validator account.
 
 ```shell
 sk-val validator unlink-address [ADDRESS] --pk-file ./pk.txt
