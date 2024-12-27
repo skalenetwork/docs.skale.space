@@ -209,21 +209,8 @@ export default {
                 {
                     label: "Wallets Aggregator",
                     link: "/builders/tools/wallets/aggregator",
-                },
+                }
             ],
         },
-
-        /*{
-            label: "SKALE",
-            collapsed: true,
-            items: [
-                { label: "Overview", link: "/builders/tools/skale" },
-                { label: "Blockscout", link: "/builders/tools/skale/blockscout" },
-                { label: "SKALE Nodes", link: "/builders/tools/skale/skale-nodes" },
-                { label: "SKALE Proxy", link: "/builders/tools/skale/skale-proxy" },
-                { label: "Full Sync Node", link: "/builders/tools/skale/full-sync-node" },
-                { label: "Archive Node", link: "/builders/tools/skale/archive-node" },
-            ]
-        }*/
     ],
 }
