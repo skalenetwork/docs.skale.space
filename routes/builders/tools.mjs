@@ -165,12 +165,12 @@ export default {
                     link: "/builders/tools/payments",
                 },
                 {
-                    label: "On-Ramp",
-                    link: "/builders/tools/payments/on-ramp",
+                    label: "Transak",
+                    link: "/builders/tools/payments/transak",
                 },
                 {
-                    label: "NFT Checkout",
-                    link: "/builders/tools/payments/nft-checkout",
+                    label: "Crossmint",
+                    link: "/builders/tools/payments/crossmint",
                 },
             ],
         },
@@ -209,7 +209,7 @@ export default {
                 {
                     label: "Wallets Aggregator",
                     link: "/builders/tools/wallets/aggregator",
-                }
+                },
             ],
         },
     ],
