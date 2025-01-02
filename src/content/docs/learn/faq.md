@@ -21,7 +21,7 @@ The stakes from the validators, developers, and the token inflation, are coordin
 
 This approach is different from other Layer 2 models that attempt to use mainnet interactions to run verification or fraud proofs. SKALE uses the Ethereum mainnet for staking and other mechanistic operations in a way that's better attuned to creating a robust and trustworthy Layer 2 network. SKALE will also support BLS Rollups for use cases that require complete reliance on Ethereum Mainnet custody.
 
-### What benefits do virtualized nodes and supernodes containerization provide? x
+### What benefits do virtualized Nodes and Supernodes containerization provide? x
 
 Each SKALE Chain comprises a collective of randomly appointed virtualized node that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Supernodes in the SKALE Network aren't restricted to operating a single chain but instead can support multiple chains via virtualized nodes. This multiplex capability is made possible via a containerized node architecture deployed on each supernode in the network. Each supernode is virtualized and can participate as a validator via this node architecture for an independent number of SKALE Chains. Chains sizes can be small, medium, or large, with a small chain using 1/128 of a supernode's resources, a medium using 1/8 of the resources, and a large using the total amount. Medium SKALE chains are available at present but the other sizes will be made available in the near future.
 

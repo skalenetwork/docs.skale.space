@@ -7,7 +7,7 @@ import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 
 The SKALE Network consists of a large pool of validator supernodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These supernodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager.
 
-Each SKALE Chain comprises a collective of randomly appointed virtualized nodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Supernodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via virtualized nodes. This multiplex capability is made possible via a containerized node architecture deployed on each supernode in the network. Each supernode is virtualized and can participate as a validator via this node architecture for an independent number of SKALE Chains.
+Each SKALE Chain comprises a collective of randomly appointed nodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Supernodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via containerized nodes. This multiplex capability is made possible via a containerized node architecture deployed on each supernode in the network. Each supernode is containerized and can participate as a validator via this node architecture for an independent number of SKALE Chains.
 
 The node virtualization is enabled via an innovative containerized architecture that provides industrial-grade performance and optionality for decentralized application developers – performance and flexibility that’s similar to traditional centralized cloud and microservice systems. Containers are divided into several main components encapsulated via a dockerized Linux OS, allowing each supernode to be hosted in an OS-agnostic manner.
 
@@ -18,11 +18,11 @@ Validators provide computation power to the network through supernodes (computer
 The collection of validators and the supernode(s) they spin up represent the entire validator network that performs core computing
 for the network as a whole such as validation and consensus.
 
-Individual SKALE Chains in the network are operated by a group of virtualized nodes selected from a
+Individual SKALE Chains in the network are operated by a group of containerized nodes selected from a
 subset of supernodes (the pool) in the network and are run on all or a subset (multi-tenancy) of each supernode’s
 computation and storage resources.
 
-As each supernode in the network continues to participate in their assigned SKALE Chains, they’re awarded bounties based upon their performance at the end of each network epoch. Each supernode will be monitored by their peer supernodes. ‍ When a SKALE Chain has reached the end of its lifetime, the resources (computation, storage) of its virtualized nodes will be freed so that validator supernodes may participate in newly created SKALE Chains.
+As each supernode in the network continues to participate in their assigned SKALE Chains, they’re awarded bounties based upon their performance at the end of each network epoch. Each supernode will be monitored by their peer supernodes. ‍ When a SKALE Chain has reached the end of its lifetime, the resources (computation, storage) of its nodes will be freed so that validator supernodes may participate in newly created SKALE Chains.
 
 ### Expectations
 

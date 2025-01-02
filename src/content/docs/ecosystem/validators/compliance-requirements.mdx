@@ -7,10 +7,10 @@ import { Aside } from "@astrojs/starlight/components";
 import { hardware } from "../../../../config";
 
 The following document outlines compliance requirements for SKALE Network supernodes.
-Failure to follow these requirements will result in a supernodes forfeiting bounty for each month
+Failure to follow these requirements will result in a supernode forfeiting bounty for each month
 that it's not in compliance as well as SKALE Chain payment claims. Please be sure to follow
 the entire proper setup and backup procedures described in Validator Denali Upgrade documentation
-to ensure your supernodes is operating as intended.
+to ensure your supernode is operating as intended.
 
 ## Compliance Requirements
 
@@ -148,4 +148,4 @@ IMA Container must pass healthcheck. `http://YOUR_SKALE_NODE_IP:3009/status/ima`
 
 - Check key-cert pair validity using `http://YOUR_SKALE_NODE_IP:3009/status/ssl`
 - Test ssl certificates using `skale ssl check`
-- Don't touch machine firewall (iptables installed by supernode node software automatically sets machine firewall rules), external VPC or networking firewall ensure Ports open on **80, 311, 443,** 3009, 8080, 9100, 10000–18192, and ICMP IPv4  (in other words, not closed by an external firewall).
+- Don't touch machine firewall (iptables installed by supernode software automatically sets machine firewall rules), external VPC or networking firewall ensure Ports open on **80, 311, 443,** 3009, 8080, 9100, 10000–18192, and ICMP IPv4  (in other words, not closed by an external firewall).
