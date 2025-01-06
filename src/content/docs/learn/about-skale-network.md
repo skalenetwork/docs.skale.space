@@ -50,7 +50,7 @@ Decentralized validator organizations run and maintain SKALE supernodes, providi
 
 Built on the foundation it services, SKALE Network is managed and operated by over 35 smart contracts deployed on Ethereum mainnet that make up SKALE Manager.
 
-These smart contracts control network functions such as chain creation, validator registration, Supernode selection, node rotation, staking, bounty payment, slashing, and more.
+These smart contracts control network functions such as chain creation, validator registration, supernode selection, node rotation, staking, bounty payment, slashing, and more.
 
 Network users such as validators, delegators, and dApp Developers exchange SKL tokens to provide stake and access network services.
 
