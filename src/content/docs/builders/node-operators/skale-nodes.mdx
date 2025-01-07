@@ -1,28 +1,28 @@
 ---
-title: SKALE Nodes
-description: Intro to SKALE Nodes
+title: SKALE Supernodes
+description: Intro to SKALE Supernodes
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ToolLayout from "../../../../components/Tool/ToolLayout.astro";
 
-The SKALE Network consists of a large pool of validator nodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These nodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager.
+The SKALE Network consists of a large pool of validator supernodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These supernodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager.
 
-Each SKALE Chain comprises a collective of randomly appointed virtualized subnodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Nodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via virtualized subnodes. This multiplex capability is made possible via a containerized subnode architecture deployed on each node in the network. Each node is virtualized and can participate as a validator via this subnode architecture for an independent number of SKALE Chains.
+Each SKALE Chain comprises a collective of randomly appointed nodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Supernodes in the SKALE Network aren’t restricted to operating a single chain but instead can support multiple chains via containerized nodes. This multiplex capability is made possible via a containerized node architecture deployed on each supernode in the network. Each supernode is containerized and can participate as a validator via this node architecture for an independent number of SKALE Chains.
 
-The subnode virtualization is enabled via an innovative containerized architecture that provides industrial-grade performance and optionality for decentralized application developers – performance and flexibility that’s similar to traditional centralized cloud and microservice systems. Containers are divided into several main components encapsulated via a dockerized Linux OS, allowing each node to be hosted in an OS-agnostic manner.
+The node virtualization is enabled via an innovative containerized architecture that provides industrial-grade performance and optionality for decentralized application developers – performance and flexibility that’s similar to traditional centralized cloud and microservice systems. Containers are divided into several main components encapsulated via a dockerized Linux OS, allowing each supernode to be hosted in an OS-agnostic manner.
 
-## Run a Node
+## Run a Supernode
 
 The SKALE Network has a pool of validators that run the network.
-Validators provide computation power to the network through nodes (computers running the network software).
-The collection of validators and the node(s) they spin up represent the entire validator network that performs core computing
+Validators provide computation power to the network through supernodes (computers running the network software).
+The collection of validators and the supernode(s) they spin up represent the entire validator network that performs core computing
 for the network as a whole such as validation and consensus.
 
-Individual SKALE Chains in the network are operated by a group of virtualized sub-nodes selected from a
-subset of nodes (the pool) in the network and are run on all or a subset (multi-tenancy) of each node’s
+Individual SKALE Chains in the network are operated by a group of containerized nodes selected from a
+subset of supernodes (the pool) in the network and are run on all or a subset (multi-tenancy) of each supernode’s
 computation and storage resources.
 
-As each node in the network continues to participate in their assigned SKALE Chains, they’re awarded bounties based upon their performance at the end of each network epoch. Each node will be monitored by their peer nodes. ‍ When a SKALE Chain has reached the end of its lifetime, the resources (computation, storage) of its virtualized sub-nodes will be freed so that validator nodes may participate in newly created SKALE Chains.
+As each supernode in the network continues to participate in their assigned SKALE Chains, they’re awarded bounties based upon their performance at the end of each network epoch. Each supernode will be monitored by their peer supernodes. ‍ When a SKALE Chain has reached the end of its lifetime, the resources (computation, storage) of its nodes will be freed so that validator supernodes may participate in newly created SKALE Chains.
 
 ### Expectations
 
@@ -31,20 +31,20 @@ As each node in the network continues to participate in their assigned SKALE Cha
 - Running latest SKALE Node software releases
 - Participation in governance (when applicable)
 
-To encourage proper behavior amongst network participants, SKALE follows a Proof of Stake (POS) system whereby each node must stake a predetermined amount of SKALE tokens to be slashed at the citation of any activity not condoned by the network.
+To encourage proper behavior amongst network participants, SKALE follows a Proof of Stake (POS) system whereby each supernode must stake a predetermined amount of SKALE tokens to be slashed at the citation of any activity not condoned by the network.
 
 Activities not approved by the network include those which denote a failure to properly participate in each assigned SKALE Chain’s consensus, and maintain uptime and latency standards enforced by the Service Level Agreement (SLA).
 
-Network SLAs are enforced through an algorithmic peer review system whereby each node is appointed 24 node peers to monitor and log their network participation, uptime, and latency. These metrics will be collected and averaged on the Ethereum mainnet to reward or slash nodes according to their respective performance.
+Network SLAs are enforced through an algorithmic peer review system whereby each supernode is appointed 24 supernode peers to monitor and log their network participation, uptime, and latency. These metrics will be collected and averaged on the Ethereum mainnet to reward or slash supernodes according to their respective performance.
 
 ### Requirements
 
-To be added as a node to the SKALE Network, a prospective node must run the SKALE Admin, which manages all operations in the node and is installed with the [skale-node-cli](/validators/validator-cli). 
+To be added as a supernode to the SKALE Network, a prospective supernode must run the SKALE Admin, which manages all operations in the supernode and is installed with the [skale-node-cli](/validators/validator-cli). 
 
-SKALE Admin evaluates the prospective node to ensure that it’s upholding network hardware requirements. If the prospective node passes this verification step, the SKALE Admin permits the node to submit a request to SKALE Manager to join the network. 
+SKALE Admin evaluates the prospective supernode to ensure that it’s upholding network hardware requirements. If the prospective supernode passes this verification step, the SKALE Admin permits the supernode to submit a request to SKALE Manager to join the network. 
 
-This request contains both the required network deposit as well as node metadata collected by the SKALE Daemon (for example IP address, port, public key, etc.).
+This request contains both the required network deposit as well as supernode metadata collected by the SKALE Daemon (for example IP address, port, public key, etc.).
 
-Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective node as a 'full node' or a 'fractional node' by assigning different sizes of SKALE Chains to the prospective node. Full nodes have all their resources utilized for a single SKALE Chain, while fractional nodes participate in multiple SKALE Chains (multi-tenancy).
+Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective supernode as a 'full node' or a 'fractional node' by assigning different sizes of SKALE Chains to the prospective supernode. Full nodes have all their resources utilized for a single SKALE Chain, while fractional nodes participate in multiple SKALE Chains (multi-tenancy).
 
 [General Hardware Requirements](https://docs.skale.network/network/v2.2.x/#_prerequisites)

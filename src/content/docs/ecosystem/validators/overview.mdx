@@ -7,18 +7,19 @@ SKALE is a network of Layer-1 blockchains which have zero gas fees, infinite sca
 and are built for best-in-class UX.
 
 SKALE is unique from other blockchain networks. The SKALE Network has a pool of validators that work together
-to secure the network. These validators provide computation power to the SKALE Network by deploying SKALE Nodes.
-The collection of validators and the node(s) they spin up represent the entire validator network that performs
-work for SKALE Chains (a Layer-1 Ethereum Compatible Chain). Each SKALE Chain in the network is operated by a
-group of virtualized sub-nodes selected from a subset of the nodes run by validators in the SKALE network and
-are run on all or a subset [multi-tenancy] of each node’s computation and storage resources.
+to secure the network. These validators provide computation power to the SKALE Network by deploying SKALE supernodes.
+The collection of validators and the supernode(s) they spin up represent the entire validator network that performs
+work for SKALE Chains (a Layer-1 Ethereum Compatible Chain). 
 
-As each node in the network continues to participate in their assigned SKALE Chains, they are awarded
-bounties based on their performance at the end of each network epoch. Each node is monitored by their peer
-nodes. When a SKALE Chain has reached the end of its lifetime, the resources (computation, storage) of its
-virtualized sub-nodes will be freed so that validator nodes may participate in newly created SKALE Chains.
+Each SKALE Chain in the network is operated by a group of virtualized nodes selected from a subset of the supernodes run by validators, 
+utilizing either all or part of the supernode's computational and storage resources [multi-tenancy].
 
-Validator nodes also receive direct payment from SKALE Chain pricing, which is "rent" paid by the chain owners/operators
+As each supernode in the network continues to participate in their assigned SKALE Chains, they are awarded
+bounties based on their performance at the end of each network epoch. Each supernode is monitored by their peer
+supernode. When a SKALE Chain has reached the end of its lifetime, the resources (computation, storage) of its
+virtualized nodes will be freed so that validator supernodes may participate in newly created SKALE Chains.
+
+Validator supernodes also receive direct payment from SKALE Chain pricing, which is "rent" paid by the chain owners/operators
 for this compute.
 
 ## SKALE Economics
@@ -39,26 +40,25 @@ Please explore the following links to learn more about the SKALE Token Economics
 - Running the latest SKALE Node software releases
 - Participation in governance (when applicable)
 
-To encourage proper behavior among network participants, SKALE follows a Proof of Stake (PoS) system whereby each node must
-stake a predetermined amount of SKALE tokens to be slashed at the citation of any activity not condoned by the network.
+To promote proper behavior, SKALE uses a Proof of Stake (PoS) system, requiring each supernode to stake a set amount of SKALE tokens, which can be slashed for any network-prohibited activity.
 
 Activities not approved by the network include those which denote a failure to properly participate in each assigned SKALE
 Chain’s consensus, and maintain uptime and latency standards enforced by the Service Level Agreement (SLA).
 
-Network SLAs are enforced through an algorithmic peer review system whereby each node is appointed 24 node peers to
+Network SLAs are enforced through an algorithmic peer review system whereby each supernode is appointed 24 supernode peers to
 monitor and log their network participation, uptime, and latency. These metrics will be collected and averaged on the
-Ethereum mainnet to reward or slash nodes according to their respective performance.
+Ethereum mainnet to reward or slash supernodes according to their respective performance.
 
 ## Requirements
 
-To be added as a node to the SKALE Network, a prospective node must run the SKALE Admin, which manages all operations in the node and is
-installed with the [skale-node-cli](/ecosystem/validators/validator-cli). SKALE Admin evaluates the prospective node to ensure that it's upholding
-network hardware requirements. If the prospective node passes this verification step, the SKALE Admin permits the node to submit a request
-to SKALE Manager to join the network. This request contains both the required network deposit as well as node metadata collected by the
+To be added as a supernode to the SKALE Network, a prospective supernode must run the SKALE Admin, which manages all operations in the supernode and is
+installed with the [skale-node-cli](/ecosystem/validators/validator-cli). SKALE Admin evaluates the prospective supernode to ensure that it's upholding
+network hardware requirements. If the prospective supernode passes this verification step, the SKALE Admin permits the supernode to submit a request
+to SKALE Manager to join the network. This request contains both the required network deposit as well as supernode metadata collected by the
 SKALE Daemon (for example IP address, port, public key, etc.).
 
-Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective node as a 'full node' or
-a 'fractional node' by assigning different sizes of SKALE Chains to the prospective node. Full nodes have all their resources utilized
+Once the request has been submitted to SKALE Manager on Ethereum, SKALE Manager randomly defines the prospective supernode as a 'full node' or
+a 'fractional node' by assigning different sizes of SKALE Chains to the prospective supernode. Full nodes have all their resources utilized
 for a single SKALE Chain, while fractional nodes participate in multiple SKALE Chains (multi-tenancy).
 
 ### General Hardware Requirements
@@ -77,7 +77,7 @@ Configuring machine resources such as CPU and memory is easy to complete via the
 To assist with configuring volume, SKALE Labs introduced [docker-lvmpy](https://github.com/skalenetwork/docker-lvmpy), a simple volume driver
 for Logical Volume Manager (LVM) volumes written in Python to format and partition disk space per SKALE Chain.
 
-When a validator sets up a node through the CLI, SKALE Admin calls docker-lvmpy to format the external and unmounted volume. Each validator in the SKALE Network must provide a non-boot external disk space, which will be used to partition the volume by the SKALE Admin.
+When a validator sets up a supernode through the CLI, SKALE Admin calls docker-lvmpy to format the external and unmounted volume. Each validator in the SKALE Network must provide a non-boot external disk space, which will be used to partition the volume by the SKALE Admin.
 
 ![SKALE Admin Flow](https://assets.website-files.com/5be05ae542686c4ebf192462/5d9ce199ca4f18fa76e29ca0_Screen%20Shot%202019-10-08%20at%2012.19.30%20PM.png)
 ![SKALE Admin Flow 2](https://assets.website-files.com/5be05ae542686c4ebf192462/5d9ce198d4f7a4dcff8cd609_Screen%20Shot%202019-10-08%20at%2012.19.46%20PM.png)
@@ -91,12 +91,12 @@ on the configured SKALE Chain size.
 Software Guard Extension (SGX) is an Intel® technology coprocessor ledger used for memory encryption and increasing the security of application code
 by storing encrypted data in the processor.
 
-A SKALE sub-node connects to the SGX wallet server, and then the SGX wallet connects to the wallet enclave (BLS signatures and ETH keys). Keys
+A SKALE node connects to the SGX wallet server, and then the SGX wallet connects to the wallet enclave (BLS signatures and ETH keys). Keys
 stored in the processor can't be taken out, and they can only be encrypted or decrypted through the enclave. The key within the processor is secure
 in the enclave, and hackers can't hack the enclave and receive the key.
 
 Without SGX, human confirmation is necessary for transactions made in the SKALE Network. SKALE uses SGX for securing cryptographic keys by allowing
-nodes to connect hardware wallets without human interaction.
+supernodes to connect hardware wallets without human interaction.
 
 SKALE uses BLS to sign blocks in consensus, and ECDSA is needed to validate regular Ethereum transactions. SKALE will have a separate
 wallet integration for ECDSA. SKALE will use Intel® SGX technology to store BLS signatures at the coprocessor level and let users automatically
@@ -118,5 +118,5 @@ authorize transactions. Currently, other than bare-metal servers, SGX is support
 
 SKALE will have two types of SGX operations:
 
-- **Local (Secure)**: Wallet running on the same server as the sub-node
-- **Network**: Sub-node talks to the SGX wallet over the SKALE Network. The validator is responsible for securing the connection.
+- **Local (Secure)**: Wallet running on the same server as the node
+- **Network**: Node talks to the SGX wallet over the SKALE Network. The validator is responsible for securing the connection.

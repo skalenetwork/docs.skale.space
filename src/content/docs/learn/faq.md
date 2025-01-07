@@ -7,25 +7,25 @@ description: SKALE Network Frequently Asked Questions
 
 ### How does the SKALE Network work?
 
-The SKALE Network consists of a large pool of validator nodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These nodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager. SKALE Manager includes SKALE Token that governs its issuance and how rewards get distributed to validators and delegators.
+The SKALE Network consists of a large pool of validator supernodes, all running concurrently and independently, validating transactions within the SKALE Chains they oversee. These supernodes coordinate with a set of smart contracts that run on the Ethereum mainnet called SKALE Manager. SKALE Manager includes SKALE Token that governs its issuance and how rewards get distributed to validators and delegators.
 
 Developers can attain the size chain (small, medium, and large), chain duration (180, 365, 730 days i.e. 6, 12, 24 months), and then stake SKL tokens to complete the provisioning of the chain. These tokens get staked into SKALE Manager on the Ethereum mainnet. Each month, a set portion of tokens from this developer's stake move into a bounty pool which is then used to reward the validators and delegators within the network. An inflation event occurs each month whereby new SKALE tokens are created, which gets pushed into the bounty pool for reward to validators and delegators.
 
-For example, suppose there are a thousand validator nodes in the network and they all perform in accordance with the service parameters. In that case, they will each participate in the monthly proceeds from the bounty pool, which includes a portion of the SKALE Chain token stakes plus the inflation/issuance amount. Note that the distribution to the validators isn't necessarily shared equally as there is a modifier component that adjusts the payout based on the stake duration.Nodes with tokens that are locked for twelve months, for example, will receive a greater percentage than those locked up for three or six months.
+For example, suppose there are a thousand validator supernodes in the network and they all perform in accordance with the service parameters. In that case, they will each participate in the monthly proceeds from the bounty pool, which includes a portion of the SKALE Chain token stakes plus the inflation/issuance amount. Note that the distribution to the validators isn't necessarily shared equally as there is a modifier component that adjusts the payout based on the stake duration. Supernodes with tokens that are locked for twelve months, for example, will receive a greater percentage than those locked up for three or six months.
 
 ### How does the network work from an operational and governance perspective? x
 
 The SKALE Network serves as a custodial execution and storage layer (Layer 2) for the Ethereum mainnet. Whereas non-custodial approaches use a system of fraud proofs to allow funds to move between chains, SKALE makes use of BLS threshold signatures, deposit boxes within the Ethereum mainnet, and other mechanisms to allow for custodial ownership and use within the network (which allows it to inherit security guarantees from the Ethereum mainnet but provide the performance inherent in a Layer 2 solution).
 
-The stakes from the validators, developers, and the token inflation, are coordinated through SKALE Manager contracts on Ethereum mainnet and SKALE nodes in the SKALE Network.
+The stakes from the validators, developers, and the token inflation, are coordinated through SKALE Manager contracts on Ethereum mainnet and SKALE supernodes in the SKALE Network.
 
 This approach is different from other Layer 2 models that attempt to use mainnet interactions to run verification or fraud proofs. SKALE uses the Ethereum mainnet for staking and other mechanistic operations in a way that's better attuned to creating a robust and trustworthy Layer 2 network. SKALE will also support BLS Rollups for use cases that require complete reliance on Ethereum Mainnet custody.
 
-### What benefits do virtualized subnodes and node containerization provide? x
+### What benefits do virtualized Nodes and Supernodes containerization provide? x
 
-Each SKALE Chain comprises a collective of randomly appointed virtualized subnodes that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Nodes in the SKALE Network aren't restricted to operating a single chain but instead can support multiple chains via virtualized subnodes. This multiplex capability is made possible via a containerized subnode architecture deployed on each node in the network. Each node is virtualized and can participate as a validator via this subnode architecture for an independent number of SKALE Chains. Chains sizes can be small, medium, or large, with a small chain using 1/128 of a node's resources, a medium using 1/8 of the resources, and a large using the total amount. Medium SKALE chains are available at present but the other sizes will be made available in the near future.
+Each SKALE Chain comprises a collective of randomly appointed virtualized node that run a containerized SKALE EVM-client daemon (skaled) and SKALE ABBA-based consensus algorithm. Supernodes in the SKALE Network aren't restricted to operating a single chain but instead can support multiple chains via virtualized nodes. This multiplex capability is made possible via a containerized node architecture deployed on each supernode in the network. Each supernode is virtualized and can participate as a validator via this node architecture for an independent number of SKALE Chains. Chains sizes can be small, medium, or large, with a small chain using 1/128 of a supernode's resources, a medium using 1/8 of the resources, and a large using the total amount. Medium SKALE chains are available at present but the other sizes will be made available in the near future.
 
-The subnode virtualization is enabled via an innovative containerized architecture that provides industrial-grade performance and optionality for decentralized application developers – performance and flexibility that's similar to traditional centralized cloud and microservice systems. Containers are divided into several main components encapsulated via a dockerized Linux OS, allowing each node to be hosted in an OS-agnostic manner.
+The nodes virtualization is enabled via an innovative containerized architecture that provides industrial-grade performance and optionality for decentralized application developers – performance and flexibility that's similar to traditional centralized cloud and microservice systems. Containers are divided into several main components encapsulated via a dockerized Linux OS, allowing each supernode to be hosted in an OS-agnostic manner.
 
 ### What differentiates the SKALE token from others? x
 
@@ -33,7 +33,7 @@ SKL is a utility token that serves as a fundamental mechanism in the security of
 
 **Security of and staking in the network**
 
-SKL token holders (delegators) stake their SKL tokens to validators who run nodes that make the SKALE network function by validating blocks, executing smart contracts, and securing the network. They're rewarded with SKL tokens for their efforts.
+SKL token holders (delegators) stake their SKL tokens to validators who run supernodes that make the SKALE network function by validating blocks, executing smart contracts, and securing the network. They're rewarded with SKL tokens for their efforts.
 
 **.**Sponsorship of SKALE Chains\*\*
 
@@ -61,7 +61,7 @@ The Network of Decentralized Economics (N.O.D.E.) Foundation based in Liechtenst
 
 The SKALE Network is governed by its code which includes the SKL token. Onchain voting will be required to change any economic principles of the protocol.
 
-The Foundation will support the network by electing a diverse set of Network Representatives. These representatives will ideally comprise dApp developers who run SKALE Chains, validators who run SKALE Nodes, independents such as investors who helped kickstart the network economics, and developers/representatives that actively build, maintain, and evolve the codebase. These representatives will serve the community by facilitating on-chain voting, grants, and budget/treasury decisions. The representatives will be selected by the Foundation initially; however, future elections will be held via a variant of on-chain voting by token holders to choose representatives that facilitate on-chain voting.
+The Foundation will support the network by electing a diverse set of Network Representatives. These representatives will ideally comprise dApp developers who run SKALE Chains, validators who run SKALE supernodes, independents such as investors who helped kickstart the network economics, and developers/representatives that actively build, maintain, and evolve the codebase. These representatives will serve the community by facilitating on-chain voting, grants, and budget/treasury decisions. The representatives will be selected by the Foundation initially; however, future elections will be held via a variant of on-chain voting by token holders to choose representatives that facilitate on-chain voting.
 
 Ten percent of the total pool of SKL tokens is allocated to the Foundation and is vested over seven years to provide it with a budget and resources to fulfill its mission.
 
@@ -117,7 +117,7 @@ execution.
 
 ### How does the network mitigate security risks?
 
-Security and validity of transactions in a SKALE chain primarily rest with the performance and behavior of the validator nodes. A network first has to have a heterogeneous set of validator nodes. A small number of nodes in a network is inherently risky and fragile.
+Security and validity of transactions in a SKALE chain primarily rest with the performance and behavior of the validator supernodes. A network first has to have a heterogeneous set of validator supernodes. A small number of supernodes in a network is inherently risky and fragile.
 
 In addition, and as a requirement for a secure and robust network, it ideally needs to provide for a) the random selection of chain validator sets and b) the rotation of nodes in and out of chains frequently. Without randomness and rotation, there is a far greater risk of bribery or collusion between validators, reducing the security and integrity of the chains within a network.
 
