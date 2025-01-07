@@ -1,0 +1,109 @@
+---
+title: Cryptopia
+description: Intro to Cryptopia
+---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import ToolLayout from "../../../../../../components/Tool/ToolLayout.astro";
+
+<ToolLayout
+    introParagraph="An optimized c++ implementation for mining sFUEL (Skale gas) in Unity3D, developed by Cryptopia. This library provides an efficient and minimal API for managing the POW gas mining processes tailored for the Skale network."
+    toolName="Cryptopia.SkaleGasMiner"
+    toolLink="https://github.com/cryptopia-com/skale-gas-miner"
+    toolDocsLink="https://github.com/cryptopia-com/skale-gas-miner "
+>
+
+The main features of this library are:
+
+- Optimized Mining: Designed specifically for Unity3D to mine sFUEL efficiently.
+- Precompiled Binaries: Ready-to-use binaries for quick integration.
+- Unity Integration: Minimal effort required to get started within Unity projects.
+
+## Getting Started
+
+Using Precompiled Binaries (Recommended)
+
+1. **Download Binaries:**
+   - Download the latest Cryptopia.SkaleGasMiner binaries from the [Release Page](https://github.com/cryptopia-com/skale-gas-miner/releases/).
+
+2. **Add to Unity Project:**
+   - Copy the `.dll` (for Windows) and/or `.bundle` (for macOS) into your Unity project's `Assets/Plugins` folder.
+
+3. **Use in Unity Scripts:**
+   - Create C# scripts to interact with the miner as described below.
+
+## Integration with Unity
+
+To use the `Cryptopia.SkaleGasMiner` binary in a Unity project, follow these steps:
+
+1. **Import the DLL:**
+   Copy the `Cryptopia.SkaleGasMiner.dll` (or `.bundle` for macOS) files into your Unity project's `Assets/Plugins` folder.
+
+2. **Create a C# Script:**
+   In your Unity project, create a C# script to interface with the DLL. Use `[DllImport]` to import the functions from the DLL.
+
+3. **Implement Function Wrappers:**
+   Write C# wrapper functions that call the imported DLL functions:
+
+   ```csharp
+   using System.Runtime.InteropServices;
+
+   public delegate void HashRateDelegate(ulong hashRate);
+   public delegate void ResultDelegate(bool success, string result, string error);
+
+   [DllImport("Cryptopia.SkaleGasMiner", EntryPoint = "IsMining", CallingConvention = CallingConvention.StdCall)]
+   private static extern bool _IsMining();
+
+   [DllImport("Cryptopia.SkaleGasMiner", EntryPoint = "GetHashRate", CallingConvention = CallingConvention.StdCall)]
+   private static extern ulong _GetHashRate();
+
+   [DllImport("Cryptopia.SkaleGasMiner", EntryPoint = "MineGas", CallingConvention = CallingConvention.StdCall)]
+   private static extern void _MineGas(ulong amount, string fromAddress, ulong nonce, uint difficulty, HashRateDelegate hashRateCallback, ResultDelegate resultCallback, uint maxThreads = 0);
+
+   [DllImport("Cryptopia.SkaleGasMiner", EntryPoint = "Stop", CallingConvention = CallingConvention.StdCall)]
+   private static extern void _Stop();
+   ```
+
+4. **Call Function Wrappers:**
+   Use the C# wrapper functions. For example:
+
+   ```csharp
+   bool isMiningCompleted = false;
+
+   Task.Run(() =>
+   {
+       _MineGas(
+           gasAmount,
+           fromAddress,
+           nonce,
+           difficulty,
+           (nextHashRate) =>
+           {
+               // Display 'nextHashRate' to player
+           },
+           (success, result, error) =>
+           {
+               if (success)
+               {
+                   // Handle successful mining
+               }
+               isMiningCompleted = true;
+           },
+           maxConcurrentJobs
+       );
+   });
+
+   yield return new WaitUntil(() => isMiningCompleted);
+   ```
+
+5. **Stop Mining:**
+   Call the `_Stop()` function to halt mining operations:
+
+   ```csharp
+   _Stop();
+   ```
+
+## Repository
+
+The source code for the Cryptopia.SkaleGasMiner is available at the [GitHub Repository](https://github.com/cryptopia-com/skale-gas-miner).
+
+</ToolLayout>
