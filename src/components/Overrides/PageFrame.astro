@@ -18,7 +18,7 @@ const showBanner = true;
             <nav class="sidebar">
                 <MobileMenuToggle showBanner={showBanner} {...Astro.props} />
                 <div id="starlight__sidebar" class="sidebar-pane">
-                    <div class={`sidebar-content sl-flex ${showBanner ? 'sidebar-content-no-banner' : ''}`}>
+                    <div class={`sidebar-content sl-flex ${showBanner ? 'sidebar-content-banner' : ''}`}>
                         <slot name="sidebar" />
                     </div>
                 </div>
@@ -57,7 +57,7 @@ const showBanner = true;
     .header {
         z-index: var(--sl-z-index-navbar); 
         position: fixed; 
-        top: 2.5rem;
+        top: 2rem;
         inset-inline-start: 0;
         width: 100%; 
         height: var(--sl-nav-height); 
@@ -92,7 +92,7 @@ const showBanner = true;
     }
 
     .main-frame {
-        padding-top: calc(var(--sl-nav-height) + 2.5rem);
+        padding-top: calc(var(--sl-nav-height) + 2rem);
         padding-inline-start: var(--sl-content-inline-start);
     }
 
@@ -119,13 +119,13 @@ const showBanner = true;
     .sidebar-content {
         height: 100%;
         min-height: max-content;
-        padding: 1rem var(--sl-sidebar-pad-x) 0;
+        padding: 0.5rem var(--sl-sidebar-pad-x) 0;
         flex-direction: column;
         gap: 1rem;
     }
 
-    .sidebar-content-no-banner {
-        padding-top: var(--sl-nav-height);
+    .sidebar-content-banner {
+        padding-top: 3rem;
     }
 
 

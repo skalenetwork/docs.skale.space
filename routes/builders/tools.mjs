@@ -127,16 +127,24 @@ export default {
                     link: "/builders/tools/nfts",
                 },
                 {
-                    label: "Marketplaces",
-                    link: "/builders/tools/nfts/marketplaces",
+                    label: "Dripverse",
+                    link: "/builders/tools/nfts/dripverse",
                 },
                 {
-                    label: "NFT API",
-                    link: "/builders/tools/nfts/nft-api",
+                    label: "Keepsake",
+                    link: "/builders/tools/nfts/keepsake",
                 },
                 {
-                    label: "NFT Mint",
-                    link: "/builders/tools/nfts/nft-minting",
+                    label: "Pixel Ream",
+                    link: "/builders/tools/nfts/pixelrealm",
+                },
+                {
+                    label: "Reservoir",
+                    link: "/builders/tools/nfts/reservoir",
+                },
+                {
+                    label: "Snag",
+                    link: "/builders/tools/nfts/snag",
                 },
             ],
         },

@@ -71,6 +71,10 @@ pre,
 	background-color: var(--sl-color-hover);
 }
 
+.right-sidebar:where(.astro-67yu43on) {
+	padding-top: 6rem;
+}
+
 iframe {
 	aspect-ratio: 16/9;
 	width: 100%;
