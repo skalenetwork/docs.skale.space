@@ -7,30 +7,15 @@ sidebar:
 ---
 
 import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
+import {Tools} from "../../../../../components/ToolsList"
 
 Web3 gaming SDKs significantly simplify the game development process by abstracting and streamlining blockchain interactions. 
 
 These SDKs allow developers to integrate blockchain features, such as asset ownership and in-game economies, with ease, freeing them from the complexities of blockchain technology. 
 
-<CardGrid>
-	<LinkCard
-		title="Eidolon"
-		href="/builders/tools/gaming/eidolon"
-		description="Unity SDK built by SKALE"
-	/>
-	<LinkCard
-		title="Mirage"
-		href="/builders/tools/gaming/mirage"
-		description="Unity and Unreal SDK"
-	/>
-	<LinkCard
-		title="Emergence"
-		href="/builders/tools/gaming/emergence"
-		description="Unity and Unreal SDK"
-	/>
-	<LinkCard
-		title="Web3unreal"
-		href="/builders/tools/gaming/web3unreal"
-		description="Unreal SDK"
-	/>
-</CardGrid>
+<Tools 
+	categories={['Gaming']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

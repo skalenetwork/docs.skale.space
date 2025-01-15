@@ -1,3 +1,5 @@
+//import type { Tool } from '../../src/config/index';
+
 export default {
     label: "Tools",
     items: [
@@ -60,6 +62,10 @@ export default {
                     link: "/builders/tools/data/dune",
                 },
                 {
+                    label: "Goldsky",
+                    link: "/builders/tools/data/goldsky",
+                },
+                {
                     label: "Subsquid",
                     link: "/builders/tools/data/subsquid",
                 },
@@ -102,21 +108,41 @@ export default {
                     link: "/builders/tools/libraries",
                 },
                 {
-                    label: "Web Libraries",
-                    link: "/builders/tools/libraries/web",
+                    label: "Ethers v5",
+                    link: "/builders/tools/libraries/ethersv5",
                 },
                 {
-                    label: "Backend Libraries",
-                    link: "/builders/tools/libraries/backend",
+                    label: "Ethers v6",
+                    link: "/builders/tools/libraries/ethersv6",
                 },
                 {
-                    label: "Unity Libraries",
-                    link: "/builders/tools/libraries/unity",
+                    label: "JSON RPC Call",
+                    link: "/builders/tools/libraries/json-rpc-calls",
                 },
                 {
-                    label: "Mobile Libraries",
-                    link: "/builders/tools/libraries/mobile",
+                    label: "Kethereum",
+                    link: "/builders/tools/libraries/kethereum",
                 },
+                {
+                    label: "Nethereum",
+                    link: "/builders/tools/libraries/nethereum",
+                },
+                {
+                    label: "Viem",
+                    link: "/builders/tools/libraries/viem",
+                },
+                {
+                    label: "Web3 Dart",
+                    link: "/builders/tools/libraries/web3dart",
+                },
+                {
+                    label: "Web3j",
+                    link: "/builders/tools/libraries/web3j",
+                },
+                {
+                    label: "Web3js",
+                    link: "/builders/tools/libraries/web3js",
+                }
             ],
         },
         {
@@ -203,20 +229,76 @@ export default {
                     link: "/builders/tools/wallets",
                 },
                 {
-                    label: "Non-Custodial Wallets",
-                    link: "/builders/tools/wallets/non-custodial",
+                    label: "Coinbase",
+                    link: "/builders/tools/wallets/coinbase",
                 },
                 {
-                    label: "Custodial Wallets",
-                    link: "/builders/tools/wallets/custodial",
+                    label: "Connect Kit",
+                    link: "/builders/tools/wallets/connectkit",
                 },
                 {
-                    label: "MPC Wallets",
-                    link: "/builders/tools/wallets/mpc",
+                    label: "Crossmint",
+                    link: "/builders/tools/wallets/crossmint",
                 },
                 {
-                    label: "Wallets Aggregator",
-                    link: "/builders/tools/wallets/aggregator",
+                    label: "Dynamic",
+                    link: "/builders/tools/wallets/dynamic-xyz",
+                },
+                {
+                    label: "Enkrypt",
+                    link: "/builders/tools/wallets/enkrypt",
+                },
+                {
+                    label: "Invisible Signer",
+                    link: "/builders/tools/wallets/invisible-signer",
+                },
+                {
+                    label: "Ledger",
+                    link: "/builders/tools/wallets/ledger",
+                },
+                {
+                    label: "Magic",
+                    link: "/builders/tools/wallets/magic",
+                },                
+                {
+                    label: "Metakeep",
+                    link: "/builders/tools/wallets/metakeep",
+                },                
+                {
+                    label: "Metamask",
+                    link: "/builders/tools/wallets/metamask",
+                },                
+                {
+                    label: "Moon",
+                    link: "/builders/tools/wallets/moon",
+                },                
+                {
+                    label: "Portis",
+                    link: "/builders/tools/wallets/portis",
+                },                
+                {
+                    label: "Privy",
+                    link: "/builders/tools/wallets/privy",
+                },                
+                {
+                    label: "Rainbow Kit",
+                    link: "/builders/tools/wallets/rainbowkit",
+                },                
+                {
+                    label: "Thirdweb",
+                    link: "/builders/tools/wallets/thirdweb",
+                },
+                {
+                    label: "Trezor",
+                    link: "/builders/tools/wallets/trezor",
+                },
+                {
+                    label: "Wallet Connect",
+                    link: "/builders/tools/wallets/wallet-connect",
+                },
+                {
+                    label: "Web3Auth",
+                    link: "/builders/tools/wallets/web3auth",
                 },
             ],
         },

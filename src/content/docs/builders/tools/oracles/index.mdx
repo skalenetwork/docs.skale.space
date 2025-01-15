@@ -7,20 +7,16 @@ sidebar:
 ---
 
 import { LinkCard , CardGrid } from "@astrojs/starlight/components";
+import {Tools} from "../../../../../components/ToolsList"
 
 Oracles on blockchain serve as bridges between smart contracts and the external world, providing the necessary data for executing contract terms based on real-world events.
 
 SKALE offers a variety of oracle solutions, allowing developers to choose the most suitable options for their specific needs.
 
-<CardGrid>
-	<LinkCard
-		title="SKALE Connect"
-		href="/builders/tools/oracles/skale-connect"
-		description="SKALE Native Oracle"
-	/>
-	<LinkCard
-		title="Razor"
-		href="/builders/tools/oracles/razor"
-		description="Decentralized Oracle offering price-feeds data"
-	/>
-</CardGrid>
+
+<Tools 
+	categories={['Oracles']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

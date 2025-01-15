@@ -7,6 +7,7 @@ sidebar:
 ---
 
 import { LinkCard, CardGrid } from "@astrojs/starlight/components";
+import {Tools} from "../../../../../components/ToolsList"
 
 The SKALE network ensures that most industry-standard tools and applications designed for Ethereum seamlessly integrate with SKALE. 
 
@@ -14,25 +15,9 @@ This compatibility allows developers to utilize familiar tools and frameworks, s
 
 Additionally, SKALE provides common industry contract features, including Multicall contracts.
 
-<CardGrid>
-	<LinkCard
-		title="Hardhat"
-		href="/builders/tools/contracts/hardhat"
-		description="Contract development environment for EVM blockchains"
-	/>
-	<LinkCard
-		title="Remix"
-		href="/builders/tools/contracts/remix"
-		description="Toolset for developing, deploying, debugging, and testing EVM-compatible smart contracts."
-	/>
-	<LinkCard
-		title="Openzeppelin"
-		href="/builders/tools/contracts/openzeppelin"
-		description="OpenZeppelin Contracts provide audited libraries of smart contracts and most ERC standards for Ethereum and other EVM blockchains."
-	/>
-	<LinkCard
-		title="Multicall"
-		href="/builders/tools/contracts/multicall"
-		description="Multicall smart contract deployed on SKALE Chains"
-	/>
-</CardGrid>
+<Tools 
+	categories={['Contracts']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

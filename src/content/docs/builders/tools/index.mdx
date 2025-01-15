@@ -12,11 +12,10 @@ import {Tools} from "../../../../components/ToolsList"
 
 The tools section covers available tooling for developing on SKALE. This includes SDKs, Wallets, Libraries, and more.
 
-<CardGrid>
-	<LinkCard
-		title="Add your Integration"
-		href="https://github.com/skalenetwork/docs.skale.space/tree/main/src/content/docs/builders/tools"
-		/>
-</CardGrid>
+<LinkCard
+	title="Add your Integration"
+	href="https://github.com/skalenetwork/docs.skale.space/tree/main/src/content/docs/builders/tools"
+/>
 
-<Tools client:load/>
+
+<Tools categories={['Wallets', 'Bridges', 'Data', 'NFTs', 'Payments', 'Randomness', 'Oracles','Contracts', 'Libraries' ,'Gaming', 'All In One']} client:load/>

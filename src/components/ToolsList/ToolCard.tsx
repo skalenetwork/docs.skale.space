@@ -1,6 +1,5 @@
 import React from 'react';
 import {Badge} from './index';
-//import { Icon } from '@astrojs/starlight/components';
 import './ToolsStyle.css'; 
 interface BadgeType {
   text: string;

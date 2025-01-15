@@ -1,28 +1,33 @@
 import React, { useState } from 'react';
 import ToolCard from './ToolCard';
 import { tools } from '../../config/index';
-import type { Tool ,SKALEChains } from '../../config/index';
-import CardGrid from './CardGrid';
+import type { Tool, SKALEChains } from '../../config/index';
 import './ToolsStyle.css';
 
+type ToolsProps = {
+  categories: readonly string[];
+  searchBar?: boolean;
+  filters?: boolean;
+};
 
-const categories = ['Wallets', 'Bridges', 'Data', 'NFTs', 'Payments', 'Randomness'] as const; 
-type ToolCategory = keyof typeof tools; 
-
-export default function Tools() {
-  const [selectedChain, setSelectedChain] = useState<SKALEChains | null>(null);
+export default function Tools({categories, searchBar = true ,filters = true}:ToolsProps) {
+  const [selectedChains, setSelectedChains] = useState<SKALEChains[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-
-  // Function to handle button clicks
   const handleFilterClick = (chain: SKALEChains) => {
-    setSelectedChain((prev) => (prev === chain ? null : chain));
+    setSelectedChains((prev) => 
+      prev.includes(chain) 
+        ? prev.filter(c => c !== chain) 
+        : [...prev, chain]
+    );
   };
 
   const filteredTools = Object.keys(tools).reduce((acc, category) => {
     const filteredToolsForCategory = tools[category as keyof typeof tools].filter((tool) =>
       tool.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (selectedChain ? tool.chains.some(chain => chain === selectedChain)  : true)
+      (selectedChains.length > 0 
+        ? tool.chains.some(chain => selectedChains.includes(chain)) 
+        : true)
     );
     if (filteredToolsForCategory.length > 0) {
       acc[category] = filteredToolsForCategory;
@@ -30,38 +35,48 @@ export default function Tools() {
     return acc;
   }, {} as Record<string, Tool[]>);
 
-
   return (
-    <div className='tools-container'>
-      
-      <div className="search-bar-container">
-        <input
-          type="text"
-          className="search-bar"
-          placeholder="Search tools..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+     <div className="tools-container">
+      { searchBar && (
+        <div className="search-bar-container">
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Search tools..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      )}
 
+      { filters && (
       <div className="filter-buttons-container">
         {(["Calypso", "Europa", "Nebula", "Titan"] as const).map((chain) => (
           <button
             key={chain}
             onClick={() => handleFilterClick(chain)}
-            className={`filter-button ${selectedChain === chain ? 'selected' : ''}`}
+            className={`filter-button ${selectedChains.includes(chain) ? 'selected' : ''}`}
           >
             {chain}
           </button>
         ))}
       </div>
+      )}
 
-      {categories.map((category) => (
-        <div key={category}>
-          <h3>{category}</h3>
-          <div className="card-grid">
-            {filteredTools[category] ? (
-              filteredTools[category].map((tool) => (
+      {categories.map((category) => {
+        const toolsForCategory = filteredTools[category];
+
+        if (!toolsForCategory || toolsForCategory.length === 0) {
+          return null;
+        }
+
+        return (
+          <div key={category}>
+            {filters && (
+              <h3 id={`${category}`}>{category}</h3>
+            )}
+            <div className="card-grid">
+              {toolsForCategory.map((tool) => (
                 <ToolCard
                   key={tool.title}
                   title={tool.title}
@@ -71,13 +86,11 @@ export default function Tools() {
                   category={tool.category.map((catg) => ({ text: catg, variant: 'success' }))}
                   image={tool.image}
                 />
-              ))
-            ) : (
-              <p>No tools found</p>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

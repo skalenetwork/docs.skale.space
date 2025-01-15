@@ -7,23 +7,13 @@ sidebar:
 ---
 
 import { LinkCard, CardGrid } from "@astrojs/starlight/components";
+import {Tools} from "../../../../../components/ToolsList"
 
 SKALE encompasses a comprehensive suite of tools and features specifically designed for NFTs, aimed at addressing the diverse requirements developers may encounter when creating their NFT collections.
 
-<CardGrid>
-	<LinkCard
-		title="Marketplace"
-		href="/builders/tools/nfts/marketplaces"
-		description="NFT marketplaces compatible with SKALE"
-	/>
-	<LinkCard
-		title="NFT API"
-		href="/builders/tools/nfts/nft-api"
-		description="NFT APIs available on SKALE"
-	/>
-	<LinkCard
-		title="NFT Mint"
-		href="/builders/tools/nfts/nft-minting"
-		description="SKALE dApps for NFT Minting"
-	/>
-</CardGrid>
+<Tools 
+	categories={['NFTs']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

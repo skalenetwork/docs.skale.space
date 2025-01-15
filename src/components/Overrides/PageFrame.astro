@@ -7,6 +7,7 @@ import Banner from '../Banner.astro';
 const { hasSidebar } = Astro.props;
 
 const showBanner = true;
+const tools = false;
 ---
 <div class="page sl-flex">
     {showBanner && <Banner/>}
@@ -92,8 +93,8 @@ const showBanner = true;
     }
 
     .main-frame {
-        padding-top: calc(var(--sl-nav-height) + 2rem);
-        padding-inline-start: var(--sl-content-inline-start);
+        padding-top: calc(var(--sl-nav-height) + 1.5rem);
+        padding-inline-start: var(--sl-content-inline-start) ;
     }
 
     .main-frame-no-banner {
