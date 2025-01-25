@@ -23,11 +23,21 @@
 	  flex-direction: row;
 	  align-items: center;
 	  justify-content: center;
+
+
   }
 
   .banner p {
 	  color: var(--sl-color-white);
 	  height: 75%;
+
+	  @media(max-width: 864px) {
+	  	height: 60%;
+	  }
+
+	  @media(max-width: 768px) {
+	  	height: 50%;
+	  }
   }
 
   .banner p .highlight_2 {
