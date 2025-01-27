@@ -84,7 +84,7 @@ export default function ToolsPage({categories, searchBar = true ,filters = true}
             {filters && (
               <h3 id={`${category}`}>{category}</h3>
             )}
-            <div className="card-grid">
+            <div className={`card-grid ${filters ? 'is-main-tools-paige': ''}`}>
               {toolsForCategory.map((tool) => (
                 <ToolCard
                   key={tool.title}
