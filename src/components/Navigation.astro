@@ -2,9 +2,11 @@
 import type { Props } from '@astrojs/starlight/props';
 import NavigationConfig from "../config/navigation";
 import NavigationItem from "./NavigationItem.astro";
+import Faucet from "./Faucet.astro";
 ---
 
 <nav class="navigation-items">
+	<Faucet/>
 	{NavigationConfig.map((item) => {
 		return <NavigationItem {...item} />
 	})}

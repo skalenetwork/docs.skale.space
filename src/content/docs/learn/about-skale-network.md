@@ -46,15 +46,18 @@ SKALE chains can exchange transactions or messages with other SKALE Chains and t
 
 With SKALE, dApps run zero-cost transactions on dedicated Proof-of-Stake chains distributed across a randomly chosen set of 16 nodes.
 
-Decentralized validator organizations run and maintain SKALE Nodes, providing distributed computing power and storage to the SKALE Network.
+Decentralized validator organizations run and maintain SKALE supernodes, providing distributed computing power and storage to the SKALE Network.
 
 Built on the foundation it services, SKALE Network is managed and operated by over 35 smart contracts deployed on Ethereum mainnet that make up SKALE Manager.
 
-These smart contracts control network functions such as chain creation, validator registration, node selection, node rotation, staking, bounty payment, slashing, and more.
+These smart contracts control network functions such as chain creation, validator registration, supernode selection, node rotation, staking, bounty payment, slashing, and more.
 
 Network users such as validators, delegators, and dApp Developers exchange SKL tokens to provide stake and access network services.
 
-The [SKALE validator community represents over 45 independent operators](https://skale.space/blog/validator-list-for-skale) running over 150 nodes, and the SKALE Mainnet has been live for over 300 days without interruption.
+The [SKALE validator community represents over 45 independent operators](https://skale.space/blog/validator-list-for-skale) running over 112 supernodes, 896 Nodes, and the SKALE Mainnet has been live for over 300 days without interruption.
+
+<iframe src="https://dune.com/embeds/2771528/7069649/" style="width: 300px; height: 150px; display: inline-block; margin-right: 10px;"></iframe>
+<iframe src="https://dune.com/embeds/2771528/7069653/" style="width: 300px; height: 150px; display: inline-block;"></iframe>
 
 SKALE Network uses a [unique combination of technologies and cryptographic-based approaches](https://skale.space/blog/technical-highlights) to achieve scalability, security, interoperability, and progressive decentralization:
 
