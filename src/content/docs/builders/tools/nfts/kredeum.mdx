@@ -2,19 +2,34 @@
 title: Kredeum
 description: Intro to Kredeum
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="Kredeum is a factory to create, buy, sell & swap NFTs with your own collections."
-    toolName="Kredeum"
-    toolLink="https://www.kredeum.com/"
-    toolDocsLink="https://www.kredeum.com/"
->
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-Kredeum NFTs allows you to :
-- Archive your images on IPFS
-- Create your own NFT collections
-- Mint your images as NFTs
-- Sell them on your Wordpress site or on a NFT MarketPlace 
+Kredeum is a factory to create, buy, sell & swap NFTs with your own collections.
 
-</ToolLayout>
+<CardGrid>
+  <LinkCard title="Website" href="https://www.kredeum.com/" />
+</CardGrid>
+
+
+## Features
+
+- **IPFS:** Allows easy image stporing on IPFS
+
+- **Factory:** Easy to use NFT factory 
+
+- **Wordpress:** Criati
+
+## Quickstart
+
+<Steps>
+
+1. Head to the Kredeum [platform](https://app.kredeum.com/).
+
+2. Connect a wallet.
+
+3. Click on add to mint a NFT or add a custom collection.
+
+</Steps>

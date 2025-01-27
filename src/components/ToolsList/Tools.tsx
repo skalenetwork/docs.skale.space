@@ -23,17 +23,26 @@ export default function Tools({categories, searchBar = true ,filters = true}:Too
   };
 
   const filteredTools = Object.keys(tools).reduce((acc, category) => {
-    const filteredToolsForCategory = tools[category as keyof typeof tools].filter((tool) =>
-      tool.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (selectedChains.length > 0 
-        ? tool.chains.some(chain => selectedChains.includes(chain)) 
-        : true)
-    );
+    const filteredToolsForCategory = tools[category as keyof typeof tools].filter((tool) => {
+
+      const matchesSearch =
+        tool.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (tool.description && tool.description.toLowerCase().includes(searchQuery.toLowerCase()));
+  
+      const matchesChains =
+        selectedChains.length > 0
+          ? tool.chains.some((chain) => selectedChains.includes(chain))
+          : true;
+  
+      return matchesSearch && matchesChains;
+    });
+  
     if (filteredToolsForCategory.length > 0) {
       acc[category] = filteredToolsForCategory;
     }
     return acc;
   }, {} as Record<string, Tool[]>);
+  
 
   return (
      <div className="tools-container">
@@ -82,8 +91,8 @@ export default function Tools({categories, searchBar = true ,filters = true}:Too
                   title={tool.title}
                   href={tool.docPath}
                   description={tool.description}
-                  badges={tool.chains.map((chain) => ({ text: chain, variant: 'note' }))}
-                  category={tool.category.map((catg) => ({ text: catg, variant: 'success' }))}
+                  badges={tool.chains.map((chain) => ({ text: chain, variant: chain.toLowerCase() }))}
+                  category={tool.category.map((catg) => ({ text: catg, variant: 'note' }))}
                   image={tool.image}
                 />
               ))}

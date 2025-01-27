@@ -2,13 +2,50 @@
 title: Enkrypt
 description: Intro to Enkrypt
 ---
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="The Enkrypt wallet is a multichain non-custodial wallet allowing users to easily manage tokens and access web3 application across multiple blockchains, like SKALE Network."
-    toolName="Enkrypt"
-    toolLink="https://www.enkrypt.com/"
-    toolDocsLink="https://www.enkrypt.com/"
->
-</ToolLayout>
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+The Enkrypt wallet is a multichain non-custodial wallet allowing users to easily manage tokens and access web3 application across multiple blockchains, like SKALE Network.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://www.enkrypt.com/" />
+  <LinkCard title="Documentation" href="https://myetherwallet.gitbook.io/enkrypt-documentation" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Custom Network Configuration:** Enables users to add and switch between custom blockchain networks.  
+- **dApp and DeFi Access:** Allows users to explore dApps and participate in DeFi directly from the wallet.  
+
+
+## Quickstart
+
+<Steps>
+
+1. Install the package:
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm i @enkryptcom/connector-wagmi
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add @enkryptcom/connector-wagmi
+        ```
+        </TabItem>
+    </Tabs>
+
+2. Import the library and start using it:
+
+    ```ts
+    import { EnkryptConnector } from "@enkryptcom/connector-wagmi";
+    import { skaleNebulaTestnet , skaleCalypsoTestnet , skaleTitanTestnet , skaleEuropaTestnet } from "wagmi/chains";
+    ```
+</Steps>

@@ -3,19 +3,35 @@ title: Pixel Realm
 description: Intro to Pixelrealm
 ---
 
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-<ToolLayout
-    introParagraph="Pixel Realm is a multichain NFT marketplace and launchpad."
-    toolName="Keepsake"
-    toolLink="https://app.pixelrealm.io/"
-    toolDocsLink="https://app.pixelrealm.io/"
->
+Pixel Realm is a multichain NFT marketplace and launchpad.
 
-Some of the main features are:
+<CardGrid>
+  <LinkCard title="Website" href="https://pixelrealm.io/" />
+</CardGrid>
 
-|Payments|Embedded Bridging|Launchpad|
-|-|-|-|
-| USDC | No | [Yes](https://app.pixelrealm.io/launch/) |
 
-</ToolLayout>
+## Features
+
+- **Payments:** Marketplace with supporting payments in USDC.
+
+- **Launchpad:** Has a NFTs collection launchpad.
+
+## Quickstart
+
+<Steps>
+
+1. Head to the Pixel Realm [platform](https://app.pixelrealm.io/).
+
+2. Connect a wallet.
+
+3. Select the SKALE Nebula Hub chain
+
+</Steps>
+
+
+
+

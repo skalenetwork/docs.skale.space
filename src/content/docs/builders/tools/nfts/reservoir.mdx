@@ -1,21 +1,38 @@
 ---
-title: Reservoir NFT API
+title: Reservoir
 description: Intro to reservoir NFT API
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="Reservoir APIs offer comprehensive endpoints for developing NFT applications.
-    The NFT data APIs provide granular token price data, real-time collection floor price and top bid events, token and collection metadata, and more."
-    toolName="Reservoir"
-    toolLink="https://docs.reservoir.tools/reference/nebula-nft-api"
-    toolDocsLink="https://docs.reservoir.tools/reference/nebula-nft-api"
->
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
+Reservoir APIs offer comprehensive endpoints for developing NFT applications.
+The NFT data APIs provide granular token price data, real-time collection floor price and top bid events, token and collection metadata, and more.
 
-Some of the supported requests return the following information:
-- Detailed collection metadata, statistics, and market data for collections owned by a user;
-- Status change events filterable by contract
-- Owners filtered by collection, collectionSetId, or attributes
+<CardGrid>
+  <LinkCard title="Website" href="https://reservoir.tools/" />
+  <LinkCard title="Documentation" href="https://docs.reservoir.tools/reference/nebula-nft-api" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
 
-</ToolLayout>
+## Features
+
+- **User Data:** Provides detailed collection metadata, statistics, and market data for collections owned by a user
+
+- **Events:** Tracks events by contracts
+
+- **Execute Order:** Has available APIs for purchase and sell NFTs 
+
+## Quickstart
+
+<Steps>
+
+1. Head to the Reservoir [dashboard](https://dashboard.reservoir.tools/) to get an API Key 
+
+2. Check the available endpoints for SKALE Nebula [here](https://docs.reservoir.tools/reference/nebula-nft-api).
+
+3. Start using the NFT API.
+
+</Steps>
+

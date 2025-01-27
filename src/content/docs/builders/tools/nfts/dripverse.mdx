@@ -2,15 +2,33 @@
 title: Dripverse
 description: Intro to Dripverse
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="Dripverse allows the easy creation of NFTs, collections as well as trade them on their market. 
-    Integration and usage of these utilities can be made available across platforms and multiple chains. With the DripVerse platform, any user can access the utilities by choosing from what the developer ecosystem has created."
-    toolName="Dripverse"
-    toolLink="https://dripverse.org/"
-    toolDocsLink="https://dripverse.org/"
->
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
+Dripverse allows the easy creation of NFTs, collections as well as trade them on their market. 
+Integration and usage of these utilities can be made available across platforms and multiple chains. With the DripVerse platform, any user can access the utilities by choosing from what the developer ecosystem has created.
 
-</ToolLayout>
+<CardGrid>
+  <LinkCard title="Website" href="https://dripverse.org/" />
+</CardGrid>
+
+## Features
+
+- **Tokens:** Support for ERC-721 token standard
+
+- **Marketplace:** Buy and seel NFTs marketplace
+
+- **NFTs Creation:** Allows creating NFTs collections
+
+## Quickstart
+
+<Steps>
+
+1. Go to the Dripverse [platform](https://dripverse.org/).
+
+2. Use the marketplace or create your own collection
+
+</Steps>
+

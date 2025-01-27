@@ -3,24 +3,35 @@ title: RainbowKit
 description: Intro to RainbowKit
 ---
 
-import {Steps} from "@astrojs/starlight/components";
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-<ToolLayout
-	introParagraph="RainbowKit is a React library that makes it easy to add wallet connection.
-    In addition to managing wallet connections and disconnections, RainbowKit supports a wide range of wallets, allows swapping connection chains, and offers many other features."
-	toolName="RainbowKit"
-	toolLink="https://www.rainbowkit.com/docs/introduction"
-	toolDocsLink="https://www.rainbowkit.com/docs/introduction"
->
+RainbowKit is a React library that makes it easy to add wallet connection.
 
-## Implementation Example
+In addition to managing wallet connections and disconnections, RainbowKit supports a wide range of wallets, allows swapping connection chains, and offers many other features.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://www.rainbowkit.com/" />
+  <LinkCard title="Documentation" href="https://www.rainbowkit.com/docs/introduction" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Multi-Wallet Support:** Supports wallets like MetaMask, Coinbase, WalletConnect, and more.  
+
+- **Developer-Friendly Design:** Built with React for seamless integration into modern web apps.  
+
+
+## Quickstart
 
 <Steps>
 
-1. ##### Package Install
-    
+1. Install the package:
+
     <Tabs>
         <TabItem label="npm">
         ```shell
@@ -33,78 +44,16 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
         ```
         </TabItem>
     </Tabs>
-2. ##### Integration
 
-    ```typescript
-        import {
-            RainbowKitProvider,
-            getDefaultConfig,
-            getDefaultWallets,
-        } from '@rainbow-me/rainbowkit';
-        import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-        import { createConfig, WagmiConfig } from 'wagmi';
-        import { publicProvider } from 'wagmi/providers/public';
-        import { 
-            skaleCalypsoTestnet, 
-            skaleEuropaTestnet, 
-            skaleNebulaTestnet, 
-            skaleTitanTestnet, 
-            Chain } from "wagmi/chains";
+2. Import the library and start using it:
 
-        import { useState } from 'react';
-        import "@rainbow-me/rainbowkit/styles.css";
-
-        const queryClient = new QueryClient();
-
-        export default function Web3WalletContainer({children,projectId}: {
-            children?: JSX.Element | JSX.Element[];
-            projectId: string;
-        }) {
- 
-        const [{ config, chains }] = useState(() => {
-
-        const chains: readonly [Chain, ...Chain[]] = [
-        skaleCalypsoTestnet,
-        skaleEuropaTestnet,
-        skaleNebulaTestnet,
-        skaleTitanTestnet,
-        ]
-
-        const config = getDefaultConfig({
-            appName: 'your app name',
-            projectId,
-            chains,
-            ssr: true,
-        });
-
-        return {
-            config,
-        chains
-        }
-    });
-    
-    if (!config || !chains) return null;
-
-    return (
-        <>
-        <WagmiConfig
-            config={config}
-        >
-            <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider
-                    appInfo={{
-                    appName: "your app name",
-                }}
-                >
-                    {children}
-                </RainbowKitProvider>
-            </QueryClientProvider>
-      </WagmiConfig>
-    </>
-    );
-    }
+    ```ts
+    import {RainbowKitProvider,getDefaultConfig,getDefaultWallets,} from '@rainbow-me/rainbowkit';
+    import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+    import { createConfig, WagmiConfig } from 'wagmi';
+    import { publicProvider } from 'wagmi/providers/public';
+    import { skaleCalypsoTestnet, skaleEuropaTestnet, skaleNebulaTestnet, skaleTitanTestnet, Chain } from "wagmi/chains";
     ```
 
 </Steps>
 
-</ToolLayout>

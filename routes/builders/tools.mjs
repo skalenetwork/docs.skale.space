@@ -5,6 +5,27 @@ export default {
     items: [
         { label: "Overview", link: "/builders/tools" },
         {
+            label: "All in one",
+            items: [
+                {
+                    label: "Overview",
+                    link: "/builders/tools/all-in-one",
+                },
+                {
+                    label: "Crossmint",
+                    link: "/builders/tools/all-in-one/crossmint",
+                },
+                {
+                    label: "Sequence",
+                    link: "/builders/tools/all-in-one/sequence",
+                },
+                {
+                    label: "Thirdweb",
+                    link: "/builders/tools/all-in-one/thirdweb",
+                }
+            ],
+        },
+        {
             label: "Bridges",
             items: [
                 {
@@ -115,10 +136,10 @@ export default {
                     label: "Ethers v6",
                     link: "/builders/tools/libraries/ethersv6",
                 },
-                {
+                /*{
                     label: "JSON RPC Call",
                     link: "/builders/tools/libraries/json-rpc-calls",
-                },
+                },*/
                 {
                     label: "Kethereum",
                     link: "/builders/tools/libraries/kethereum",
@@ -202,10 +223,6 @@ export default {
                     label: "Transak",
                     link: "/builders/tools/payments/transak",
                 },
-                {
-                    label: "Crossmint",
-                    link: "/builders/tools/payments/crossmint",
-                },
             ],
         },
         {
@@ -235,10 +252,6 @@ export default {
                 {
                     label: "Connect Kit",
                     link: "/builders/tools/wallets/connectkit",
-                },
-                {
-                    label: "Crossmint",
-                    link: "/builders/tools/wallets/crossmint",
                 },
                 {
                     label: "Dynamic",
@@ -285,10 +298,6 @@ export default {
                     link: "/builders/tools/wallets/rainbowkit",
                 },                
                 {
-                    label: "Thirdweb",
-                    link: "/builders/tools/wallets/thirdweb",
-                },
-                {
                     label: "Trezor",
                     link: "/builders/tools/wallets/trezor",
                 },
@@ -301,6 +310,6 @@ export default {
                     link: "/builders/tools/wallets/web3auth",
                 },
             ],
-        },
+        }
     ],
 }

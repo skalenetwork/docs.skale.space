@@ -2,44 +2,40 @@
 title: Portis
 description: Intro to Portis
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-<ToolLayout
-    introParagraph="Portis is a non-custodial Web3 wallet SDK supported by a variety of `evergreen` browsers. The Portis SDK allows you to integrate your dApp with SKALE."
-    toolName="Portis"
-    toolLink="https://docs.portis.io/#/quick-start"
-    toolDocsLink="https://docs.portis.io/#/quick-start"
->
+Portis is a non-custodial Web3 wallet SDK supported by a variety of `evergreen` browsers. The Portis SDK allows you to integrate your dApp with SKALE.
 
-## Implementation Example
+<CardGrid>
+  <LinkCard title="Website" href="https://www.portis.io/" />
+  <LinkCard title="Documentation" href="https://docs.portis.io/#/quick-start" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Web-Based Wallet:** Allows users to access their wallet directly from any browser without extensions.  
+
+- **Easy dApp Integration:** Designed for seamless integration with Web3 applications.  
+
+
+## Quickstart
 
 <Steps>
-1. ##### Package Install
+
+1. Install the package:
+
     ```shell
     npm install --save web3 @portis/web3
     ```
-2. ##### Integration
-    ```javascript
+
+2. Import the library and start using it:
+
+    ```ts
     import Portis from '@portis/web3';
-    import Web3 from 'web3';
-
-
-    // Your setup information
-    const endpoint = 'your_skale_network_rpc'; // your SKALE Chain endpoint
-    const skaleChainId = 123456                     // chainId of your SKALE Chain
-    const testAPIKey = 'your_api_key';
-
-    const mySKALEChain = {
-        nodeUrl: endpoint,
-        chainId: skaleChainId,
-        nodeProtocol: "rpc"
-    }
-
-    // Setting network
-    const portis = new Portis(testAPIKey, mySKALEChain);
-    let web3 = new Web3(portis.provider);
     ```
 </Steps>
-
-</ToolLayout>

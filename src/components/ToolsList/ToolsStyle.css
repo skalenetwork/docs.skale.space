@@ -22,6 +22,22 @@
 	--sl-badge-tip-border: var(--sl-color-purple);
 	--sl-badge-tip-bg: var(--sl-color-purple-low);
 	--sl-badge-tip-text: #fff;
+
+	--sl-badge-calypso-border: #f11387;
+	--sl-badge-calypso-bg: #730140;
+	--sl-badge-calypso-text: #fff;
+
+	--sl-badge-nebula-border: #d659c5;
+	--sl-badge-nebula-bg: #590f8e;
+	--sl-badge-nebula-text: #fff;
+
+	--sl-badge-europa-border: #79d0e4;
+	--sl-badge-europa-bg: #025599;
+	--sl-badge-europa-text: #fff;
+
+	--sl-badge-titan-border: #ffcea7;
+	--sl-badge-titan-bg: #eb5f0f;
+	--sl-badge-titan-text: #fff;
 }
 
 [data-theme="light"]:root {
@@ -83,6 +99,30 @@
 	--sl-color-text-badge: var(--sl-badge-success-text);
 }
 
+.calypso {
+	--sl-color-bg-badge: var(--sl-badge-calypso-bg);
+	--sl-color-border-badge: var(--sl-badge-calypso-border);
+	--sl-color-text-badge: var(--sl-badge-calypso-text);
+}
+
+.titan {
+	--sl-color-bg-badge: var(--sl-badge-titan-bg);
+	--sl-color-border-badge: var(--sl-badge-titan-border);
+	--sl-color-text-badge: var(--sl-badge-titan-text);
+}
+
+.nebula {
+	--sl-color-bg-badge: var(--sl-badge-nebula-bg);
+	--sl-color-border-badge: var(--sl-badge-nebula-border);
+	--sl-color-text-badge: var(--sl-badge-nebula-text);
+}
+
+.europa {
+	--sl-color-bg-badge: var(--sl-badge-europa-bg);
+	--sl-color-border-badge: var(--sl-badge-europa-border);
+	--sl-color-text-badge: var(--sl-badge-europa-text);
+}
+
 .tip {
 	--sl-color-bg-badge: var(--sl-badge-tip-bg);
 	--sl-color-border-badge: var(--sl-badge-tip-border);
@@ -103,7 +143,7 @@
 	border-radius: 0.5rem;
 	padding: 1rem;
 	box-shadow: var(--sl-shadow-sm);
-	background-color: var(--sl-color-gray-7);
+	background-color: var(--sl-color-gray-tools);
 	text-decoration: none;
 	position: relative;
 }
@@ -242,7 +282,7 @@
 }
 
 .filter-button.selected {
-	background-color: var(--sl-color-accent-high);
+	background-color: var(--sl-color-accent-tool-filter);
 	color: var(--sl-color-text-invert);
 }
 

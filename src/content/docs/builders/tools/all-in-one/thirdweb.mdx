@@ -1,0 +1,56 @@
+---
+title: Thirdweb
+description: Intro to Thirdweb
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Thirdweb provides a wallet solution that can accommodate different needs. Their connect wallet UI allows connecting with the common industry wallets (ex: Metamask, Coinbase, WalletConnect) as well as creating an MPC wallet with social logins.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://thirdweb.com/"/>
+  <LinkCard title="Documentation" href="https://portal.thirdweb.com/" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Smart Contract Deployment:** Easily deploy pre-built or custom smart contracts on multiple blockchains.  
+
+- **Developer SDKs:** Supports JavaScript, Unity, Python for a seamless integration.  
+
+- **Dashboard Management:** Intuitive interface to manage contracts, users, and analytics.  
+
+- **Wallet Integration:** Includes wallet connectors and features for smooth user onboarding.  
+
+- **Secure Smart Contracts:** Pre-audited contracts ensure security and reliability.  
+
+
+## Quickstart
+
+<Steps>
+
+1. Head to the [Thirdweb dashboard](https://thirdweb.com/login).
+
+2. Go to overview and create a new project.
+
+3. Get the Thirdweb secret key and client ID.
+
+4. Start using one of the different Thirdweb tools:
+
+    <Tabs>
+    <TabItem label="Wallet">  
+    Setup the Thirdweb [Wallet](https://portal.thirdweb.com/connect/wallet/overview).
+    </TabItem>
+    <TabItem label="Engine">
+    Use the Thirdweb [Engine](https://portal.thirdweb.com/engine).
+    </TabItem>
+    <TabItem label="Contracts">
+    Use and deploy the Thirdweb [Contracts](https://portal.thirdweb.com/contracts).
+    </TabItem>
+    </Tabs>
+</Steps>

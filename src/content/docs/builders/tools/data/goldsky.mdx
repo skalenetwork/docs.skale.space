@@ -2,14 +2,56 @@
 title: Goldsky
 description: Intro to Goldsky
 ---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-	introParagraph=""
-	toolName="Goldsky"
-	toolLink="https://subsquid.io/"
-	toolDocsLink="https://docs.subsquid.io/"
->
+Goldsky is a data indexing platform designed to help developers efficiently query blockchain data for building Web3 applications.
 
-</ToolLayout>
+<CardGrid>
+  <LinkCard title="Website" href="https://goldsky.com/" />
+  <LinkCard title="Documentation" href="https://docs.goldsky.com/introduction" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+## Features
+
+- **Custom Data Indexing:** Enables developers to create tailored indexes for specific on-chain data, making queries faster and more precise.
+
+- **Real-Time Data Streams:** Provides real-time data feeds, allowing applications to stay updated with the latest blockchain events.
+
+- **SKALE Chains:** The Goldsky service is available on 3 of the SKALE Hubs, Nebula, Calypso and Europa.
+
+- **Subgraphs:** Define data sources and transformation logic to query structured blockchain data using GraphQL via instant API endpoints.
+
+- **Mirror:** Stream real-time blockchain data directly to your database, offering full control and customization over your data pipeline.
+
+## Quickstart
+
+<Steps>
+
+1. Go [here](https://docs.goldsky.com/introduction) and install Goldsky CLI by running the command:
+
+	```sh
+		curl https://goldsky.com | sh
+	```
+
+2. Go to [Goldsky dashboard](https://app.goldsky.com/login) and create an account.
+
+3. Decide what to use:
+
+	<Tabs>
+		<TabItem label="Subgraphs">
+			Check the Subgraph [documentation](https://docs.goldsky.com/subgraphs/introduction).
+		</TabItem>
+		<TabItem label="Mirror">
+			Check the Mirror [documentation](https://docs.goldsky.com/mirror/introduction).
+		</TabItem>
+	</Tabs>
+
+</Steps>
+
+
+

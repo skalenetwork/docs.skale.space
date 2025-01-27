@@ -3,7 +3,7 @@ import './ToolsStyle.css';
 
 type BadgeProps = {
     text: string;
-    variant?: 'default' | 'note' | 'danger' | 'success' | 'caution' | 'tip';
+    variant?: 'default' | 'note' | 'danger' | 'success' | 'caution' | 'tip' | 'nebula' | 'calypso' | 'titan' | 'europa';
     size?: 'small' | 'medium' | 'large';
     className?: string;
   };

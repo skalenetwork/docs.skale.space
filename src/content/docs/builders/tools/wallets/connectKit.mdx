@@ -2,22 +2,33 @@
 title: ConnectKit
 description: Intro to ConnectKit
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-<ToolLayout
-    introParagraph="ConnectKit is a react component library designed for integrating a wallet with dApps.
-    It supports a wide range of popular connectors and blockchains, ensuring a smooth and visually appealing user experience."
-    toolName="ConnectKit"
-    toolLink="https://docs.family.co/connectkit/getting-started"
-    toolDocsLink="https://docs.family.co/connectkit/getting-started"
->
+ConnectKit is a react component library designed for integrating a wallet with dApps.
+It supports a wide range of popular connectors and blockchains, ensuring a smooth and visually appealing user experience.
 
-## Implementation Example
+<CardGrid>
+  <LinkCard title="Website" href="https://family.co/" />
+  <LinkCard title="Documentation" href="https://docs.family.co/connectkit/getting-started" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Customizable Wallet Integration:** Simplifies wallet connection for dApps with a fully customizable interface.  
+- **Multi-Wallet Support:** Enables integration with various wallets like MetaMask, Coinbase, and WalletConnect.  
+- **Multi-Chain:** Compatible with all EVM Networks which means all SKALE Chains are compatible as well.
+
+## Quickstart
 
 <Steps>
-1. ##### Package Install
+
+1. Install the package:
 
     <Tabs>
         <TabItem label="npm">
@@ -32,48 +43,15 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
         </TabItem>
     </Tabs>
 
-2. ##### Integration
-    ```typescript
-        import { WagmiProvider , createConfig, http } from "wagmi";
-        import { skaleNebulaTestnet , skaleCalypsoTestnet , skaleTitanTestnet , skaleEuropaTestnet } from "wagmi/chains";
-        import { QueryClient , QueryClientProvider } from "@tanstack/react-query";
-        import { ConnectKitProvider , getDefaultConfig } from "connectkit";
-        import { ConnectKitButton } from "connectkit";
+2. ConnectKit utilises WalletConnect's SDK which means it's required to get a `projectId`. Head to [WalletConnect Cloud](https://cloud.reown.com/sign-in) to get it.
 
-        const config = createConfig(
-        getDefaultConfig({
-            // Your dApps chains
-            chains: [skaleNebulaTestnet],
-            transports: {
-            // RPC URL for each chain
-            [skaleNebulaTestnet.id]: http(
-                `https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet`,
-            ),
-            },
+3. Import the required libraries and start using connect kit:
 
-            // Required API Keys
-            walletConnectProjectId: "Get yours here: https://cloud.walletconnect.com/sign-in",
-
-            // Required App Info
-            appName: "ConnectKit"
-        }),
-        );
-
-        const queryClient = new QueryClient();
-
-        export const Web3Provider = ({ children }) => {
-        return (
-            <WagmiProvider config={config}>
-            <QueryClientProvider client={queryClient}>
-                <ConnectKitProvider>{children}
-                <ConnectKitButton/>
-                </ConnectKitProvider>
-            </QueryClientProvider>
-            </WagmiProvider>
-        );
-        };       
+    **Example**
+    ```js
+    import { WagmiProvider , createConfig, http } from "wagmi";
+    import { skaleNebulaTestnet , skaleCalypsoTestnet , skaleTitanTestnet , skaleEuropaTestnet } from "wagmi/chains";
+    import { QueryClient , QueryClientProvider } from "@tanstack/react-query";
+    import {  ConnectKitProvider , getDefaultConfig } from "connectkit";
     ```
-
 </Steps>
-
-</ToolLayout>

@@ -2,23 +2,41 @@
 title: Meson Finance
 description: Intro to Meson.fi
 ---
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="Meson Finance is a stable coin bridge that connects SKALE chains with more than 35 different chains, enabling to move different stable coins (USDC and USDT) in and out of SKALE network"
-    toolName="Meson.fi"
-    toolLink="https://meson.dev/introduction"
-    toolDocsLink="https://meson.dev/introduction"
->
-
-Meson can be integrated in three different ways in an application:
-
-- **[Link](https://meson.dev/getting-started/link-integration)**: This method requires merely adding a link. A popup window will then guide the user to complete the cross-chain transfer. Link integration is a fast and easy way to integrate Meson, ideal for platforms wanting a quick setup to leverage Meson's cross-chain capabilities.
-
-- **[SDK](https://meson.dev/getting-started/sdk-integration)**: For a more seamless user experience, you can install the meson.to SDK. Beyond the features of Link integration, SDK integration displays your app name & icon, and enables direct interaction with your app's smart contract during a cross-chain transfer.
-
-- **[API](https://meson.dev/getting-started/api-integration)**: If you prefer backend integration, you can directly use the Meson protocol through APIs. 
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 
-</ToolLayout>
+Meson Finance is a stable coin bridge that connects SKALE chains with more than 35 different chains, enabling to move different stable coins (USDC and USDT) and ETH in and out of SKALE network.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://meson.fi/" />
+  <LinkCard title="Documentation" href="https://docs.meson.fi/" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+## Features
+
+- **Multiple networks:** SKALE Chains connected with a lot of diferent networks. 
+
+- **Tokens:** Multiple tokens support -> **USDC**, **USDT**, **ETC** and **WBTC**. 
+
+- **Embeded Integrations:** There're different solutions available to integrate the plaform in seamless manner.
+
+- **Smart Contract Interaction:** You can directly interact with the smart contracts for bridging, instead of using the solutions provided by the Meson team. This can be helpful for dApps that use features like custodial wallets.
+
+## Quickstart
+
+<Steps>
+
+1. Visit https://meson.fi/.
+
+2. Connect your wallet.
+
+3. Select the destination chain, origin chain, token to bridge and amount.
+
+4. Bridge.
+
+</Steps>
+

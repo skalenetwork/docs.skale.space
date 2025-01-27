@@ -27,7 +27,7 @@ export default function ToolCard({
 
       <div className="card-header">
         <div className="left-content">
-          {image && <img src={image} alt={title} className="link-card-image" />}
+          {image && <img loading="lazy" crossOrigin='anonymous' src={`https://cdn.skale.space/icons/${image}.png`} alt={title} className="link-card-image" />}
           <span className="card-content">
             <span className="title" dangerouslySetInnerHTML={{ __html: title }} />
           </span>

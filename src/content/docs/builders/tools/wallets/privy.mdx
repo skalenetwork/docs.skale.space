@@ -2,92 +2,39 @@
 title: Privy
 description: Intro to Privy
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
-import { Steps } from "@astrojs/starlight/components";
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import { Aside } from '@astrojs/starlight/components';
 
-<ToolLayout
-    introParagraph="
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 Privy is a versatile tool designed to seamlessly onboard all your users to Web3, whether or not they already have a wallet, on both mobile and desktop.
 
 With Privy's client-side SDKs, you can authenticate users, create embedded wallets for them, and facilitate wallet interactions effortlessly. Additionally, Privy’s server wallets allow you to securely manage digital assets at the application level directly from your server.
-"
-    toolName="Privy"
-    toolLink="https://docs.privy.io/"
-    toolDocsLink="https://docs.privy.io/"
->
 
-## Implementation Example
+<CardGrid>
+  <LinkCard title="Website" href="https://www.privy.io/" />
+  <LinkCard title="Documentation" href="https://docs.privy.io/" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Privacy-Focused Wallet:** Enables secure and private key management for users.  
+- **Customizable Authentication:** Offers developers flexibility in integrating wallets with various user flows.  
+- **SKALE Chains:** All SKALE Hubs are compatible with the Privy Wallets.
+
+## Quickstart
 
 <Steps>
 
-1. ##### Get an API ID
+1. Install the package:
+    ```shell
+    npm i @privy-io/react-auth
+    ```
+2. Get an API Key on the [Privy dashboard](https://dashboard.privy.io/).
 
-    - Login to [Privy dashboard](https://dashboard.privy.io/)
-    - Click on `New App` on the Applications page
-    - Click on the Settings button on the left pane. Under the Basic tab, you'll find the API keys.
-
-2. ##### Select the Privy SDK
-
-    Head to [Privy SDK](https://docs.privy.io/#explore-by-sdk) section and select which ones suits your better.
-
-3. ##### Package Install
-
-    <Tabs>
-    <TabItem label="React">
-        ```shell
-        npm i @privy-io/react-auth
-        ```
-    </TabItem>
-    <TabItem label="Unity">
-        Please request the SDK access by reaching out the team through the following email: `sales@privy.io`
-    </TabItem>
-    <TabItem label="Swift">
-        - Open `Xcode` -> `File` -> `Add Package Dependencies...`
-        - Enter `https://github.com/privy-io/privy-ios`
-        - Add `import PrivySDK` on top of the file
-    </TabItem>
-    <TabItem label="Expo">
-        **Core Install**
-
-        ```shell
-        npx expo install expo-application expo-constants expo-web-browser expo-linking expo-secure-store react-native-webview expo-crypto @privy-io/expo-native-extensions @privy-io/expo
-        ```
-
-        **Polyfills Install**
-        ```shell
-        npm i fast-text-encoding react-native-get-random-values @ethersproject/shims
-        ```
-
-        <Aside>
-            If your app uses the `Expo bare workflow` please import:
-
-            ```shell
-            npx pod install
-            ```
-        </Aside>
-    </TabItem>
-    </Tabs>
-
-4. ##### Integration
-
-    <Tabs>
-    <TabItem label="React">
-        Check the [Privy React quickstart](https://docs.privy.io/guide/react/quickstart).
-    </TabItem>
-    <TabItem label="Unity">
-        Check the [Privy Unity quickstart](https://docs.privy.io/guide/unity/setup/install).
-    </TabItem>
-    <TabItem label="Swift">
-        Check the [Privy Swift quickstart](https://docs.privy.io/guide/swift/setup/).
-    </TabItem>
-    <TabItem label="Expo">
-        Check the [Privy Expo quickstart](https://docs.privy.io/guide/expo/quickstart).
-    </TabItem>
-    </Tabs>
+3. Check the [Privy quickstart](https://docs.privy.io/guide/react/quickstart).
 
 </Steps>
-
-
-</ToolLayout>

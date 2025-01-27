@@ -2,47 +2,49 @@
 title: Coinbase
 description: Intro to Coinbase
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-<ToolLayout
-    introParagraph="Coinbase Wallet is a self-custody crypto wallet, available as a browser extension and a mobile app on Android and iOS"
-    toolName="Coinbase"
-    toolLink="https://docs.cloud.coinbase.com/wallet-sdk/docs/welcome"
-    toolDocsLink="https://docs.cloud.coinbase.com/wallet-sdk/docs/welcome"
->
+Coinbase Wallet is a self-custody crypto wallet, available as a browser extension and a mobile app on Android and iOS.
 
-## Implementation Example
+<CardGrid>
+  <LinkCard title="Website" href="https://www.coinbase.com" />
+  <LinkCard title="Documentation" href="https://docs.cloud.coinbase.com/wallet-sdk/docs/welcome" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **DeFi and dApp Integration:** Supports direct access to DeFi platforms and dApps within the wallet.  
+- **Cross-Platform Compatibility:** Available as a mobile app and browser extension for versatile use. 
+- **Custom Network Configuration:** Enables users to add and switch between custom blockchain networks.  
+
+## Quickstart
 
 <Steps>
-1. ##### Package Install
-    ```shell
-    npm install --save web3 @coinbase/wallet-sdk
-    ```
-2. ##### Integration
-    ````javascript
+
+1. Install the package:
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm install --save web3 @coinbase/wallet-sdk
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add web3 @coinbase/wallet-sdk
+        ```
+        </TabItem>
+    </Tabs>
+
+2. Import the library and start using it:
+
+    ```ts
     import CoinbaseWalletSDK from '@coinbase/wallet-sdk'
-    import Web3 from 'web3'
-
-    const APP_NAME = 'My Awesome App'
-    const APP_LOGO_URL = 'https://example.com/logo.png'
-    const SKALE_JSONRPC_URL = 'your_skale_network_rpc'
-    const SKALE_CHAIN_ID = 123456
-
-    // Initialize Coinbase Wallet SDK
-    export const coinbaseWallet = new CoinbaseWalletSDK({
-      appName: APP_NAME,
-      appLogoUrl: APP_LOGO_URL,
-      darkMode: false
-    })
-
-    // Initialize a Web3 Provider object
-    export const skale = coinbaseWallet.makeWeb3Provider(SKALE_JSONRPC_URL, SKALE_CHAIN_ID)
-
-    // Initialize a Web3 object
-    export const web3 = new Web3(skale)
-    ````
+    ```
 </Steps>
-
-
-</ToolLayout>

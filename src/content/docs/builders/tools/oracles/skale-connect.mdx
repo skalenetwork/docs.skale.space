@@ -2,24 +2,69 @@
 title: SKALE Connect
 description: SKALE Connect
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-<ToolLayout
-	introParagraph="SKALE Connect allows developers to access any external data source using the decentralized power of your SKALE Chain. If your dApp needs market data, weather temperatures, or Ethereum data, SKALE Connect provides a simple way to deliver this data to your Dapp."
-	toolName="SKALE Connect"
-	toolLink="https://github.com/TheGreatAxios/skale-oracle-example-js/blob/main/index.js"
-	toolDocsLink="https://github.com/TheGreatAxios/skale-oracle-example-js/blob/main/index.js"
->
+SKALE Connect allows developers to access any external data source using the decentralized power of your SKALE Chain. If your dApp needs market data, weather temperatures, or Ethereum data, SKALE Connect provides a simple way to deliver this data to your Dapp.
 
-| Chain Name      | Oracle Contract Address                    |
-| --------------- | ------------------------------------------ |
-| Calypso Testnet | 0x3aBF627F8450242376331c0752d19c9c6F01CB88 |
-| Europa Testnet  | 0x3ac975ec90aD45D52B8A9599cB7910689772593C |
-| Nebula Testnet  | 0x476a3F651d724472346bA4D6389665abC4921537 |
-| Titan Testnet   | 0xC0007F195B7c49b40C6166a78B2C81Fee8f7593E |
+<CardGrid>
+  <LinkCard title="Theory" href="#theory"/>
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+## Features
+
+- **JSON RPC Request:** With simple JSON-RPC request it's possible to get outside information on-chain
+
+- **Provable Security:** The data requested dat aapproval relies on the distributed nodes of the chain where each signs the result with it’s ECDSA key.
+
+- **Free of charge:** It has no cost for the SKALE developers.
+
+- **Chains:** This tool can be used on all SKALE Chains.
+
+## Quickstart
+
+<Steps>
+
+1. Run the following command to clone the SKALE Connect example:
+
+	```sh
+	git clone https://github.com/TheGreatAxios/skale-oracle-example-js
+	```
+
+2. Install the dependencies:
+
+	```sh
+	npm install
+	```
+3. Run the codebse:
+
+	```sh
+	node ./index.js
+	```
+
+5. Oracle Contracts deployed on Testnet hubs:
+
+	| Chain Name      | Oracle Contract Address                    |
+	| --------------- | ------------------------------------------ |
+	| Calypso Testnet | 0x3aBF627F8450242376331c0752d19c9c6F01CB88 |
+	| Europa Testnet  | 0x3ac975ec90aD45D52B8A9599cB7910689772593C |
+	| Nebula Testnet  | 0x476a3F651d724472346bA4D6389665abC4921537 |
+	| Titan Testnet   | 0xC0007F195B7c49b40C6166a78B2C81Fee8f7593E |
+
+</Steps>
 
 ## Theory
+
+1. A client submits a JSON RPC `oracle_submitRequest` GET or POST request to the SKALE chain containing the request specification.
+
+2. The SKALE daemon (skaled) distributes the request to all other nodes in the SKALE Chain and the client is presented with a receipt.
+
+3. Each of the 16 SKALE nodes performs the request, retrieves the data, and signs the result with it's ECDSA key.
+
+4. The Oracle result is returned when <math display="inline"><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></math>  nodes sign the same result, where <math display="inline"><mi>t</mi></math> is the maximum number of untruthful nodes. On SKALE Chains <math display="inline"><mi>t</mi></math> is <math display="inline"> <mrow> <mi>n</mi><mo>(</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>)</mo></mrow></math>.
 
 **Oracle Methods**
 
@@ -201,135 +246,3 @@ The result repeats JSON elements from the corresponding Oracle request, plus inc
  ORACLE_PARAMS_NO_ARRAY 61
  ORACLE_PARAMS_GAS_NOT_UINT64 62
 ```
-
-## Hands On
-
-
-##### How it works
-
-1. A client submits a JSON RPC `oracle_submitRequest` GET or POST request to the SKALE chain containing the request specification.
-2. The SKALE daemon (skaled) distributes the request to all other nodes in the SKALE Chain and the client is presented with a receipt.
-3. Each of the 16 SKALE nodes performs the request, retrieves the data, and signs the result with it's ECDSA key.
-4. The Oracle result is returned when <math display="inline"><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></math>  nodes sign the same result, where <math display="inline"><mi>t</mi></math> is the maximum number of untruthful nodes. On SKALE Chains <math display="inline"><mi>t</mi></math> is <math display="inline"> <mrow> <mi>n</mi><mo>(</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>)</mo></mrow></math>.
-
-<Steps>
-
-1. ##### Request Formatting
-
-	To make a JSON-RPC request, send an HTTP POST request with a `Content-Type: application/json` header. The JSON request data should contain 4 fields:
-
-	- `jsonrpc: <string>`, set to `"2.0"`
-	- `id: <number>`, a unique client-generated identifying integer
-	- `method: <string>`, a string containing the method to be invoked
-	- `params: <array>`, a JSON array of ordered parameter values
-
-	The response output will be a JSON object with the following fields:
-
-	- `jsonrpc: <string>`, matching the request specification
-	- `id: <number>`, matching the request identifier
-	- `result: <array|number|object|string>`, requested data or success confirmation
-
-	Requests can be sent in batches by sending an array of JSON-RPC request objects as the data for a single POST.
-
-2. ##### Request Example
-
-	Below is shown how to make a request to the SKALE Connect. The full example, in Javascript, requests from the SKALE Calypso Testnet the balanceOf a NFT present on the  Ethereum Goerli Network.
-
-	```javascript
-	require("dotenv").config();
-	const {
-		chain
-	} = require("./config.json");
-	const { ethers } = require("ethers");
-	const deployment = require("./smart-contracts/deployments/deployments-4.json");
-	const claimAbi = require("./smart-contracts/artifacts/contracts/Claim.sol/Claim.json");
-	const {generateOracleRequest} = require("./oracle");
-
-	const PRIVATE_KEY = process.env.PRIVATE_KEY;
-
-	async function main() {
-
-		if (!PRIVATE_KEY) throw new Error("Private Key Not Found");
-
-		const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
-		const signer = new ethers.Wallet(PRIVATE_KEY).connect(provider);
-
-		console.log(1);
-
-		const mainnetNFT = new ethers.Contract(deployment.mainnetNFT.address, deployment.mainnetNFT.abi);
-		const claim = new ethers.Contract(deployment.claim.address, claimAbi.abi, signer);
-
-
-		const request = {
-			"cid": 1,
-			"uri": "eth://",
-			"encoding": "json",
-			"ethApi": "eth_call",
-			"params": [{
-				"from": ethers.ZeroAddress,
-				"to": mainnetNFT.target,
-				"data": mainnetNFT.interface.encodeFunctionData(
-					"balanceOf",
-					[signer.address]
-				),
-				"gas": "0xfffff"
-			},
-			"latest"],
-		}
-
-		const requestStr = JSON.stringify(request);
-		const oracleResponse = await generateOracleRequest(requestStr.slice(1, requestStr.length - 1));
-		const res = oracleResponse["result"];
-		const paramsStartIndex = res.toString().search(/params/) + 8;
-		const paramsEndIndex = res.toString().search(/time/) - 2;
-
-
-		const parsedResult = JSON.parse(res);
-
-		const claimTransactionHash = await claim.claim([
-			parsedResult["cid"],
-			parsedResult["uri"],
-			parsedResult["encoding"],
-			parsedResult["ethApi"],
-			oracleResponse["result"].slice(paramsStartIndex, paramsEndIndex),
-			[],
-			[],
-			"",
-			parsedResult["time"],
-			parsedResult["rslts"],
-			parsedResult["sigs"].map((sig) => {
-				console.log(sig);
-				if (sig === null) {
-					return {
-						v: 0,
-						r: ethers.ZeroHash,
-						s: ethers.ZeroHash
-					}
-				} else {
-					let splitVals = sig.split(":");
-					return {
-						v: splitVals[0] == 0 ? 27 : 28,
-						r: ethers.zeroPadValue("0x" + (splitVals[1].length % 2 == 0 ? splitVals[1] : "0" + splitVals[1]), 32),
-						s: ethers.zeroPadValue("0x" + (splitVals[2].length % 2 == 0 ? splitVals[2] : "0" + splitVals[2]), 32)
-					}
-				}
-			})
-		], {
-			gasLimit: BigInt(140000000),
-			gasPrice: await provider.getFeeData().gasPrice
-		});
-		console.log("Claim Transaction Hash: ", claimTransactionHash);
-		const resultClaim = await claimTransactionHash.wait();
-		console.log("Result claim:", resultClaim);
-	}
-
-	main()
-		.catch((err) => {
-			process.exitCode = 1;
-			console.error(err);
-		})
-
-	```
-</Steps>
-
-</ToolLayout>

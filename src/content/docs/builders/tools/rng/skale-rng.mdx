@@ -2,16 +2,49 @@
 title: SKALE RNG
 description: SKALE RNG
 ---
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-<ToolLayout
-	introParagraph="Each SKALE chain offers a freely accessible Random Number Generator that relies on the inherent randomness of the chain's consensus mechanism."
-	toolName="SKALE RNG"
-	toolLink="https://www.npmjs.com/package/@dirtroad/skale-rng"
-	toolDocsLink="https://www.npmjs.com/package/@dirtroad/skale-rng"
->
+Each SKALE chain offers a freely accessible Random Number Generator that relies on the inherent randomness of the chain's consensus mechanism.
 
+<CardGrid>
+  <LinkCard title="Theory" href="#theory" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+## Features
+
+- **Provable RNG:** The RNG is mathematical provable since it relies on the chain consensus of the chain
+
+- **Fast:** Since the SKALE chains consensus is super fast the SKALE RNG inherits that speed.
+
+- **Free of charge:** It has no cost for the SKALE developers.
+
+- **Chains:** This tool can be used on all SKALE Chains.
+
+
+## Quickstart
+
+<Steps>
+
+1. Import the following npm package:
+
+    ```sh
+    npm i @dirtroad/skale-rng
+    ```
+
+2. Import to your contract the RNG contract from the package:
+
+    ```solidity
+    import "@dirtroad/skale-rng/contracts/RNG.sol";
+    ```
+3. Utilize the function(s) from the RNG contract that suits you better
+
+</Steps>
+
+## Theory
 
 Each SKALE Chain includes a built-in random number generator (RNG) that produces
 a new random number with every block. This RNG is derived from the threshold signature
@@ -28,11 +61,11 @@ Steps to achieve the random number:
 3. The resulting hex RNG is presented.
 </Steps>
 
-## Implementation Example
+#### Usage
 
 <Steps>
 
-1. #### Code to retrieve the random bytes
+1. **Code to retrieve the random bytes**
 
     The code bellow showcases how to use the pre-compiled RNG. It showcases how to access the `getBlockRandom` precompiled at the address `0x18`.
 
@@ -54,7 +87,7 @@ Steps to achieve the random number:
     }
     ```
 
-2. #### Returned random bytes
+2. **Returned random bytes**
 
     Running the `getRandom()` function several times returns something similar to the following example. Each different result corresponds to a new block: 
 
@@ -67,7 +100,7 @@ Steps to achieve the random number:
     0:bytes32: addr 0xb95f1c2be3b13371115b8e6431461a24e960f0bb9881420993528ce68b019f75
     ```
 
-3. #### Converting random bytes into uint256
+3. **Converting random bytes into uint256**
 
     The random bytes returned by the `getRandom()` function can be handled in different ways depending on the use case. One of the most common cases is generating a simple random uint256. 
 
@@ -78,32 +111,4 @@ Steps to achieve the random number:
         return uint256(getRandom());
     }
     ```
-4. #### Examples
-    For more examples, like generating a random number within a specific range or generating two random numbers from the same block, check out the documentation at: https://docs.dirtroad.dev/skale/skale-rng/.
 </Steps>
-</ToolLayout>
-
-## Libraries
-
-[SKALE RNG by Dirt Road Development](https://docs.dirtroad.dev/skale/skale-rng) is an NPM library available for free
-and fully MIT licensed that offers developers both the RNG endpoint pre-packaged as well as a number of helper functions
-to quickly help developers build on SKALE.
-
-### Using SKALE RNG
-
-```solidity
-pragma solidity ^0.8.13;
-
-import "@dirtroad/skale-rng/contracts/RNG.sol";
-
-contract SomeContract is RNG {
-
-    function _getRandomNumber() {
-        uint256 num = getRandomNumber();
-    }
-
-    function _getRandomNumberInRange() {
-        uint256 num = getRandomRange(5); // Num between 0 and 5
-    }
-}
-```

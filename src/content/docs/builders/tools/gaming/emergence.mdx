@@ -2,75 +2,51 @@
 title: Emergence SDK
 description: Intro to Emergence SDK
 ---
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-<ToolLayout
-    introParagraph="Emergence serves as a Web3 SDK tailored for game developers, seamlessly integrating with Unreal Engine and Unity through."
-    toolName="Emergence SDK"
-    toolLink="https://docs.emergence.site/introduction/readme"
-    toolDocsLink="https://docs.emergence.site/introduction/readme"
->
+Emergence serves as a Web3 SDK tailored for game developers, seamlessly integrating with Unreal Engine and Unity through.
 
-It provides features such as: 
-- wallet authentication
--  smart contracts calls
--  NFT inventory services
-
-## Implementation Example
-
-<Tabs>
-<TabItem label="Unity">
-
-<Steps>
-1. ##### Package Install
-    Get the package on the [Unity Asset Store](https://assetstore.unity.com/packages/decentralization/infrastructure/emergence-sdk-252187)
-
-2. ##### Contract Call
-    ```c#
-    public class NFTMint : MonoBehaviour
-    {
-
-        public DeployedSmartContract deployedSmart;
-
-        // Public string array that is used as input data for the smart contract method
-        private string[] body = new string[] { "0x...SomeAddress" };
-        // Public string that is used as input data for the smart contract method
-        private string value = "0";
-
-        private IContractService ContractService => contractService ??= EmergenceServices.GetService<IContractService>();
-        private IContractService contractService;
+<CardGrid>
+  <LinkCard title="Website" href="https://www.emergence.site/" />
+  <LinkCard title="Documentation" href="https://docs.emergence.site/introduction/readme" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
 
 
-        private void Awake()
-        {
-        //   contractService = EmergenceServices.GetService<IContractService>();
-        }
+## Features
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            WriteMethod();
-        }
+- **Plaforms:** Supports both Unity and Unreal.
+
+- **EVM Compatibility:** It's prepared to to interact with any kind of EVM requests.
+
+- **Wallet Connect:** Supports WalletConnect interaction.
+
+## Quickstart
+
+1. Get the SDK on:  
+    <Tabs>
+		<TabItem label="Unity">
+			Get it the Unity [SDK](https://assetstore.unity.com/packages/decentralization/infrastructure/emergence-sdk-252187).
+		</TabItem>
+		<TabItem label="Unreal">
+		    Get it the Unreal [SDK](https://www.fab.com/listings/663187a7-fe59-4fe0-a4aa-cb6582d8842f).
+		</TabItem>
+	</Tabs>
+
+2. Follow the guide:
+    <Tabs>
+		<TabItem label="Unity">
+			Unity [Guide](https://docs.emergence.site/game-engines/unity/getting-started).
+		</TabItem>
+		<TabItem label="Unreal">
+		    Unreal [Guide](https://docs.emergence.site/game-engines/unreal/getting-started).
+		</TabItem>
+	</Tabs>
 
 
-        // This method is called once the contract is loaded
-        private void WriteMethod()
-        {
-            // Creates a ContractInfo object with the smart contract address, method name, network name, and default node URL
-            var contractInfo = new ContractInfo(deployedSmart, "safeMint");
-            ContractService.WriteMethod(contractInfo, "", "100000", value, body, OnWriteSuccess, EmergenceLogger.LogError);
-        }
 
-        private void OnWriteSuccess(BaseResponse<string> response)
-        {
-            // Logs the response to the console
-            Debug.Log($"{response}");
-        }
-    }
-    ```
-</Steps>
-</TabItem>
-</Tabs>
-</ToolLayout>
+

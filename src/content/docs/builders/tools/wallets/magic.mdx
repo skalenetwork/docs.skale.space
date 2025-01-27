@@ -2,68 +2,50 @@
 title: Magic
 description: Intro to Magic
 ---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="Magic is a developer SDK that integrates with your application to enable passwordless Web3 onboarding and authentication using magic links."
-    toolName="Magic"
-    toolLink="https://magic.link/docs/home/welcome"
-    toolDocsLink="https://magic.link/docs/home/welcome"
->
+Magic is a developer SDK that integrates with your application to enable passwordless Web3 onboarding and authentication using magic links.
 
-## Implementation Example
+<CardGrid>
+  <LinkCard title="Website" href="https://magic.link" />
+  <LinkCard title="Documentation" href="https://magic.link/docs/home/welcome" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
 
-1. **Package Install**
+## Features
 
-<Tabs>
-<TabItem label="NPM">
-```shell
-⁠npm install magic-sdk
-```
-</TabItem>
-<TabItem label="Yarn">
-```shell
-yarn add magic-sdk
-```
-</TabItem>
-</Tabs>
+- **Passwordless Login:** Allows users to sign in and create wallets with email-based authentication.  
+- **Simplified Onboarding:** Eliminates the need for private key management, streamlining the user experience.  
 
-2. **Get your API Key on Magic Dashboard**
+## Quickstart
 
-3. **Magic Setup**
-```javascript
-const customNodeOptions = {
-  rpcUrl: 'Your SKALE RPC',
-  chainId: 12345
-}
+<Steps>
 
- let magic = new Magic('api_key_dedicated_wallet', { 
-      network: customNodeOptions,
-    });
-```
+1. Run the following command:
 
-4. **Native token transfer example**
-```javascript
-    import { Magic } from 'magic-sdk';
-    import { ethers } from "ethers";
+    <Tabs>
+    <TabItem label="Project from scratch">
+    ```shell
+    npx make-scoped-magic-app
+    ```
+    </TabItem>
+    <TabItem label="Add to existing project">
+    ```shell
+    npm install magic-sdk
+    ```
+    </TabItem>
+    </Tabs>
 
-    const provider = new ethers.BrowserProvider(magic.rpcProvider);
+2. Head to [Magic Dashboard](https://dashboard.magic.link/login) and get an API Key
 
-    await magic.auth.loginWithEmailOTP({ email: 'set_user_email@gmail.com'});
+3. Import the library and start using it:
 
-    const signer = await provider.getSigner();
+    ```javascript
+    import { Magic as MagicBase } from 'magic-sdk';
+    ```
 
-    const txnParams = {
-      to: "address_to_send_gas",
-      value: ethers.parseUnits('0.000001', 'ether'),
-      gasLimit: ethers.parseUnits('0.0001', 'gwei'),
-      gasPrice: ethers.parseUnits('0.0001', 'gwei'),
-    };
-
-    const tx = await signer.sendTransaction(txnParams);
-
-    console.log("TX HASH " + tx.hash)
-```
-
-</ToolLayout>
+</Steps>

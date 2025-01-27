@@ -22,7 +22,7 @@ export type NFTToolsypes = "NFT Marketplace" | "NFT Minter" | "NFT API" | "White
 export type PaymentTypes = "On-Ramp" | "NFT Checkout";
 export type RandomTypes = "RNG";
 export type NotApplicable = "Not Applicable";
-export type GamingSDKType = "Unity SDK" | "Unreal SDK" | "Web SDK";
+export type GamingSDKType = "Unity SDK" | "Unreal SDK" | "Web SDK" | "Multiple SDK";
 export type ContractType = "Contract Development IDE" | "Contracts Library" | "Contract Functionality" | "Contract Generator";
 export type LibraryType = 
     |"Web Library" 
@@ -77,7 +77,7 @@ const tools = {
 		{
 			title: "Coinbase",
 			description: "Secure, user-friendly non-custodial wallet for managing crypto across multiple chains",
-			image: "",
+			image: "coinbase",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Non-Custodial Wallet"],
 			docPath: "/builders/tools/wallets/coinbase",
@@ -85,7 +85,7 @@ const tools = {
 		{
 			title: "Connect Kit",
 			description: "Wallet aggregator designed to streamline connections between various crypto wallets",
-			image: "",
+			image: "connectkit",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Wallet Aggregator"],
 			docPath: "/builders/tools/wallets/connectkit",
@@ -93,7 +93,7 @@ const tools = {
 		{
 			title: "Dynamic",
 			description: "Versatile wallet aggregator and embedded wallet solution",
-			image: "",
+			image: "dynamic",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Wallet Aggregator", "Embedded Wallet"],
 			docPath: "/builders/tools/wallets/dynamic-xyz",
@@ -101,7 +101,7 @@ const tools = {
 		{
 			title: "Enkrypt",
 			description: "Non-custodial wallet supporting multiple blockchain ecosystems",
-			image: "",
+			image: "enkrypt",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Non-Custodial Wallet"],
 			docPath: "/builders/tools/wallets/enkrypt",
@@ -109,7 +109,7 @@ const tools = {
 		{
 			title: "Invible Signer",
 			description: "SKALE native solution using custodial wallets to provide 100% frictionless solution to users",
-			image: "",
+			image: "skale",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Custodial Wallet"],
 			docPath: "/builders/tools/wallets/invisible-signer",
@@ -117,7 +117,7 @@ const tools = {
 		{
 			title: "Ledger",
 			description: "Leading hardware wallet offering top-tier security for crypto assets",
-			image: "",
+			image: "ledger",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Hardware Wallet"],
 			docPath: "/builders/tools/wallets/ledger",
@@ -125,7 +125,7 @@ const tools = {
 		{
 			title: "Magic",
 			description: "Seamless embedded wallet solution, focusing on easy integration and user experience",
-			image: "",
+			image: "magic",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Embedded Wallet"],
 			docPath: "/builders/tools/wallets/magic",
@@ -133,7 +133,7 @@ const tools = {
 		{
 			title: "Metakeep",
 			description: "MPC wallet service that offers smooth integration and reliable security for decentralized applications",
-			image: "",
+			image: "metakeep",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["MPC Wallet"],
 			docPath: "/builders/tools/wallets/metakeep",
@@ -141,7 +141,7 @@ const tools = {
 		{
 			title: "Metamask",
 			description: " Popular non-custodial wallet with browser extension and mobile app for secure crypto management",
-			image: "",
+			image: "metamask",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Non-Custodial Wallet"],
 			docPath: "/builders/tools/wallets/metamask",
@@ -157,7 +157,7 @@ const tools = {
 		{
 			title: "Portis",
 			description: "Non-custodial wallet with a focus on ease of use",
-			image: "",
+			image: "portis",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Non-Custodial Wallet"],
 			docPath: "/builders/tools/wallets/portis",
@@ -165,7 +165,7 @@ const tools = {
 		{
 			title: "Privy",
 			description: "Comprehensive wallet aggregator and embedded wallet solution aimed at enhancing privacy and user control",
-			image: "/privy.jpeg",
+			image: "privy",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Wallet Aggregator", "Embedded Wallet"],
 			docPath: "/builders/tools/wallets/privy",
@@ -173,7 +173,7 @@ const tools = {
 		{
 			title: "Rainbow Kit",
 			description: "Intuitive wallet aggregator designed for easy integration with various crypto platforms",
-			image: "/rainbow.png",
+			image: "rainbow",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Wallet Aggregator"],
 			docPath: "/builders/tools/wallets/rainbowkit",
@@ -181,7 +181,7 @@ const tools = {
 		{
 			title: "Trezor",
 			description: "Trusted hardware wallet known for its robust security features and user-friendly interface",
-			image: "",
+			image: "trezor",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Non-Custodial Wallet"],
 			docPath: "/builders/tools/wallets/trezor",
@@ -189,7 +189,7 @@ const tools = {
 		{
 			title: "Wallet Connect",
 			description: "Enables seamless connection to multiple wallets through a simple and secure interface",
-			image: "",
+			image: "walletconnect",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Wallet Aggregator"],
 			docPath: "/builders/tools/wallets/wallet-connect",
@@ -197,7 +197,7 @@ const tools = {
 		{
 			title: "Web3Auth",
 			description: "Multi-party computation wallet with embedded features for simplified user onboarding and security",
-			image: "",
+			image: "web3auth",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Wallet Aggregator", "MPC Wallet", "Embedded Wallet"],
 			docPath: "/builders/tools/wallets/web3auth",
@@ -207,7 +207,7 @@ const tools = {
 		{
 			title: "Hardhat",
 			description: "Powerful contract development IDE for building, testing, and deploying smart contracts",
-			image: "",
+			image: "hardhat",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Contract Development IDE"],
 			docPath: "/builders/tools/contracts/hardhat",
@@ -215,7 +215,7 @@ const tools = {
 		{
 			title: "Multicall",
 			description: "Efficiently aggregate multiple contract calls into a single on-chain transaction",
-			image: "",
+			image: "skale",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Contract Functionality"],
 			docPath: "/builders/tools/contracts/multicall",
@@ -223,7 +223,7 @@ const tools = {
 		{
 			title: "OpenZeppelin",
 			description: "Robust library of secure, audited, reusable smart contract components with the industry standards",
-			image: "",
+			image: "openzepplin",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Contracts Library"],
 			docPath: "/builders/tools/contracts/openzeppelin",
@@ -231,7 +231,7 @@ const tools = {
 		{
 			title: "Remix",
 			description: "Browser-based IDE for writing, deploying, and debugging smart contracts",
-			image: "",
+			image: "remix",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Contract Development IDE"],
 			docPath: "/builders/tools/contracts/remix",
@@ -241,7 +241,7 @@ const tools = {
 		{
 			title: "Layer Zero",
 			description: "Omnichain interoperability protocol facilitating seamless cross-chain communication",
-			image: "/lz.png",
+			image: "layerzero",
 			chains: ["Europa"],
 			category: ["Bridge"],
 			docPath: "/builders/tools/bridges/layer-zero",
@@ -249,7 +249,7 @@ const tools = {
 		{
 			title: "Meson Fi",
 			description: "Secure bridge enabling fast, low-cost transfers across multiple chains",
-			image: "/mesonfi.png",
+			image: "mesonfi",
 			chains: ["Nebula", "Europa", "Calypso"],
 			category: ["Bridge"],
 			docPath: "/builders/tools/bridges/meson-fi",
@@ -257,7 +257,7 @@ const tools = {
 		{
 			title: "SKALE Bridge",
 			description: "Native bridge solution for seamless asset transfers on SKALE network and Ethereum",
-			image: "",
+			image: "skale",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Bridge"],
 			docPath: "/builders/tools/bridges/skale-native-bridge",
@@ -267,7 +267,7 @@ const tools = {
 		{
 			title: "Dune",
 			description: "Analytics platform providing customizable dashboards for blockchain data insights",
-			image: "",
+			image: "dune",
 			chains: [],
 			category: ["Network Data Analytics"],
 			docPath: "/builders/tools/data/dune",
@@ -275,7 +275,7 @@ const tools = {
 		{
 			title: "Goldsky",
 			description: "Comprehensive data indexer and hosting service for blockchain analytics",
-			image: "",
+			image: "goldsky",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Data Indexer", "Hosting Service"],
 			docPath: "/builders/tools/data/goldsky",
@@ -283,7 +283,7 @@ const tools = {
 		{
 			title: "Subsquid",
 			description: "Flexible data indexing framework with hosting services for blockchain applications",
-			image: "",
+			image: "subsquid",
 			chains: ["Nebula"],
 			category: ["Data Indexer", "Hosting Service"],
 			docPath: "/builders/tools/data/subsquid",
@@ -291,7 +291,7 @@ const tools = {
 		{
 			title: "The Graph",
 			description: "Decentralized protocol for querying and indexing blockchain data",
-			image: "",
+			image: "thegraph",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Data Indexer", "Self Hosting Service"],
 			docPath: "/builders/tools/data/the-graph",
@@ -301,7 +301,7 @@ const tools = {
 		{
 			title: "Eidolon",
 			description: "Unity SDK tailored for blockchain-based game development on SKALE Network",
-			image: "",
+			image: "eidolon",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Unity SDK"],
 			docPath: "/builders/tools/gaming/eidolon",
@@ -309,7 +309,7 @@ const tools = {
 		{
 			title: "Emergence",
 			description: "Cross-platform SDK supporting Unity and Unreal Engine for Web3 game integration",
-			image: "",
+			image: "emergence",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Unity SDK", "Unreal SDK"],
 			docPath: "/builders/tools/gaming/emergence",
@@ -317,7 +317,7 @@ const tools = {
 		{
 			title: "Mirage",
 			description: "SDK for seamless integration of blockchain functionalities in Unity and Unreal Engine",
-			image: "",
+			image: "mirage",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Unity SDK", "Unreal SDK"],
 			docPath: "/builders/tools/gaming/mirage",
@@ -325,7 +325,7 @@ const tools = {
 		{
 			title: "Web3 Unreal",
 			description: "Specialized Unreal Engine SDK for blockchain game development",
-			image: "",
+			image: "web3unreal",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Unreal SDK"],
 			docPath: "/builders/tools/gaming/web3unreal",
@@ -335,7 +335,7 @@ const tools = {
 		{
 			title: "Ethers v5",
 			description: "Comprehensive JavaScript/TypeScript library for Ethereum development",
-			image: "",
+			image: "ethers",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Web Library", "Backend Library", "Javascript", "Typescript"],
 			docPath: "/builders/tools/libraries/ethersv5",
@@ -343,7 +343,7 @@ const tools = {
 		{
 			title: "Ethers v6",
 			description: "Advanced version of Ethers with enhanced features for blockchain applications",
-			image: "",
+			image: "ethers",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Web Library", "Backend Library" ,"Javascript", "Typescript"],
 			docPath: "/builders/tools/libraries/ethersv6",
@@ -351,7 +351,7 @@ const tools = {
 		{
 			title: "JSON RPC Call",
 			description: "Streamlined commands for making JSON RPC requests to blockchain nodes",
-			image: "",
+			image: "skale",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["RPC Request"],
 			docPath: "/builders/tools/libraries/json-rpc-calls",
@@ -359,7 +359,7 @@ const tools = {
 		{
 			title: "Kethereum",
 			description: "Kotlin library designed for Ethereum blockchain development",
-			image: "",
+			image: "kethereum",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Backend Library", "Kotlin"],
 			docPath: "/builders/tools/libraries/kethereum",
@@ -367,7 +367,7 @@ const tools = {
 		{
 			title: "Nethereum",
 			description: "C# library enabling Ethereum development within Unity and .NET applications",
-			image: "",
+			image: "nethereum",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Unity Library", "Csharp"],
 			docPath: "/builders/tools/libraries/nethereum",
@@ -375,7 +375,7 @@ const tools = {
 		{
 			title: "Viem",
 			description: "Lightweight, fast JavaScript/TypeScript library for blockchain interactions",
-			image: "",
+			image: "viem",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Web Library", "Javascript", "Typescript"],
 			docPath: "/builders/tools/libraries/viem",
@@ -383,7 +383,7 @@ const tools = {
 		{
 			title: "Web3 Dart",
 			description: "Dart library optimized for mobile blockchain applications",
-			image: "",
+			image: "web3dart",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Mobile Library", "Dart"],
 			docPath: "/builders/tools/libraries/web3dart",
@@ -391,7 +391,7 @@ const tools = {
 		{
 			title: "Web3j",
 			description: "Java library for integrating blockchain functionalities into backend systems",
-			image: "",
+			image: "web3j",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Backend Library", "Java"],
 			docPath: "/builders/tools/libraries/web3j",
@@ -399,7 +399,7 @@ const tools = {
 		{
 			title: "Web3js",
 			description: "Popular JavaScript/TypeScript library for Ethereum web development",
-			image: "",
+			image: "web3js",
 			chains: ["Nebula", "Europa", "Calypso", "Titan"],
 			category: ["Web Library", "Javascript", "Typescript"],
 			docPath: "/builders/tools/libraries/web3js",
@@ -409,7 +409,7 @@ const tools = {
 		{
 			title: "Dripverse",
 			description: "All-in-one NFT marketplace and minter for the Calypso chain",
-			image: "",
+			image: "dripverse",
 			chains: ["Calypso"],
 			category: ["NFT Marketplace", "NFT Minter"],
 			docPath: "/builders/tools/nfts/dripverse",
@@ -417,7 +417,7 @@ const tools = {
 		{
 			title: "Keepsake",
 			description: "User-friendly NFT marketplace for Calypso and Nebula chains",
-			image: "",
+			image: "keepsake",
 			chains: ["Calypso", "Nebula"],
 			category: ["NFT Marketplace"],
 			docPath: "/builders/tools/nfts/keepsake",
@@ -425,7 +425,7 @@ const tools = {
 		{
 			title: "Pixel Ream",
 			description: "Vibrant NFT marketplace catering to Nebula chain users",
-			image: "",
+			image: "pixelrealm",
 			chains: ["Nebula"],
 			category: ["NFT Marketplace"],
 			docPath: "/builders/tools/nfts/pixelrealm",
@@ -433,7 +433,7 @@ const tools = {
 		{
 			title: "Reservoir",
 			description: "Comprehensive API for accessing NFT data and market analytics",
-			image: "",
+			image: "reservoir",
 			chains: ["Nebula"],
 			category: ["NFT API"],
 			docPath: "/builders/tools/nfts/reservoir",
@@ -441,7 +441,7 @@ const tools = {
 		{
 			title: "Snag",
 			description: "Whitelabel NFT marketplace solution for easy deployment on Nebula",
-			image: "",
+			image: "snag",
 			chains: ["Nebula"],
 			category: ["Whitelabel NFT Marketplace"],
 			docPath: "/builders/tools/nfts/snag",
@@ -451,7 +451,7 @@ const tools = {
 		{
 			title: "SKALE Connect",
 			description: "Reliable oracle service providing real-world data to blockchain applications",
-			image: "",
+			image: "skale",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
 			category: ["Oracle"],
 			docPath: "/builders/tools/oracles/skale-connect",
@@ -459,7 +459,7 @@ const tools = {
 		{
 			title: "Razor",
 			description: "Decentralized oracle offering accurate, tamper-proof data for smart contracts",
-			image: "",
+			image: "razor",
 			chains: [],
 			category: ["Oracle"],
 			docPath: "/builders/tools/oracles/razor",
@@ -469,7 +469,7 @@ const tools = {
 		{
 			title: "Transak",
 			description: "Easy-to-use on-ramp service for converting fiat to crypto on the Europa chain",
-			image: "/transak.png",
+			image: "transak",
 			chains: ["Europa"],
 			category: ["On-Ramp"],
 			docPath: "/builders/tools/payments/transak",
@@ -479,7 +479,7 @@ const tools = {
 		{
 			title: "SKALE RNG",
 			description: "Random Number Generator present on every SKALE Chain and mathematical provable",
-			image: "/skale-logo.png",
+			image: "skale",
 			chains: ["Nebula", "Europa", "Calypso"],
 			category: ["RNG"],
 			docPath: "/builders/tools/rng/skale-rng",
@@ -488,27 +488,27 @@ const tools = {
     "All In One": [
         {
             title: "Crossmint",
-			description: "",
-			image: "/crossmint.png",
+			description: "Crossmint is a versatile platform that provides tools like NFT checkout, NFT APIs, and custodial wallets.",
+			image: "crossmint",
 			chains: ["Nebula"],
 			category: ["NFT Checkout", "NFT API", "Custodial Wallet"],
-			docPath: "",
+			docPath: "/builders/tools/all-in-one/crossmint",
         },
 		{
             title: "Sequence",
-			description: "",
-			image: "/crossmint.png",
+			description: "Sequence offers an all-in-one platform with features like account abstraction, NFT APIs, contract generators, custom NFT marketplace and SDKs (ex: Unity, Web, etc).",
+			image: "sequence",
 			chains: ["Nebula"],
-			category: ["Account Abstraction", "NFT API", "NFT Marketplace", "Contract Generator", "Unity SDK"],
-			docPath: "",
+			category: ["Account Abstraction", "NFT API", "NFT Marketplace", "Contract Generator", "Multiple SDK"],
+			docPath: "/builders/tools/all-in-one/sequence",
         },
 		{
 			title: "Thirdweb",
-			description: "",
-			image: "/3web.png",
+			description: "Thirdweb provides wallet aggregators, embedded wallets, and contract generators. It empowers developers with multiple SDKs (ex: Unity, Web, etc) for a seamless integration.",
+			image: "thirdweb",
 			chains: ["Calypso", "Europa", "Nebula", "Titan"],
-			category: ["Wallet Aggregator", "Embedded Wallet", "Contract Generator", "Unity SDK"],
-			docPath: "/builders/tools/mpc/thirdweb",
+			category: ["Wallet Aggregator", "Embedded Wallet", "Contract Generator", "Multiple SDK"],
+			docPath: "/builders/tools/all-in-one/thirdweb",
 		},
     ]
 } satisfies GroupedTools;
