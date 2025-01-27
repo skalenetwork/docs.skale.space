@@ -75,10 +75,6 @@ pre,
 	background-color: var(--sl-color-hover);
 }
 
-.right-sidebar:where(.astro-67yu43on) {
-	padding-top: 6rem;
-}
-
 iframe {
 	aspect-ratio: 16/9;
 	width: 100%;
@@ -97,4 +93,16 @@ main:where(.astro-bguv2lll) {
 
 nav:where(.astro-doynk5tl) {
 	top: auto;
+}
+
+@media (max-width: 1149px) {
+	.right-sidebar:where(.astro-67yu43on) {
+		padding-top: 0.5rem;
+	}
+}
+
+@media (min-width: 1150px) {
+	.right-sidebar:where(.astro-67yu43on) {
+		padding-top: 6rem;
+	}
 }
