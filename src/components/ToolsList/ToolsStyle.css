@@ -1,3 +1,4 @@
+/* Badge Section*/
 :root {
 	--sl-badge-default-border: var(--sl-color-accent);
 	--sl-badge-default-bg: var(--sl-color-accent-low);
@@ -135,6 +136,7 @@
 	--sl-color-text-badge: var(--sl-badge-caution-text);
 }
 
+/* Tool Card Section*/
 .icon-link-card {
 	display: flex;
 	flex-direction: column;
@@ -180,18 +182,6 @@
 	color: var(--sl-color-white);
 }
 
-.icon-container {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	margin-bottom: auto;
-}
-
-.icon {
-	color: var(--sl-color-gray-3);
-	flex-shrink: 0;
-}
-
 .description {
 	margin-top: 0.5rem;
 	color: var(--sl-color-gray-3);
@@ -235,6 +225,7 @@
 	color: var(--sl-color-white);
 }
 
+/* Tools Page Section*/
 .card-grid {
 	display: grid;
 	gap: 1rem;
@@ -244,11 +235,31 @@
 	margin-top: 0 !important;
 }
 
-@media (min-width: 50rem) {
+.sl-container:where(.astro-7nkwcw3z) {
+	max-width: 100%;
+}
+@media (min-width: 72rem) {
+	[data-has-sidebar][data-has-toc] .main-pane:where(.astro-67yu43on) {
+		order: 1;
+		width: 100%;
+	}
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
 	.card-grid {
 		grid-template-columns: 1fr 1fr;
 		gap: 1.5rem;
 	}
+}
+
+@media (min-width: 1200px) {
+	.card-grid {
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 1.5rem;
+	}
+}
+
+@media (min-width: 50rem) {
 	.stagger {
 		--stagger-height: 5rem;
 		padding-bottom: var(--stagger-height);

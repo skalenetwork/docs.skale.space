@@ -4,10 +4,12 @@ description: Tools on SKALE
 
 sidebar:
   order: 0
+
+tableOfContents: false
 ---
 
 import { LinkCard, CardGrid } from '@astrojs/starlight/components';
-import {Tools} from "../../../../components/ToolsList"
+import {ToolsPage} from "../../../../components/ToolsList"
 
 
 The tools section covers available tooling for developing on SKALE. This includes SDKs, Wallets, Libraries, and more.
@@ -18,4 +20,4 @@ The tools section covers available tooling for developing on SKALE. This include
 />
 
 
-<Tools categories={['All In One','Bridges','Contracts','Data','Gaming','Libraries','NFTs','Oracles','Payments','Wallets','Randomness']} client:load/>
+<ToolsPage categories={['All In One','Bridges','Contracts','Data','Gaming','Libraries','NFTs','Oracles','Payments','Wallets','Randomness']} client:load/>

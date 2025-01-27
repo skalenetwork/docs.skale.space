@@ -10,7 +10,7 @@ type ToolsProps = {
   filters?: boolean;
 };
 
-export default function Tools({categories, searchBar = true ,filters = true}:ToolsProps) {
+export default function ToolsPage({categories, searchBar = true ,filters = true}:ToolsProps) {
   const [selectedChains, setSelectedChains] = useState<SKALEChains[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 

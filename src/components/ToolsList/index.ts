@@ -1,6 +1,6 @@
-import ToolsCardList from "./Tools";
+import ToolsCardList from "./ToolsPage";
 import Badge from "./Badge";
 import ToolCard from "./ToolCard";
-import Tools from "./Tools";
+import ToolsPage from "./ToolsPage";
 
-export { ToolsCardList, Badge, ToolCard , Tools}
+export { ToolsCardList, Badge, ToolCard , ToolsPage}

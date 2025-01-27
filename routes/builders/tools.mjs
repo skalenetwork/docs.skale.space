@@ -136,10 +136,10 @@ export default {
                     label: "Ethers v6",
                     link: "/builders/tools/libraries/ethersv6",
                 },
-                /*{
+                {
                     label: "JSON RPC Call",
                     link: "/builders/tools/libraries/json-rpc-calls",
-                },*/
+                },
                 {
                     label: "Kethereum",
                     link: "/builders/tools/libraries/kethereum",
