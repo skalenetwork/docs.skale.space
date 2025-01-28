@@ -12,6 +12,10 @@ export default {
         nodeOperators,
         tools,
         {
+            label: "Developer FAQ",
+            link: "/builders/developer-faq"
+        },
+        {
             label: "Integrating SKALE",
             link: "/builders/integration-guide",
             badge: {
