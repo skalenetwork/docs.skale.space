@@ -10,34 +10,45 @@
 
 <style>
   
+  .banner {
+	  background-color: var(--sl-color-gray-5); 
+	  width: 100%; 
+	  text-align: center; 
+	  height: 50px;
+	  font-size: clamp(0.6rem, 2vw, 1rem); 
+	  position: fixed;
+	  top: 0; 
+	  z-index: 10;
+	  display: flex;
+	  flex-direction: row;
+	  align-items: center;
+	  justify-content: center;
+
+
+  }
+
   .banner p {
-	  color: black; 
+	  color: var(--sl-color-white);
+	  height: 75%;
+
+	  @media(max-width: 864px) {
+	  	height: 60%;
+	  }
+
+	  @media(max-width: 768px) {
+	  	height: 50%;
+	  }
   }
 
   .banner p .highlight_2 {
-	  color: rgb(15, 22, 216);
+	  color: var(--sl-color-accent-high);
 	  font-weight: bold; 
   }
 
 
   .banner p .highlight_1 {
-	  color: rgb(0, 0, 0);
+	  color: var(--sl-color-white);
 	  font-weight: bold; 
-  }
-
-  .banner {
-	  background-color:var(--sl-color-text-accent); 
-	  width: 100%; 
-	  text-align: center; 
-	  height: 2rem;
-	  font-size: clamp(0.6rem, 2vw, 1rem); 
-	  padding: 0.5rem 1rem;
-	  position: fixed;
-	  top: 0; 
-	  z-index: 10; 
-	  display: flex;
-	  align-items: center; 
-	  justify-content: center; 
   }
 
 </style>

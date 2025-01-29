@@ -6,6 +6,10 @@ export default {
             link: "/builders/app-developers/overview",
         },
         {
+            label: "EVM Compatiblity",
+            link: "/builders/app-developers/evm-compatibility"
+        },
+        {
             label: "sFUEL Distribution",
             items: [
                 {
