@@ -1,0 +1,55 @@
+---
+title: Invisible Signers
+description: Intro to Invisible Signers
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+Thanks to the zero gas fees nature of the SKALE chains projects can perform transactions on behalf of the users without compromising the company sustainability by covering huge gas fees costs. In order to achieve the described above, the application can generate on the background a wallet for each user, distribute the free gas token to it and store it on the backend.
+Every time a user performs a transaction, the background wallet signs the transaction without the user having idea he just made a on-chain transaction.
+
+<CardGrid>
+  <LinkCard title="Theory" href="#theory" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Background Signing:** Uses Viem to sign transactions in the background, making dApp interactions faster and smoother.  
+
+- **Session-Based Wallets:** Assigns a unique wallet to each user for the session, ensuring consistent and hassle-free usage.  
+
+- **Scalable Storage Options:** Can store encrypted private keys in tools like Redis for better reliability and scalability.  
+
+- **No fee costs:** Due to the valuless nature of sFUEL this solution can be implemented without incurring in any subsidizing gas fees costs.
+
+## Quickstart
+
+<Steps>
+
+1. Run the command:
+
+    ```sh
+    git clone -b recipe-api-background-signer git@github.com:skalenetwork/recipes.git && cd recipes
+    ```
+
+2. Add the necessary environment variables to a .env file
+    ```sh
+    cp .env.example .env
+    ```
+3. Run the application locally:
+
+    ```sh
+    npm run dev
+    ```
+
+</Steps>
+
+## Theory
+
+This codebase uses the Typescript language along with the Viem library to showcase a proof of concept on how to utilize background signers within an API or Server based environment. This can be a useful strategy when working to improve the UX of your dApp by reducing clicks.
+
+This example also uses a sticky session per userId meaning that the randomly generated accounts are mapped 1:1 with a userId. This will persist only for the duration of the service liftetime. On application crash or restart new wallets will be created. To resolve these types of issues you can encrypt the private keys and store them in something like Redis to make a more sophisticated service that would also allow for multiple AZ usage.

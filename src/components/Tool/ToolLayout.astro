@@ -1,11 +1,10 @@
 ---
 import AdditionalDocs from "./ToolAdditionalDocs.astro";
 import Intro from "./ToolIntro.astro";
-import Availability from "./ToolAvailability.astro";
+
 const {
     introParagraph,
     toolName,
-    availability,
     toolLink,
     toolDocsLink
 } = Astro.props;
@@ -16,7 +15,6 @@ const {
         <Intro
             content={introParagraph}
         />
-        <Availability availability={availability}/>
         <slot />
         <AdditionalDocs
             toolDocsLink={toolDocsLink}

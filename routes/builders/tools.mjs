@@ -1,7 +1,30 @@
+//import type { Tool } from '../../src/config/index';
+
 export default {
     label: "Tools",
     items: [
         { label: "Overview", link: "/builders/tools" },
+        {
+            label: "All in one",
+            items: [
+                {
+                    label: "Overview",
+                    link: "/builders/tools/all-in-one",
+                },
+                {
+                    label: "Crossmint",
+                    link: "/builders/tools/all-in-one/crossmint",
+                },
+                {
+                    label: "Sequence",
+                    link: "/builders/tools/all-in-one/sequence",
+                },
+                {
+                    label: "Thirdweb",
+                    link: "/builders/tools/all-in-one/thirdweb",
+                }
+            ],
+        },
         {
             label: "Bridges",
             items: [
@@ -60,6 +83,10 @@ export default {
                     link: "/builders/tools/data/dune",
                 },
                 {
+                    label: "Goldsky",
+                    link: "/builders/tools/data/goldsky",
+                },
+                {
                     label: "Subsquid",
                     link: "/builders/tools/data/subsquid",
                 },
@@ -102,21 +129,41 @@ export default {
                     link: "/builders/tools/libraries",
                 },
                 {
-                    label: "Web Libraries",
-                    link: "/builders/tools/libraries/web",
+                    label: "Ethers v5",
+                    link: "/builders/tools/libraries/ethersv5",
                 },
                 {
-                    label: "Backend Libraries",
-                    link: "/builders/tools/libraries/backend",
+                    label: "Ethers v6",
+                    link: "/builders/tools/libraries/ethersv6",
                 },
                 {
-                    label: "Unity Libraries",
-                    link: "/builders/tools/libraries/unity",
+                    label: "JSON RPC Call",
+                    link: "/builders/tools/libraries/json-rpc-calls",
                 },
                 {
-                    label: "Mobile Libraries",
-                    link: "/builders/tools/libraries/mobile",
+                    label: "Kethereum",
+                    link: "/builders/tools/libraries/kethereum",
                 },
+                {
+                    label: "Nethereum",
+                    link: "/builders/tools/libraries/nethereum",
+                },
+                {
+                    label: "Viem",
+                    link: "/builders/tools/libraries/viem",
+                },
+                {
+                    label: "Web3 Dart",
+                    link: "/builders/tools/libraries/web3dart",
+                },
+                {
+                    label: "Web3j",
+                    link: "/builders/tools/libraries/web3j",
+                },
+                {
+                    label: "Web3js",
+                    link: "/builders/tools/libraries/web3js",
+                }
             ],
         },
         {
@@ -127,16 +174,24 @@ export default {
                     link: "/builders/tools/nfts",
                 },
                 {
-                    label: "Marketplaces",
-                    link: "/builders/tools/nfts/marketplaces",
+                    label: "Dripverse",
+                    link: "/builders/tools/nfts/dripverse",
                 },
                 {
-                    label: "NFT API",
-                    link: "/builders/tools/nfts/nft-api",
+                    label: "Keepsake",
+                    link: "/builders/tools/nfts/keepsake",
                 },
                 {
-                    label: "NFT Mint",
-                    link: "/builders/tools/nfts/nft-minting",
+                    label: "Pixel Ream",
+                    link: "/builders/tools/nfts/pixelrealm",
+                },
+                {
+                    label: "Reservoir",
+                    link: "/builders/tools/nfts/reservoir",
+                },
+                {
+                    label: "Snag",
+                    link: "/builders/tools/nfts/snag",
                 },
             ],
         },
@@ -165,12 +220,8 @@ export default {
                     link: "/builders/tools/payments",
                 },
                 {
-                    label: "On-Ramp",
-                    link: "/builders/tools/payments/on-ramp",
-                },
-                {
-                    label: "NFT Checkout",
-                    link: "/builders/tools/payments/nft-checkout",
+                    label: "Transak",
+                    link: "/builders/tools/payments/transak",
                 },
             ],
         },
@@ -195,35 +246,70 @@ export default {
                     link: "/builders/tools/wallets",
                 },
                 {
-                    label: "Non-Custodial Wallets",
-                    link: "/builders/tools/wallets/non-custodial",
+                    label: "Coinbase",
+                    link: "/builders/tools/wallets/coinbase",
                 },
                 {
-                    label: "Custodial Wallets",
-                    link: "/builders/tools/wallets/custodial",
+                    label: "Connect Kit",
+                    link: "/builders/tools/wallets/connectkit",
                 },
                 {
-                    label: "MPC Wallets",
-                    link: "/builders/tools/wallets/mpc",
+                    label: "Dynamic",
+                    link: "/builders/tools/wallets/dynamic-xyz",
                 },
                 {
-                    label: "Wallets Aggregator",
-                    link: "/builders/tools/wallets/aggregator",
+                    label: "Enkrypt",
+                    link: "/builders/tools/wallets/enkrypt",
+                },
+                {
+                    label: "Invisible Signer",
+                    link: "/builders/tools/wallets/invisible-signer",
+                },
+                {
+                    label: "Ledger",
+                    link: "/builders/tools/wallets/ledger",
+                },
+                {
+                    label: "Magic",
+                    link: "/builders/tools/wallets/magic",
+                },                
+                {
+                    label: "Metakeep",
+                    link: "/builders/tools/wallets/metakeep",
+                },                
+                {
+                    label: "Metamask",
+                    link: "/builders/tools/wallets/metamask",
+                },                
+                {
+                    label: "Moon",
+                    link: "/builders/tools/wallets/moon",
+                },                
+                {
+                    label: "Portis",
+                    link: "/builders/tools/wallets/portis",
+                },                
+                {
+                    label: "Privy",
+                    link: "/builders/tools/wallets/privy",
+                },                
+                {
+                    label: "Rainbow Kit",
+                    link: "/builders/tools/wallets/rainbowkit",
+                },                
+                {
+                    label: "Trezor",
+                    link: "/builders/tools/wallets/trezor",
+                },
+                {
+                    label: "Wallet Connect",
+                    link: "/builders/tools/wallets/wallet-connect",
+                },
+                {
+                    label: "Web3Auth",
+                    link: "/builders/tools/wallets/web3auth",
                 },
             ],
-        },
-
-        /*{
-            label: "SKALE",
-            collapsed: true,
-            items: [
-                { label: "Overview", link: "/builders/tools/skale" },
-                { label: "Blockscout", link: "/builders/tools/skale/blockscout" },
-                { label: "SKALE Nodes", link: "/builders/tools/skale/skale-nodes" },
-                { label: "SKALE Proxy", link: "/builders/tools/skale/skale-proxy" },
-                { label: "Full Sync Node", link: "/builders/tools/skale/full-sync-node" },
-                { label: "Archive Node", link: "/builders/tools/skale/archive-node" },
-            ]
-        }*/
+        }
     ],
 }

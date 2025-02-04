@@ -1,0 +1,52 @@
+---
+title: Web3.js
+description: Intro to Web3.js
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Set of Javascript libraries enabling interaction with a local or remote Ethereum node through HTTP, IPC, or WebSocket protocols.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://www.web3js.org/" />
+  <LinkCard title="Documentation" href="https://docs.web3js.org/" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Ethereum API:** Offers a full suite of tools for interacting with Ethereum nodes using JSON-RPC, WebSocket, or IPC.
+
+- **Smart Contract:** Supports seamless deployment and interaction with smart contracts via ABI encoding/decoding.
+
+- **Ecosystem:** Compatible with browsers, Node.js, and various Ethereum networks, making it highly versatile.
+
+## Quickstart
+
+<Steps>
+
+1. Install the package:
+    <Tabs>
+    <TabItem label="npm">
+    ```shell
+    npm install web3
+    ```
+    </TabItem>
+    <TabItem label="yarn">
+    ```shell
+    yarn add web3
+    ```
+    </TabItem>
+    </Tabs>
+
+2. Import the library and start using it:
+
+    ```ts
+    import Web3 from "web3"
+    ```
+
+</Steps>

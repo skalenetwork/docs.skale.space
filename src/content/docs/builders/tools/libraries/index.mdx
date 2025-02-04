@@ -7,30 +7,15 @@ sidebar:
 ---
 
 import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
+import {ToolsPage} from "../../../../../components/ToolsList"
 
 SKALE's EVM compatibility enables developers to use a wide range of Web3 libraries in various programming languages, depending on their specific goals. 
 
 This flexibility allows seamless integration and interaction with the SKALE chains from almost any type of application, whether web, mobile, or desktop
 
-<CardGrid>
-	<LinkCard
-		title="Web"
-		href="/builders/tools/libraries/web"
-		description="Web3 libraries for web apps"
-	/>
-	<LinkCard
-		title="Mobile"
-		href="/builders/tools/libraries/mobile"
-		description="Web3 libraries for mobile apps"
-	/>
-	<LinkCard
-		title="Unity"
-		href="/builders/tools/libraries/unity"
-		description="Web3 libraries for Unity apps"
-	/>
-	<LinkCard
-		title="Backend"
-		href="/builders/tools/libraries/backend"
-		description="Web3 libraries for backend apps"
-	/>
-</CardGrid>
+<ToolsPage 
+	categories={['Libraries']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

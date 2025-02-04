@@ -2,167 +2,51 @@
 title: Hardhat
 description: Intro to Hardhat
 ---
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+
 import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-<ToolLayout
-	introParagraph="Hardhat is an EVM developer environment helping developers quickly and easily create, test, and deploy smart contracts. Hardhat is also home to a vibrant community offering a number of different plugins."
-	toolName="Hardhat"
-	toolLink="https://hardhat.org"
-	toolDocsLink="https://hardhat.org/docs"
->
+Hardhat is an EVM developer environment helping developers quickly and easily create, test, and deploy smart contracts. Hardhat is also home to a vibrant community offering a number of different plugins.
 
-## Setup for a SKALE Chain
+<CardGrid>
+  <LinkCard title="Website" href="https://hardhat.org" />
+  <LinkCard title="Documentation" href="https://hardhat.org/docs" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+## Features
+
+- **Automatic Smart Contract Compilation:** Automatically compiles smart contracts whenever files are updated, ensuring your code is always up-to-date.
+
+- **SKALE Chains Integration:** All SKALE chains can be easily configured on Hardhat to seamlessly deploy and interact with smart contracts.
+
+- **Integrated Testing Framework:** Built-in testing environment with Mocha and Chai, allowing developers to write and run tests seamlessly.
+
+- **Comprehensive Debugging Tools:** Provides stack traces, error messages, and a console for debugging Solidity code efficiently.
+
+
+## Quickstart
 
 <Steps>
 
-1. ##### Hardhat project setup
+1. Please visit [Hardhat Guide](https://hardhat.org/hardhat-runner/docs/getting-started#installation).
+
+2. Create a sample project by running on your terminal:
+    
     ```sh
-    mkdir hardhat-skale && cd hardhat-skale && npx hardhat init
+      npx hardhat init
     ```
 
-2. ##### hardhat.config setup
-    ```javascript
-    require("@nomicfoundation/hardhat-toolbox");
-    require("@nomiclabs/hardhat-etherscan");
-    const dotenv = require("dotenv");
-    dotenv.config();
+3. Setup the hardhat.config file with the desired SKALE Chain
 
-    module.exports = {
-      solidity: {
-        version: "0.8.19",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 50,
-          },
-        },
-      },
-      networks:{
-        nebula: {
-          url: "https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet",
-          chainId: 37084624, // Replace with the correct chainId for the "nebula" network
-          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-        },
-        calypso: {
-          url: "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
-          chainId: 974399131, // Replace with the correct chainId for the "calypso" network
-          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-        },
-        europa: {
-          url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
-          chainId: 1444673419, // Replace with the correct chainId for the "europa" network
-          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-        },
-        titan: {
-          url: "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
-          chainId: 1020352220, // Replace with the correct chainId for the "titan" network
-          accounts: [process.env.PK], // Add private keys or mnemonics of accounts to use
-        }
-      },
-      etherscan: {
-        apiKey: {
-          nebula: "does not matter as long it has a non empty string",
-          calypso: "does not matter as long it has a non empty string",
-          europa: "does not matter as long it has a non empty string",
-          titan: "does not matter as long it has a non empty string",
-        },
-        customChains: [
-          {
-            network: "nebula",
-            chainId: 37084624, 
-            urls: {
-              apiURL:
-                "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/api",
-              browserURL:
-                "https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/",
-            },
-          },
-          {
-            network: "calypso",
-            chainId: 974399131,
-            urls: {
-              apiURL:
-                "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/api",
-              browserURL:
-                "https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/",
-            },
-          },
-          {
-            network: "europa",
-            chainId: 1444673419, 
-            urls: {
-              apiURL:
-                "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
-              browserURL:
-                "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/",
-            },
-          },
-          {
-            network: "titan",
-            chainId: 1020352220,
-            urls: {
-              apiURL:
-                "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/api",
-              browserURL:
-                "https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com/",
-            },
-          },
-        ],
-      },
-    };
-    ```
+4. Under the `contracts/` folder you'll find a contract example called `Lock.sol`
 
-3. ##### Create a smart contract - contracts/MockContract.sol
-    ```solidity
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.19;
-
-    import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-
-    contract MockContract is ERC721 {
-        uint256 private _nextTokenId;
-
-        constructor(address initialOwner)
-            ERC721("MyToken", "MTK")
-        {}
-
-        function safeMint(address to) public {
-            uint256 tokenId = _nextTokenId++;
-            _safeMint(to, tokenId);
-        }
-    }
-    ```
-4. ##### Create a deploy script - scripts/deploy.js
-
-    ```javascript
-    const hre = require("hardhat");
-
-    async function main() {
-
-      const myAddress = "0x_some_address"
-      const token = await hre.ethers.deployContract("MockContract", [myAddress]);
-
-      console.log(token.address);
-    }
-
-    main().catch((error) => {
-      console.error(error);
-      process.exitCode = 1;
-    });
-    ```
-
-5. ##### Deploy contract
+5. To deploy the `Lock.sol` contract run the command:
+  
     ```sh
-    npx hardhat run scripts/deploy.js --network <network name you defined on hardhat.config> 
-    ```
-
-6. ##### Verify contract
-    ```sh
-    npx hardhat verify --network <network name> <deployed contract address> <contract deployed constructor arguments>
+      npx hardhat ignition deploy ./ignition/modules/Lock.ts --network _network_name_given_on_hardhat.config
     ```
 
 </Steps>
 
-</ToolLayout>

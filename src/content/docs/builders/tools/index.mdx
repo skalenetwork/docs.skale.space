@@ -4,51 +4,19 @@ description: Tools on SKALE
 
 sidebar:
   order: 0
+
+tableOfContents: false
 ---
 
 import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import {ToolsPage} from "../../../../components/ToolsList"
+
 
 The tools section covers available tooling for developing on SKALE. This includes SDKs, Wallets, Libraries, and more.
 
-## Explore Tools by Category
+<LinkCard
+	title="Add your Integration"
+	href="https://github.com/skalenetwork/docs.skale.space/tree/main/src/content/docs/builders/tools"
+/>
 
-
-
-<CardGrid>
-	<LinkCard
-		title="Wallets"
-		href="/builders/tools/wallets"
-		/>
-	<LinkCard
-		title="Libraries"
-		href="/builders/tools/libraries"
-		/>
-	<LinkCard
-		title="NFTs"
-		href="/builders/tools/nfts"
-		/>
-	<LinkCard
-		title="Gaming SDKs"
-		href="/builders/tools/gaming"
-		/>
-	<LinkCard
-		title="Bridges"
-		href="/builders/tools/bridges"
-		/>
-	<LinkCard
-		title="Contracts"
-		href="/builders/tools/contracts"
-		/>
-	<LinkCard
-		title="Data & Indexers"
-		href="/builders/tools/data"
-		/>
-	<LinkCard
-		title="Oracles"
-		href="/builders/tools/oracles"
-		/>
-	<LinkCard
-		title="Payments"
-		href="/builders/tools/payments"
-		/>
-</CardGrid>
+<ToolsPage categories={['All In One','Bridges','Contracts','Data','Gaming','Libraries','NFTs','Oracles','Payments','Wallets','Randomness']} client:load/>
