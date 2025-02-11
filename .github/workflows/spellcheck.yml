@@ -3,8 +3,6 @@ name: Spell Check
 on:
   pull_request:
     branches: [ main ]  # or master, depending on your default branch
-    paths:
-      - 'src/content/**'
 
 jobs:
   spellcheck:
