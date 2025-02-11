@@ -3,7 +3,7 @@ export default {
     "/build/sfuel": "/builders/app-developers/sfuel-distribution",
     "/tools": "builders/tools",
     "/validators/validator-cli": "ecosystem/validators/validator-cli/overview",
-    "/ecosystem/validators/faq": "ecosystem/validators/overview",
+    // "/ecosystem/validators/faq": "ecosystem/validators/overview",
     "/ecosystem/validators/validator-cli": "ecosystem/validators/validator-cli/overview",
     "/ecosystem/validators/validator-cli/self-recharding-wallets": "ecosystem/validators/validator-cli/self-recharging-wallets",
     "/tools/platforms/sfuel-station": "/builders/app-developers/sfuel-station",
