@@ -1,9 +1,5 @@
 name: Spell Check
 
-on:
-  pull_request:
-    branches: [ main ]  # or master, depending on your default branch
-
 jobs:
   spellcheck:
     name: Run cspell
