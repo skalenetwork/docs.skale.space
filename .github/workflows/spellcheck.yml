@@ -1,5 +1,7 @@
 name: Spell Check
 
+on: push
+
 jobs:
   spellcheck:
     name: Run cspell
