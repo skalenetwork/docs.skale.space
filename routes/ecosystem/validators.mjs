@@ -45,7 +45,11 @@ export default {
         },
         {
             label: "Validator Setup",
-            link: "/ecosystem/validators/validator-setup"
+            link: "/ecosytem/validators/validator-setup"
+        },
+        {
+            label: "FAQ",
+            link: "/ecosystem/validators/faq"
         },
         {
             label: "Validator CLI",
@@ -98,6 +102,6 @@ export default {
                     link: "/ecosystem/validators/releases/3-1-0-upgrade"
                 } 
             ],
-        },
+        }
     ],
 }
