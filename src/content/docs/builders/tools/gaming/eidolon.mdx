@@ -2,17 +2,20 @@
 title: Eidolon
 description: Intro to Eidolon
 ---
-import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-<ToolLayout
-    introParagraph="It is a Unity SDK built on to of Nethereum library and provides a easy developer onboarding to interact with EVM blockchains. This SDK was created to accommodate all SKALE developer needs, e.g sFUEL distribution."
-    toolName="Eidolon"
-    toolLink="https://docs.eidolon.dirtroad.dev/"
-    toolDocsLink="https://docs.eidolon.dirtroad.dev/"
->
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
-Here’s an overview of what Eidolon SDK handles:
+It is a Unity SDK built on to of Nethereum library and provides a easy developer onboarding to interact with EVM blockchains. This SDK was created to accommodate all SKALE developer needs, e.g sFUEL distribution.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://eidolongaming.dev/" />
+  <LinkCard title="Documentation" href="https://docs.eidolon.dirtroad.dev/" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+## Features
 
 - **Blockchain Interaction**: Eidolon.Unity allows you to interact with the Ethereum blockchain effortlessly. With just a few lines of code, you can perform various operations, such as sending transactions, reading contract data, and managing accounts.
 
@@ -24,13 +27,18 @@ Here’s an overview of what Eidolon SDK handles:
 
 - **Native Gas distribution**: Due to the zero gas fees of SKALE, in order to allow users performing transactions the dApps need to implement a gas token distribution or sFUEL distribution. Eidolon already takes care of that for the developers.
 
-{/*## Implementation Example
+## Quickstart
 
-The Eidolon SDK aims to make the blockchain development side of things as simple and quick as possible.
+<Steps>
 
-The simplicity explained above can be seen, for example, in the contracts deployment section of the Eidolon SDK.
-The image bellow exemplifies how quickly a ERC-20 token can be deployed.
+1. Head to Eidolon [main page](https://eidolongaming.dev/).
 
-(Video of deploy in-game token)*/}
+2. Select **Get Started** and login.
 
-</ToolLayout>
+3. Choose the **Eidolon.Web3** card and download the SDK.
+
+4. Follow the next steps detailed [here](https://docs.eidolon.gg/packages/web3/quickstart-guide#2-import-the-sdk-into-your-unity-project).
+
+
+</Steps>
+

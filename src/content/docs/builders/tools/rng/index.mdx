@@ -7,6 +7,7 @@ sidebar:
 ---
 
 import { LinkCard , CardGrid } from "@astrojs/starlight/components";
+import {ToolsPage} from "../../../../../components/ToolsList"
 
 Random Number Generation (RNG) has many applications in software development [both Web2 and Web3].
 It can be used to support generation of secure credentials, support with decision making, 
@@ -17,10 +18,9 @@ the popular Chainlink VRF functionality is very common with developers building 
 
 SKALE Chains all come with the RNG endpoint available directly in Solidity with zero gas fees.
 
-<CardGrid>
-	<LinkCard
-		title="SKALE RNG"
-		href="/builders/tools/rng/skale-rng"
-		description="SKALE Native Random Number Generator"
-	/>
-</CardGrid>
+<ToolsPage 
+	categories={['Randomness']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

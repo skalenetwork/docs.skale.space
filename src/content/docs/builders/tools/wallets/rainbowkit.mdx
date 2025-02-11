@@ -1,0 +1,59 @@
+---
+title: RainbowKit
+description: Intro to RainbowKit
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+RainbowKit is a React library that makes it easy to add wallet connection.
+
+In addition to managing wallet connections and disconnections, RainbowKit supports a wide range of wallets, allows swapping connection chains, and offers many other features.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://www.rainbowkit.com/" />
+  <LinkCard title="Documentation" href="https://www.rainbowkit.com/docs/introduction" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Multi-Wallet Support:** Supports wallets like MetaMask, Coinbase, WalletConnect, and more.  
+
+- **Developer-Friendly Design:** Built with React for seamless integration into modern web apps.  
+
+
+## Quickstart
+
+<Steps>
+
+1. Install the package:
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm init @rainbow-me/rainbowkit@latest
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add @rainbow-me/rainbowkit
+        ```
+        </TabItem>
+    </Tabs>
+
+2. Import the library and start using it:
+
+    ```ts
+    import {RainbowKitProvider,getDefaultConfig,getDefaultWallets,} from '@rainbow-me/rainbowkit';
+    import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+    import { createConfig, WagmiConfig } from 'wagmi';
+    import { publicProvider } from 'wagmi/providers/public';
+    import { skaleCalypsoTestnet, skaleEuropaTestnet, skaleNebulaTestnet, skaleTitanTestnet, Chain } from "wagmi/chains";
+    ```
+
+</Steps>
+

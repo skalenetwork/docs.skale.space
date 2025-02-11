@@ -1,0 +1,49 @@
+---
+title: Metakeep
+description: Intro to Metakeep
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+MetaKeep user wallets are seamless non-custodial wallets fully owned by end users. Developers can use MetaKeep APIs and Client SDKs to interact with these wallets, obtaining user consent to perform operations.
+MetaKeep offers API based wallets and functionality through abstracted hardware wallets.
+This achieve this through the use of industry standard hardware wallets managed automatically by their service. Their reliable and cost-effective innovations promote mass adoption. Additionally, the team offers insurance polices to enhance user confidence.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://metakeep.xyz/" />
+  <LinkCard title="Documentation" href="https://docs.metakeep.xyz/docs/create-a-developer-account" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **API-Based Non-Custodial Wallets:** Allows developers to easily integrate user-owned wallets using MetaKeep's APIs and SDKs for seamless operations.  
+
+- **Secure Hardware Wallet Integration:** Uses industry-standard hardware wallets managed automatically to ensure security and reliability, promoting user confidence with optional insurance coverage.  
+
+## Quickstart
+
+<Steps>
+
+1. Install the package:
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm install metakeep@2.2.3
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add metakeep@2.2.3
+        ```
+        </TabItem>
+    </Tabs>
+
+2. Get an AppId in the [developer console](https://console.metakeep.xyz/) and start using it.
+
+</Steps>

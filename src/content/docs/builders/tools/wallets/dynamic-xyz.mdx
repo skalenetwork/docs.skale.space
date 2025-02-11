@@ -1,0 +1,54 @@
+---
+title: Dynamic
+description: Intro to Dynamic
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Dynamic provides login flows tailored for crypto-native users, straightforward onboarding processes for all other users, and a comprehensive suite of developer tools extending beyond authentication.
+
+<CardGrid>
+  <LinkCard title="Website" href="https://layerzero.network/" />
+  <LinkCard title="Documentation" href="https://docs.dynamic.xyz/adding-dynamic/adding-the-sdk" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!"/>
+</CardGrid>
+
+
+## Features
+
+- **Embedded Wallets:** Allows developers to create personalized wallet experiences for their users with social logil EOA wallets.
+- **Multi-Wallet Support:** Enables integration with various wallets like MetaMask, Coinbase, and WalletConnect.
+- **Account Abstraction Wallets:** Integrates multiple account abstraction providers.  
+- **Multi-Chain:** Compatible with all EVM Networks which means all SKALE Chains are compatible as well.
+
+## Quickstart
+
+<Steps>
+
+
+1. Install the package:
+
+    <Tabs>
+        <TabItem label="npm">
+        ```shell
+        npm install @dynamic-labs/sdk-react-core
+        ```
+        </TabItem>
+        <TabItem label="yarn">
+        ```shell
+        yarn add @dynamic-labs/sdk-react-core
+        ```
+        </TabItem>
+    </Tabs>
+
+2. Get a environment ID [here](https://app.dynamic.xyz/).
+
+3. Import the library and start using it:
+
+    ```ts
+    import { DynamicContextProvider,DynamicWidget } from '@dynamic-labs/sdk-react-core';
+    ```
+</Steps>

@@ -7,6 +7,7 @@ sidebar:
 ---
 
 import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
+import {ToolsPage} from "../../../../../components/ToolsList"
 
 Bridges play a crucial role in expanding the functionality and connectivity of various blockchain ecosystems. 
 
@@ -14,20 +15,10 @@ This piece of technology increases flexibility and efficiency by allowing decent
 
 The SKALE Ecosystem has different bridging solutions available to all dApps.
 
-<CardGrid>
-	<LinkCard
-		title="SKALE IMA"
-		href="/builders/tools/bridges/skale-native-bridge"
-		description="SKALE Native Bridge"
-	/>
-	<LinkCard
-		title="Meson Finance"
-		href="/builders/tools/bridges/meson-fi"
-		description="Bridge connecting SKALE to over 35 different chains"
-	/>
-	<LinkCard
-		title="LayerZero"
-		href="/builders/tools/bridges/layer-zero"
-		description="Cross-Chain messaging protocol"
-	/>
-</CardGrid>
+
+<ToolsPage 
+	categories={['Bridges']} 
+	searchBar = {false}
+	filters = {false}
+	client:load 
+/>

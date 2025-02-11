@@ -1,0 +1,52 @@
+---
+title: Stardust
+description: Intro to Stardust
+---
+import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
+import { Badge } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+<ToolLayout
+    introParagraph="Stardust solution allows developers to quickly create custodial wallets.
+	With this solution it's possible to create a frictionless user onboarding experience, by removing the need for them to manage their own private keys.
+	"
+    toolName="Stardust"
+    toolLink="https://docs.stardust.gg/docs"
+    toolDocsLink="https://docs.stardust.gg/docs"
+>
+
+
+## Implementation Example 
+
+The following example provides a number of examples on how to use Stardust WaaS. For the full code repo go [here](https://github.com/Dirt-Road-Development/stardust-examples)
+
+##### Integration
+
+````javascript
+const { StardustCustodialSDK, StardustApp, StardustWallet } = require("@stardust-gg/stardust-custodial-sdk");
+const { STARDUST_API_KEY, RPC_URL } = require("../../config");
+const createStardustWallet = require("./createWallet");
+const { providers } = require("ethers");
+const getStardustWallet = require("./getWallet");
+
+function stardust() {
+	const provider = new providers.JsonRpcProvider(RPC_URL);
+	const sdk = new StardustCustodialSDK(STARDUST_API_KEY);
+
+	async function getWallet(walletId) {
+		return await getStardustWallet(sdk, walletId);
+	}
+
+	return {
+		createWallet: async() => createStardustWallet(sdk),
+		getWallet,
+		getSigner: async(walletId) => {
+			const wallet = await getWallet(walletId);
+			return wallet.signers.ethers.connect(provider);
+		}
+	}
+}
+module.exports = stardust();
+````
+
+</ToolLayout>
