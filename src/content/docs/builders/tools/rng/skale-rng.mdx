@@ -42,6 +42,26 @@ Each SKALE chain offers a freely accessible Random Number Generator that relies 
     ```
 3. Utilize the function(s) from the RNG contract that suits you better
 
+4. Example:
+
+    ```solidity
+    // SPDX-License-Identifer: MIT
+    pragma solidity ^0.8.19;
+
+    import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+    contract ExampleRNG is RNG {
+
+    function getRandomNumber() external returns(uint256){
+        return getRandomNumber(); 
+    }
+
+    function getRandomNumberInRange(uint256 minRange, uint256 maxRange) external returns(uint256) {
+        return getNextRandomRange(minRange,maxRange);
+    }
+    }
+    ```
+
 </Steps>
 
 ## Theory
