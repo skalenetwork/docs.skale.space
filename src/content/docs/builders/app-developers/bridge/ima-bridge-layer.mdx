@@ -1,0 +1,156 @@
+---
+title: IMA Bridge Layer
+description: Bridge Layer
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Badge } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import Dropdown from '../../../../../components/NumbersDropdown.astro';
+import { Steps } from "@astrojs/starlight/components";
+
+The IMA Bridge layer is a specialized component built on top of the messaging protocol, designed to manage the seamless transfer of tokens between chains. 
+
+This layer includes dedicated contracts for handling ERC-20, ERC-721, and ERC-1155 token standards. 
+
+Each supported chain (Ethereum and SKALE Chains) have a set of contracts to handle cross-chain transfers of the different standards.
+
+## Architecture
+
+The Bridge Layer operates through a combination of smart contracts that comunicate with the Message Proxy contract to deliver the message to the destination.
+
+These set of contract are in most things very similar to each other accross all chains but there's small differences between the **Ethereum** and **SKALE Chains** contracts:
+
+<Tabs>
+<TabItem label="Ethereum">
+  - `DepositBox`: abstract contract for DepositBoxes contracts (ERC20, ERC721, etc.)
+  - `DepositBoxETH`: implements DepositBox and accepts messages from schain and stores deposits of ETH.
+  - `DepositBoxERC20`: implements DepositBox and accepts messages from schain and stores deposits of ERC20.
+  - `DepositBoxERC721`: implements DepositBox and accepts messages from schain and stores deposits of ERC721.
+  - `DepositBoxERC721WithMetadata`: implements DepositBox and accepts messages from schain and stores deposits of ERC721 with metadata.
+  - `DepositBoxERC1155`: implements DepositBox and accepts messages from schain and stores deposits of ERC1155.
+</TabItem>
+<TabItem label="SKALE Chains">
+  - `TokenManager`: abstract contract for TokenManager contracts (ERC20, ERC721, etc.)
+  - `TokenManagerETH`: implements TokenManager, accepts messages from mainnet and stores deposits of ETH - on SKALE Chains ETH is an ERC-20.
+  - `TokenManagerERC20`: implements TokenManager, accepts messages from schain/mainnet and stores deposits of ERC20.
+  - `TokenManagerERC721`: implements TokenManager, accepts messages from schain/mainnet and stores deposits of ER721.
+  - `TokenManagerERC721WithMetadata`: implements TokenManager, accepts messages from schain/mainnet and stores deposits of ERC721 with metadata.
+  - `TokenManagerERC1155`: implements TokenManager, accepts messages from schain/mainnet and stores deposits of ERC20.
+</TabItem>
+</Tabs>
+
+
+## Key Methods
+
+The Bridge Layer consists of a group of contracts on all IMA-connected chains (SKALE Chains and Ethereum). These contracts work with the Message Proxy and handle the transfer of various tokens.
+
+As the [architecture section](#architecture) above shows there's differents DepositBox/TokenManager contracts for each token standard. However they all have very similar structure and similar functions.
+
+When briding the functions utilized across the contracts are:
+
+<Tabs>
+<TabItem label="DepositBox Contracts">
+- **depositDirect:** Allows to send ETH from Ethereum to SKALE Chain
+- **addERC**<Dropdown/>**TokenByOwner:** Adds a token of the selected type to the corresponding deposit box
+- **depositERC**<Dropdown/>**Direct:** Transfer the token of the selected type to a SKALE Chain
+</TabItem>
+<TabItem label="TokenManager Contracts">
+- **exitToMain:** Allows to send ETH from SKALE Chain to Ethereum
+- **addERC**<Dropdown/>**TokenByOwner:** Adds a token of the selected type to the corresponding token manager
+- **transferToSchainERC**<Dropdown/>**:** Transfer the token of the selected type to a SKALE Chain
+- **exitToMainERC**<Dropdown/>**:** Transfer the token of the selected type to Ethereum
+</TabItem>
+</Tabs>
+
+<Aside> The buttons dropdown above show the small variations in naming some functions have.</Aside>
+
+---
+
+## Bridge Flow
+
+Let's consider a transfer flow that requires to move a token from:
+
+ **Ethereum** -> **SKALE Europa** -> **SKALE Chain A** (e.g., SKALE Nebula). 
+
+The process involves **locking** tokens on Ethereum, **mint clone** token on SKALE Europa, **wrap clone and mint** token on SKALE Europa, and finally bridging them to SKALE Chain A.
+
+Most SKALE tokens follow the flow where a core token on Ethereum Mainnet is mapped via the SKALE Native IMA Bridge to the Europa chain. Since IMA prevents cloned tokens from being mapped to another SKALE Chain, tokens are first "Wrapped" to bypass this restriction before being mapped to another SKALE Chain (e.g., Nebula).
+
+<Aside>
+    | Tokens | |
+    |-|-|
+    | mUSDC | USDC on <Badge text="Ethereum" variant="note" />. |
+    | eUSDC | USDC on <Badge text="SKALE Europa" variant="caution" />. |
+    | weUSDC | Wrapped USDC on <Badge text="SKALE Europa" variant="caution" />. |
+    | nUSDC | USDC on <Badge text="SKALE Chain A" variant="tip" /> (e.g. SKALE Nebula). |
+
+</Aside>
+
+<Steps>
+
+1. **Create All Tokens** <Badge text="Ethereum" variant="note" /> <Badge text="SKALE Europa" variant="caution" /> <Badge text="SKALE Chain A" variant="tip" />
+   1. Create a normal token on Ethereum
+
+   2. Create a token on Europa and SKALE Chain A. Both contracts should create and assign MINTER_ROLE and BURNER_ROLE to the TokenManager. On top of that the mint and burn functions should control access with the created roles.
+
+   **Example**
+
+   ```solidity
+   import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+   import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+
+   contract InterchainERC20 is ERC20, AccessControl {
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        _grantRole(DEFAULT_ADMIN_ROLE, 0xD244519000000000000000000000000000000000);
+        _grantRole(MINTER_ROLE, 0xD2aAA00500000000000000000000000000000000);
+        _grantRole(BURNER_ROLE, 0xD2aAA00500000000000000000000000000000000);
+    }
+
+   function mint(address to, uint256 amount) public virtual onlyRole(MINTER_ROLE){
+      _mint(to, amount);
+   }
+
+   function burn(uint256 amount) public virtual onlyRole(BURNER_ROLE) {
+        _burn(msg.sender, amount);
+    }
+   ```
+
+   3. Create a wrap token on SKALE Europa for the previous created token on the chain
+
+   **Example**
+   ```solidity
+   import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+   import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+   import {ERC20Wrapper} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
+
+   contract InterchainERC20Wrapper is ERC20Wrapper {
+      constructor(string memory contractName, string memory contractSymbol, IERC20 originToken)
+        ERC20Wrapper(originToken)
+        ERC20(string.concat("Wrapped ", contractName), string.concat("w", contractSymbol))
+    {}
+   }
+   ```
+
+1. **Approve Token** <Badge text="Ethereum" variant="note" />
+   - Call the `approve` function on the `mUSDC` contract and allow the `DepositBoxERC20` contract to lock the tokens.
+
+2. **Deposit Token** <Badge text="Ethereum" variant="note" />
+   - Call the `depositERC20` function on the `DepositBoxERC20` contract to lock the tokens on Ethereum.
+
+3. **Mint Token** <Badge text="SKALE Europa" variant="caution" />
+   - The `TokenManagerERC20` contract on SKALE Europa recieves the request and mints the equivalent amount of tokens to the user's address.
+
+5. **Approve Wrapped Token** <Badge text="SKALE Europa" variant="caution" />
+   - Approve the `TokenManagerERC20` contract on SKALE Europa to allow the transfer of `weUSDC`.
+
+6. **Bridge Wrapped Token** <Badge text="SKALE Europa" variant="caution" />
+   - Call the `transferERC20` function on the `TokenManagerERC20` contract to lock `weUSDC` on SKALE Europa and initiate the transfer to SKALE Chain A.
+
+7. **Mint Token** <Badge text="SKALE Chain A" variant="tip" />
+   - The `TokenManagerERC20` contract on SKALE Chain A recieves the request and mints the equivalent amount of tokens to the user's address.
+
+</Steps>

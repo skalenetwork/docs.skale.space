@@ -1,12 +1,61 @@
 ---
-title: SKALE Native Bridge
-description: Intro to SKALE IMA
+title: SKALE Bridge
+description: A comprehensive guide to the Interchain Messaging Agent (IMA) for transferring tokens and messages between Ethereum and SKALE Chains.
 ---
+
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import ToolLayout from "../../../../../components/Tool/ToolLayout.astro";
 
-import {Content as IMA} from './skale-ima/ima.mdx';
-import {Content as IMAJS} from './skale-ima/imajs.mdx';
-import {Content as METAPORT} from './skale-ima/metaport.mdx';
+The **Interchain Messaging Agent (IMA)**, also known as the **SKALE IMA Bridge**, enables seamless token and message transfers between Ethereum and SKALE Chains.
 
-<IMA/>
+IMA is **flexible**, **modular**, **secure**, and **cost-efficient**, making it a powerful tool for developers building cross-chain dApps.
+
+<CardGrid>
+  <LinkCard title="Documentation" href="/builders/app-developers/bridge/overview" />
+  <LinkCard title="Recipe" description="Not ready yet but is coming very soon!" />
+</CardGrid>
+
+## Features
+
+- **Chains:** Supports bridging `Ethereum` ↔ `SKALE Chains` and `SKALE Chains` ↔ `SKALE Chains`
+
+- **Messagin Protocol:** It supports any kind of messages and token standards (ex: ETH, ERC-20, ERC-721, ERC-1155, etc).
+
+- **Speed:** Very fast bridge taking between 30 to 60 seconds to complete the bridging.
+
+- **Cost Efficient:** The transfer between SKALE Chains (S2S) are free and the costs for Ethereum transfers are low.
+
+## Quickstart
+
+
+<Tabs>
+	<TabItem label="Bridge New Tokens">
+	<Steps>
+    1. **Deploy Token Contracts**
+        - Deploy your token contracts on Ethereum and/or SKALE Chains.
+        - Ensure the contract supports **minting** and **burning** like is shown [here](https://github.com/Dirt-Road-Development/skale-interchain/blob/main/tokens/src/interchain/InterchainERC20.sol).
+
+    2. **Submit token mapping request**
+
+        <LinkCard title="Token Mapping" href="" description="Fill out the form and submit a request for your token to be mapped!"/>
+
+    </Steps>
+	</TabItem>
+	<TabItem label="Bridge Existing Tokens">
+	<Steps>
+    1. Head to [SKALE Portal](https://portal.skale.space/bridge?from=elated-tan-skat&to=honorable-steel-rasalhague&token=skl&type=erc20)
+    
+    2. Connect a wallet.
+
+    3. Select the desire origin and destination chain as well as the token to bridge.
+
+    4. Initiate the bridging.
+    </Steps>
+	</TabItem>
+</Tabs>
+
+
+
+

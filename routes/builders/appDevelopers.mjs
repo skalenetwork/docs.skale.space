@@ -10,6 +10,27 @@ export default {
             link: "/builders/app-developers/evm-compatibility"
         },
         {
+            label: "Bridge",
+            items: [
+					{
+						label: "Overview",
+						link: "/builders/app-developers/bridge/overview"
+					},
+					{
+						label: "IMA Deep Dive",
+						link: "/builders/app-developers/bridge/ima-deep-dive"
+					},
+                    {
+						label: "IMA Messaging Layer",
+						link: "/builders/app-developers/bridge/ima-messaging-layer"
+					},
+                    {
+						label: "IMA Bridge Layer",
+						link: "/builders/app-developers/bridge/ima-bridge-layer"
+					}
+            ]
+        },
+        {
             label: "sFUEL Distribution",
             items: [
                 {

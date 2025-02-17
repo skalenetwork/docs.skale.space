@@ -1,0 +1,31 @@
+---
+title: Overview
+description: IMA is SKALE's native bridge and messaging protocol.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+SKALE Network uses a native messaging and bridging protocol called **Interchain Messaging Agent (IMA)**. IMA connects every **SKALE Chain** to the **Ethereum Mainnet** and to other **SKALE Chains**. 
+
+It is a modular system that allows transferring any type of data between chains (**Ethereum** ↔ **SKALE** or **SKALE** ↔ **SKALE**). Additionally, it includes prebuilt modules for moving tokens that follow popular ERC standards.
+
+## Relation to Ethereum
+
+IMA is backed by Ethereum mainnet and SKALE Chain security mechanisms - It uses your SKALE Chain’s
+16 randomly selected validator nodes to sign and verify messages between the Ethereum mainnet and your
+SKALE Chain using BLS threshold signatures and Trusted-Execution Environments (TEE). It uses smart contracts
+running on Ethereum to manage the locking and unlocking of the deposit box on the mainnet. And, each of the
+16 nodes supporting your SKALE Chain each has 20 million SKL tokens staked.
+
+## Design Overview
+
+IMA has **two main layers**:
+
+1. **Messaging Protocol:** base layer that allows arbitrary data transfer between Ethereum and SKALE Chains. It uses two key contracts:
+   - **MessageProxy:** contract on Ethereum Mainnet
+   - **MessageProxyForSchain:** contract on each SKALE Chain  
+    <Aside>This message exgange it's possible through SKALE Supernodes that run an IMA Agent software to listen for and forward messages to the target chain.</Aside>
+
+2. **Bridging System:** layer built on top of the messaging protocol and handles token transfers. IMA includes default bridges for ERC-20, ERC-721 and ERC-1155 using the following contracts:
+   - **Deposit Box:** contract on Ethereum Mainnet
+   - **Token Manager:** contract on each SKALE Chain 

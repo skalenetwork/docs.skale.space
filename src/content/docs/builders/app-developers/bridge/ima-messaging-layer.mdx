@@ -1,0 +1,98 @@
+---
+title: IMA Messaging Layer
+description: Messaging Layer
+---
+
+import { Steps } from "@astrojs/starlight/components";
+import { Aside } from '@astrojs/starlight/components';
+
+The **Message Proxy** is a core component of SKALE's Interchain Messaging Agent (IMA) system. It enables the transfer of messages between contracts on the Ethereum Mainnet and SKALE Chains, as well as between SKALE Chains.
+
+## Use Cases
+
+- Send messages between **Ethereum** ↔ **SKALE Chains** or **SKALE Chains** ↔ **SKALE Chains**.
+- Enable arbitrary data transfer between chains.
+- Facilitate cross-chain token transfers (e.g., ETH, ERC-20, ERC-721, ERC-1155).
+- Support modular expansion for additional message types and contracts.
+
+## Architecture
+
+The Message Proxy operates through a combination of smart contracts and the **IMA Agent**. Here's an overview of its architecture:
+
+1. **Contracts**:
+   - **MessageProxy**: deployed on Ethereum Mainnet.
+   - **MessageProxyForSchain**: deployed on each SKALE Chain.
+
+2. **IMA Agent**:
+   - A containerized script running on SKALE Nodes.
+   - Listens for `postOutgoingMessage` events on both Ethereum Mainnet and SKALE Chains.
+   - Forwards messages to the destination chain using `postIncomingMessage`.
+
+## Key Methods
+
+The Message Proxy provides several methods to manage cross-chain communication. These methods coexist on both contract types: **MessageProxy** and **MessageProxyForSchain**.
+
+- **`postOutgoingMessage`**
+    - Posts message from this Origin Chain MessageProxy contract to `targetChainHash` MessageProxy contract
+
+- **`postIncomingMessage`**
+    - Entry point for incoming messages.
+    - Function called by IMA agent to deliver incoming messages from external chains.
+
+- **`registerExtraContract`**
+  - Registers an extra contract to be authorized to transfer messages from custom contracts.
+
+- **`removeExtraContract`**
+  - Removes a contract authorization to transfer messages from custom contracts.
+
+- **`registerExtraContractForAll`**
+  - Registers a contract to be authorized to transfer messages from custom contracts on all SKALE Chains(current and future chains)/Ethereum 
+
+- **`removeExtraContractForAll`**
+  - Removes a contract authorization to transfer messages from custom contracts on all SKALE Chains (current and future)/Ethereum.
+
+---
+
+## Messages Flow
+
+The Message Proxy enables seamless cross-chain communication through a well-defined flow. Here's how it works:
+
+<Steps>
+
+1. ### Register Contracts
+    Before sending messages, your contracts must be registered with the Message Proxy.
+
+    **On Mainnet**:
+    - Call `registerExtraContract([SKALE_CHAIN_NAME], [CONTRACT_ADDRESS_ON_MAINNET])` to register a contract.
+    - Only the SKALE Chain owner or an address with the `EXTRA_CONTRACT_REGISTRAR_ROLE` can perform these actions.
+
+    **On SKALE Chain**:
+    - Call `registerExtraContract("Mainnet", [CONTRACT_ADDRESS_ON_SCHAIN])` to register a contract.
+    - Only the SKALE Chain owner or an address with the `EXTRA_CONTRACT_REGISTRAR_ROLE` can perform these actions.
+
+2. ### Sending Messages
+    **SKALE Chain -> Mainnet**:
+    - Call `postOutgoingMessage("Mainnet", [RECEIVING_CONTRACT_ADDRESS_ON_MAINNET], [DATA])` from your SKALE Chain contract.
+    - The receiving contract on Mainnet must implement a `postMessage` function.
+
+    **Mainnet -> SKALE Chain**:
+    - Call `postOutgoingMessage([SKALE_CHAIN_NAME], [RECEIVING_CONTRACT_ADDRESS_ON_SCHAIN], [DATA])` from your Mainnet contract.
+    - The receiving contract on the SKALE Chain must implement a `postMessage` function.
+
+3. ### Receiving Messages
+    To receive messages, your contract must implement the `postMessage` function. Here's how to set it up:
+
+    ```solidity
+    contract ReceiverExample {
+        function postMessage(
+            bytes32 schainHash,
+            address sender,
+            bytes calldata data
+        ) external returns (address) {
+        // Add your processing logic here
+        }
+    }
+
+    ```
+</Steps>
+

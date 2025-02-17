@@ -1,0 +1,89 @@
+---
+title: IMA Deep Dive
+description: IMA is the native SKALE Bridge and Messaging Protocol
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Steps } from "@astrojs/starlight/components";
+
+The IMA bridge allows users to transfer tokens and messages across chains within the **SKALE Network** and with **Ethereum**. 
+
+The IMA bridge supports ETH, ERC20, ERC721, and ERC1155 tokens out of the box. 
+It can be expanded to any arbitrary message or token standard using the base messaging system.
+
+The high-level flow between chains consists of the following:
+- Tokens that leave an `origin` chain are locked, and the same number of tokens are minted on a `target` chain.
+- Tokens that leave a `target` chain are burned, and then unlocked on the `origin` chain to complete the round-trip transfer.
+ 
+## Features
+
+The SKALE IMA has a set of features designed to enable seamless and efficient cross-chain transfers:
+
+1. **Interchain Messaging:** Supports the transfer of any standard token (ERC-20, ERC-721 and ERC-1115) as well as any transfer of arbitrary messages.
+
+2. **Fast Transfers:** Deposits and withdrawals between Ethereum and SKALE Chains are processed in seconds, thanks to the efficient consensus mechanism of SKALE Chains and the use of BLS threshold signatures. It usally takes betweem 30s to 60s.
+
+3. **Cost-Efficient Transfers:** Transfers between SKALE Chains are free, while transfers between Ethereum and SKALE Chains require minimal gas costs.
+
+4. **Automatic and Manual Deployment:** Developers can choose between automatic and manual token mapping. Automatic deployment creates token clones on the target chain automatically, while manual deployment allows for greater control over the token cloning process.
+
+5. **Chain Support:** Enables bridging between all SKALE Chains as well as Ethereum.
+
+## Architecture
+
+The SKALE IMA bridge can be described as four main pieces:
+
+1. **IMA Agents:** A containerized service running on each SKALE Chain node that relays messages between Ethereum and SKALE Chains.
+
+2. **Message Proxy Contracts:** Entry point contract for messages that come from mainnet or other SKALE chains and contract that emits messages for mainnet or other SKALE chains.
+
+3. **Deposit Box Contracts:** Set of contracts on **Ethereum** that will lock and unlock the tokens bridge in and out.  
+
+4. **Token Manager Contracts:** Set of contracts on **SKALE Chains** that will lock and unlock the tokens bridge in and out.
+
+<Aside>The `DepositBox contracts` and `TokenManager contracts` are abstract contracts. There's different implementations of this contracts for the different token standards (ex: `TokenManagerERC20.sol`/`DepositBoxERC20.sol` or `TokenManagerERC721.sol`/`DepositBoxERC721.sol`) </Aside>
+
+`The flow image will enter here`
+
+### High Level Bridge Flow
+
+<Steps>
+
+1. **Token creation** on origin and destination chain.
+
+2. **Token added** to `Token Manager` contract or/and `Deposit Box` contract.
+
+    <Aside> The setup of the Deposit Box Contract depends on whether the bridging is to occur on the Ethereum side.</Aside>
+
+3. **Initiate the transfer** by calling the `Token Manager/Deposit Box` contract on the origin chain. 
+
+4. The token is locked on `Manager/Deposit Box` contract and calls the `Message Proxy` contract to emit the transfer event.
+
+5. The `IMA Agent` picks up the event thrown.
+
+6. The `IMA Agent` forwards the message to the destination chain `Message Proxy` contract.
+
+7. The destination chain `Message Proxy` contract calls the `Token Manager/Deposit Box` contract and the token is minted to the receiver address.
+
+</Steps>
+
+For a more detailed bridge flow description please visit the [IMA Bridge Layer](./ima-bridge-layer) documentation.
+
+
+## Security
+
+The SKALE IMA Bridge incorporates advanced security measures to ensure the safe and efficient transfer of assets and messages between Ethereum and SKALE Chains. Here are the key security features:
+
+- **BLS threshold signatures:** The IMA is secured by the robust security mechanisms of both the Ethereum mainnet and SKALE Chains. It leverages 16 randomly selected validator nodes from the SKALE Chain to sign and verify messages between Ethereum and SKALE using BLS threshold signatures.
+
+- **Trusted Execution Environments (TEE):** Each of the 16 validator nodes operates within a secure enclave, known as a Trusted Execution Environment (TEE). This hardware-based security feature ensures that sensitive data and operations are protected from external tampering.
+
+- **Smart Contracts:** Leverages smart contracts on decentralised networks (Ethereum and SKALE Chains) to store the tokens bridged with the lock and unlock mechanism.
+
+- **Pauseable Message Processing:** The IMA Bridge allows SKALE Chain owners to pause the processing of IMA messages for a specific chain. This feature is crucial during security incidents or maintenance, providing an additional layer of control and protection.
+
+- **Role-Based Access Control:** The IMA Bridge utilizes role-based access control, such as `PAUSABLE_ROLE` and `ARBITER_ROLE`, to manage critical functions like pausing message processing or initiating arbitration. This ensures that only authorized entities can execute sensitive operations.
+
+- **Token Integrity**: When tokens are transferred from Ethereum to a SKALE Chain, they are locked in a deposit box on Ethereum, and clones are minted on the SKALE Chain. This ensures a 1:1 peg between the original tokens and their clones, maintaining the integrity of the asset transfer.
+
+
