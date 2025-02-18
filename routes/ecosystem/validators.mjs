@@ -100,7 +100,15 @@ export default {
                 {
                     label: "3.1.0 Upgrade",
                     link: "/ecosystem/validators/releases/3-1-0-upgrade"
-                } 
+                },
+                {
+                    label: "3.1.1 Upgrade",
+                    link: "/ecosystem/validators/releases/3-1-1-upgrade"
+                },
+                {
+                    label: "3.1.1 Upgrade (local sgx)",
+                    link: "/ecosystem/validators/releases/3-1-1-upgrade-local-sgx"
+                }
             ],
         }
     ],
