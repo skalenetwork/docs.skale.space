@@ -20,7 +20,7 @@ The firewall mechanism was updated in version 3.1.1. As a result, please proceed
 2. Turn off the node
 
     ```bash
-    skale node turn-off --yes
+    skale node turn-off --unsafe --yes
     ```
 
 3. Backup the node
@@ -51,7 +51,7 @@ The firewall mechanism was updated in version 3.1.1. As a result, please proceed
 
 8. Make sure nftables is installed
     ```bash
-    sudo apt install nftables
+    sudo apt update && sudo apt install nftables docker-compose-plugin
     ```
 
 7. Disable ufw ipv6 configuration
@@ -64,9 +64,12 @@ The firewall mechanism was updated in version 3.1.1. As a result, please proceed
     ufw reload
     ```
 
-9. Add `-b` option in `command` section of `run_sgx/docker-compose.yml`
+9. Pull latest changes from sgxwallet
+    ```bash
+    cd sgxwallet/run_sgx && git checkout stable && git pull
+    ```
 
-10. Set SGX wallet version to `1.9.0-stable.2` in `run_sgx/docker-compose.yml`
+10. Add `-b` option in the `command` section of `run_sgx/docker-compose.yml`
 
 11. Run sgxwallet
     ```bash
@@ -110,5 +113,6 @@ The firewall mechanism was updated in version 3.1.1. As a result, please proceed
     </Aside>
     ```bash
     systemctl restart nftables && systemctl restart docker
+    nft add rule inet firewall skale tcp dport 1026-1031 drop
     ```
 </Steps>
