@@ -45,7 +45,7 @@ export default {
         },
         {
             label: "Validator Setup",
-            link: "/ecosytem/validators/validator-setup"
+            link: "/ecosystem/validators/validator-setup"
         },
         {
             label: "FAQ",
