@@ -1,8 +1,0 @@
-.row {
-	display: flex;
-	flex-direction: row;
-
-	input[type="checkbox"] {
-		margin-right: 8px;
-	}
-}
