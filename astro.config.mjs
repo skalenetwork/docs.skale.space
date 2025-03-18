@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import routes from "./routes";
+import routes from "./routes/index.mjs";
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,18 +15,9 @@ export default defineConfig({
 				root: {
 					label: 'English',
 					lang: 'en'
-				},
-				'pt-pt': {
-					label: "Portuguese",
-					lang: 'pt-pt'
 				}
 			},
-			sidebar: [
-				{
-					label: "Welcome",
-					items: routes.welcome
-				}
-			],
-		}),
+			sidebar: routes
+		})
 	],
 });
