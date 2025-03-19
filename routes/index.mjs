@@ -1,5 +1,6 @@
 import buildingApplications from "./building-applications.json";
 import runASkaleChain from "./run-a-skale-chain.json";
+import runASkaleNode from "./run-a-skale-node.json";
 import skaleBridge from "./skale-bridge.json";
 import welcome from "./welcome.json";
 
@@ -23,5 +24,10 @@ export default [
         label: "SKALE Bridge",
         collapsed: true,
         items: skaleBridge
+    },
+    {
+        label: "Run a SKALE Node",
+        collapsed: true,
+        items: runASkaleNode
     }
 ]
