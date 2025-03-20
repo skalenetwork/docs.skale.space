@@ -17,6 +17,9 @@ export default defineConfig({
 					lang: 'en'
 				}
 			},
+			// Below error for some reason doesn't like badge variants from external files
+			// If you remove and it breaks, I will be sad :(
+			// @ts-ignore
 			sidebar: routes
 		})
 	],
