@@ -35,5 +35,29 @@ export default [
         label: "How SKALE Works",
         collapsed: true,
         items: howSkaleWorks
+    },
+    {
+        label: "Audits",
+        slug: "audits"
+    },
+    {
+        label: "FAQ",
+        slug: "faq"
+    },
+    {
+        label: "Faucet",
+        slug: "faucet"
+    },
+    {
+        label: "Forum",
+        link: "https://forum.skale.network",
+        badge: {
+            text: "External",
+            variant: "caution"
+        }
+    },
+    {
+        label: "Tools",
+        slug: "tools"
     }
 ]
