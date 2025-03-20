@@ -1,4 +1,4 @@
-[
+export default [
     { "label": "Intro to sChains", "slug": "run-a-skale-chain/intro-to-schains" },
     { "label": "Setup Requirements", "slug": "run-a-skale-chain/setup-requirements" },
     { "label": "Managing State Consumption", "slug": "run-a-skale-chain/managing-state-consumption" },

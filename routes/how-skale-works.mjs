@@ -1,4 +1,4 @@
-[
+export default [
     { "label": "Mainnet Beta", "slug": "how-skale-works/mainnet-beta" },
     { "label": "Bridge Architecture", "slug": "how-skale-works/bridge-architecture" },
     { "label": "Delegation Model", "slug": "how-skale-works/delegation-model" },

@@ -1,9 +1,9 @@
-import buildingApplications from "./building-applications.json";
-import howSkaleWorks from "./how-skale-works.json";
-import runASkaleChain from "./run-a-skale-chain.json";
-import runASkaleNode from "./run-a-skale-node.json";
-import skaleBridge from "./skale-bridge.json";
-import welcome from "./welcome.json";
+import buildingApplications from "./building-applications.mjs";
+import howSkaleWorks from "./how-skale-works.mjs";
+import runASkaleChain from "./run-a-skale-chain.mjs";
+import runASkaleNode from "./run-a-skale-node.mjs";
+import skaleBridge from "./skale-bridge.mjs";
+import welcome from "./welcome.mjs";
 
 export default [
     {
