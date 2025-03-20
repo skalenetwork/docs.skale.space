@@ -1,4 +1,4 @@
-[
+export default [
     { "label": "Intro to Bridging", "slug": "skale-bridge/intro-to-bridging" },
     { "label": "Create Custom Contracts", "slug": "skale-bridge/create-custom-contracts" },
     { "label": "Connect Custom Contracts", "slug": "skale-bridge/connect-custom-contracts" },

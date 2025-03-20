@@ -1,4 +1,4 @@
-[
+export default [
     { "label": "Intro to Solidity", "slug": "building-applications/intro-to-solidity" },
     { "label": "Gas Fees", "slug": "building-applications/gas-fees" },
     { "label": "Gasless Transactions", "slug": "building-applications/gasless-transactions" },

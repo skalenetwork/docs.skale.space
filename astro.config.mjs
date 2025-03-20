@@ -17,14 +17,7 @@ export default defineConfig({
 					lang: 'en'
 				}
 			},
-			sidebar: transformRoutesToSidebar(routes)
+			sidebar: routes
 		})
 	],
 });
-
-function transformRoutesToSidebar(routes) {
-	return routes.map((/** @type {{ label: string; collapsed: boolean; slug?: string; link?: string; items: any[]; }} */ route) => ({
-		...route
-	}));
-}
-

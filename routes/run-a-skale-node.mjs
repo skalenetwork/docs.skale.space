@@ -1,4 +1,6 @@
-[
+const successVariant = "success";
+
+export default [
     { "label": "Overview", "slug": "run-a-skale-node/overview" },
     { "label": "Become a Validator", "slug": "run-a-skale-node/become-a-validator" },
     { "label": "Node Types", "slug": "run-a-skale-node/node-types" },
@@ -21,7 +23,7 @@
                 "slug": "run-a-skale-node/node-cli/release-v2-0",
                 "badge": {
                     "text": "Latest Release",
-                    "variant": "success"
+                    "variant": successVariant
                 }
             }
         ]
@@ -37,7 +39,7 @@
                 "slug": "run-a-skale-node/validator-cli/release-v1-2-0",
                 "badge": {
                     "text": "Latest Release",
-                    "variant": "success"
+                    "variant": successVariant
                 }
             }
         ]
@@ -58,7 +60,7 @@
                 "slug": "run-a-skale-node/releases/upgrade-3-1-1-sgx",
                 "badge": {
                     "text": "Latest Release",
-                    "variant": "success"
+                    "variant": successVariant
                 }
             },
             { "label": "3.1.1 Upgrade", "slug": "run-a-skale-node/releases/upgrade-3-1-1" },
