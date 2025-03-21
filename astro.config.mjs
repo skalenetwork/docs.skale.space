@@ -11,6 +11,9 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'SKALE Docs',
+			customCss: [
+				'./src/styles/global.css'
+			],
 			locales: {
 				root: {
 					label: 'English',
