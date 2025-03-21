@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import routes from "./routes/index.mjs";
+import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,6 +10,7 @@ export default defineConfig({
 		"/": "/welcome/get-started"
 	},
 	integrations: [
+		react(),
 		starlight({
 			title: 'SKALE Docs',
 			customCss: [
