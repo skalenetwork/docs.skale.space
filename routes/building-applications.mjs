@@ -1,6 +1,6 @@
 export default [
     { "label": "Building a dApp", "slug": "building-applications/build-a-dapp" },    
-    { "label": "Gas Fees", "slug": "building-applications/gas-fees" },
+    { "label": "Zero Gas Fees", "slug": "building-applications/zero-gas-fees" },
     { "label": "Gasless Transactions", "slug": "building-applications/gasless-transactions" },
     { "label": "msg.value vs ERC-20", "slug": "building-applications/msg-value-vs-erc-20" },
     { "label": "Using Contract Factories", "slug": "building-applications/using-contract-factories" },
