@@ -1,45 +1,31 @@
-import { defineConfig } from "astro/config";
-import starlight from "@astrojs/starlight";
-import react from "@astrojs/react";
+// @ts-check
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
 import routes from "./routes/index.mjs";
-import redirects from "./routes/redirects.mjs";
+import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
-	redirects: redirects,
+	redirects: {
+		"/": "/welcome/get-started"
+	},
 	integrations: [
 		react(),
 		starlight({
-			title: "SKALE Docs",
+			title: 'SKALE Docs',
 			customCss: [
-				"./src/styles/hubs.css",
-				"./src/styles/overrides.css",
-				"./src/styles/mathml.css",
-				"./src/styles/tips.css",
-				"./node_modules/react-toastify/dist/ReactToastify.css",
+				'./src/styles/global.css'
 			],
-			components: {
-				Badge: "./src/components/Overrides/Badge.astro",
-				Header: "./src/components/Overrides/Header.astro",
-				MobileMenuFooter:
-					"./src/components/Overrides/MobileMenuFooter.astro",
-				PageFrame: "./src/components/Overrides/PageFrame.astro",
-				Sidebar: "./src/components/Overrides/Sidebar.astro",
-				SidebarSublist:
-					"./src/components/Overrides/SidebarSublist.astro",
-				MobileMenuToggle: "./src/components/Overrides/MobileMenuToggle.astro",
+			locales: {
+				root: {
+					label: 'English',
+					lang: 'en'
+				}
 			},
-			expressiveCode: true,
-			favicon: "/favicon.png",
-			logo: {
-				dark: "./src/assets/skale_logo_w.svg",
-				light: "./src/assets/skale_logo_b.svg",
-			},
-			social: {
-				discord: "https://discord.com/invite/gM5XBy6",
-				github: "https://github.com/skalenetwork",
-			},
-			sidebar: routes,
-		}),
+			// Below error for some reason doesn't like badge variants from external files
+			// If you remove and it breaks, I will be sad :(
+			// @ts-ignore
+			sidebar: routes
+		})
 	],
 });

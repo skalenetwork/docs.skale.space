@@ -1,0 +1,52 @@
+---
+title: Permission Layer
+description: SKALE Chain Permission Layer for Contract Deployments
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+When deploying smart contracts on a SKALE Chain, developers have to be aware of the contract permission layer.
+
+The permission layer of a SKALE Chain works within a very simple set of rules. Each rule list below covers the role underneath it:
+
+1. The permission layer can be disabled, in which anyone can deploy anything.
+2. The <span style="color: var(--sl-color-accent-high);">tx.origin</span> (i.e the sender) of the transaction MUST BE approved to deploy
+3. A <span style="color: var(--sl-color-accent-high);">factory</span> smart contract can be approved directly to allow ANYONE to deploy
+4. A <span style="color: var(--sl-color-accent-high);">factory</span> smart contract can be approved to allow ONLY specific addresses to deploy through it
+
+### Option 1: Disabling the Permission Layer
+
+If the deployer permission layer is disabled, you can proceed with deploying your smart contract as you would on any other EVM-compatible blockchain.
+
+<Aside type="danger">
+The SKALE Chain permission layer is enabled by default. Disabling the permission layer is not recommended for production chains, however, it is disabled by default
+on SKALE Testnets.
+</Aside>
+
+### Option 2: Direct Approval
+
+This is the most common route to deploy a smart contract on a SKALE Chain. When the above permission layer is enabled, being approved directly by
+a chain operator enables you to deploy smart contracts.
+
+<Aside type="note">
+Deployment access on shared chains is generally revoked periodically to maintain a higher level of security on the chain.
+</Aside>
+
+### Option 3: Factory Approval
+
+While rare, this functionality is used by developers to allow smart contracts to be deployed by anyone through another smart contract.
+To allow this functionality, smart contracts should have their own checks that are verified by the chain operators to ensure they cannot be openly
+bypass by any developer for "generic contract creation".
+
+<Aside type="caution">
+Generic contract creation should be protected against at all costs
+</Aside>
+
+### Option 4: Factory Allowlist
+
+This is a pattern commonly used with account abstraction. It allows a specific set of wallets to be added to an allow list that can deploy through a specific factory contract
+without giving them permission to deploy directly. This locks down their deployment capabilities to just what the factroy contract allows.
+
+<Aside type="caution">
+Allowlist wallets should be monitored to ensure they are not compromised.
+</Aside>

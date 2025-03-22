@@ -1,9 +1,0 @@
-.select-chain {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-evenly;
-	flex-wrap: wrap;
-	margin: 0;
-	padding: 0;
-}
