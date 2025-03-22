@@ -2,7 +2,7 @@ export default [
     { "label": "Building a dApp", "slug": "building-applications/build-a-dapp" },    
     { "label": "Zero Gas Fees", "slug": "building-applications/zero-gas-fees" },
     { "label": "Gasless Transactions", "slug": "building-applications/gasless-transactions" },
-    { "label": "msg.value vs ERC-20", "slug": "building-applications/msg-value-vs-erc-20" },
+    { "label": "Payments on SKALE", "slug": "building-applications/payments-on-skale" },
     { "label": "Using Contract Factories", "slug": "building-applications/using-contract-factories" },
     { "label": "Native Filestorage", "slug": "building-applications/native-filestorage" },
     { "label": "Random Number Generation", "slug": "building-applications/random-number-generation" },
