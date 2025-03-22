@@ -1,6 +1,7 @@
 export default [
     { "label": "Mainnet Beta", "slug": "how-skale-works/mainnet-beta" },
     { "label": "Bridge Architecture", "slug": "how-skale-works/bridge-architecture" },
+    { "label": "Permission Layer", "slug": "how-skale-works/permission-layer" },
     { "label": "Delegation Model", "slug": "how-skale-works/delegation-model" },
     { "label": "Staking Lifecycle", "slug": "how-skale-works/staking-lifecycle" },
     { "label": "Inheriting Security", "slug": "how-skale-works/inheriting-security" },
