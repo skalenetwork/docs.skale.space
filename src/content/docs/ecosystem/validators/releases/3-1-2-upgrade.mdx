@@ -34,13 +34,18 @@ import { Aside, Steps } from "@astrojs/starlight/components";
 
 <Steps>
 
-1. Download new node-cli binary
+1. Disable docker-lvmpy
+    ```bash 
+    systemctl stop docker-lvmpy && systemctl disable docker-lvmpy
+    ```
+
+2. Download new node-cli binary
 
     ```bash
     curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.1/skale-2.6.1-Linux-x86_64 > /usr/local/bin/skale
     ```
 
-2. Verify node-cli binary hash sum
+3. Verify node-cli binary hash sum
 
     ```bash
     sha512sum /usr/local/bin/skale
@@ -50,12 +55,12 @@ import { Aside, Steps } from "@astrojs/starlight/components";
     5faf3eb1bffe00a4172f7f34570b84bed2ff051b40b3bc97b249ee74e07ea2dee5991297bbe8071c50ad01fa718d9ebbe9fc4d397324b4fa05950d11e891a179
     ```
 
-3. Make node-cli executable
+4. Make node-cli executable
     ```bash
     chmod +x /usr/local/bin/skale
     ```
 
-4. Reconfigure firewall
+5. Run update procedure
     ```bash
     skale node update .env --yes
     ```
