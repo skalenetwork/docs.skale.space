@@ -216,10 +216,10 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     sudo apt-get install -y docker.io
     ```
 
-    **Install docker-compose:**
+    **Install docker compose:**
 
     ```shell
-    sudo apt-get install -y docker-compose
+    sudo apt-get install -y docker-compose-plugin
     ```
 
     **Install cpuid and libelf-dev packages:**
@@ -356,11 +356,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     services:
       sgxwallet:
         image: skalenetwork/sgxwallet:<SGX_VERSION>
-        ports:
-          - "1026:1026"
-          - "1027:1027"
-          - "1028:1028"
-          - "1029:1029"
+        network_mode: host
         devices:
           - "/dev/isgx"
           - "/dev/sg0"
@@ -373,12 +369,10 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
             max-size: "10m"
             max-file: "4"
         restart: unless-stopped
-        command: -s -y -V
+        command: -y -V
         healthcheck:
           test: ["CMD", "ls", "/dev/isgx", "/dev/"]
     ```
-
-
 
     ### 2.7 Spin up SGXWallet Container
 
@@ -386,7 +380,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     To run the server as a daemon:
 
     ```shell
-    sudo docker-compose up -d
+    sudo docker compose up -d
     ```
 
     ### 2.8 Securely save generated backup key
@@ -446,8 +440,8 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     Before setting up supernode you should make sure that the following software is installed:
 
     - docker
-    - docker-compose (preferably 1.27.4)
-    - iptables-persistent 
+    - docker-compose
+    - nftables
     - lvm2 
 
     <Aside type="note" title="Important">
@@ -536,7 +530,25 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     - `TG_API_KEY` - Telegram API key
     - `TG_CHAT_ID` - Telegram chat ID
 
-    ### 3.8 Initialize Supernode
+    ### 3.8 Enable SGX wallet autosign 
+
+    Switch back to sgx server and go to `sgxwallet/run_sgx` folder
+    ```shell
+    cd sgxwallet/run_sgx
+    ```
+
+    Set `-s` option in docker-compose.yml
+
+    ```shell
+    sed -i -E 's/(command: .*) *$/\1 -s/g' docker-compose.yml
+    ```
+
+    Restart the container 
+    ```shell
+    docker compose down && docker compose up -d
+    ```
+
+    ### 3.9 Initialize Supernode
 
     To install supernode on your server you should run `skale node init`. It will create necessary configuration files and run base services and containers. 
 
@@ -597,13 +609,31 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
 
     ```
 
-    ### 3.9 Setup SSL Certificates
+    ### 3.10 Disable SGX wallet autosign 
 
-    #### 3.9.1 Setup IP Redirects
+    Switch back to sgx server and go to `sgxwallet/run_sgx` folder
+    ```shell
+    cd sgxwallet/run_sgx
+    ```
+
+    Remove `-s` option in docker-compose.yml
+
+    ```shell
+    sed -i -E 's/(command: .*) -s( .*)?$/\1\2/g' docker-compose.yml
+    ```
+
+    Restart the container 
+    ```shell
+    docker compose down && docker compose up -d
+    ```
+
+    ### 3.11 Setup SSL Certificates
+
+    #### 3.11.1 Setup IP Redirects
 
     You will need to setup redirects from each supernode IP to the supernode domain.
 
-    #### 3.9.2 Issue SSL Certificates
+    #### 3.11.2 Issue SSL Certificates
 
     You will need SSL certs issued by one of the Trusted CAs. Once you've decided on the certificate issuer you have several
     options - issue a separate certificate for each subdomain (node-0.awesome-validator.com, node-1.awesome-validator.com) or
@@ -613,7 +643,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     - Certificate file (for example, fullchain.pem or cert.pem)
     - Private key file (for example, privkey.pem, pk.pem)
 
-    #### 3.9.3 Upload certificates to the SKALE Node
+    #### 3.11.3 Upload certificates to the SKALE Node
 
     Once you copied the certificate and private key file, all you have to do is to run the following command:
 
@@ -621,7 +651,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     sudo skale ssl upload -c $PATH_TO_CERT_FILE -k $PATH_TO_KEY_FILE
     ```
 
-    #### 3.9.4 SSL Status
+    #### 3.11.4 SSL Status
 
     Status of the SSL certificates on the supernode
 
@@ -632,7 +662,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     For more details, please see [Node SSL docs](/ecosystem/validators/node-cli/node-ssl-setup).
 
 
-    ### 3.10 Fund Node wallet with ETH
+    ### 3.12 Fund Node wallet with ETH
 
     Some of the supernode operations send ETH mainnet transaction (e.g. chain creation). So the supernode wallet should have at least 1 ETH
 
@@ -643,7 +673,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     </Aside>
 
 
-    ### 3.11 Sign Validator ID using SGXWallet
+    ### 3.13 Sign Validator ID using SGXWallet
 
     Using *validator-cli* check your validator ID:
 
@@ -664,7 +694,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     Signature: <your-signature>
     ```
 
-    ### 3.12 Link SKALE wallet address to your validator account using Validator CLI
+    ### 3.14 Link SKALE wallet address to your validator account using Validator CLI
 
     To successfully register new supernode you should bind supernode address and validator entity using *validator-cli* `link-address`:
 
@@ -682,7 +712,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
     - `--gas-price` - Gas price value in Gwei for transaction (if not specified doubled average network value will be used)
     - `--yes` - Confirmation flag
 
-    ### 3.13 Backup Node
+    ### 3.15 Backup Node
 
     We strongly recommend to regularly backup supernode data. The critical information stored `~/.skale` directory.
 
@@ -692,7 +722,7 @@ import { PostRegistrationChecklist } from "../../../../components/PostRegistrati
 
     More information can be found [here](/ecosystem/validators/node-cli/releases/v2-0#node-backup).
 
-    ### 3.14 Accept Delegations
+    ### 3.16 Accept Delegations
 
     Every delegation need to be accepted. You can do it using `sk-val validator accept-delegation` command:
 
