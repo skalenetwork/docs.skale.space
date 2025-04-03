@@ -12,5 +12,11 @@ export default [
     { "label": "JSON-RPC Interface", "slug": "building-applications/json-rpc-interface" },
     { "label": "Pick a chain", "slug": "building-applications/pick-a-chain" },
     { "label": "Using Filestorage", "slug": "building-applications/using-filestorage" },
-    { "label": "FAQs", "slug": "building-applications/faqs" }
+    { "label": "FAQs", "slug": "building-applications/faqs" },
+    {
+        "label": "Libraries",
+        "items": [
+            { "label": "Filestorage.js", "slug": "building-applications/libraries/filestorage-js", "collapsed": true },
+        ]
+    }
 ]

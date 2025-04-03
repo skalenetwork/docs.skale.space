@@ -1,0 +1,175 @@
+---
+title: Filestorage.js
+version: How to use Filestorage.js -- v1.0.1
+---
+
+A JavaScript library for using SKALE Network's native and decentralized onchain filestorage.
+
+To learn more about filestorage, checkout the [Filestorage Deep Dive](/how-skale-works/filestorage). For an example of how to use filestorage, checkout [using filestorage](/building-applications/using-filestorage).
+
+## Overview
+
+Storing files on the blockchain is possible within the SKALE Network. You can use SKALE to host your text, image, HTML, and other file formats through the [Filestorage.js NPM package](https://www.npmjs.com/package/@skalenetwork/filestorage.js/v/1.0.1).
+
+See the file storage demo on GitHub.
+
+## Installation
+
+```sh
+npm install @skalenetwork/filestorage.js@~1.0.1
+```
+
+## Usage
+
+Once installed, you can instantiate the client by passing a SKALE endpoint into the constructor.
+
+### JavaScript
+
+```javascript
+const Filestorage = require('@skalenetwork/filestorage.js');
+const Web3 = require('web3');
+
+const web3Provider = new Web3.providers.HttpProvider('----SKALE ENDPOINT----');
+let filestorage = new Filestorage(web3Provider);
+
+// Directly with http(s)/ws(s) endpoints
+let filestorage = new Filestorage('----HTTP(s)/WS(s) SKALE ENDPOINT----');
+```
+
+### HTML
+
+```html
+<script src="PATH_TO_PACKAGE/@skalenetwork/filestorage.js/dist/filestorage.min.js"></script>
+<script type="text/javascript">
+    async function downloadFile() {
+        let fs = new filestorage('----SKALE ENDPOINT----', true);
+        await fs.downloadToFile('----STORAGE_PATH----');
+    }
+</script>
+```
+
+## Upload Files
+
+Uploading files can be accomplished using the `uploadFile` method available within the [Filestorage.js NPM package](https://www.npmjs.com/package/@skalenetwork/filestorage.js/v/1.0.1).
+
+### JavaScript
+
+```javascript
+<input onChange={(e) => upload(e)} type="file" id="files" />
+
+async function upload(event, specificDirectory=''){
+  event.preventDefault();
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let privateKey = '0x' + '[YOUR_PRIVATE_KEY]';
+  let account = "[YOUR_ACCOUNT_ADDRESS]";
+  let file = document.getElementById('files').files[0];
+  let reader = new FileReader();
+  let filePath = specificDirectory ? `${specificDirectory}/${file.name}` : file.name;
+  reader.onload = async function(e) {
+    const bytes = new Uint8Array(reader.result);
+    let link = filestorage.uploadFile(account, filePath, bytes, privateKey);
+  };
+  reader.readAsArrayBuffer(file);
+}
+```
+
+## Show Contents
+
+```javascript
+async function getFiles(storagePath){
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let account = "[YOUR_ACCOUNT_ADDRESS]";
+  let files = await filestorage.listDirectory(storagePath);
+}
+```
+
+## Download Files
+
+```javascript
+async function downloadFileToDesktop(storagePath) {
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  await filestorage.downloadToFile(storagePath);
+}
+
+async function downloadFileToVariable(storagePath) {
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let file = await filestorage.downloadToBuffer(storagePath);
+  file = 'data:image/png;base64,' + file.toString('base64');
+}
+```
+
+## Delete Files
+
+```javascript
+async function deleteFile(filePath) {
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let privateKey = '[YOUR_PRIVATE_KEY]';
+  let account = "[YOUR_ACCOUNT_ADDRESS]";
+  await filestorage.deleteFile(account, filePath, privateKey);
+}
+```
+
+## Create Directory
+
+```javascript
+async function createDirectory(directoryPath) {
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let privateKey = '[YOUR_PRIVATE_KEY]';
+  let account = "[YOUR_ACCOUNT_ADDRESS]";
+  await filestorage.createDirectory(account, directoryPath, privateKey);
+}
+```
+
+## Delete Directory
+
+```javascript
+async function deleteDirectory(directoryPath) {
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let privateKey = '[YOUR_PRIVATE_KEY]';
+  let account = "[YOUR_ACCOUNT_ADDRESS]";
+  await filestorage.deleteDirectory(account, directoryPath, privateKey);
+}
+```
+
+## Reserve Space
+
+```javascript
+async function reserveSpace(addressToReserve, reservedSpace) {
+  const web3Provider = new Web3.providers.HttpProvider("[YOUR_SKALE_CHAIN_ENDPOINT]");
+  let web3 = new Web3(web3Provider);
+  let filestorage = new Filestorage(web3, true);
+  let privateKey = '[YOUR_PRIVATE_KEY]';
+  let account = "[YOUR_ACCOUNT_ADDRESS]";
+  await filestorage.reserveSpace(account, addressToReserve, reservedSpace, privateKey);
+}
+```
+
+## Additional Notes
+
+### Storage Path
+
+Storage path is a label used to point to a file or directory in Filestorage. It contains two parts separated by a slash:
+
+1. File owner address (LOWERCASE & without `0x`)
+2. File/directory path in owner's root directory
+
+**Examples:**
+
+```shell
+77333da3492c4bbb9ccf3ea5bb63d6202f86cda8/directoryA/random_text.txt
+77333da3492c4bbb9ccf3ea5bb63d6202f86cda8/random_text.txt
+0x77333da3492c4bbb9ccf3ea5bb63d6202f86cda8/random_text.txt # Invalid storage path
