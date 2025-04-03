@@ -1,0 +1,174 @@
+---
+title: Filestorage
+description: Use the only native decentralized onchain filestorage
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+SKALE Filestorage is a configurable SKALE Chain feature. Available on all SKALE Hubs and most active SKALE Chains (as of April 2, 2025) -- this feature lets developers utilize special storage resources on their sChain nodes store data in a validated and secure manner that is separate from their onchain contract data.
+
+## Architecture
+
+SKALE Filestorage consists of multiple layers:
+
+<svg width="800" height="350" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+    <rect width="800" height="400" fill="#f4f4f4"/>
+
+    <rect x="50" y="250" width="700" height="80" rx="10" ry="10" fill="#4A90E2"/>
+    <text x="400" y="290" font-size="20" font-family="Arial" fill="white" text-anchor="middle">Node Filesystem (Base Layer)</text>
+
+    <rect x="150" y="180" width="500" height="60" rx="10" ry="10" fill="#D0021B"/>
+    <text x="400" y="215" font-size="18" font-family="Arial" fill="white" text-anchor="middle">Precompiled.cpp (Smart Contract)</text>
+    
+    <rect x="200" y="120" width="400" height="50" rx="10" ry="10" fill="#F5A623"/>
+    <text x="400" y="150" font-size="18" font-family="Arial" fill="white" text-anchor="middle">Filestorage.sol (Smart Contract)</text>
+    
+    <rect x="250" y="60" width="300" height="50" rx="10" ry="10" fill="#7ED321"/>
+    <text x="400" y="90" font-size="18" font-family="Arial" fill="white" text-anchor="middle">Filestorage.js (Library)</text>
+    
+    <line x1="400" y1="110" x2="400" y2="120" stroke="black" stroke-width="2"/>
+    <line x1="400" y1="170" x2="400" y2="180" stroke="black" stroke-width="2"/>
+    <line x1="400" y1="240" x2="400" y2="250" stroke="black" stroke-width="2"/>
+</svg>
+
+### Architecture Component Deep Dive
+- Node Filesystem - this is a portion of the filesystem directly in the SKALE Node
+- Precompiled.cpp - a Solidity smart contract on each sChain that can access the node's native filesystem
+- Filestorage.sol - the Solidity smart contract to interact Precompiled.cpp
+- Filestorage.js - a Node.js library that makes using SKALE Filestorage easy
+
+Each of these layers helps enable functionality such as uploading, downloading, and deleting files from the EVM.
+
+## Web3 CDN & File Server
+
+SKALE Nodes come default with an NGINX server that allows read-only access to each file uploaded to the sChain filestorage.
+
+### Accessing Files
+
+If using the [SKALE Proxy](/run-a-skale-chain/schain-rpcs), the following is your endpoint:
+
+```shell
+# Reverse Proxy Endpoint = mainnet.skalenodes.com
+# SKALE Chain Name = honorable-steel-rasalhague
+# Filestorage Full Path = uploader address + path + file name + file extension 
+# Example: https://network.skalenodes.com/fs/chubby-sadr/77333da3492c4BBB9ccf3Ea5bb63d6202f86cda8/directoryA/random_text.txt
+http(s)://REVERSE_PROXY_ENDPOINT/fs/SKALE_CHAIN_NAME/FILESTORAGE_FULL_PATH
+```
+
+If connecting directly to a single node on the sChain, the following is your endpoint:
+
+```shell
+# Node Domain Name = validator.com
+# SKALE Chain Name = elated-tan-skat
+# Filestorage Full Path = uploader address + path + file name + file extension 
+# Example: https://node1.validator.com/fluffy-marsupial/77333da3492c4BBB9ccf3Ea5bb63d6202f86cda8/directoryA/random_text.txt
+http(s)://NODE_DOMAIN_NAME/SKALE_CHAIN_NAME/FILESTORAGE_FULL_PATH
+```
+
+Interested in learning more about how the read-only access works? Checkout the [nginx config](#filestorage-nginx-config) below.
+
+<Aside type="note">
+The uploader address in the URLs MUST omit the 0x prefix AND be in lowercase.
+For example: 0x77333Da3492C4BBB9CCF3EA5BB63D6202F86CDA8 must be entered as 77333da3492c4BBB9ccf3Ea5bb63d6202f86cda8
+</Aside>
+
+## FAQ
+
+### How long is data stored in filestorage?
+
+Data is available as long as the SKALE Chain is alive. As long as chain owners, operators, or the community
+continues to top up a SKALE Chain through [sChain Payments](/how-skale-works/economic-model).
+
+### Can files be removed?
+
+Files (and the underlying data) can be removed from the "serving" portion of filestorage, however, since the uploads of files
+occur through a blockchain **write** transaction; the byte data will forever be available through the blockchain state.
+When a file is **deleted**, it would not longer be available through the filestorage endpoints of a SKALE Chain.
+
+### Are immutable files an option?
+
+Yes! After uploading files to filestorage; individual files can be tagged as immutable.
+Once a file is made immutable it can longer be deleted and will be available for the entire lifetime of a SKALE Chain.
+
+### Can I store NFT metadata or images in filestorage?
+
+Absoluteley! You can mint NFTs onchain and store the actual media files and JSON files all in the same place.
+Those URIs are then available through the [Web3 Server](#web_server).
+
+### How are files replicated in filestorage?
+
+When a file is uploaded to a sChain, the data is replicated across all 16 nodes in the SKALE Chain.
+If a node is rotated out, during the catchup/backup phase; it would also replicate the filestorage information.
+
+### Are there any size restrictions for stored NFTs?
+
+The maximum file size is 100 MB. Files larger than 1 MB are chunked during upload into chunks \<\= 1 MB.
+Additionally, SKALE Chains have storage limits (that vary per SKALE Chain). For example, sCHains using the 1/8th of a node configuration
+are capable of storing \~60 GBs of filestorage data if they are the default configuration.
+
+### Can I run and execute programs from filestorage?
+
+No, filestorage is suitable for static content ONLY such as:
+- Media: Images, Videos, Gifs, Music, etc
+- Data Files: JSON, CSV, etc.
+- Code Files: HTML, JS, CSS, etc.
+
+You can host static websites from SKALE Filestorage, which may include client-side scripts and media files.
+
+### Where can I find Filestorage ABIs?
+
+You can find the latest ABIs on the [SKALE Filestorage Github](https://github.com/skalenetwork/filestorage/releases)
+
+### Why can't I allocate space?
+
+Ensure that **ALLOCATOR_ROLE** has been granted to the address performing `reserveSpace()`.
+
+## Filestorage Nginx Config
+
+```nginx
+limit_req_zone $binary_remote_addr zone=one:10m rate=7r/s;
+
+server {
+    listen 3009;
+
+    {% if ssl %}
+    listen 311 ssl;
+    ssl_certificate     /ssl/ssl_cert;
+    ssl_certificate_key /ssl/ssl_key;
+    {% endif %}
+
+    proxy_read_timeout 500;
+    proxy_connect_timeout 500;
+    proxy_send_timeout 500;
+
+    error_log /var/log/nginx/error.log warn;
+    client_max_body_size 20m;
+
+    server_name localhost;
+    limit_req zone=one burst=10;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass 127.0.0.1:3010;
+    }
+}
+
+server {
+    listen 80;
+
+    {% if ssl %}
+    listen 443 ssl;
+    ssl_certificate     /ssl/ssl_cert;
+    ssl_certificate_key /ssl/ssl_key;
+    {% endif %}
+
+    error_log /var/log/nginx/error.log warn;
+    client_max_body_size 20m;
+    server_name localhost;
+    limit_req zone=one burst=50;
+
+    location / {
+        root /filestorage;
+    }
+}
+```
