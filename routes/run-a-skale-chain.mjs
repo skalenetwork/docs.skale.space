@@ -14,5 +14,6 @@ export default [
     { "label": "sChain Infrastructure", "slug": "run-a-skale-chain/schain-infrastructure" },
     { "label": "Implement Transaction Fees", "slug": "run-a-skale-chain/implement-transaction-fees" },
     { "label": "Pricing and Payments", "slug": "run-a-skale-chain/pricing-and-payments" },
+    { "label": "Upgradeable Contracts", "slug": "run-a-skale-chain/upgradeable-contracts" },
     { "label": "FAQ", "slug": "run-a-skale-chain/faq" }
 ]
