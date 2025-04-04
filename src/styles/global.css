@@ -303,3 +303,7 @@ mfrac {
 	margin: 0 !important;
   color: var(--sl-color-accent-high);
 }
+
+.expressive-code {
+  max-width: 60vw;
+}
