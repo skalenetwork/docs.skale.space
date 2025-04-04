@@ -150,15 +150,18 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
         --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
     ```
 
+    <Aside type="note">
+    The below prompt is a full example of the verification request and successful output!
+    </Aside>
     ```shell
     # The following is an example of what the full verification request looks like
-    
     forge verify-contract \
         --rpc-url skale_testnet \
         0x4A435f6E471f773173774E860EBDcd17B132a2b4 \
         src/Counter.sol:Counter \
         --verifier blockscout \
         --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+
     # Output
     Start verifying contract `0x4A435f6E471f773173774E860EBDcd17B132a2b4` deployed on 1444673419
     
