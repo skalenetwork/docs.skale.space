@@ -303,7 +303,7 @@ mfrac {
 	margin: 0 !important;
   color: var(--sl-color-accent-high);
 }
-
+/* If Not available, code blocks seem to stregh >80% of body width */
 .expressive-code {
   max-width: 60vw;
 }
