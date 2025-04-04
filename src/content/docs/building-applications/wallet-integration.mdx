@@ -1,4 +1,103 @@
 ---
-title: Gas Fees
-description: Gas Fees on SKALE
+title: Wallet Integration Guide
+description: This guide helps wallets integrate on a SKALE Chain
 ---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+This integration guide is for Wallets interested in integrating with the SKALE Network.
+It contains a high-level introduction to SKALE, operational nuances, information on speed and costs, and RPC information.
+
+If you require support, please reach out in the [SKALE Discord](https://discord.gg/skale).
+
+## Intro to SKALE
+
+SKALE is a network of interopable Layer 1 blockchains with leaderless consensus, instant finality, and zero gas fees.
+Each SKALE Chain in the network is capable of 400+ TPS, single-slot finality, and is fully EVM (Ethereum Virtual Machine) compatible.
+
+To avoid having to source liquidity and operations on every single chain, the network utilizes **Hubs** to easily share resources between different chains.
+The SKALE Europa Hub is used for a combination of DeFi, liquidity, and payment related operations and is the most common location for
+centralized exchanges to setup. Exchanges are welcome to add support for any SKALE Chain directly.
+
+### Operations
+
+The network offers stable public proxy endpoints run by the core team (all actions redirect to validator nodes).
+See the public RPC endpoints below that you can consume for free. If you would prefer a dedicated endpoint you can: 
+
+1. Run your own [SKALE Proxy](/run-a-skale-chain/run-a-skale-proxy)
+2. Contact the [Eidolon](https://eidolon.gg) team who can run dedicated proxy endpoints
+
+If you require indexing or archival capabilities, please reach out to the core team in [Discord](https://discord.gg/skale).
+
+### RPC Endpoints
+
+The following are public RPC endpoints for for the four (4) SKALE Hubs:
+
+<Tabs syncKey="networkEnvironment">
+    <TabItem label="Mainnet Hubs">
+    | Chain Name | Category | RPC Endpoint |
+    | - | - | - |
+    | Calypso | Consumer, Social, DePIN | https://mainnet.skalenodes.com/v1/honorabl-steel-rasalhague |
+    | Europa (Recommended) | DeFi, Liquidity | https://mainnet.skalenodes.com/v1/elated-tan-skat |
+    | Nebula | Gaming | https://mainnet.skalenodes.com/v1/green-giddy-denebola |
+    | Titan | AI | https://mainnet.skalenodes.com/v1/parallel-stormy-spica |
+    </TabItem>
+    <TabItem label="Testnet Hubs">
+    | Chain Name | Category | RPC Endpoint |
+    | - | - | - |
+    | Calypso | Consumer, Social, DePIN | https://testnet.skalenodes.com/v1/giant-half-dual-testnet |
+    | Europa (Recommended) | DeFi, Liquidity | https://testnet.skalenodes.com/v1/juicy-low-small-testnet |
+    | Nebula | Gaming | https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet |
+    | Titan | AI | https://testnet.skalenodes.com/v1/aware-fake-trim-testnet |
+    </TabItem>
+</Tabs>
+
+### Block Explorers
+
+<Tabs syncKey="networkEnvironment">
+    <TabItem label="Mainnet Hubs">
+    | Chain Name | Category | Explorer URL |
+    | - | - | - |
+    | Calypso | Consumer, Social, DePIN | https://honorabl-steel-rasalhague.explorer.mainnet.skalenodes.com |
+    | Europa (Recommended) | DeFi, Liquidity | https://elated-tan-skat.explorer.mainnet.skalenodes.com |
+    | Nebula | Gaming | https://green-giddy-denebola.explorer.mainnet.skalenodes.com |
+    | Titan | AI | https://parallel-stormy-spica.explorer.mainnet.skalenodes.com |
+    </TabItem>
+    <TabItem label="Testnet Hubs">
+    | Chain Name | Category | Explorer URL |
+    | - | - | - |
+    | Calypso | Consumer, Social, DePIN | https://giant-half-dual-testnet.explorer.testnet.skalenodes.com |
+    | Europa (Recommended) | DeFi, Liquidity | https://juicy-low-small-testnet.explorer.testnet.skalenodes.com |
+    | Nebula | Gaming | https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com |
+    | Titan | AI | https://aware-fake-trim-testnet.explorer.testnet.skalenodes.com |
+    </TabItem>
+</Tabs>
+
+### Speed &amp; Finality
+
+SKALE is known for being incredibly fast.
+It's very common for new infrastructure partners and exchanges to use "Ethereum or EVM Standards" for things like estimating block times,
+number of confirmations/finality, etc.
+
+**Key Information about SKALE**
+
+| Key | Info |
+| - | - |
+| TPS* | 400 |
+| Finality | 1 block/single slot |
+| Avg. Block Time | 1 second |
+| Forking | None -- only 1 block confirmation needed for receipt |
+
+\* TPS is per chain
+
+<Aside type="tip">
+If you are sending many transactions rapid fire, you should manually increment nonces or use NonceManager on most SKALE Chains.
+If you are using Calypso or Europa, note that these are non Multi-Transaction Mode chains and only one (1) transaction is allowed per wallet
+per block.
+</Aside>
+
+### Gas Fees
+
+The native gas token on a SKALE Chain is sFUEL. sFUEL has no monetary value which is how SKALE has zero gas fees.
+You can either distribute sFUEL to users by requesting an allocation or the recommended option is to implement [gasless transactions](/building-applications/gasless-transactions).
+Need sFUEL? Join us in [Discord](https://discord.gg/skale).
