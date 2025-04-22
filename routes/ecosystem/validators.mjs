@@ -90,10 +90,6 @@ export default {
             label: "Releases",
             items: [
                 {
-                    label: "3.0.2 Upgrade",
-                    link: "/ecosystem/validators/releases/3-0-2-upgrade",
-                },
-                {
                     label: "3.0.3 Upgrade",
                     link: "/ecosystem/validators/releases/3-0-3-upgrade"
                 }, 
@@ -112,6 +108,10 @@ export default {
                 {
                     label: "3.1.2 Upgrade",
                     link: "/ecosystem/validators/releases/3-1-2-upgrade"
+                },
+                {
+                    label: "4.0.0 Upgrade",
+                    link: "/ecosystem/validators/releases/4-0-0-upgrade"
                 }
             ],
         }
