@@ -112,6 +112,10 @@ export default {
                 {
                     label: "4.0.0 Upgrade",
                     link: "/ecosystem/validators/releases/4-0-0-upgrade"
+                },
+                {
+                    label: "4.0.1 Upgrade",
+                    link: "/ecosystem/validators/releases/4-0-1-upgrade"
                 }
             ],
         }
