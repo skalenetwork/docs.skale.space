@@ -19,9 +19,9 @@ Applications are commonly read-heavy compared to writes, meaning they pull data 
 ## Node Machine Requirements
 
 * A Linux x86_64 machine
-* Ubuntu 18.04
+* Ubuntu 22.04
 * 8 physical cores
-* 32GB RAM
+* 16GB RAM
 * 100GB root storage
 * 2TB attached storage
 
@@ -67,7 +67,7 @@ Before proceeding, notify the core team of the IP address of your full-sync node
 <Steps>
 1. ##### Download sync-node-cli tool
     ```shell
-    VERSION_NUM=2.2.0-sync-node.6 && sudo -E bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-`uname -s`-`uname -m`-sync >  /usr/local/bin/skale"
+    VERSION_NUM=2.6.2 && sudo -E bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-`uname -s`-`uname -m`-sync >  /usr/local/bin/skale"
     ```
 
 2. ##### Apply executable permissions to the downloaded binary:
@@ -83,16 +83,21 @@ Before proceeding, notify the core team of the IP address of your full-sync node
 4. ##### Prepare `.env` file:
 
     ```
-    CONTAINER_CONFIGS_STREAM="2.2.0-sync-node.0"
+    CONTAINER_CONFIGS_STREAM="4.0.1"
+    ENFORCE_BTRFS=True/False
     ENDPOINT=[[By Validator], YOUR GETH/INFURA ENDPOINT]
-    MANAGER_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.9.0/skale-manager-1.9.0-mainnet-abi.json"
-    IMA_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/IMA/1.3.0/mainnet/abi.json"
+    MANAGER_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/mainnet/skale-manager/1.12.0/skale-manager-1.12.0-mainnet-abi.json"
+    IMA_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/mainnet/IMA/2.2.0/mainnet/abi.json"
     DISK_MOUNTPOINT=[[By Validator], your attached storage /dev/sda or /dev/xvdd (this is an example. You just need to use your 2TB block device)]
     DOCKER_LVMPY_STREAM="1.0.2-stable.0"
     ENV_TYPE="mainnet"
 
     SCHAIN_NAME=[[By Validator], SCHAIN NAME FOR YOUR SYNC NODE]
     ```
+
+:::tip[Warning]
+ENFORCE_BTRFS=True formats your attached device as btrfs even if there is another filesytem. Backup the storage before running the command.
+::::
 
 5. ##### Init sync node:
     ```shell
