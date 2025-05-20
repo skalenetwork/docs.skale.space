@@ -12,7 +12,7 @@ export default [
     { "label": "JSON-RPC Interface", "slug": "building-applications/json-rpc-interface" },
     { "label": "Pick a chain", "slug": "building-applications/pick-a-chain" },
     { "label": "Using Filestorage", "slug": "building-applications/using-filestorage" },
-    { "label": "FAQs", "slug": "building-applications/faqs" },
+    { "label": "Troubleshooting", "slug": "building-applications/troubleshooting" },
     {
         "label": "Libraries",
         "items": [
