@@ -3,5 +3,33 @@ title: Transaction Processing
 description: Explore standard and multi-transaction mode processing on SKALE
 ---
 
-{/* TODO -> Standard & MTM Mode Comparsions */}
-{/* Linked to from customize sChain */}
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside type="note">
+SKALE Chains can be created with either default processing or MTM mode. Interested in MTM mode on your SKALE Chain? Contact the team in [Discord](https://discord.gg/skale).
+</Aside>
+
+## Default Processing
+
+SKALE Chains without multi-transaction mode allow the virtual machine to process one transaction per account per block ensuring that every transaction per account is fully **mined** before being added to the block and the chain.
+
+This is similar to how Ethereum operates where an active transaction must be fully confirmed before the next transaction can be "mined" by the chain.
+
+
+## Multi-Transaction Mode
+
+Multi-transaction mode (MTM) is a configurable option for a SKALE Chain that allows the virtual machine to process multiple transactions from a single account in a single block.
+
+This differs from default processing which only allows one transaction per account per block.
+
+### How it Works
+
+Multi-transaction mode adds a future transactions queue (FTQ) to skaled. Transactions are processed according to the following rules:
+
+- if `transaction_nonce > current_nonce` then the transaction will be placed in FTQ (without MTM mode this transaction is discarded)
+
+- once the transaction with `current_nonce` is imported to the transaction queue (TQ) and FTQ includes a batch of `k` transactions with a contigous range of nonces `[current_nonce+k, ..., current_nonce+2, current_nonce+1]` these transations will be imported to TQ from FTQ and will be processed as common transactions
+
+<Aside type="note">
+To protect skaled from memory overflow issues, the FTQ limits the amount of transactions inside. The default is **16384**. The oldest transactions are removed from the FTQ first if this limit is exceeded.
+</Aside>

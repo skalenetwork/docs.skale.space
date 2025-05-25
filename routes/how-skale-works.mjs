@@ -7,6 +7,7 @@ export default [
     { "label": "Staking Lifecycle", "slug": "how-skale-works/staking-lifecycle" },
     { "label": "Inheriting Security", "slug": "how-skale-works/inheriting-security" },
     { "label": "EVM Compatibility", "slug": "how-skale-works/evm-compatibility" },
+    { "label": "Transaction Processing", "slug": "how-skale-works/transaction-processing" },
     { "label": "Instant Finality", "slug": "how-skale-works/instant-finality" },
     { "label": "Economic Model", "slug": "how-skale-works/economic-model" },
     { "label": "Block Rotation", "slug": "how-skale-works/block-rotation" },
