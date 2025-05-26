@@ -4,18 +4,21 @@ export default [
 		label: "Setup Requirements",
 		slug: "run-a-skale-chain/setup-requirements",
 	},
-	{ label: "Customize sChain", slug: "run-a-skale-chain/customize-schain" },
 	{
-		label: "Managing State Consumption",
-		slug: "run-a-skale-chain/managing-state-consumption",
+		label: "Customize sChain",
+		slug: "run-a-skale-chain/customize-schain"
 	},
 	{
-		label: "Managing Deployment Permissions",
-		slug: "run-a-skale-chain/managing-deployment-permissions",
+		label: "Access Control",
+		slug: "run-a-skale-chain/access-control",
 	},
 	{
 		label: "Managing sFUEL Distribution",
 		slug: "run-a-skale-chain/managing-sfuel-distribution",
+	},
+	{
+		label: "Managing State Consumption",
+		slug: "run-a-skale-chain/managing-state-consumption",
 	},
 	{
 		label: "Connecting sChains",
