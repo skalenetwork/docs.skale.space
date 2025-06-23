@@ -20,12 +20,16 @@ export default [
 		slug: "run-a-skale-chain/managing-sfuel-distribution",
 	},
 	{
-		label: "sChain Ownership Deep Dive",
-		slug: "run-a-skale-chain/schain-ownership-deep-dive",
+		label: "sChain Ownership",
+		slug: "run-a-skale-chain/schain-ownership",
 	},
 	{
 		label: "Using Multisigwallet CLI",
 		slug: "run-a-skale-chain/using-multisig-wallet-cli",
+	},
+	{
+		label: "Using SAFE",
+		slug: "run-a-skale-chain/using-safe"
 	},
 	{
 		label: "Pricing and Payments",
