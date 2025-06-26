@@ -1,4 +1,93 @@
 ---
-title: Gas Fees
-description: Gas Fees on SKALE
+title: Validator FAQ
+description: Frequently Asked Quesitons related to SKALE Network Validators
 ---
+
+### Are network incentives setup to be mining pool resistant?
+
+Yes -- SKALE is a Delegated Proof of Stake Network; meaning there are no direct mining capabilities.
+
+Additionally, the concept of pooling mining power has been eliminated on SKALE entirley where every Supernode has equal earning power simply by supplying compute to the network and meeting the decentralized SLA.
+
+To learn more checkout the article on the [SKALE Blog](https://skale.space/blog/eliminating-mining-pools) about Eliminating Mining Pools.
+
+### Are you aware of Intel SGX-related attacks like Plundervolt, cache attacks, and other vulnerabilities?
+
+The SKALE team stays abreast of any and all security issues related to Intel SGX and takes all measures necessary to counteract them. Intel is very good at providing BIOS updates to address any security holes and prevent these types of attacks. The validator also shares security responsibility for ensuring that their service providers consistently use the latest BIOS version. The SKALE team will keep validators abreast of security issues, recommend best practices, and work closely with validators to address these issues and more.
+
+### Why the specific requirements for the disk storage and memory?
+
+The SKALE Network is designed to be highly performant with high throughput and low latency. On-chain storage is also an optional offering by the network and so disk storage needs to be above a certain amount in order to support this capability.
+
+Nodes operate in a virtualized manner, meaning that one SKALE Supernode can service many chains. The network can support a variety of chain sizes where different chain sizes use some different fractional portion of a Supernode. The network currently operates with virtualized nodes consuming 1/8th of a Supernode.
+
+We should also mention the future that the SKALE Network is building towards is one where decentralized solutions will make use of a number of chains – not unlike the way cloud applications today make use of multiple microservice meshes and/or database clusters, each one optimized for the app features or capabilities it is supporting.
+
+### Has the Intel SGX technology been adequately vetted?
+
+Yes, the SKALE technology team has analyzed the benefits and operation of the Intel SGX chipset in depth, is aware of any perceived vulnerabilities, and is satisfied the technology meets the security and data protection requirements of the network.
+
+### Some networks that use BLS signatures use Ledger as opposed to Intel SGX. Why the difference?
+
+Most often the case is that these other networks are applying BLS multisignature aggregation. Simply put, every validator generates a BLS signature and then performs operations with this signature. The network protocol aggregates all signature operations into one. What you gain from this process is compressed data, since instead of multiple ECDSA keys, you have a single aggregated signature, and nothing more. This use is suitable for Ledger hardware.
+
+SKALE's process is drastically different. SKALE uses BLS threshold signatures – a different and much more complicated process than BLS signature aggregation. To make a threshold signature work – such that only **t of n** operators are needed to perform an operation – one needs a trusted process to construct a BLS public key based on secret shares from each of the operators. This is called DKG or distributed key generation and requires much more complicated processing than what Ledger-based solutions can provide. Whereas Ledger-based networks are simply storing a BLS signature for the purposes of multi-signature aggregation, Intel SGX is being used for DKG and related threshold operations.
+
+Another critical distinction is that BLS signature aggregation is performed per validator, whereas BLS threshold signature operations are done per SKALE Chain and on a frequent basis. If a validator node is supporting 128 SKALE chains, then the node core has to generate 128 BLS threshold public keys and 128 BLS threshold private keys via distributed key generation.
+
+If a validator is using a single Intel SGX server to support 16 nodes and each node is running 128 chains, then it needs to generate and maintain 2048 public and private BLS threshold keys. When a node is swapped into a new SKALE chain, the DKG process is re-initiated with all nodes within the chain group, resulting in new public and private key generation for that specific SKALE chain. Given this increased frequency of digital key generation and complexity of BLS threshold cryptography, the use of Intel SGX is an optimal solution for addressing the performance and data security requirements of the network.
+
+### What are the hardware requirements for being a validator node?
+
+Validators need to provision and operate their own server or servers with sufficient network capacity and data center operational integrity. Servers can operate in a public or private cloud setting or on locally provisioned hardware, provided they meet SLA requirements. A particular requirement for servers is that they operate Intel SGX.
+
+Intel SGX (Software Guard Extensions) is a set of instructions that increases the security of application code and data, providing added protection from disclosure or modification. Developers can partition sensitive information into enclaves, which are areas of execution in memory with more security protection. It is recommended that all nodes in a validator set be Intel SGX servers although it’s also possible to set up a network nodes with a certain ratio of Intel SGX servers to non-SGX servers.
+
+Other node requirements include Ubuntu 22.04 or above, 200GB of attached storage, and 32GB RAM.
+
+
+### What type of validators is the network looking for?
+
+The SKALE Network is open to any validator as long as they meet the technical requirements and staking commitment. Validators should have the desire and resources to run Supernodes as well as personnel capable of operating the SKALE Supernodes with proper global coverage.
+
+### What is the Service Level Agreement (SLA) threshold?
+
+The SLA threshold is a high percentage uptime and low latency response time. If a validator cannot meet the SLA requirements for a particular epoch (as determined by the network monitoring procedures), they will not be eligible to participate in the awards from the bounty pool.
+
+### Is there a minimum delegation requirement?
+
+No -- there is no minimum delegation requirement for a validator. Validators can chose to self-delegate or choose to bring on delegators, in which case, validators can set minimum delegation amount for accepting delegations.
+
+### Does the network have support for validator commissions and delegation of investor stakes?
+
+Yes -- validators can raise stake from delegators and have this reflected via contracts running the network. Commissions can be set for the monthly bounties such that payouts can be split into both commissions (to the validator) and delegator awards (to stakers). The commission rate that is set is solely at the discretion of validators and on what the market will bear.
+
+### Is there any unbonding or undelegation period?
+
+Yes -- the unbonding period for SKL tokens is the time between an undelegation request and the epoch at whicher the current delegation ends. Example:
+
+Delegator delegates 100,000 SKL to Validator 1 on January 5th.
+
+Validator 1 accepts delegation on January 25th.
+
+Delegation goes into affect February 1.
+
+The delegation remains in affecet and and will automatically re-delegate on April 1.
+
+If an undelegation request is made anytime between February 1 and April 1 (~3 days before is the recommended deadline to request undelegation); then the unboding period is the time between undelegation request and April 1.
+
+### Is there a Minimum Staking Requirement (MSR)? Why is there an MSR?
+
+Yes, the MSR for a single Supernode is currently **20,000,000 SKL**.
+
+A key requirement for an effective security and execution layer is a proper incentive structure that addresses both penalties and rewards. With respect to the former, every validator node should have significant value staked into a network. Staking is an enforcer of good behavior in that if a validator decides to collude or go byzantine and gets caught, it will lose its stake and be removed from the network.
+
+### How does the network mitigate security risks?
+
+Security and validity of transactions in a chain or subchain in a second layer primarily rests with the performance and behavior of the validator nodes. To make sure the validation layer is operating properly, a network first has to have a large number of validator nodes. A small number of nodes in a network is inherently risky and fragile.
+
+In addition and as a requirement for a secure and robust network, it ideally needs to provide for:
+
+1. The random selection of chain validator sets 
+
+2. The rotation of nodes in and out of chains on a frequent basis. Without randomness and rotation, there is a far greater risk of bribery of and/or collusion between validators, vastly reducing the security and integrity of the chains within a network.

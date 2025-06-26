@@ -1,4 +1,159 @@
 ---
-title: Gas Fees
-description: Gas Fees on SKALE
+title: Run Archive Node
+description: Run a SKALE Network Archive Node
 ---
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Steps } from "@astrojs/starlight/components";
+
+Within the realm of nodes, there are distinct types tailored for specific purposes. For instance, archive nodes specialize in storing comprehensive historical data of the blockchain and providing it upon request.
+
+This sets them apart from full nodes, which focus on recent blockchain states, and light nodes, primarily reliant on data from full nodes.
+
+Archive nodes build archival blockchain data quickly and efficiently, and they’re useful for querying arbitrary historical data, like a user’s balances on a specific block. 
+
+## General Steps
+
+1. Provision a machine.
+2. Notify core team of IP/IPs range (`x.x.x.x:x.x.x.x`) and SKALE Chain for archive.
+3. Complete archive node setup.
+
+## Recommended Machine Requirements
+
+* A Linux x86_64 machine
+* Ubuntu 20.04
+* 4 physical cores
+* 16GB RAM
+* 100GB root storage
+* 2TB attached storage
+
+## Node Network Requirements
+
+* Ports 80, 443, 3009, and 10000–18192, and ICMP IPv4 should not be closed by any firewall software.
+
+:::tip[Warning]
+Firewall setup is a part of skale binary. Any custom configuration may break or reduce the security of the system.
+::::
+
+## Node Software Prerequisites
+
+* 8GB Swap
+* docker
+* docker-compose → 1.29.2
+* iptables-persistent, btrfs-progs, lsof, lvm2, psmisc, and apt packages
+
+
+## From Fresh Machine
+
+```shell
+sudo apt-get update
+
+# Install Docker and Docker-compose
+sudo apt-get install docker.io
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# Install other dependencies
+sudo apt install iptables-persistent btrfs-progs lsof lvm2 psmisc
+
+# Setup Swapfile
+sudo fallocate -l 8G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo cp /etc/fstab /etc/fstab.bak
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+## SKALE Archive Node Implementation
+
+:::tip[Note]
+Before proceeding, notify the core team of the IP address of your archive node. It's suggested to use an elastic IP for the whitelisted IP address.
+:::
+
+<Steps>
+1. ##### Download sync-node-cli tool
+    ```shell
+    VERSION_NUM=2.3.0-sync-node.1 && sudo -E bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-`uname -s`-`uname -m`-sync >  /usr/local/bin/skale"
+    ```
+
+2. ##### Verify checksum 
+    ```shell
+    # sha512sum /usr/local/bin/skale
+
+    b35d88fba1269f859a996a1fefd9520e30f965c092d3ba716f8d7dd88694b821dc225641f75a60cef2364d0fbeb986d314f592fe4b4238c716acf0834d2d6146  /home/ubuntu/dist/skale-2.3.0-sync-node.1-Linux-x86_64-sync
+    ```
+
+3. ##### Apply executable permissions to the downloaded binary:
+    ```shell
+    chmod +x /usr/local/bin/skale
+    ```
+
+4. ##### Test the installation
+    ```shell
+    sudo skale --help
+    ```
+
+5. ##### Prepare `.env` file:
+    ```shell
+    CONTAINER_CONFIGS_STREAM="2.2.1-sync"
+    ENDPOINT=[YOUR GETH/INFURA ENDPOINT]
+    IMA_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/IMA/1.5.0/mainnet/abi.json
+    MANAGER_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.9.3/skale-manager-1.9.3-mainnet-abi.json
+    DISK_MOUNTPOINT=[The second disk /dev/sdb or /dev/xvdb (this is an example. You just need to use your 2TB block device)]
+    DOCKER_LVMPY_STREAM="1.0.2-stable.0"
+    ENFORCE_BTRFS=True/False
+    ENV_TYPE="mainnet"
+    SCHAIN_NAME=[SCHAIN NAME FOR YOUR ARCHIVE NODE]
+    ```
+
+    :::tip[Warning]
+    ENFORCE_BTRFS=True formats your attached device as btrfs even if there is another filesystem. Backup the storage before running the command.
+    :::
+
+6. ##### Init archive node:
+    ```shell
+    sudo skale sync-node init --archive --catchup --historic-state [ENV_FILE_PATH]
+    ```
+
+    . Wait until your archive node will be inited.
+    . After the node is successfully inited, wait until chain container will download the snapshot and starts catchup blocks (usually 15–30 minutes).
+
+</Steps>
+
+
+## Setup SSL certs
+
+Node SSL certificates support secure communication with chain endpoints. By default, each node of a SKALE Chain listens on HTTP and WS ports. If SSL certs exist on the node, then HTTPS and WSS ports are also turned on.
+
+To upload SSL certs to the node run:
+
+```shell
+sudo skale ssl upload -c $PATH_TO_CERT_FILE -k $PATH_TO_KEY_FILE
+```
+
+To check the status of your certs run:
+
+```shell
+sudo skale ssl status
+```
+
+Once certs are uploaded, HTTPS/WSS endpoints should become available for your chain.
+
+## Update archive node
+
+Update archive SKALE node on current machine
+
+```shell
+sudo skale sync-node update [ENV_FILEPATH]
+```
+
+Options:
+
+- `--yes` - update without additional confirmation
+
+Arguments:
+
+- `ENV_FILEPATH` - path to env file where parameters are defined
+
+:::tip[Note]
+You can just update a file with environment variables used during `sudo skale sync-node init`.
+:::
