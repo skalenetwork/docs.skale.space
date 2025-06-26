@@ -1,0 +1,24 @@
+---
+title: SKALE 3.0.3 upgrade
+description: SKALE node upgrade steps from 3.0.2 to 3.0.3
+---
+import { Steps } from "@astrojs/starlight/components";
+
+
+## Upgrade steps from 3.0.2 to 3.0.3
+
+<Steps>
+
+1. Update the following parameters to the new values
+
+    ```bash
+    CONTAINER_CONFIGS_STREAM=3.0.3
+    ```
+
+2. Execute update
+
+    ```bash
+    skale node update .env --yes
+    ```
+
+</Steps>

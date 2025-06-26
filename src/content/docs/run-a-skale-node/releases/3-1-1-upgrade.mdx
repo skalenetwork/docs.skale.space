@@ -1,0 +1,141 @@
+---
+title: SKALE 3.1.1 upgrade
+description: SKALE node upgrade steps from 3.1.0 to 3.1.1
+---
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+<Aside type="caution">
+The firewall mechanism was updated in version 3.1.1. As a result, please proceed with the following steps with extra caution. Ensure that you perform these actions on each node individually.
+</Aside>
+
+## Upgrade steps for the SGX server
+
+<Steps>
+1. Backup `sgx_data` folder and SGX backup key
+
+2. Create new SGX server on Ubuntu 22.04
+
+3. Clone sgxwallet repo
+    ```bash
+    git clone https://github.com/skalenetwork/sgxwallet.git && git checkout stable
+    ```
+
+4. Install required packages
+    ```bash 
+    apt-get install docker.io docker-compose build-essential
+    ```
+
+5. Enable sgx
+    ```bash
+    cd sgxwallet && sudo ./sgx_enable
+    ```
+
+6. Install sgx driver
+    ```bash
+    cd scripts; sudo ./sgx_linux_x64_driver_2.11.b6f5b4a.bin; cd ..
+    ```
+7. Configure firewall between nodes and SGX server
+
+8. Upload `sgx_data` folder to `sgxwallet/run_sgx/sgx_data` on the new server
+
+9. Add `-b` option in `command` section of `run_sgx/docker-compose.yml`
+
+9. Set SGX wallet version to `1.9.0-stable.2` in `run_sgx/docker-compose.yml`
+
+10. Run sgxwallet
+    ```bash
+    cd run_sgx && docker-compose up -d
+    ```
+</Steps>
+
+
+## Upgrade steps for the node server
+
+<Steps>
+
+1. Turn off the node
+
+    ```bash
+    skale node turn-off --yes --unsafe
+    ```
+
+2. Backup the node
+    ```bash
+    skale node backup .
+    ```
+    Save the data on another machine
+
+3. Upgrade packages
+
+    ```bash
+    sudo apt update && sudo apt upgrade
+    sudo reboot
+    ```
+
+4. Upgrade to Ubuntu 22.04
+    ```bash
+    do-release-upgrade
+    reboot
+    ```
+
+5. Turn off docker-lvmpy
+    ``` bash
+    systemctl stop docker-lvmpy && systemctl disable docker-lvmpy
+    ```
+
+6. Make sure nftables is installed
+    ```bash
+    sudo apt install nftables docker-compose-plugin
+    ```
+
+7. Disable ufw ipv6 configuration
+    ```bash
+    sed -i 's/IPV6=yes/IPV6=no/' /etc/default/ufw.
+    ```
+
+8. Reload ufw
+    ```bash
+    ufw reload
+    ```
+
+9. Download new node-cli binary
+
+    ```bash
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.0/skale-2.6.0-Linux-x86_64 > /usr/local/bin/skale
+    ```
+
+10. Verify node-cli binary hash sum
+
+    ```bash
+    sha512sum /usr/local/bin/skale
+    ```
+    Expected checksum
+
+    ```bash
+    15b2aade24223da4f84ec79bd820d57f852fd7a5d78f10652823629da28aab5db49a5815a2be0c894bb00b99324b00b7d9da2ab1518ddc11f304378af54b427c
+    ```
+
+11. Make node-cli executable
+    ```bash
+    chmod +x /usr/local/bin/skale
+    ```
+
+12. Update the following parameters to the new values
+    ```bash
+    CONTAINER_CONFIGS_STREAM=3.1.1
+    SGX_WALLET_URL=https://[NEW SGX WALLET SERVER IP]:1026
+    ```
+
+13. Execute update
+    ```bash
+    skale node update .env --yes
+    ```
+
+14. Restart nftables and docker services
+    <Aside type="caution">
+    Proceed with the execution in close collaboration with the core team, ensuring that the chains are fully stable beforehand.
+    </Aside>
+    ```bash
+    systemctl restart nftables && systemctl restart docker
+    ```
+</Steps>

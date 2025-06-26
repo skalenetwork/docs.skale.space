@@ -1,0 +1,26 @@
+---
+title: SKALE Watchdog
+description: Overview of SKALE Watchdog
+---
+
+import { Aside, LinkCard } from "@astrojs/starlight/components";
+
+SKALE Watchdog is microservice running on every SKALE supernode for providing SLA agents with supernode
+performance metrics. It also can be used for external monitoring goals (validators can use it in
+their monitoring tools).
+
+## How It Works
+Watchdog is a Python script running in docker container with Flask web server that provides simple
+REST JSON API available on port 3009 (http://YOUR_SKALE_NODE_IP:3009). Currently, Watchdog can give
+data on all SKALE supernode docker containers, health checks of sChains and SGX server, Ethereum node endpoint
+status, and hardware information.
+
+<Aside type="note">
+Node CLI automatically opens port 3009 on the machine using iptables.
+Be sure that port 3009 is open for the supernode’s external network for Watchdog to work.
+</Aside>
+
+<LinkCard
+    title="Checkout the APIs"
+    href="/ecosystem/validators/watchdog/apis"
+/>
