@@ -1,0 +1,124 @@
+---
+title: Bridge ERC-20 Tokens
+description: Guide on bridging ERC-20 tokens on SKALE
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Discover how to bridge ERC-20 tokens between Ethereum and SKALE efficiently, leveraging lower fees and enhanced scalability.
+
+## Steps to Bridge
+
+### Step 1: Preparation
+- Ensure your wallet is compatible with both Ethereum and SKALE.
+- Ensure your tokens are supported on the SKALE Bridge.
+
+### Step 2: Using the Bridge Interface
+- Navigate to the SKALE Bridge platform.
+- Select the ERC-20 token you wish to bridge.
+- Specify the amount to transfer.
+
+### Step 3: Approving and Bridging
+1. Initiate the token approval in your wallet.
+2. Confirm the bridging transaction.
+3. Monitor the transaction status until completion.
+
+## Visual Guide
+
+{/*![ERC-20 Bridging Overview](../assets/erc20-bridging-overview.png)*/}
+
+## Example Code Implementations
+
+Here are example implementations using different JavaScript libraries:
+
+### Implementation Tabs
+
+<Tabs>
+<TabItem value="web3.js" label="Web3.js" default>
+
+```javascript
+import Web3 from 'web3';
+import { Transaction } from 'ethereumjs-tx';
+
+const rinkebyABIs = "[YOUR_SKALE_ABIs_ON_RINKEBY]";
+const rinkebyERC20ABI = "[YOUR_ERC20_ABI_ON_RINKEBY]";
+
+const privateKeyForMainnet = Buffer.from("[YOUR_MAINNET_ACCOUNT_PRIVATE_KEY]", 'hex');
+
+const accountForMainnet = "[YOUR_MAINNET_ACCOUNT_ADDRESS]";
+const rinkeby = "[RINKEBY_ENDPOINT]";
+const schainName = "[YOUR_SKALE_CHAIN_NAME]";
+const chainId = "RINKEBY_CHAIN_ID";
+
+const web3ForMainnet = new Web3(rinkeby);
+const depositBox = new web3ForMainnet.eth.Contract(
+  rinkebyABIs.deposit_box_erc20_abi,
+  rinkebyABIs.deposit_box_erc20_address
+);
+
+const contractERC20 = new web3ForMainnet.eth.Contract(rinkebyERC20ABI.erc20_abi, rinkebyERC20ABI.erc20_address);
+
+const approve = contractERC20.methods.approve(
+  rinkebyABIs.deposit_box_erc20_address,
+  web3ForMainnet.utils.toHex(web3ForMainnet.utils.toWei("1", "ether"))
+).encodeABI();
+
+const deposit = depositBox.methods.depositERC20(
+  schainName,
+  rinkebyERC20ABI.erc20_address,
+  web3ForMainnet.utils.toHex(web3ForMainnet.utils.toWei("1", "ether"))
+).encodeABI();
+
+web3ForMainnet.eth.getTransactionCount(accountForMainnet).then(nonce => {
+  const rawTxApprove = {
+    chainId: chainId,
+    from: accountForMainnet,
+    nonce: "0x" + nonce.toString(16),
+    data: approve,
+    to: rinkebyERC20ABI.erc20_address,
+    gas: 6500000,
+    gasPrice: 100000000000
+  };
+
+  const txApprove = new Transaction(rawTxApprove, { chain: 'rinkeby', hardfork: 'petersburg' });
+  txApprove.sign(privateKeyForMainnet);
+
+  const serializedTxApprove = txApprove.serialize();
+
+  web3ForMainnet.eth.sendSignedTransaction("0x" + serializedTxApprove.toString("hex"))
+    .on("receipt", console.log)
+    .catch(console.error);
+});
+```
+</TabItem>
+<TabItem value="ethers.js" label="Ethers.js">
+
+```javascript
+// Ethers.js implementation example
+
+```
+
+</TabItem>
+<TabItem value="viem.js" label="Viem.js">
+
+```javascript
+// Viem.js implementation example
+
+```
+
+</TabItem>
+</Tabs>
+
+
+## Troubleshooting Tips
+
+- Ensure token approvals are completed to avoid delays.
+- Re-check network fees and settings if issues arise.
+
+## Next Steps
+- Delve into creating [Custom Contracts](./custom-contracts).
+- Understand [Exit to Ethereum](./exit-to-ethereum) for finalizing processes.
+
+## Further Assistance
+Visit the SKALE [support page](https://support.skale.network) for insights.
+
