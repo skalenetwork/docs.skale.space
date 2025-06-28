@@ -37,7 +37,7 @@ The following requires `EXTRA_CONTRACT_REGISTRAR_ROLE` on the account calling **
 		];
 
 		const provider = new JsonRpcProvider(process.env.RPC_URL);
-		const wallet = new Wallet(process.env.PRIVATE_KEY);
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
 		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
 		const res = await contract.grantRole(id("EXTRA_CONTRACT_REGISTRAR_ROLE", "0x..."));
 		```
@@ -79,7 +79,7 @@ This is required since the SKALE Chain does default to giving Marionette EXTRA_C
 		];
 
 		const provider = new JsonRpcProvider(process.env.RPC_URL);
-		const wallet = new Wallet(process.env.PRIVATE_KEY);
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
 		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
 		const res = await contract.registerExtraContract("elated-tan-skat", "0x...")); // elated-tan-skat is Europa Mainnet
 		```
