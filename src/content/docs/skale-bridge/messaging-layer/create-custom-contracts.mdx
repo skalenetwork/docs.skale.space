@@ -9,7 +9,14 @@ import sendNumberExample from "./examples/SendNumber.sol?raw";
 The following will guide you through an example implementation of using SKALE's Native Messaging Layer to send custom information back and forth between SKALE Chains.
 The following implements a bi-directional flow of data to showcase both sending and receiving clearly, however, contracts can easily implement a one-way flow.
 
+## Custom Contract
+
 <Code code={sendNumberExample} lang="solidity" title="SendNumber.sol" />
+
+## Key Notes
+- This contract is both a sender and receiver via IMA
+- This means it implements both postOutgoingMessage via MessageProxy interface AND postMessage which is the receiving part
+- This contract takes two constructor arguments to set the destination (dst) chain and contract which are later used to check and validate messages
 
 <Aside type="caution">
 Don't forget to register your smart contracts on MessageProxyForSchain next! See [Connect Custom Contracts](/skale-bridge/messaging-layer/connect-custom-contracts) for next steps!
