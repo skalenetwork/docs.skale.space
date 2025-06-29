@@ -1,4 +1,46 @@
 ---
 title: Bridge ETH
-description: Guide on bridging Ethereum on SKALE
+description: Guide on bridging ETH from Ethereum to a SKALE Chain
 ---
+
+import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
+import depositEthJs from "./examples/deposit-eth.js?raw";
+
+SKALE's Interchain Messaging Agent includes a native bridging layer for industry standard assets including the native gas token of it's base layer, ETH on Ethereum. You can use IMA to easily send ETH to any SKALE Chain. Here are a few important notes to simplify the flow for your application:
+
+## Important Information
+
+- Unlike ERC-20, ERC-721, and ERC-1155; ETH is nativley support between Ethereum and SKALE Chains. This means you do **NOT** need to map ETH to a token
+- ETH has its own special DepositBox on Ethereum called DepositBoxETH which holds ETH separately from the other assets bridged to the SKALE Network
+
+<Aside type="caution" title="Really Important!">
+When ETH is deposited on Ethereum, it is received as an ERC-20 token on all SKALE Chains.
+This token is **NOT** WETH. This token is predeployed on all SKALE Chains to the same token address and information as [ETHC](#eth-on-skale).
+</Aside>
+
+### ETH on SKALE
+
+ETH when bridged to a SKALE Chain always "mints" to the same place. This is flagged as important to avoid confusion with you and your users.
+
+| Key | Value | Note |
+| - | - | - |
+| Name | ERC20 Ether Clone | Use ETH, Ether, or Ethereum on your frontend |
+| Symbol | ETHC | Use ETH on your frontend |
+| Contract Address | 0xD2Aaa00700000000000000000000000000000000 | This is the same on all SKALE Chains and will not change |
+
+An example of ETH on SKALE can be seen [here on Europa Mainnet block explorer](https://elated-tan-skat.explorer.mainnet.skalenodes.com/token/0xD2Aaa00700000000000000000000000000000000).
+
+## Bridging ETH
+
+### 1. Deposit ETH on Ethereum to SKALE
+
+<Aside type="note">
+The following does not require any gas (i.e sFUEL) on the SKALE Chain. Please note to **exit** to Ethereum once you are on SKALE,
+you will need ETH on Ethereum to fill up your community wallet.
+</Aside>
+
+<Tabs keySync="method">
+	<TabItem label="Ethers v6">
+		<Code code={depositEthJs} lang="js" />
+	</TabItem>
+</Tabs>
