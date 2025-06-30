@@ -18,10 +18,6 @@ SKALE's Interchain Messaging Agent (IMA) Bridge allows for direct communication 
 
 The following walks you through setting up an ERC-20 token between two SKALE Chains and how to programatically bridge.
 
-<Aside type="note">
-Moving assets between two SKALE Chains i.e Europa and Nebula requires no custom modifications. However, assets bridged in from Ethereum between multiple SKALE Chains requires extra steps by default.
-</Aside>
-
 ## Important Information
 - When a SKALE Chain is created, there are no ERC-20 tokens mapped by default
 - A token being bridged between two chains should have its supply **issued** (i.e minted) on one chain. The second SKALE Chain mints by design via IMA, however, the token should not be mintable any other way
@@ -29,6 +25,10 @@ Moving assets between two SKALE Chains i.e Europa and Nebula requires no custom 
 - Tokens being bridged from SKALE Chain to SKALE Chain are minted by IMA on the destination chain
 
 ## Bridge Setup
+
+<Aside type="note">
+If the SKALE Chains you are mapping the ERC-20 token from/to are not connected, please [connect the SKALE Chains](/skale-bridge/skale/connect-schains).
+</Aside>
 
 ### 1. Prepare the ERC-20
 
@@ -105,7 +105,7 @@ The flow for bridging an ERC-20 from sChain to sChain follows a very similiar fl
 
 1. Approve the origin chain bridge contract on the ERC-20 token to allow it to control some amount of funds
 2. Call the origin bridge directly to transfer the asset from SKALE Chain -> SKALE Chain
-3. Wait for the message to be posted by the validator set on the destination SKALE Chain, which is where the net-new minted tokens corresponding to the value locked on Ethereum during the bridge are created
+3. Wait for the message to be posted by the validator set on the destination SKALE Chain, which is where the net-new minted tokens corresponding to the value locked on the origin SKALE Chain during the bridge are created
 
 ### Bridge Tokens
 
