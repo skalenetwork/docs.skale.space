@@ -22,11 +22,11 @@ const tokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
 
 // 1. Approve the bridge to move ERC-1155 Tokens
 const approvalTx = await tokenContract.setApprovalForAll(TOKEN_MANAGER_ERC1155_ADDRESS, true);
-await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // 2. Bridge 5 of ERC-1155 Token Id #1 and 100 of Token Id #5, will receive on same address on new skale chain
 const bridgeTx = await tokenManagerContract.transferToSchainERC1155Batch(DST_SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_IDS, NUMBER_TOKENS_TO_TRANSFER);
-await bridgeTx.wait(1);
+await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // Success! Now watch for delivery on Destination Chain
 console.log("Success!");

@@ -22,11 +22,11 @@ const tokenContract = new Contract(ERC20_ADDRESS, ERC20_ABI, wallet);
 
 // 1. Approve the bridge to move ERC-20
 const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
-await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // 2. Deposit ERC-20 into bridge, will receive on the custom receiver address on SKALE
 const bridgeTx = await tokenManagerContract.transferToSchainERC20Direct(DST_SKALE_CHAIN_NAME, ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER, CUSTOM_RECEIVER_ADDRESS);
-await bridgeTx.wait(1);
+await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // Success! Now watch for delivery on Destination Chain
 console.log("Success!");

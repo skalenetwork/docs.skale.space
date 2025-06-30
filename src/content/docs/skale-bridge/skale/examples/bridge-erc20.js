@@ -25,7 +25,7 @@ await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1s seconds
 
 // 2. Deposit ERC-20 into bridge, will receive on same address on SKALE
 const bridgeTx = await tokenManagerContract.transferToSchainERC20(DST_SKALE_CHAIN_NAME, ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
-await bridgeTx.wait(1);
+await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // Success! Now watch for delivery on Destination Chain
 console.log("Success!");

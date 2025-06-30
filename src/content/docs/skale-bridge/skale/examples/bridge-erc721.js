@@ -21,11 +21,11 @@ const tokenContract = new Contract(ERC721_ADDRESS, ERC721_ABI, wallet);
 
 // 1. Approve the bridge to move ERC-721 Token Id #1
 const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC721_ADDRESS, TOKEN_ID);
-await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // 2. Deposit ERC-721 Token Id #1 into bridge, will receive on same address on SKALE
 const bridgeTx = await tokenManagerContract.transferToSchainERC721(DST_SKALE_CHAIN_NAME, ERC721_ADDRESS, TOKEN_ID);
-await bridgeTx.wait(1);
+await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // Success! Now watch for delivery on Destination Chain
 console.log("Success!");
