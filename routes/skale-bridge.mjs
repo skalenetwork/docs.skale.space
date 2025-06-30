@@ -29,10 +29,6 @@ export default [
 			{ "label": "Bridge ERC-1155", "slug": "skale-bridge/skale/bridge-erc1155" },
 		],
 		"collapsed": true
-	},
-	{ "label": "Architecture of IMA", "slug": "skale-bridge/architecture-of-ima" },
-	{ "label": "Interchain Tokens", "slug": "skale-bridge/interchain-tokens" },
-	{ "label": "Security Methods", "slug": "skale-bridge/security-methods" },
-	{ "label": "Token Availability", "slug": "skale-bridge/token-availability" },
+	}
 
 ]
