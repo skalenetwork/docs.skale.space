@@ -23,7 +23,6 @@ export default [
 	{
 		"label": "SKALE Chain Bridge",
 		"items": [
-			{ "label": "Overview", "slug": "skale-bridge/skale/overview" },
 			{ "label": "Bridge ERC-20", "slug": "skale-bridge/skale/bridge-erc20" },
 			{ "label": "Bridge ERC-721", "slug": "skale-bridge/skale/bridge-erc721" },
 			{ "label": "Bridge ERC-1155", "slug": "skale-bridge/skale/bridge-erc1155" },
