@@ -4,7 +4,13 @@ description: Guide on bridging ETH from Ethereum to a SKALE Chain
 ---
 
 import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
+
 import depositEthJs from "./examples/deposit-eth.js?raw";
+import depositEthDirectJs from "./examples/deposit-eth-direct.js?raw";
+import exitEthJs from "./examples/exit-eth.js?raw";
+
+{/* Community Pool Fill Up Imports */}
+import fillCommunityPoolJs from "./examples/fill-community-pool.js?raw";
 
 SKALE's Interchain Messaging Agent includes a native bridging layer for industry standard assets including the native gas token of it's base layer, ETH on Ethereum. You can use IMA to easily send ETH to any SKALE Chain. Here are a few important notes to simplify the flow for your application:
 
@@ -32,7 +38,9 @@ An example of ETH on SKALE can be seen [here on Europa Mainnet block explorer](h
 
 ## Bridging ETH
 
-### 1. Deposit ETH on Ethereum to SKALE
+To bridge ETH from Ethereum to SKALE, you should deposit ETH on Ethereum Mainnet to DepositBoxEth, a smart contract that 
+
+### Bridge to SKALE (from Ethereum)
 
 <Aside type="note">
 The following does not require any gas (i.e sFUEL) on the SKALE Chain. Please note to **exit** to Ethereum once you are on SKALE,
@@ -40,7 +48,47 @@ you will need ETH on Ethereum to fill up your community wallet.
 </Aside>
 
 <Tabs keySync="method">
-	<TabItem label="Ethers v6">
+	<TabItem label="normalDeposit.js">
 		<Code code={depositEthJs} lang="js" />
 	</TabItem>
+	<TabItem label="directDeposit.js">
+		<Code code={depositEthDirectJs} lang="js" />
+	</TabItem>
 </Tabs>
+
+### Bridge to Etheruem (from SKALE)
+
+SKALE's decentralized bridge offers a simple two-step process to bridge ETH from any SKALE Chain to Ethereum Mainnet.
+
+1. The first step, which only has to be done if you don't have a sufficient balance to exit, is to fill up your gas wallet on Ethereum
+
+2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
+
+
+<Aside type="note">
+Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge is successful.
+</Aside>
+
+#### Pre-pay for your Exit
+
+This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
+You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
+
+<Code code={fillCommunityPoolJs} lang="js" title="fillCommunityPool.js" />
+
+#### Bridge to Ethereum
+
+Once the above prepayment steps are completed, you can proceed with the bridging.
+Bridging from SKALE simply requires the `exitToMain` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
+
+<Code code={exitEthJs} lang="js" title="exit.js" />
+
+<Aside type="note">
+If your bridge is not working, it is most likely for one of three reasons:
+
+1. You forgot to prepay for gas
+2. You forgot to approve the SKALE Bridge on the ETH ERC-20 token
+3. You don't have sufficient funds to bridge
+
+Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
+</Aside>
