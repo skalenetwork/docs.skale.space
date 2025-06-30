@@ -23,7 +23,7 @@ const approvalTx = await ethERC20Contract.approve(TOKEN_MANAGER_ETH_ADDRESS, ONE
 await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
 
 // 2. Transfer ERC-20 into bridge, will recieve on the same address on Ethereum
-const exitTx = await tokenManagerETH.exitToMainERC20(ETH_ERC20_ADDRESS, ONE_HUNDRED_TOKENS);
+const exitTx = await tokenManagerETH.exitToMain(ONE_HUNDRED_TOKENS);
 await exitTx.wait(1);
 
 // Success! Now watch for delivery on Ethereum
