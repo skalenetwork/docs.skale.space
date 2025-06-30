@@ -1,26 +1,17 @@
 export default [
     { "label": "Mainnet Beta", "slug": "how-skale-works/mainnet-beta" },
-    { "label": "Bridge Architecture", "slug": "how-skale-works/bridge-architecture" },
-    { "label": "Permission Layer", "slug": "how-skale-works/permission-layer" },
-    { "label": "Delegation Model", "slug": "how-skale-works/delegation-model" },
-    { "label": "SKALE Filestorage", "slug": "how-skale-works/filestorage" },
-    { "label": "Staking Lifecycle", "slug": "how-skale-works/staking-lifecycle" },
-    { "label": "Inheriting Security", "slug": "how-skale-works/inheriting-security" },
-    { "label": "EVM Compatibility", "slug": "how-skale-works/evm-compatibility" },
-    { "label": "Transaction Processing", "slug": "how-skale-works/transaction-processing" },
-    { "label": "Instant Finality", "slug": "how-skale-works/instant-finality" },
-    { "label": "Economic Model", "slug": "how-skale-works/economic-model" },
     { "label": "Block Rotation", "slug": "how-skale-works/block-rotation" },
     { "label": "Consensus", "slug": "how-skale-works/consensus" },
     { "label": "DDoS Protection", "slug": "how-skale-works/ddos-protection" },
     { "label": "Distributed Key Generation with BLS", "slug": "how-skale-works/dkg-with-bls" },
     { "label": "Precompiled Contracts", "slug": "how-skale-works/precompiled-contracts" },
     { "label": "Snapshots", "slug": "how-skale-works/snapshots" },
-    { "label": "Node Rotation", "slug": "how-skale-works/node-rotation" },
-    { "label": "SKALE Manager", "slug": "how-skale-works/skale-manager" },
-    { "label": "Bounties", "slug": "how-skale-works/bounties" },
     { "label": "SKL Token", "slug": "how-skale-works/skl-token" },
-    { "label": "DKG Specification", "slug": "how-skale-works/dkg-specification" },
-    { "label": "Threshold Schemes", "slug": "how-skale-works/threshold-schemes" },
-    { "label": "Elliptic Curve Cryptography", "slug": "how-skale-works/elliptic-curve-cryptography" }
+    {
+        "label": "Advanced",
+        "items": [
+            { "label": "Threshold Schemes", "slug": "how-skale-works/threshold-schemes" },
+            { "label": "Elliptic Curve Cryptography", "slug": "how-skale-works/elliptic-curve-cryptography" }
+        ]
+    }    
 ]
