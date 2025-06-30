@@ -9,6 +9,16 @@ import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
 import InterchainERC721Code from "./examples/InterchainERC721.sol?raw";
 import InterchainNFTCode from "./examples/InterchainNFT.sol?raw";
 
+{/* Deposit Code Example Imports */}
+import depositERC721Js from "./examples/deposit-erc721.js?raw";
+import depositERC721DirectJs from "./examples/deposit-erc721-direct.js?raw";
+
+{/* Exit Code Import */}
+import exitERC721Js from "./examples/exit-erc721.js?raw";
+
+{/* Community Pool Fill Up Imports */}
+import fillCommunityPoolJs from "./examples/fill-community-pool.js?raw";
+
 SKALE's Interchain Messaging Agent includes a native bridging layer for ERC-721 tokens, the most popular non-fungible token standard
 that exists in blockchain today. The following introduces key information on setting up the bridgeable collectibles as well as how
 to actually programatically bridge the tokens.
@@ -111,17 +121,14 @@ The flow for bridging an ERC-721 from Ethereum to SKALE follows a very similiar 
 
 ### Bridge to SKALE (from Ethereum)
 
-<Aside type="note">
-A normal ERC-20 deposit will result in tokens being delivered to the same wallet on SKALE.
-A direct ERC-20 deposit will result in tokens being delivered to the specified wallet on SKALE.
-</Aside>
+The following will help you bridge an NFT from Ethereum to SKALE.
 
 <Tabs>
-  <TabItem label="normalDeposit.js">
-    {/*<Code code={depositERC20Js} lang="js" />*/}
+  <TabItem label="bridge.js">
+    <Code code={depositERC721Js} lang="js" />
   </TabItem>
-  <TabItem label="directDeposit.js">
-    {/*<Code code={depositERC20DirectJs} lang="js" />*/}
+  <TabItem label="bridgeDirect.js">
+    <Code code={depositERC721DirectJs} lang="js" />
   </TabItem>
 </Tabs>
 
@@ -143,21 +150,21 @@ Gas Wallet, officially referred to as the community pool, is a smart contract on
 This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
 You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
 
-{/*<Code code={fillCommunityPoolJs} lang="js" title="fillCommunityPool.js" />*/}
+<Code code={fillCommunityPoolJs} lang="js" title="fillCommunityPool.js" />
 
 #### Bridge to Ethereum
 
 Once the above prepayment steps are completed, you can proceed with the bridging.
-Bridging from SKALE simply requires the `exitToMainERC20` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
+Bridging from SKALE simply requires the `exitToMainERC721` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
 
-{/*<Code code={exitERC20Js} lang="js" title="exit.js" />*/}
+<Code code={exitERC721Js} lang="js" title="exit.js" />
 
 <Aside type="note">
 If your bridge is not working, it is most likely for one of three reasons:
 
 1. You forgot to prepay for gas
-2. You forgot to approve the bridge on the ERC-20 token
-3. You don't have sufficient funds to bridge
+2. You forgot to approve the bridge on the ERC-721 token id you want to bridge
+3. You don't actually own the ERC-721 Token
 
 Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
 </Aside>
