@@ -42,7 +42,11 @@ export default [
     },
     {
         label: "Faucet",
-        link: "https://sfuelstation.com"
+        link: "https://sfuelstation.com",
+        badge: {
+            text: "External",
+            variant: "caution"
+        }
     },
     {
         label: "Forum",
