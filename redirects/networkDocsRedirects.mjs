@@ -25,8 +25,8 @@ export default {
 	'/develop/sfuel/sfuel-station': '/faucet',
 
 	// Delegators/Validators Section → Run a SKALE Node
-	'/delegators': '/run-a-skale-node/overview',
-	'/delegators/delegation-faq': '/run-a-skale-node/faq',
+	'/delegators': '/how-skale-works/skl-token',
+	'/delegators/delegation-faq': '/how-skale-works/skl-token',
 	'/validators': '/run-a-skale-node/overview',
 	'/validators/validator-faq': '/run-a-skale-node/faq',
 
