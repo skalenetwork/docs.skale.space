@@ -8,7 +8,7 @@ export default [
     { "label": "Snapshots", "slug": "how-skale-works/snapshots" },
     { "label": "SKL Token", "slug": "how-skale-works/skl-token" },
     {
-        "label": "Advanced",
+        "label": "Advanced Topics",
         "items": [
             { "label": "Threshold Schemes", "slug": "how-skale-works/threshold-schemes" },
             { "label": "Elliptic Curve Cryptography", "slug": "how-skale-works/elliptic-curve-cryptography" }
