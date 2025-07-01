@@ -37,16 +37,12 @@ export default [
         items: howSkaleWorks
     },
     {
-        label: "Audits",
-        slug: "audits"
-    },
-    {
-        label: "FAQ",
-        slug: "faq"
+        label: "Audits and Security",
+        slug: "audits-and-security"
     },
     {
         label: "Faucet",
-        slug: "faucet"
+        link: "https://sfuelstation.com"
     },
     {
         label: "Forum",
@@ -55,9 +51,5 @@ export default [
             text: "External",
             variant: "caution"
         }
-    },
-    {
-        label: "Tools",
-        slug: "tools"
     }
 ]
