@@ -5,17 +5,13 @@ description: Learn about using random number generation (RNG) on SKALE
 
 import { Steps, Aside } from "@astrojs/starlight/components";
 
-Ranodm number generation (RNG), also commonly known as verifiable random functions (VRF) within blockcahin; is a common tool used by
-developers of financial, gaming, social, and creative applications. Blockchains are known for traditionally being unable to generate
-provably random values due to the lack of shared rng values (i.e getting a random number at some point in time).
+Ranodm number generation (RNG), also commonly known as verifiable random functions (VRF) within blockchain; is a common tool used by developers of financial, gaming, social, and creative applications. Blockchains are known for traditionally being unable to generate provably random values due to the lack of shared rng values (i.e getting a random number at some point in time).
 
 SKALE has solved this problem of random number generation nativley available within a blockchain thanks to the use of BLS threshold encyption.
 Every SKALE Chain includes a built-in random number generation feature that allows for a unique value to be derived from the chains threshold
 signature every single block using the previous blocks supermajority signature.
 
-SKALE chain consensus is asynchronous and leaderless with each and every block signed by a minimum of 11 out of 16 nodes in the SKALE Chain.
-The signatures are combined in a way that prevents any single node from influencing the final outcome, ensuring the randomness cannot be tampered
-with or manipulated by any individual entity.
+SKALE chain consensus is asynchronous and leaderless with each and every block signed by a minimum of 11 out of 16 nodes in the SKALE Chain. The signatures are combined in a way that prevents any single node from influencing the final outcome, ensuring the randomness cannot be tampered with or manipulated by any individual entity.
 
 ## Achieving Randomness
 
@@ -130,7 +126,6 @@ takes the above and wraps it with a number of easy to use helpers.
     ```
 
 </Steps>
-
 
 ## FAQ
 

@@ -7,9 +7,11 @@ import { Aside } from "@astrojs/starlight/components";
 
 ## Definitions
 
-SKALE Network - a network of Layer 1 blockchains that are fully EVM compatible, built different to scale gaming, AI, DeFi, and more.
-SKALE Chain - a singular Layer 1 within the SKALE Network. Often referred to as a mini Ethereum with superpowers.
-Etheruem - the original programmable Layer 1 blockchain that is also the biggest in the world in terms of direct total value secured
+**SKALE Network** - a network of Layer 1 blockchains that are fully EVM compatible, built different to scale gaming, AI, DeFi, and more.
+
+**SKALE Chain** - a singular Layer 1 within the SKALE Network. Often referred to as a mini Ethereum with superpowers.
+
+**Ethereum** - the original programmable Layer 1 blockchain that is also the biggest in the world in terms of direct total value secured
 
 ## Blockchain Comparison
 | <div style={{ width: "15vw" }}></div>| <div style={{ width: "15vw" }}>SKALE Network</div> | <div style={{ width: "15vw" }}>Ethereum</div> |
@@ -49,12 +51,10 @@ with dynamic gas pricing where short term gas spikes can result in a transaction
 
 ### Finality
 
-Finality is the act of being permanent on a blockchain. Traditionally blockchains including Etheruem have had to deal with forking.
-Forking brings about both short term UX negativity (i.e waiting for multiple block confirmations) as well potential MEV vulnerabilities such as tail-forking.
+Finality is the act of being permanent on a blockchain. Traditionally blockchains including Etheruem have had to deal with forking. Forking brings about both short term UX negativity (i.e waiting for multiple block confirmations) as well potential MEV vulnerabilities such as tail-forking.
 
 SKALE solves both the short term UX problem with single-slot finality, meaning after one block transaction state is fully final and cannot change.
-Additionally, with leaderless consensus which enables unified validation paired with single-slot finality; tail-forking is not possible on SKALE 
-simple and efficiently solivng one of the more complicated forms of MEV.
+Additionally, leaderless consensus enables unified validation which when paired with single-slot finality solves time bandit attacks making this form of MEV not impossible on SKALE.
 
 Ethereum on the other hand has a more complex form of finalization through [Gasper](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/gasper/).
 In Gasper, finality requires a two-thirds (2/3) agreement that a block is canonical. To do so, blocks on Ethereum must pass through a two-step upgrade procedure

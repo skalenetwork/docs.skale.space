@@ -10,24 +10,30 @@ import filestorageUploadCode from "./code/filestorageUploadScript?raw";
 
 SKALE Filestorage is the only onchain and decentralized filestorage in blockchain. The following walks through an example of how to use filestorage on your sChain.
 
+> Filestorage capacity is dependent on each SKALE Chain. Different size chains and configurations result in different allocations to filestorage, which is a capped resource. Filestorage is ideal for storing static data (i.e one off sets of metadata or images) but not for data that may grow exponentially (i.e user uploads).
+
 ## Preparing Files
 
 The following example will be showcasing how to store a static website in filestorage.
 
-## 1. Retrieve sChain Information
+## Requirements
 You will need:
 - An RPC Endpoint
 - A private key (with sFUEL) that has been provided with storage space
 - Files (see next section)
 
-## 2. Prepare Files
+<Aside type="note">
+Storage space must be provided by a SKALE Chain owner. Please contact the SKALE Team in [Discord](https://skale.chat) for support.
+</Aside>
+
+## 1. Prepare Files
 
 Anything that builds into HTML, CSS, JS, and media files will work. If you haven't already built a site, you can use the below:
 
 <Code code={indexHtmlCode} lang="html" title="index.html" />
 <Code code={stylesCssCode} lang="css" title="styles.css" />
 
-### 3. Upload to your SKALE Chain
+### 2. Upload to your SKALE Chain
 
 Setup your project as follows:
 <Aside type="note">
@@ -55,7 +61,7 @@ touch index.html styles.css
 
 Once complete, copy the above files into their respective files.
 
-### 4. Setup
+### 3. Setup
 
 Open the `index.js` file and copy in the following:
 
@@ -68,7 +74,7 @@ PRIVATE_KEY=YOUR_PRIVATE_KEY
 RPC_URL=RPC_URL_OF_SKALE_CHAIN
 ```
 
-### 5. Executing
+### 4. Executing
 
 When executing, this is done via the standard RPC_URL endpoint of your sChain. This was added to your `.env` file above.
 To execute, run the following:

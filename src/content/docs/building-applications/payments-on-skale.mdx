@@ -8,7 +8,7 @@ import nativePaymentCode from "./code/native-payment.sol?raw";
 import erc20PaymentCode from "./code/erc20-payment.sol?raw";
 
 Payments and tokenization is currently one of the most common usecases within the blockchain space.
-It's important to recognize that with [zero gas fees](/building-applications/zero-gas-fees) on SKALE, the way you handle payments and tokenization
+It's important to recognize that with [zero gas fees](/building-applications/gas-fees) on SKALE, the way you handle payments and tokenization
 may require a small change compared to other networks.
 
 ## Background
@@ -22,7 +22,7 @@ When you're building an application that faciliates payments on Ethereum and oth
 token as a primary form of payment. This is because the gas token is generally the most liquid asset and easiest to attain for users since they need it to execute
 transactions.
 
-However, on SKALE, with zero gas fees or [gasless transactions](/building-applications/gasless-transactions); you <span style="color: red;">cannot use</span> the native token as form of payment at all
+However, on SKALE, with zero gas fees or gasless transactions; you <span style="color: red;">cannot use</span> the native token as form of payment at all
 as it has **0 monetary value**. Therefore, you should use other forms of value such as ERC-20 tokens or other tokens that have value on the network.
 
 ## Technical Comparison
