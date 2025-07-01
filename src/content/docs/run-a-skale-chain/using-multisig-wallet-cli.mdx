@@ -1,0 +1,246 @@
+---
+title: Using Multisig Wallet CLI
+description: Explore how to use the multisigwallet CLI to manage your SKALE Chain
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+The [multisigwallet CLI](https://github.com/skalenetwork/multisigwallet-cli) is a command line interface tool that helps handle encoding function data specifically
+on SKALE Network contracts. Due to the unique [ownership structure](/run-a-skale-chain/schain-ownership) of a SKALE Chain, this CLI supports with management of your SKALE Chain both from the sChain side and from Mainnet via Gnosis SAFE.
+
+## Installing the CLI?
+
+To install the CLI:
+
+1. Visit the [releases](https://github.com/skalenetwork/multisigwallet-cli/releases), download the most recent version by clicking **Assets** and then downloading the zip.
+2. Unpack the zip
+3. Ensure [Yarn](https://yarnpkg.com/getting-started/install) is installed
+4. Run `yarn install` in your command prompt
+
+You are now ready to use the CLI!
+
+## Using Gnosis SAFE
+
+### Encode Function Data
+
+Returns encoded data for interaction with schain through gnosis safe on mainnet.
+
+```bash
+npx msig encodeData [options] <schainName> <contract> <func> [params...]
+```
+
+Required arguments:
+-  `<schainName>` - Destination schain name
+-  `<contract>` -   Destination contract that you wanna call
+-  `<func>` -       Function that you wanna call on the destination contract
+
+Optional arguments:
+-  `[params...]` -     Arguments for the destination function
+
+To execute via SAFE, see [using SAFE](/run-a-skale-chain/using-safe).
+
+
+## Using the MultisigWallet on sChain
+
+<Aside type="note">
+The following calls require a PRIVATE_KEY and RPC to be set in .env or passed in via CLI to work. The `.env` method is encouraged.
+The below calls execute directly through the SKALE Chain MultiSigWallet and DO NOT require the Gnosis SAFE on Ethereum Mainnet.
+</Aside>
+
+### Global options
+- `-a, --account <number>` - Account number from which the transaction should be performed, by default it's 1. The account is associated with a private key in `.env`
+- `--custom` - For custom abi, set filepath to ABI into `.env`
+
+### Call
+
+Returns the result of executing the transaction, using call.
+
+```bash
+npx msig call [options] <contract> <func> [params...]
+```
+
+Required arguments:
+-  `<contract>` -   Destination contract that you wanna call
+-  `<func>` -       Function that you wanna call on the destination contract
+
+Optional arguments:
+-  `[params...]` -     Arguments for the destination function
+
+
+### Recharge
+
+Allows to recharge the sFUEL balance of the MultiSigWallet contract
+
+```bash
+npx msig recharge [options] <amount>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<amount>` -     Amount of sFUEL in wei
+
+### Submit Transaction
+
+Allows an owner to submit and confirm a transaction. `<contract>` must be written in `PascalCase`. `<func>` must be written in `camelCase` and function parameters must be written separated by spaces.
+
+```bash
+npx msig submitTransaction [options] <contract> <func> [params...]
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+
+-   `<contract>` - Name of the contract in pascal case
+-   `<func>` - Name of the function that you wanna call on the destination contract
+
+Optional arguments:
+-   `[params...]` - Arguments for the destination function
+
+Usage example:
+```bash
+npx msig submitTransaction ConfigController addToWhitelist <ethereum-address>
+```
+
+### Submit Transaction with Data
+
+Allows an owner to submit and confirm a transaction with custom data.
+
+```bash
+npx msig submitTransactionWithData [options] <contractAddress> <data>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<contractAddress>` -  Destination contract that you wanna call
+-  `<data>` -             Encoded data of function selector and params
+
+### Confirm Transaction
+
+Allows an owner to confirm a transaction.
+
+```bash
+npx msig confirmTransaction [options] <transactionId>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<transactionId>` - Transaction id
+
+
+### Revoke Confirmation
+
+Allows an owner to revoke a confirmation for a transaction.
+
+```bash
+npx msig revokeConfirmation [options] <transactionId>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<transactionId>` - Transaction id
+
+
+### Execute Transaction
+
+Allows an owner on the MultisigWallet to execute a confirmed transaction.
+
+```bash
+npx msig executeTransaction [options] <transactionId>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<transactionId>` - Transaction id
+
+
+### Get Confirmations
+
+Returns a list (i.e array) with the owner addresses who confirmed the transaction.
+
+```bash
+npx msig getConfirmations [options] <transactionId>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<transactionId>` - Transaction id
+
+
+### Get Confirmation Count
+
+Returns number of confirmations of a transaction (i.e how many times the transaction has been confirmed).
+
+```bash
+npx msig getConfirmationCount [options] <transactionId>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+-  `<transactionId>` - Transaction id
+
+
+### Is Transaction Confirmed
+
+Returns the confirmation status of transactions. If transaction ID was provided, than execution will return only status for that transaction.
+
+```bash
+npx msig isConfirmed [options] <transactionId>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Optional arguments:
+-  `[transactionId]` - Transaction id
+
+### Get Owners
+
+Returns list of owners on MultisigWallet on sChain.
+
+```bash
+npx msig getOwners [options]
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+### Get Balance of MultisigWallet
+
+Returns the sFUEL balance of address.
+
+```bash
+npx msig getBalance [options] <address>
+```
+
+Required variables:
+- `ENDPOINT` - Endpoint of the SKALE chain
+- `PRIVATE_KEY_1` - Originatior private key (owner of the MultiSigWallet)
+
+Required arguments:
+- `<address>` -     The address of which to return the sFUEL balance

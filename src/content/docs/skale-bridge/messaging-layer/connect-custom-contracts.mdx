@@ -1,0 +1,112 @@
+---
+title: Connect Custom Contracts
+description: Learn how to connect your custom contracts via IMA
+---
+
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
+
+<Aside type="note">
+The following requires `EXTRA_CONTRACT_REGISTRAR_ROLE` on the account calling **registerExtraContract**.
+</Aside>
+
+## Adding Extra Contract Registrar Role on sChain
+
+<Tabs syncKey="method">
+	<TabItem label="via SAFE">
+		1. Encode the function call via [multisigwallet-cli](/run-a-skale-chain/using-multisig-wallet-cli)
+		```shell
+		npx msig encodeData [schain-name] MessageProxyForSchain grantRole 0x6155b5aac15ce9aa193c0527a6f43be0a36a7e2e7496c2b615c0e5f922842773 [0x_ACCOUNT_TO_GRANT_EXTRA_CONTRACT_REGISTRAR_ROLE_TO]
+		```
+
+		2. Execute via SAFE by following the steps [here](/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+	</TabItem>
+	<TabItem label="Ethers v6">
+		```ts
+		/**
+		* Run:
+		* npm install ethers dotenv
+		*/
+
+		import { Contract, JsonRpcProvider, Wallet } from "ethers";
+		import dotenv from "dotenv";
+		dotenv.config();
+
+		const MSG_PROXY_SCHAIN_ADDR = "0xd2AAa00100000000000000000000000000000000";
+		const MSG_PROXY_SCHAIN_ABI = [
+			"function grantRole(bytes32 role, address account) external"
+		];
+
+		const provider = new JsonRpcProvider(process.env.RPC_URL);
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
+		const res = await contract.grantRole(id("EXTRA_CONTRACT_REGISTRAR_ROLE", "0x..."));
+		```
+	</TabItem>
+</Tabs>
+
+<Aside type="note">
+This is required since the SKALE Chain does default to giving Marionette EXTRA_CONTRACT_REGISTRAR_ROLE
+</Aside>
+
+## Registering Contracts on a SKALE Chain
+
+- **via SAFE** -- would be if you give Marionette EXTRA_CONTRACT_REGISTRAR_ROLE on MessageProxyForSchain
+- **via Ethers v6** -- would be if you gave an EOA the role and use Ethers
+
+<Tabs>
+	<TabItem label="via SAFE">
+		1. Encode the function call via [multisigwallet-cli](/run-a-skale-chain/using-multisig-wallet-cli)
+		```shell
+			npx msig encodeData juicy-low-small-testnet MessageProxyForSchain registerExtraContract destination-skale-chain-name local-contract-address
+		```
+
+		2. Execute via SAFE by following the steps [here](/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+	</TabItem>
+	<TabItem label="Ethers v6">
+		```ts
+		/**
+		* Run:
+		* npm install ethers dotenv
+		*/
+
+		import { Contract, JsonRpcProvider, Wallet } from "ethers";
+		import dotenv from "dotenv";
+		dotenv.config();
+
+		const MSG_PROXY_SCHAIN_ADDR = "0xd2AAa00100000000000000000000000000000000";
+		const MSG_PROXY_SCHAIN_ABI = [
+			"function registerExtraContract(string memory chainName, address extraContract)"		
+		];
+
+		const provider = new JsonRpcProvider(process.env.RPC_URL);
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
+		const res = await contract.registerExtraContract("elated-tan-skat", "0x...")); // elated-tan-skat is Europa Mainnet
+		```
+	</TabItem>
+</Tabs>
+
+## Registering Contracts on Ethereum
+
+1. Go to [SAFE App](https://safe.global) or your preferred frontend for SAFE.
+2. Press **New Transaction** and then **Transaction Builder**
+
+![Click on Transaction Builder](../../../../assets/run-a-skale-chain/safe-transaction-builder.png)
+
+3. Input the MessageProxy address for your correct environment into the **Contract Address** field and select **Use Implementation ABI**
+
+<Aside type="tip">
+Each SKALE Manager deployment -- Mainnet, Testnet, etc. -- has a smart contract called MessageProxy which is what sends data between Ethereum and SKALE Chains. Grab the correct address from the table below and verify by visiting the SKALE Network [Releases Repo](https://github.com/skalenetwork/skale-network/tree/master/releases).
+</Aside>
+
+**MessageProxy Contract Addresses**
+| Network | Contract Address |
+| - | - | 
+| Ethereum Mainnet | 0x8629703a9903515818C2FeB45a6f6fA5df8Da404 |
+| Ethereum Holesky Testnet | 0x682ef859e1cE314ceD13A6FA32cE77AaeCE98e28 |
+
+4. Select `registerExtraContract` from the dropdown list in *Contract Method Selector*, set the *schainName (string)* field (e.g elated-tan-skat), and set the *extraContract (address)* field which is the smart contract on Ethereum
+
+![Input transaction details](../../../../assets/skale-bridge/custom-contract-ethereum-registration.png)
+
+5. Click **Add transaction**, scroll down, and click **Create Batch**, then click **Send Batch**. [Tenderly](https://tenderly.co/) simulation is generally available, even on testnet, and is encouraged to be used to see all the changes occuring on the Ethereum side before they occur.

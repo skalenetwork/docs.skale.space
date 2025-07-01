@@ -1,45 +1,63 @@
-import { defineConfig } from "astro/config";
-import starlight from "@astrojs/starlight";
-import react from "@astrojs/react";
+// @ts-check
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
 import routes from "./routes/index.mjs";
-import redirects from "./routes/redirects.mjs";
+import redirects from "./redirects/index.mjs";
+import react from "@astrojs/react";
+import starlightLinksValidator from "starlight-links-validator";
+import sitemap from "@astrojs/sitemap";
+import starlightLlmsTxt from "starlight-llms-txt";
+
+const llms = starlightLlmsTxt({
+	projectName: "SKALE Network",
+	description: "SKALE is a network of layer 1 blockchains offering infinite scalability, zero gas fees, and one of the fastest EVMs in thew world.",
+	optionalLinks: [
+		{
+			label: "SKALE Network Github",
+			url: "https://github.com/skalenetwork",
+			description: "SKALE Network GitHub Organization"
+		},
+		{
+			label: "Dirt Road Dev Docs",
+			url: "https://docs.dirtroad.dev",
+			description: "3rd party contributor Dirt Road Development docs which contains key SKALE contributions"
+		},
+		{
+			label: "Eidolon Docs",
+			url: "https://docs.eidolon.gg",
+			description: "3rd party contributor Eidolon Labs docs which contains key SKALE contributions"
+		}
+	]
+})
 
 // https://astro.build/config
 export default defineConfig({
+	site: process.env.NODE_ENV === "production" ? "https://docs.skale.space" : "http://localhost:4321",
 	redirects: redirects,
 	integrations: [
+		sitemap(),
 		react(),
 		starlight({
-			title: "SKALE Docs",
+			title: 'SKALE Docs',
 			customCss: [
-				"./src/styles/hubs.css",
-				"./src/styles/overrides.css",
-				"./src/styles/mathml.css",
-				"./src/styles/tips.css",
-				"./node_modules/react-toastify/dist/ReactToastify.css",
+				'./src/styles/global.css'
 			],
-			components: {
-				Badge: "./src/components/Overrides/Badge.astro",
-				Header: "./src/components/Overrides/Header.astro",
-				MobileMenuFooter:
-					"./src/components/Overrides/MobileMenuFooter.astro",
-				PageFrame: "./src/components/Overrides/PageFrame.astro",
-				Sidebar: "./src/components/Overrides/Sidebar.astro",
-				SidebarSublist:
-					"./src/components/Overrides/SidebarSublist.astro",
-				MobileMenuToggle: "./src/components/Overrides/MobileMenuToggle.astro",
+			locales: {
+				root: {
+					label: 'English',
+					lang: 'en'
+				}
 			},
-			expressiveCode: true,
-			favicon: "/favicon.png",
-			logo: {
-				dark: "./src/assets/skale_logo_w.svg",
-				light: "./src/assets/skale_logo_b.svg",
-			},
-			social: {
-				discord: "https://discord.com/invite/gM5XBy6",
-				github: "https://github.com/skalenetwork",
-			},
+			// Below error for some reason doesn't like badge variants from external files
+			// If you remove and it breaks, I will be sad :(
+			// @ts-ignore
 			sidebar: routes,
-		}),
+			plugins: process.env.CHECK_LINKS ?  [
+				starlightLinksValidator(),
+				llms,
+			] : [
+				llms
+			]
+		})
 	],
 });

@@ -1,0 +1,176 @@
+---
+title: Bridge ERC-20 Tokens
+description: Guide on bridging ERC-20 tokens on SKALE
+---
+
+import { Aside, Code, Tabs, TabItem } from "@astrojs/starlight/components";
+
+{/* Solidity Code Example Imports */}
+import InterchainERC20Code from "./examples/InterchainERC20.sol?raw";
+import InterchainSKLCode from "./examples/InterchainSKL.sol?raw";
+import InterchainUSDTCode from "./examples/InterchainUSDT.sol?raw";
+
+{/* Deposit Code Example Imports */}
+import depositERC20DirectJs from "./examples/deposit-erc20-direct.js?raw";
+import depositERC20Js from "./examples/deposit-erc20.js?raw";
+
+{/* Exit Code Example Imports */}
+import exitERC20Js from "./examples/exit-erc20.js?raw";
+
+{/* Community Pool Fill Up Imports */}
+import fillCommunityPoolJs from "./examples/fill-community-pool.js?raw";
+
+SKALE's Interchain Messaging Agent includes a native bridging layer for ERC-20 tokens, the most popular fungible token standard
+that exists in blockchain today. The following introduces key information on setting up the bridgeable token as well as how
+to actually programatically bridge the token.
+
+## Important Information
+
+- When a SKALE Chain is created, there are NO ERC-20 tokens mapped by default
+- In order to bridge an ERC-20 token to a SKALE Chain from Ethereum, it must be **added** by the SKALE Chain owner or operator
+via the standard mapping process
+- All ERC-20 tokens bridged into SKALE have a set of basic requirements to make them compatible with SKALE's bridging layer
+
+<Aside type="note">
+SKALE utilizes a popular architectural design within bridging which is a liquidity based bridge.
+This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on the target SKALE Chain.
+</Aside>
+
+## Bridge Setup
+
+### 1. Prepare the ERC-20 on SKALE
+
+ERC-20 tokens that are being bridged to SKALE should follow two basic requirements in order to be compatible with the SKALE IMA
+bridging layer:
+
+1. Have a **mint** function that is locked down to the IMA Bridge
+2. Have a **burn** function that is locked down to the IMA Bridge
+
+<Aside type="danger" title="Caution on Minting">
+If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC20; there is a chance that
+the supply on the SKALE Chain side could be larger than what is actually deposited in the bridge.
+</Aside>
+
+<Aside type="danger" title="Caution on Burning">
+If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC20; there is a chance that
+the supply on the SKALE Chain side could be "burned", while the tokens still exist on Ethereum which could later be withdrawn under
+certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
+</Aside>
+
+The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
+
+<Code code={InterchainERC20Code} lang="solidity" title="InterchainERC20.sol" />
+### 2. Deploy the ERC-20 on SKALE
+
+Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-20 token to the SKALE Chain you want to be able to bridge assets too.
+
+<Tabs>
+  <TabItem label="InterchainSKL.sol">
+    *This is an example of an 18 decimal ERC-20 token that would be deployed on SKALE*
+    <Code code={InterchainSKLCode} lang="solidity" />
+  </TabItem>
+  <TabItem label="InterchainUSDT.sol">
+    *This is an example of an 6 decimal ERC-20 token that would be deployed on SKALE*
+    <Code code={InterchainUSDTCode} lang="solidity" />
+  </TabItem>
+</Tabs>
+
+> *InterchainERC20.sol is inherited from the code above*
+
+### 3. Map the SKALE and Ethereum tokens together
+
+<Aside type="note">
+If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
+</Aside>
+
+#### Add the token on Ethereum via SAFE
+
+Start by visiting your SAFE via the official SAFE website or your preferred tool. If you are unsure, you can follow the steps [here](/run-a-skale-chain/using-safe).
+
+Once on your SAFE, start by preparing a transaction via the **Transaction Builder** and follow the screenshots below, which will use Europa Testnet and the SKL token as en example for the mapping.
+
+<Aside type="caution">
+Make sure to replace the values with your SKALE Chain name and the correct token addresses.
+</Aside>
+
+#### Add the token on SKALE Chain TokenManagerERC20
+<Tabs>
+  <TabItem label="Multisigwallet CLI">
+    ```shell
+    npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerERC20 addERC20TokenByOwner Mainnet 0x[TOKEN_ON_ETHEREUM] 0x[TOKEN_ON_SKALE_CHAIN]
+    ```
+
+    After this, execute by following the steps on [Using SAFE](/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+  </TabItem>
+</Tabs>
+
+#### Verify the Mapping
+
+To verify the mapping, you should have an event emitted from the following:
+
+1. DepositBoxERC20 on Ethereum - `event ERC20TokenAdded(string schainName, address indexed contractOnMainnet);`
+
+2. TokenManagerERC20 on SKALE Chain - `event ERC20TokenAdded(SchainHash indexed chainHash, address indexed erc20OnMainChain, address indexed erc20OnSchain);`
+
+## Bridging ERC-20
+
+The following does not require you to setup your own token. This works with **ANY** ERC-20 token that is mapped from Ethereum to any SKALE Chain as long as the actual ERC-20 token on each side does not have additional restrictions around who can transfer.
+
+The flow for bridging an ERC-20 from Ethereum to SKALE follows a very similar flow to a standard ERC-20 transfer:
+
+1. Approve the bridge contract on the ERC-20 token to allow it to control some amount of funds
+2. Call the bridge directly to transfer the asset from Ethereum -> SKALE Chain, if the mapping exists
+3. Wait for the message to be posted by the validator set on the SKALE Chain, which is the net-new minted tokens corresponding to the value locked on Ethereum during the bridge
+
+### Bridge to SKALE (from Ethereum)
+
+<Aside type="note">
+A normal ERC-20 deposit will result in tokens being delivered to the same wallet on SKALE.
+A direct ERC-20 deposit will result in tokens being delivered to the specified wallet on SKALE.
+</Aside>
+
+<Tabs>
+  <TabItem label="bridge.js">
+    <Code code={depositERC20Js} lang="js" />
+  </TabItem>
+  <TabItem label="bridgeDirect.js">
+    <Code code={depositERC20DirectJs} lang="js" />
+  </TabItem>
+</Tabs>
+
+### Bridge to Ethereum (from SKALE)
+
+SKALE's decentralized bridge offers a simple two-step process to bridge from any SKALE Chain to Ethereum Mainnet.
+
+1. The first step, which only has to be done if you don't have a sufficient balance to exit, is to fill up your gas wallet on Ethereum
+
+2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
+
+
+<Aside type="note">
+Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
+</Aside>
+
+#### Pre-pay for your Exit
+
+This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
+You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
+
+<Code code={fillCommunityPoolJs} lang="js" title="fillCommunityPool.js" />
+
+#### Bridge to Ethereum
+
+Once the above prepayment steps are completed, you can proceed with the bridging.
+Bridging from SKALE simply requires the `exitToMainERC20` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
+
+<Code code={exitERC20Js} lang="js" title="exit.js" />
+
+<Aside type="note">
+If your bridge is not working, it is most likely for one of three reasons:
+
+1. You forgot to prepay for gas
+2. You forgot to approve the bridge on the ERC-20 token
+3. You don't have sufficient funds to bridge
+
+Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
+</Aside>

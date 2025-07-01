@@ -1,0 +1,25 @@
+---
+title: sChain Ownership
+description: A deep dive into the ownership structure of a SKALE Chain
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+<Aside type="note">
+The following is background information on how to operate your sChain using [multisigwallet-cli](/run-a-skale-chain/using-multisig-wallet-cli).
+</Aside>
+
+## sChain Ownership Structure
+
+By default, on all SKALE V2 Chains; the SKALE Chain ownership structure is a unique combination of predeployed smart contracts, multisignature wallets (across multiple networks), and cold wallets. The structure looks like the following:
+
+-- Ownership Structure Text, Replace with Diagram
+There is a smart contract predeployed on every SKALE Chain that is created called **Marionette**. Marionettee is essentially a simple smart contract that has proxied access control and is by default given `DEFAULT_ADMIN_ROLE` on other predeployed smart contracts on the SKALE Chain like Etherbase, Filestorage, Config Controller, etc.
+
+Marionette has a role called `PUPPETTEER_ROLE` which allows others to execute dynamic smart contract calls through it. By default, when the chain is created there are two addresses given `PUPPETTEER_ROLE`:
+
+1. The local multisignature wallet deployed on the SKALE Chain which is also a predeployed smart contract
+2. The external Gnosis SAFE smart contract address deployed on Ethereum Mainnet which is generally considered to be the "SKALE Chain Owner"
+
+Additionally, by default in this setup MessageProxyForSchain is provided with IMA_ROLE and is needed to allow the Gnosis SAFE on Ethereum Mainnet to post data all the way to Marionette.
+

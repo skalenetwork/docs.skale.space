@@ -1,68 +1,24 @@
 {
-  "name": "@skalenetwork/docs",
+  "name": "docs.skale.space",
   "type": "module",
-  "version": "1.6.0",
-  "authors": [
-    {
-      "name": "Sawyer Cutler",
-      "email": "sawyer@dirtroad.dev",
-      "url": "https://dirtroad.dev"
-    },
-    {
-      "name": "Manuel Barbas",
-      "email": "manuel@skalelabs.com",
-      "url": "https://skale.space"
-    }
-  ],
-  "description": "SKALE Network Documentation",
-  "keywords": [
-    "skale",
-    "docs",
-    "dirtroaddev",
-    "web3"
-  ],
-  "funding": {
-    "type": "Buy Me a Coffee",
-    "url": "https://www.buymeacoffee.com/thegreataxios"
-  },
-  "homepage": "https://docs.skale.dirtroad.dev",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/skalenetwork/docs.skale.space"
-  },
-  "license": "MIT",
+  "version": "2.0.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "format": "prettier --loglevel warn --write \"**/*.{js,css,md}\"",
-    "posttest": "npm run format",
-    "spellcheck": "cspell \"./src/content/**\"",
-    "lint": "eslint . --cache --fix",
-    "pretest": "npm run lint",
-    "prepare": "husky install"
+    "linkcheck": "CHECK_LINKS=true astro build"
   },
   "dependencies": {
-    "@astrojs/react": "^3.6.0",
-    "@astrojs/starlight": "^0.24.5",
-    "@astrojs/ts-plugin": "^1.8.0",
-    "@pagefind/linux-x64": "^1.1.0",
-    "astro": "^4.11.4",
-    "ethers": "^6.13.1",
-    "react-toastify": "^10.0.5",
-    "sharp": "^0.32.5"
+    "@astrojs/react": "^4.3.0",
+    "@astrojs/starlight": "^0.34.4",
+    "astro": "^5.10.1",
+    "sharp": "^0.32.5",
+    "starlight-llms-txt": "^0.5.1",
+    "viem": "^2.23.13"
   },
   "devDependencies": {
-    "cspell": "^8.0.0",
-    "eslint": "^8.53.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.0.2",
-    "prettier": "^3.0.3"
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
+    "starlight-links-validator": "^0.17.0"
   }
 }

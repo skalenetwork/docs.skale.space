@@ -1,13 +1,59 @@
-import builders from "./builders/index.mjs";
-import ecosystem from "./ecosystem/index.mjs";
-import learn from "./learn/index.mjs";
+import buildingApplications from "./building-applications.mjs";
+import howSkaleWorks from "./how-skale-works.mjs";
+import runASkaleChain from "./run-a-skale-chain.mjs";
+import runASkaleNode from "./run-a-skale-node.mjs";
+import skaleBridge from "./skale-bridge.mjs";
+import welcome from "./welcome.mjs";
 
 export default [
-    builders,
-    ecosystem,
-    learn,
     {
-        label: "Quick Start",
-        autogenerate: { directory: "quick-start" },
+        label: "Welcome",
+        collapsed: true,
+        items: welcome
     },
-];
+    {
+        label: "Building Applications",
+        collapsed: true,
+        items: buildingApplications
+    },
+    {
+        label: "Run a SKALE Chain",
+        collapsed: true,
+        items: runASkaleChain
+    },
+    {
+        label: "SKALE Bridge",
+        collapsed: true,
+        items: skaleBridge
+    },
+    {
+        label: "Run a SKALE Node",
+        collapsed: true,
+        items: runASkaleNode
+    },
+     {
+        label: "How SKALE Works",
+        collapsed: true,
+        items: howSkaleWorks
+    },
+    {
+        label: "Audits and Security",
+        slug: "audits-and-security"
+    },
+    {
+        label: "Faucet",
+        link: "https://sfuelstation.com",
+        badge: {
+            text: "External",
+            variant: "caution"
+        }
+    },
+    {
+        label: "Forum",
+        link: "https://forum.skale.network",
+        badge: {
+            text: "External",
+            variant: "caution"
+        }
+    }
+]
