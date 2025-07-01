@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import routes from "./routes/index.mjs";
+import redirects from "./redirects/index.mjs";
 import react from "@astrojs/react";
 import starlightLinksValidator from "starlight-links-validator";
 import sitemap from "@astrojs/sitemap";
@@ -32,9 +33,7 @@ const llms = starlightLlmsTxt({
 // https://astro.build/config
 export default defineConfig({
 	site: process.env.NODE_ENV === "production" ? "https://docs.skale.space" : "http://localhost:4321",
-	redirects: {
-		"/": "/welcome/get-started"
-	},
+	redirects: redirects,
 	integrations: [
 		sitemap(),
 		react(),
