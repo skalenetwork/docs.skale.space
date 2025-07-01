@@ -9,14 +9,14 @@ including developers, validators, delegators, and more.
 
 ## Support
 
-Docs giving you trouble? Request support in the [Discord](https://skale.chat).
+Docs giving you trouble? Request support in the [Discord](https://discord.gg/skale).
 
 ## Contributing
 
 If you are a new contributor or interested in contributing, welcome!
 We are excited to have you join us! Please check out our [Contributors Guide](./CONTRIBUTING.md) for help getting started.
 
-Join us on [Discord](https://skale.chat) to meet other maintainers!
+Join us on [Discord](https://discord.gg/skale) to meet other maintainers!
 We can help answer questions and support you in your contributions.
 
 ## Links
