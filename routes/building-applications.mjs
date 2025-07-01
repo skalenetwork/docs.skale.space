@@ -7,8 +7,6 @@ export default [
     { "label": "Random Number Generation", "slug": "building-applications/random-number-generation" },
     { "label": "SKALE vs Ethereum", "slug": "building-applications/skale-vs-ethereum" },
     { "label": "Solidity Quickstart", "slug": "building-applications/solidity-quickstart" },
-    { "label": "CEX Integration", "slug": "building-applications/cex-integration" },
-    { "label": "Wallet Integration", "slug": "building-applications/wallet-integration" },
     { "label": "JSON-RPC Interface", "slug": "building-applications/json-rpc-interface" },
     { "label": "Pick a chain", "slug": "building-applications/pick-a-chain" },
     { "label": "Using Filestorage", "slug": "building-applications/using-filestorage" },

@@ -31,7 +31,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
 
     #### 1.1.4 Fund SRW Wallet with ETH
 
-    Be ready to fund ETH in your self-recharging wallet (SRW). See [Self-recharging wallet documentation](/ecosystem/validators/validator-cli/self-recharding-wallets).
+    Be ready to fund ETH in your self-recharging wallet (SRW). See [Self-recharging wallet documentation](/run-a-skale-node/validator-cli/self-recharging-wallets).
 
     *Minimum ETH*: <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mn>0.5</mn><mo>&#x2219;</mo><mi>supernode</mi><mo>&#xA0;</mo><mi>count</mi></mrow></math>
 
@@ -56,7 +56,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
     - Link all validator supernode addresses to a validator wallet address
     - Request or cancel a delegation
 
-    [See the SKALE Validator CLI documentation](/ecosystem/validators/validator-cli/overview)
+    [See the SKALE Validator CLI documentation](/run-a-skale-node/validator-cli/overview)
 
     This document contains instructions on how to get started with the SKALE Validator CLI.
 
@@ -167,7 +167,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
 
     SKALE DKG uses Intel® SGX server to store account and BLS keys and all the data related to DKG process
     and it also uses the random number generator provided by Intel® SGX. For more information,
-    please check [here](/learn/advanced/dkg-bls).
+    please check [here](/how-skale-works/dkg-with-bls).
 
     Clients connect to the server, authenticate to it using TLS 1.0 protocol with client certificates, and then
     issue requests to the server to generate crypto keys and perform cryptographic operations. The keys are
@@ -431,7 +431,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
     - 32GB RAM
     - 16GB Swap
 
-    More information can be found here: [Compliance requirements](/ecosystem/validators/compliance-requirements)
+    More information can be found here: [Compliance requirements](/run-a-skale-node/compliance-requirements)
 
     ### 3.2 Install Packages
 
@@ -458,10 +458,10 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
 
     <Aside type="note" title="Important">
     You should carefully control any automatic updates. In general avoid updates to the Linux kernel, docker, docker-compose, btrfs-progs.
-    And take care when updating lvm2, iptables, iptables-persistent, and python. Please see the [FAQ - Node update procedure for more information](/ecosystem/validators/faq#node-update-procedure).
+    And take care when updating lvm2, iptables, iptables-persistent, and python.
     </Aside>
 
-    If you have any concerns or questions, please don't hesitate to reach out to SKALE Team leads on http://skale.chat/[Discord].
+    If you have any concerns or questions, please don't hesitate to reach out to SKALE Team leads on [Discord](http://skale.chat).
 
     ### 3.3 Download Node CLI binary
 
@@ -487,7 +487,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
     You should run node-cli commands using sudo
     </Aside>
 
-    More information can be found [here](/ecosystem/validators/node-cli/overview).
+    More information can be found [here](/run-a-skale-node/node-cli/overview).
 
 
     ### 3.7 Configure .env
@@ -657,7 +657,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
     sudo skale ssl status
     ```
 
-    For more details, please see [Node SSL docs](/ecosystem/validators/node-cli/node-ssl-setup).
+    For more details, please see [Node SSL docs](/run-a-skale-node/node-cli/node-ssl-setup).
 
 
     ### 3.12 Fund Node wallet with ETH
@@ -718,7 +718,7 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
 
     To restore the supernode you should use `skale node restore`
 
-    More information can be found [here](/ecosystem/validators/node-cli/releases/v2-0#node-backup).
+    More information can be found [here](/run-a-skale-node/node-cli/releases/v2-0#node-backup).
 
     ### 3.16 Accept Delegations
 
