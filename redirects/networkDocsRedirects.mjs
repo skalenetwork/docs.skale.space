@@ -155,4 +155,24 @@ export default {
 	'/recipes': '/welcome/get-started',
 	'/tools': '/welcome/get-started',
 	'/technology': '/welcome/get-started',
+
+	'/tools/skale-specific/ml': '/building-applications/build-a-dapp',
+	'/tools/skale-specific/oracle': '/building-applications/build-a-dapp',
+	'/tools/skale-specific/rng': '/building-applications/random-number-generation',
+
+	'/infrastructure/archive-node': '/run-a-skale-node/run-archive-node',
+	'/infrastructure/skale-chain-sizes': '/run-a-skale-node/customize-schain',
+	'/skale-watchdog/2.0.x/': '/run-a-skale-node/watchdog/overview',
+	'/skale-chain-administration/skale-chain-access-control': '/run-a-skale-node/access-control',
+
+	'/develop/hubs': '/building-applications/pick-a-chain',
+	'/recipes/libraries/providers': '/building-applications/solidity-quickstart',
+
+	'/technology': '/how-skale-works/technology',
+	'/introduction/skale-chain-types': '/how-skale-works/chain-types',
+	'/introduction/mainnet-beta': '/how-skale-works/mainnet-beta',
+
+	'/partnership/integration': '/welcome/getting-started',
+
+	'/skaled/3.16.x-beta': '/how-skale-works/consensus'
 }
