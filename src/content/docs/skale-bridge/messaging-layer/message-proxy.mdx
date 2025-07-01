@@ -5,7 +5,7 @@ description: Using SKALE MessageProxy to connect blockchains
 
 import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
 
-A message proxy within the SKALE Ecosystem is a key "connection" point that works to send and recieve messages between Ethereum and SKALE Chains.
+A message proxy within the SKALE Ecosystem is a key "connection" point that works to send and receive messages between Ethereum and SKALE Chains.
 **MessageProxy** is an abstract smart contract that is extended into two key smart contracts used as cornerstones of the SKALE IMA Messaging Layer:
 
 1. **MessageProxyForMainnet** -- the MessageProxy deployed on the Ethereum Mainnet with an architecture designed for posting messages to SKALE Chains
@@ -18,7 +18,7 @@ A message proxy within the SKALE Ecosystem is a key "connection" point that work
 - MessageProxy contracts are deployed on Mainnet, MessageProxyForMainnet, and each SKALE Chain, MessageProxyForSchain.
 - Contracts must be registered to a MessageProxy which allows them to interact with IMA Agent
 - Messages sent via MessageProxy are processed by the [IMA Agent](#ima-agent).
-- Messages recieved via MessageProxy are forwarded to the contract contract and executed
+- Messages received via MessageProxy are forwarded to the contract contract and executed
 
 <Aside type="note">
 MessageProxyForSchain is deployed to **0xd2AAa00100000000000000000000000000000000** on EVERY SKALE Chain.
@@ -47,7 +47,7 @@ contract ExampleSendContract {
 }
 ```
 
-Utilize the following base flow to recieve a message:
+Utilize the following base flow to receive a message:
 
 ```solidity
 contract ExampleReceiveContract {
@@ -76,7 +76,7 @@ The agent automatically utilizes the nodes trusted execution environment (TEE) t
 
 ## Managing IMA
 
-IMA, similiar to other predeployed contracts running on SKALE, is a highly customizable and managed by the SKALE Chain Owner/Operator or accounts delegated to them.
+IMA, similar to other predeployed contracts running on SKALE, is a highly customizable and managed by the SKALE Chain Owner/Operator or accounts delegated to them.
 The following are managed by the SKALE Chain Owner:
 
 ### Message Size Limit
