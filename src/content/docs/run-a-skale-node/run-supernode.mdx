@@ -3,7 +3,6 @@ title: Validator Setup
 description: Setup Process for new SKALE Validator
 ---
 import { Steps, Aside } from "@astrojs/starlight/components";
-import { PostRegistrationChecklist } from "../../../components/PostRegistrationChecklist";
 
 <Steps>
 
@@ -801,9 +800,11 @@ import { PostRegistrationChecklist } from "../../../components/PostRegistrationC
     ```
 
 5. ## Post Registration Checks
-    <Aside type="note">
-        The checkboxes below will save to local storage so you can use this as a checklist.
-    </Aside>
-    <br />
-    <PostRegistrationChecklist client:load />
+    - [ ] Private and backup keys are secured in a safe place.
+    - [ ] VPN is configured on all SGXWallet servers.
+    - [ ] Ensure node wallets have sufficient ETH.
+    - [ ] Accept delegations for the next month.
+    - [ ] Check telegram notifications (if you enabled them).
+    - [ ] Use [watchdog](/run-a-skale-node/watchdog/overview) to monitor node status.
+    - [ ] Get support from the SKALE validator community.
 </Steps>
