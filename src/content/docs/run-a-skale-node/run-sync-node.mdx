@@ -1,6 +1,6 @@
 ---
 title: Run Sync Node
-description: Guide to running a SKALE Network Sync Node 
+description: Complete guide to running a SKALE Network Sync Node with VPS and self-hosted options
 ---
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { Steps } from "@astrojs/starlight/components";
@@ -9,143 +9,674 @@ The Full-Sync Node is an available software implementation of a read-only SKALE 
 
 Applications are commonly read-heavy compared to writes, meaning they pull data from the chain more often than push them. For applications that contain many reads, a full-sync node can help increase chain stability and speed by reducing the number of actions the core nodes on the chain must do, leaving them with a more extraordinary ability to handle transactions.
 
-## General Steps
+## Deployment Options
 
-- Provision a machine
-- Notify core team of IP/IPs range (`x.x.x.x:x.x.x.x`) and SKALE Chain for full-sync.
-- Complete Full Sync setup
+Choose your deployment scenario based on your infrastructure setup:
+
+<Tabs>
+<TabItem label="VPS/Cloud Deployment">
+
+**Best for**: Production deployments, cloud providers (Hetzner, DigitalOcean, AWS, etc.)
+- Direct server IP access (Cloudflare is optional)
+- Simple network configuration
+- Professional hosting environment
+
+</TabItem>
+<TabItem label="Self-Hosted/Proxmox">
+
+**Best for**: Home servers, private infrastructure, development environments
+- Cloudflare tunnel recommended for secure access
+- SSH tunneling for remote management
+- Virtualized environment support
+
+</TabItem>
+</Tabs>
 
 ## Node Machine Requirements
 
 * A Linux x86_64 machine
 * Ubuntu 22.04
-* 8 vCPUs
-* 16GB RAM
+* 4+ vCPUs (8+ recommended)
+* 16GB RAM (32GB recommended)
 * 100GB root storage
-* 256GB attached storage for MEDIUM chain
-* 2TB attached storage for LARGE chain
+* 256GB attached storage for SMALL/MEDIUM chains
+* 2TB attached storage for LARGE chains
 
-## Node Network Requirements
+### Minimum Specifications
+- **CPU**: 4 vCPUs (8 vCPUs recommended)
+- **RAM**: 16GB (32GB recommended)
+- **Storage**: 
+  - 100GB+ for OS
+  - 256GB for small/medium chains, 2TB for large chains
+- **Network**: Stable internet, ports 80, 443, 3009, 10000–18192
 
-- Ports 80, 443, 3009, and 10000–18192, and ICMP IPv4 shouldn't be closed by external firewall
+### Recommended Specifications
+- **CPU**: 8+ vCPUs
+- **RAM**: 32GB
+- **Storage**: NVMe SSD for optimal performance
+- **Network**: 1Gbps+ connection
 
-## Node Software Prerequisites
+## Software Prerequisites
 
-* 16GB Swap
-* docker
-* docker-compose → 1.27.4
-* iptables-persistent, btrfs-progs, lsof, lvm2, psmisc, and apt packages
+- Ubuntu 22.04 LTS
+- Docker & Docker Compose
+- 16GB+ swap space (32GB recommended)
+- Required packages: `iptables-persistent`, `btrfs-progs`, `lsof`, `lvm2`, `psmisc`
 
+## Complete Setup Guide
 
-## From Fresh Machine
-
-```shell
-sudo apt-get update
-
-# Install Docker and Docker-compose
-sudo apt-get install docker.io
-sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-# Install other dependencies
-sudo apt install iptables-persistent btrfs-progs lsof lvm2 psmisc
-
-# Setup Swapfile
-sudo fallocate -l 16G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-sudo cp /etc/fstab /etc/fstab.bak
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-```
-
-:::tip[Developer Note]
-Before proceeding, notify the core team of the IP address of your full-sync node. It's suggested to use an elastic IP for the whitelisted IP address.
-:::
-
-## Installation
+<Tabs>
+<TabItem label="VPS/Cloud Setup">
 
 <Steps>
-1. ##### Download sync-node-cli tool
+
+1. ##### Provision VPS
+
+   Choose your cloud provider and create a server with the following specifications:
+   ```
+   CPU: 4+ vCPUs (8+ recommended)
+   RAM: 16GB+ (32GB recommended)
+   Storage: 100GB OS + 256GB-2TB data disk (based on chain size)
+   OS: Ubuntu 22.04 LTS
+   ```
+
+2. ##### Initial Server Setup
+
+   ```shell
+   # Connect to your VPS
+   ssh root@YOUR_VPS_IP
+   
+   # Update system
+   apt update && apt upgrade -y
+   
+   # Create non-root user
+   adduser skale-admin
+   usermod -aG sudo skale-admin
+   
+   # Switch to non-root user
+   su - skale-admin
+   ```
+
+3. ##### Install Required Software
+
+   ```shell
+   # Install essential packages
+   sudo apt install -y curl wget git htop iotop net-tools unzip
+   
+   # Install Docker
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   sudo usermod -aG docker $USER
+   
+   # Install Docker Compose
+   sudo apt install -y docker-compose
+   
+   # Install SKALE dependencies
+   sudo apt install -y iptables-persistent btrfs-progs lsof lvm2 psmisc
+   ```
+
+4. ##### Configure Storage
+
+   ```shell
+   # Identify storage devices
+   lsblk
+   
+   # Format additional storage with BTRFS (replace /dev/sdb)
+   sudo mkfs.btrfs /dev/sdb
+   
+   # SKALE will manage mounting automatically via DISK_MOUNTPOINT
+   ```
+
+5. ##### Setup Swap
+
+   ```shell
+   # Create 16GB+ swap file (32GB recommended)
+   sudo fallocate -l 32G /swapfile
+   sudo chmod 600 /swapfile
+   sudo mkswap /swapfile
+   sudo swapon /swapfile
+   
+   # Make permanent
+   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+   
+   # Verify
+   free -h
+   ```
+
+6. ##### Configure Firewall
+
+   ```shell
+   # Install and configure UFW
+   sudo apt install -y ufw
+   sudo ufw default deny incoming
+   sudo ufw default allow outgoing
+   sudo ufw allow ssh
+   sudo ufw allow 3009/tcp
+   sudo ufw allow 10000:18192/tcp
+   sudo ufw allow 80/tcp
+   sudo ufw allow 443/tcp
+   sudo ufw enable
+   ```
+
+7. ##### Install SKALE CLI
+
+   ```shell
+   # Download SKALE CLI
+   VERSION_NUM=2.6.2
+   sudo bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-\`uname -s\`-\`uname -m\`-sync > /usr/local/bin/skale"
+   
+   # Make executable
+   sudo chmod +x /usr/local/bin/skale
+   
+   # Verify installation
+   skale --version
+   ```
+
+8. ##### Configure Environment
+
+   ```shell
+   # Create SKALE environment file
+   cat > ~/.skale.env << 'EOF'
+   CONTAINER_CONFIGS_STREAM="4.0.1"
+   ENFORCE_BTRFS=False
+   ENDPOINT="https://1rpc.io/holesky"
+   MANAGER_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/testnet/skale-manager/1.11.0/skale-manager-1.11.0-abi.json"
+   IMA_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/testnet/IMA/1.8.2/ima-1.8.2-abi.json"
+   DISK_MOUNTPOINT="/dev/sdb"
+   DOCKER_LVMPY_STREAM="1.0.2-stable.0"
+   ENV_TYPE="testnet-v1"
+   SCHAIN_NAME="warm-huge-striped-skale"
+   EOF
+   ```
+
+9. ##### Get IP for Whitelisting
+
+   ```shell
+   # Check your public IP
+   curl -4 ifconfig.me
+   ```
+   
+   **Contact SKALE engineering team** with this IP address for whitelisting.
+
+10. ##### Initialize SKALE Node
+
     ```shell
-    VERSION_NUM=2.6.2 && sudo -E bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-`uname -s`-`uname -m`-sync >  /usr/local/bin/skale"
+    # Initialize the sync node
+    sudo skale sync-node init ~/.skale.env
+    
+    # Monitor progress
+    sudo docker ps
+    sudo docker logs skale_schain_warm-huge-striped-skale -f
     ```
 
-2. ##### Apply executable permissions to the downloaded binary:
+11. ##### Test RPC Endpoint
+
     ```shell
-    chmod +x /usr/local/bin/skale
+    # Test local endpoint
+    curl -X POST http://localhost:3009 \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    
+    # Test public endpoint
+    curl -X POST http://YOUR_VPS_IP:3009 \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
     ```
-
-3. ##### Test the installation
-    ```shell
-    skale --help
-    ```
-
-4. ##### Prepare `.env` file:
-
-    ```
-    CONTAINER_CONFIGS_STREAM="4.0.1"
-    ENFORCE_BTRFS=True/False
-    ENDPOINT=[[By Validator], YOUR GETH/INFURA ENDPOINT]
-    MANAGER_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/mainnet/skale-manager/1.12.0/skale-manager-1.12.0-mainnet-abi.json"
-    IMA_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/mainnet/IMA/2.2.0/mainnet/abi.json"
-    DISK_MOUNTPOINT=[[By Validator], your attached storage /dev/sda or /dev/xvdd (this is an example. You just need to use your 2TB block device)]
-    DOCKER_LVMPY_STREAM="1.0.2-stable.0"
-    ENV_TYPE="mainnet"
-
-    SCHAIN_NAME=[[By Validator], SCHAIN NAME FOR YOUR SYNC NODE]
-    ```
-
-    :::tip[Warning]
-    ENFORCE_BTRFS=True formats your attached device as btrfs even if there is another filesytem. Backup the storage before running the command.
-    :::
-
-5. ##### Init sync node:
-    ```shell
-    skale sync-node init [ENV_FILE_PATH]
-    ```
-
-6. ##### Wait until your sync node will be inited
-7. ##### After the node is successfully inited, wait until `skaled` will download the snapshot and starts catchup blocks (usually 15–30 minutes)
 
 </Steps>
 
-### Setup SSL certs
+</TabItem>
+<TabItem label="Self-Hosted/Proxmox Setup">
 
-Node SSL certificates support secure communication with sChain endpoints. By default, each node of a SKALE Chain listens on HTTP and WS ports. If SSL certs exist on the node, then HTTPS and WSS ports are also turned on.
+<Steps>
 
-To upload SSL certs to the node run:
+1. ##### Proxmox Host Setup
+
+   Install Proxmox VE on your dedicated hardware:
+   - Download Proxmox VE ISO from https://www.proxmox.com/
+   - Create bootable USB and install on host
+   - Access web interface at `https://HOST_IP:8006`
+
+2. ##### Create VM in Proxmox
+
+   **VM Configuration:**
+   ```
+   General:
+     - Name: skale-fullsync-node
+     - VM ID: 100
+   
+   OS:
+     - ISO: Ubuntu 22.04 LTS Server
+   
+   System:
+     - BIOS: OVMF (UEFI)
+     - SCSI Controller: VirtIO SCSI
+   
+   Hard Disk 1 (OS):
+     - Storage: local-lvm
+     - Size: 120GB
+     - Cache: Write back
+   
+   Hard Disk 2 (SKALE Data):
+     - Storage: local-lvm  
+     - Size: 256GB (small/medium) or 2TB (large chains)
+     - Cache: Write back
+   
+   CPU:
+     - Cores: 4+ (8+ recommended)
+     - Type: host
+   
+   Memory: 16384 MB (32GB recommended)
+   
+   Network:
+     - Bridge: vmbr0
+     - Model: VirtIO
+   ```
+
+3. ##### Install Ubuntu in VM
+
+   - Boot VM and install Ubuntu 22.04 LTS Server
+   - **Enable OpenSSH server during installation**
+   - Create user account (avoid using root)
+   - Note the VM's IP address from DHCP
+
+4. ##### Initial VM Configuration
+
+   ```shell
+   # SSH to your VM
+   ssh username@VM_IP
+   
+   # Update system
+   sudo apt update && sudo apt upgrade -y
+   
+   # Install essential packages
+   sudo apt install -y curl wget git htop iotop net-tools unzip
+   
+   # Install Docker
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   sudo usermod -aG docker $USER
+   
+   # Install Docker Compose and dependencies
+   sudo apt install -y docker-compose iptables-persistent btrfs-progs lsof lvm2 psmisc
+   
+   # Reboot to apply all changes
+   sudo reboot
+   ```
+
+5. ##### Configure Storage
+
+   ```shell
+   # Check available storage devices
+   lsblk
+   # You should see:
+   # - sda: 120GB (OS disk)
+   # - sdb: 2TB (SKALE data disk)
+   
+   # Format SKALE data disk with BTRFS
+   sudo mkfs.btrfs /dev/sdb
+   
+   # Verify filesystem
+   sudo blkid /dev/sdb
+   ```
+
+6. ##### Create SSH User
+
+   ```shell
+   # Create user for remote access
+   sudo adduser {USERNAME_HERE}
+   sudo usermod -aG docker {USERNAME_HERE}
+   
+   # Set up SSH key (replace with your own public key)
+   sudo mkdir -p /home/{USERNAME_HERE}/.ssh
+   echo "YOUR_SSH_PUBLIC_KEY_HERE" | sudo tee /home/{USERNAME_HERE}/.ssh/authorized_keys
+   
+   # Set proper permissions
+   sudo chmod 700 /home/{USERNAME_HERE}/.ssh
+   sudo chmod 600 /home/{USERNAME_HERE}/.ssh/authorized_keys
+   sudo chown -R {USERNAME_HERE}:{USERNAME_HERE} /home/{USERNAME_HERE}/.ssh
+   ```
+
+7. ##### Install Cloudflare Tunnel
+
+   ```shell
+   # Download and install cloudflared
+   curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+   sudo dpkg -i cloudflared.deb
+   
+   # Login to Cloudflare (opens browser for authentication)
+   cloudflared tunnel login
+   ```
+
+8. ##### Configure Cloudflare Tunnel
+
+   ```shell
+   # Create tunnel
+   cloudflared tunnel create skale-node
+   # Note the tunnel ID from output
+   
+   # Install as service
+   sudo cloudflared service install
+   
+   # Create system config
+   sudo mkdir -p /etc/cloudflared
+   sudo tee /etc/cloudflared/config.yml << 'EOF'
+   tunnel: YOUR_TUNNEL_ID
+   credentials-file: /etc/cloudflared/YOUR_TUNNEL_ID.json
+   ingress:
+     - hostname: node.yourdomain.com
+       service: http://localhost:3009
+     - hostname: ssh.yourdomain.com
+       service: ssh://localhost:22
+     - service: http_status:404
+   EOF
+   
+   # Copy credentials
+   sudo cp ~/.cloudflared/YOUR_TUNNEL_ID.json /etc/cloudflared/
+   
+   # Set up DNS records
+   cloudflared tunnel route dns skale-node node.yourdomain.com
+   cloudflared tunnel route dns skale-node ssh.yourdomain.com
+   
+   # Start tunnel service
+   sudo systemctl enable cloudflared
+   sudo systemctl start cloudflared
+   ```
+
+9. ##### Setup Swap
+
+   ```shell
+   # Create 16GB+ swap file (32GB recommended)
+   sudo fallocate -l 32G /swapfile
+   sudo chmod 600 /swapfile
+   sudo mkswap /swapfile
+   sudo swapon /swapfile
+   
+   # Make permanent
+   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+   
+   # Verify
+   free -h
+   ```
+
+10. ##### Install SKALE CLI
+
+    ```shell
+    # Download SKALE CLI
+    VERSION_NUM=2.6.2
+    sudo bash -c "curl -L https://github.com/skalenetwork/node-cli/releases/download/$VERSION_NUM/skale-$VERSION_NUM-\`uname -s\`-\`uname -m\`-sync > /usr/local/bin/skale"
+    
+    # Make executable
+    sudo chmod +x /usr/local/bin/skale
+    
+    # Verify installation
+    skale --version
+    ```
+
+11. ##### Configure SKALE Environment
+
+    ```shell
+    # Create environment file
+    cat > ~/.skale.env << 'EOF'
+    CONTAINER_CONFIGS_STREAM="4.0.1"
+    ENFORCE_BTRFS=False
+    ENDPOINT="https://1rpc.io/holesky"
+    MANAGER_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/testnet/skale-manager/1.11.0/skale-manager-1.11.0-abi.json"
+    IMA_CONTRACTS_ABI_URL="https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/testnet/IMA/1.8.2/ima-1.8.2-abi.json"
+    DISK_MOUNTPOINT="/dev/sdb"
+    DOCKER_LVMPY_STREAM="1.0.2-stable.0"
+    ENV_TYPE="testnet-v1"
+    SCHAIN_NAME="warm-huge-striped-skale"
+    EOF
+    ```
+
+12. ##### Get IP for Whitelisting
+
+    ```shell
+    # Check your public IP (what SKALE will connect from)
+    curl -4 ifconfig.me
+    ```
+    
+    **Contact SKALE engineering team** with:
+    - Public IP address
+
+    **Access your node** with:
+    - RPC endpoint: `https://node.yourdomain.com`
+    - SSH access: `ssh {USERNAME_HERE}@ssh.yourdomain.com`
+    <br></br>
+
+13. ##### Initialize SKALE Node
+
+    ```shell
+    # Initialize the sync node
+    sudo skale sync-node init ~/.skale.env
+    
+    # Verify containers
+    sudo docker ps
+    
+    # Monitor sync progress
+    sudo docker logs skale_schain_warm-huge-striped-skale -f
+    ```
+
+14. ##### Test Endpoints
+
+    ```shell
+    # Test local RPC
+    curl -X POST http://localhost:3009 \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    
+    # Test tunnel RPC (after DNS propagation)
+    curl -X POST https://node.yourdomain.com \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+    
+    # Test SSH access
+    ssh skale-eng@ssh.yourdomain.com
+    ```
+
+</Steps>
+
+</TabItem>
+</Tabs>
+
+## Environment Configuration
+
+### Required Variables
 
 ```shell
-skale ssl upload -c $PATH_TO_CERT_FILE -k $PATH_TO_KEY_FILE
+# Core Configuration
+CONTAINER_CONFIGS_STREAM="4.0.1"    # SKALE container version
+ENFORCE_BTRFS=False                  # Let SKALE manage filesystem
+ENV_TYPE="testnet-v1"               # Network type
+SCHAIN_NAME="warm-huge-striped-skale"  # Target chain name
+
+# Network Configuration  
+ENDPOINT="https://1rpc.io/holesky"   # Ethereum RPC endpoint
+MANAGER_CONTRACTS_ABI_URL="..."     # SKALE manager contracts
+IMA_CONTRACTS_ABI_URL="..."         # IMA contract definitions
+
+# Storage Configuration
+DISK_MOUNTPOINT="/dev/sdb"          # Raw storage device (SKALE manages automatically)
+DOCKER_LVMPY_STREAM="1.0.2-stable.0"  # LVM management version
 ```
 
-To check the status of your certs run:
+### Alternative Ethereum RPC Endpoints
+
+<Tabs>
+<TabItem label="Free Endpoints">
 
 ```shell
+# Holesky Testnet (Free)
+ENDPOINT="https://1rpc.io/holesky"
+ENDPOINT="https://endpoints.omniatech.io/v1/eth/holesky/public"
+ENDPOINT="https://ethereum-holesky.publicnode.com"
+
+# Mainnet (Free with rate limits)
+ENDPOINT="https://1rpc.io/eth"
+ENDPOINT="https://eth.public-rpc.com"
+```
+
+</TabItem>
+<TabItem label="Paid/API Endpoints">
+
+```shell
+# Infura (Paid)
+ENDPOINT="https://holesky.infura.io/v3/YOUR_API_KEY"
+ENDPOINT="https://mainnet.infura.io/v3/YOUR_API_KEY"
+
+# Alchemy (Paid)
+ENDPOINT="https://eth-holesky.g.alchemy.com/v2/YOUR_API_KEY"
+ENDPOINT="https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY"
+
+# QuickNode (Paid)
+ENDPOINT="https://your-endpoint.quicknode.pro/YOUR_API_KEY"
+```
+
+</TabItem>
+</Tabs>
+
+:::tip[BTRFS Warning]
+`ENFORCE_BTRFS=True` formats your attached device as BTRFS even if there is another filesystem. Backup the storage before running the command. For most setups, `ENFORCE_BTRFS=False` is recommended as SKALE can work with existing filesystems.
+:::
+
+## SSL Certificate Setup
+
+Node SSL certificates support secure communication with sChain endpoints. By default, each node listens on HTTP and WS ports. If SSL certs exist, HTTPS and WSS ports are also enabled.
+
+```shell
+# Upload SSL certificates
+skale ssl upload -c $PATH_TO_CERT_FILE -k $PATH_TO_KEY_FILE
+
+# Check certificate status
 skale ssl status
 ```
 
-Once certs are uploaded, HTTPS/WSS endpoints should become available for your chain.
+For self-hosted setups using Cloudflare tunnels, SSL is automatically handled by Cloudflare.
 
-### Full sync node update 
+## Node Management
 
-Update full sync SKALE node on current machine
+### Basic Commands
 
 ```shell
-skale sync-node update [ENV_FILEPATH]
+# Start node with path/to/.env
+sudo skale sync-node init ~/.skale.env
+
+# Update node configuration with path/to/.env
+sudo skale sync-node update ~/.skale.env
+
+# Cleanup node (removes all data and containers)
+sudo skale sync-node cleanup
+
+# Check container status
+sudo docker ps
+
+# Follow the logs for your node. Replace container name with your chain name
+sudo docker logs skale_schain_warm-huge-striped-skale -f
 ```
 
-Options:
+### Monitoring
 
-- `--yes` - update without additional confirmation
+```shell
+# Container health
+sudo docker ps
+sudo docker stats
 
-Arguments:
+# System resources
+htop
+df -h
+free -h
 
-- `ENV_FILEPATH` - path to env file where parameters are defined
+# Network connectivity
+netstat -tlnp | grep -E "(3009|10000)"
+```
 
-[NOTE]
-You can just update a file with environment variables used during `skale sync-node init`.
+## Troubleshooting
 
-### Maintenance
+### Common Issues
 
-Maintenance commands are not available for a sync node. 
+<Tabs>
+<TabItem label="State Root Mismatch">
+
+**Error**: `FATAL STATE ROOT MISMATCH ERROR`
+
+**Cause**: Corrupted blockchain data or connectivity issues
+
+**Solution**:
+```shell
+# Stop and cleanup the sync node completely
+sudo skale sync-node cleanup
+
+# Reinitialize and restart
+sudo skale sync-node init ~/.skale.env
+
+# Monitor sync progress
+sudo docker logs skale_schain_warm-huge-striped-skale -f
+```
+
+</TabItem>
+<TabItem label="Container Issues">
+
+**Error**: Containers not starting or unhealthy
+
+**Diagnosis**:
+```shell
+# Check container logs
+sudo docker logs skale_sync_admin --tail 50
+sudo docker logs skale_nginx --tail 20
+
+# Check system resources
+free -h
+df -h
+
+# Check Docker status
+sudo systemctl status docker
+```
+
+**Solutions**:
+- Ensure sufficient disk space
+- Verify proper permissions on data directories
+- Check if ports are available and not blocked
+
+</TabItem>
+<TabItem label="Network Connectivity">
+
+**Error**: Cannot connect to peers or sync failing
+
+**Diagnosis**:
+```shell
+# Check your public IP
+curl -4 ifconfig.me
+
+# Test connectivity to core nodes
+telnet 3.130.225.113 10005
+
+# Check firewall status
+sudo ufw status
+```
+
+**Solution**: Verify your IP is whitelisted with SKALE engineering team
+
+</TabItem>
+</Tabs>
+
+### Important Notes
+
+- **Admin Container "Unhealthy"**: Often cosmetic and doesn't affect functionality
+- **Storage Management**: SKALE automatically manages storage via `DISK_MOUNTPOINT`
+- **IP Whitelisting**: Must use actual public IP, not tunnel IP addresses
+- **Sync Time**: Initial sync can take several hours depending on chain size
+- **Reliable RPC**: Make sure your RPC is not rate limited as unreliable RPCs can cause sync issues
+
+## Support Resources
+
+- [SKALE Discord Community](https://discord.gg/skale)
+- [GitHub Repository](https://github.com/skalenetwork)
+
+:::tip[Production Deployment]
+For production environments, consider implementing monitoring, backup strategies, and regular maintenance schedules.
+:::
+
+---
+
+*Documentation updated based on real-world deployment experience*
