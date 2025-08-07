@@ -7,7 +7,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
 <Steps>
 
 1. ## Setup Validator
-    
+
     ### 1.1 Prepare
 
     #### 1.1.1 Obtain Ethereum Software Wallet or Hardware wallet
@@ -68,10 +68,8 @@ import { Steps, Aside } from "@astrojs/starlight/components";
 
     ##### Download the SKALE Validator CLI binary
 
-    `VERSION_NUM` is a version identifier
-
     ```shell
-    VERSION_NUM=[VERSION_NUM] && sudo -E bash -c "curl -L https://github.com/skalenetwork/validator-cli/releases/download/$VERSION_NUM/sk-val-$VERSION_NUM-`uname -s`-`uname -m` >  /usr/local/bin/sk-val"
+    VERSION_NUM=1.3.3 && sudo -E bash -c "curl -L https://github.com/skalenetwork/validator-cli/releases/download/$VERSION_NUM/sk-val-$VERSION_NUM-`uname -s`-`uname -m` >  /usr/local/bin/sk-val"
     ```
 
     ##### Apply executable permissions to the binary
@@ -122,7 +120,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     <Aside type="note" title="Important">
     Make sure you enabled blind signing on ETH application settings. Otherwise transactions won't work
     </Aside>
-    
+
     #### 1.2.3 Register as a new SKALE validator
 
     <Aside type="caution" title="Warning">
@@ -191,7 +189,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     SGXWallet can support up to <strong>5</strong> SKALE supernodes. If you have more, you should setup additional server.
     </Aside>
 
-    ### 2.4 Install and Configure Packages 
+    ### 2.4 Install and Configure Packages
 
     Before running SGXWallet install the following packages
 
@@ -239,7 +237,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     **Disable automatic updates**
 
     It's recommended to only update the SGXWallet server if there are critical security fixes. This is because SGXWallet is based on new low
-    level technology, and kernel updates may break the system. Currently SGX is tested on 4.15-\* kernels. It's best to avoid minor version updates too.
+    level technology, and kernel updates may break the system. Currently SGX is tested on 5.15\* kernels. It's best to avoid minor version updates too.
 
     To make sure `apt update` won't update the kernel you should use apt-mark hold command:
 
@@ -272,7 +270,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     ```shell
     git clone https://github.com/skalenetwork/sgxwallet/
     cd sgxwallet
-    git checkout tags/ADD_VERSION_TAG
+    git checkout tags/1.9.1-stable.1
     ```
 
     #### 2.5.2 Enable SGX
@@ -281,14 +279,6 @@ import { Steps, Aside } from "@astrojs/starlight/components";
 
     ```shell
     sudo ./sgx_enable
-    ```
-
-    Note: if you aren't using Ubuntu 18.04 (not recommended), you may need to rebuild the sgx-software-enable utility before use by typing:
-
-    ```shell
-    cd sgx-software-enable;
-    make
-    cd ..
     ```
 
     **Install SGX Library:**
@@ -311,8 +301,12 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     ```shell
     ls /dev/isgx
     ```
+    For newer machine device should be
+    ```shell
+    ls /dev/sgx_enclave
+    ```
 
-    If you don't see the isgx device, you need to troubleshoot your driver installation from [here](https://github.com/skalenetwork/sgxwallet/blob/develop/docs/enabling-sgx.md).
+    If you don't see the neither of isgx and sgx_enclave device, you need to troubleshoot your driver installation from [here](https://github.com/skalenetwork/sgxwallet/blob/develop/docs/enabling-sgx.md).
 
     **Another way to verify Intel SGX is enabled in BIOS:**
 
@@ -346,17 +340,17 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     vi docker-compose.yml
     ```
 
-    make sure `image` is skalenetwork/sgxwallet:&lt;`SGX_VERSION`> in docker-compose and it will look like:
+    make sure `image` is skalenetwork/sgxwallet:&lt;1.9.1-stable.1> in docker-compose and it will look like:
 
     ```shell
     version: '3'
     services:
       sgxwallet:
-        image: skalenetwork/sgxwallet:<SGX_VERSION>
+        image: skalenetwork/sgxwallet:1.9.1-stable.1
         network_mode: host
         devices:
-          - "/dev/isgx"
-          - "/dev/sg0"
+          - "/dev/isgx" # leave on of them
+          - "/dev/sgx_enclave"
         volumes:
           - ./sgx_data:/usr/src/sdk/sgx_data
           -  /dev/urandom:/dev/random
@@ -368,7 +362,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
         restart: unless-stopped
         command: -y -V
         healthcheck:
-          test: ["CMD", "ls", "/dev/isgx", "/dev/"]
+          test: ["CMD", "ls", "/dev/isgx", "/dev/sgx_enclave"]
     ```
 
     ### 2.7 Spin up SGXWallet Container
@@ -439,12 +433,12 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     - docker
     - docker-compose
     - nftables
-    - lvm2 
+    - lvm2
 
     <Aside type="note" title="Important">
     After docker installation make sure that the `live-restore` option is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
     </Aside>
-    
+
     <Aside>
     You can install iptables-persistent using the following commands:
     </Aside>
@@ -464,10 +458,15 @@ import { Steps, Aside } from "@astrojs/starlight/components";
 
     ### 3.3 Download Node CLI binary
 
-    ### 3.4 Download the Executable
-
     ```shell
-    sudo -E bash -c "curl -L {node-cli} >  /usr/local/bin/skale"
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.2/skale-2.6.2-Linux-x86_64 > /usr/local/bin/skale
+    ```
+
+    ### 3.4 Check hashsum
+    ```shell
+    sha512sum /usr/local/bin/skale
+    # Expected output:
+    # e012e18b062015c234e364bc0cd49ee40e65243d725f2261a4a5a2d516ac2fd86d59f3b9104f15f4fbe4045ec3ead018cc7ec159d079001fe9293617602741e4
     ```
 
     ### 3.5 Apply executable permissions to the downloaded binary:
@@ -494,7 +493,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     Configuration parameters are passed to Node CLI through .env file. It should contain the following variables:
 
     -   `CONTAINERS_CONFIG_STREAM` - git branch with containers versions config
-    -   `DISK_MOUNTPOINT` - Attached storage block device 
+    -   `DISK_MOUNTPOINT` - Attached storage block device
     -   `DOCKER_LVMPY_STREAM` - git branch of docker lvmpy volume driver for schains
     -   `ENDPOINT` - RPC endpoint of the supernode in the network where SKALE manager is deployed (`http` or `https`)
     -   `FILEBEAT_HOST` - URL to the Filebeat log server
@@ -510,11 +509,11 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     For the `{ENV_TYPE}` network .env will look like:
 
     ```txt
-    CONTAINER_CONFIGS_STREAM=3.0.1
+    CONTAINER_CONFIGS_STREAM=4.0.1
     DOCKER_LVMPY_STREAM=1.0.2-stable.0
     FILEBEAT_HOST=filebeat.mainnet.skalenodes.com:5000
-    MANAGER_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/skale-manager/1.11.0/skale-manager-1.11.0-mainnet-abi.json
-    IMA_CONTRACTS_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/master/releases/mainnet/IMA/1.5.0/mainnet/abi.json
+    MANAGER_CONTRACTS_ABI_URL= https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/mainnet/skale-manager/1.12.0/skale-manager-1.12.0-mainnet-abi.json
+    IMA_CONTRACT_ABI_URL=https://raw.githubusercontent.com/skalenetwork/skale-network/refs/heads/master/releases/mainnet/IMA/2.2.0/mainnet/abi.json
     ENV_TYPE=mainnet
     DISK_MOUNTPOINT=[DISK_MOUNTPOINT]
     IMA_ENDPOINT=[IMA_ENDPOINT]
@@ -527,7 +526,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     - `TG_API_KEY` - Telegram API key
     - `TG_CHAT_ID` - Telegram chat ID
 
-    ### 3.8 Enable SGX wallet autosign 
+    ### 3.8 Enable SGX wallet autosign
 
     Switch back to sgx server and go to `sgxwallet/run_sgx` folder
     ```shell
@@ -540,17 +539,17 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     sed -i -E 's/(command: .*) *$/\1 -s/g' docker-compose.yml
     ```
 
-    Restart the container 
+    Restart the container
     ```shell
     docker compose down && docker compose up -d
     ```
 
     ### 3.9 Initialize Supernode
 
-    To install supernode on your server you should run `skale node init`. It will create necessary configuration files and run base services and containers. 
+    To install supernode on your server you should run `skale node init`. It will create necessary configuration files and run base services and containers.
 
     ```shell
-    sudo skale node init .env 
+    sudo skale node init .env
     ```
 
     **Example Output:**
@@ -571,7 +570,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     Creating skale_api                 ... done
     ```
 
-    You can verify installation procedure by running: 
+    You can verify installation procedure by running:
 
     ```shell
     sudo skale wallet info
@@ -606,7 +605,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
 
     ```
 
-    ### 3.10 Disable SGX wallet autosign 
+    ### 3.10 Disable SGX wallet autosign
 
     Switch back to sgx server and go to `sgxwallet/run_sgx` folder
     ```shell
@@ -619,7 +618,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     sed -i -E 's/(command: .*) -s( .*)?$/\1\2/g' docker-compose.yml
     ```
 
-    Restart the container 
+    Restart the container
     ```shell
     docker compose down && docker compose up -d
     ```
@@ -678,7 +677,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     sk-val validator ls
     ```
 
-    Get your SKALE supernode signature by running Node CLI command. 
+    Get your SKALE supernode signature by running Node CLI command.
 
     ```shell
     sudo skale node signature [VALIDATOR_ID]
@@ -724,7 +723,7 @@ import { Steps, Aside } from "@astrojs/starlight/components";
     Every delegation need to be accepted. You can do it using `sk-val validator accept-delegation` command:
 
     ```shell
-    sk-val validator accept-delegation --delegation-id [DELEGATION-ID] 
+    sk-val validator accept-delegation --delegation-id [DELEGATION-ID]
     ```
 
     Required arguments:
