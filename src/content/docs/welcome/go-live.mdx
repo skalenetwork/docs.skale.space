@@ -1,0 +1,74 @@
+---
+title: Go Live
+description: Go Live
+---
+import { Steps } from "@astrojs/starlight/components";
+import { LinkCard ,CardGrid } from "@astrojs/starlight/components";
+
+The go-live process for SKALE is unique compared to other EVM networks.
+As SKALE Chains are permissioned, you must be given to permission by a chain owner or operator to deploy.
+While all chains can have their own individual requirements; the below are the common checks that the majority
+of the SKALE Chains use including the core SKALE Hubs: Calypso, Europa, Nebula, and Titan.
+
+<Steps>
+
+1. ### Onboarding Form
+
+   Please fill out the onboarding form to help provide key information that will be used throughout the review process.
+
+	<LinkCard
+		title="Onboarding Form"
+		href="https://onboarding.skale.space"
+	/>
+
+2. ### Validate your Smart Contracts
+
+   #### Taking Payment/Valued Tokens
+
+   SKALE is well known for its zero-gas fees. However, because the native 
+   gas token sFUEL has no monetary value; it should never be used in situations where
+   you are attempting to represent value.
+
+   This means that in Solidity you should NOT use msg.value and should instead utilize tokens of value in the 
+   form of ERC-20 or some other way to represent value. 
+
+   For more information please check the [payments section](/building-applications/payments-on-skale).
+
+   #### Check for Factories
+
+   As mentioned above, SKALE Chains are permissioned by default.
+   This permission layer on SKALE offers very explicit rules for how it operates:
+
+   - It allows Externally Owned Accounts (EOAs) -- e.g. private keys -- to deploy smart contracts IF
+   they have the DEPLOYER_ROLE on the ConfigController.
+
+   - It allows smart contracts to deploy other smart contracts without any sort of restrictions -- e.g factories.
+
+   In order to ensure that the SKALE Chain you are looking to deploy to stays secure, the chain owners and operators 
+   will request that your scripts and smart contracts only use contract factories that adhere to the following:
+
+      - The use of deterministic deployers, e.g <a href="https://github.com/Arachnid/deterministic-deployment-proxy">CREATE2Factory</a>, should be swapped out for <a href="https://github.com/payvint/skale-deterministic-deployment-proxy">SKALE Deterministic Deploy</a>.
+      - The use of contract creation factories for items like assets should ideally be locked down behind either authoritative actions/roles or limited in some other way. This
+      will reduce the chance of a factory contract being botted with zero gas fees.
+
+    For more information please check the [factories section](/building-applications/using-contract-factories).
+
+
+3. ### Deploy to Testnet
+
+   While individual dApp chains don't hold this requirement, if you plan on deploying to a SKALE Hub you should plan on showcasing your project on 
+   testnet before requesting access to Mainnet. This will ensure that the chain operators have a chance to work with you to ensure that
+   the chain you are looking to deploy on is the correct fit.
+
+   You can find inforamtion about the different SKALE Chains Tesnets [here](/welcome/chain-info).
+
+4. ### Showcase your Project
+
+   Once you are ready to go to Mainnet, head over to the <a href="https://discord.com/invite/gM5XBy6">Discord</a> and add your project in
+   the #showcase-your-project.
+
+5. ### Request Review
+
+   Please add the **Request Review** tag the SKALE Developer Success Team or the Chain Operator to proceed with the review process.
+
+</Steps>
