@@ -29,10 +29,10 @@ export default {
 	"/quick-start/": "/welcome/get-started",
 	"/quick-start/building-for-skale": "/building-applications/build-a-dapp",
 	"/quick-start/building-for-skale/": "/building-applications/build-a-dapp",
-	"/quick-start/deploy-to-testnet": "/building-applications/deploy-on-skale",
-	"/quick-start/deploy-to-testnet/": "/building-applications/deploy-on-skale",
-	"/quick-start/go-live": "/building-applications/deploy-on-skale",
-	"/quick-start/go-live/": "/building-applications/deploy-on-skale",
+	"/quick-start/deploy-to-testnet": "/welcome/go-live",
+	"/quick-start/deploy-to-testnet/": "/welcome/go-live",
+	"/quick-start/go-live": "/welcome/go-live",
+	"/quick-start/go-live/": "/welcome/go-live",
 
 	// Builders App Developers → Building Applications
 	"/builders/app-developers/overview": "/building-applications/build-a-dapp",
@@ -233,4 +233,5 @@ export default {
 	"/builders/tools/wallets/wallet-connect":
 		"/building-applications/build-a-dapp",
 	"/builders/tools/wallets/web3auth": "/building-applications/build-a-dapp",
+	"/building-applications/deploy-on-skale": "/welcome/go-live"
 };
