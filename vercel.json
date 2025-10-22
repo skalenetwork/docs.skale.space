@@ -1,0 +1,9 @@
+{
+    "redirects": [
+        {
+            "source": "/introduction/mainnet-beta",
+            "destination": "/how-skale-works/mainnet-beta",
+            "permanent": true
+        }
+    ]
+}
