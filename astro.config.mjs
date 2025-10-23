@@ -16,18 +16,7 @@ const llms = starlightLlmsTxt({
 			label: "SKALE Network Github",
 			url: "https://github.com/skalenetwork",
 			description: "SKALE Network GitHub Organization"
-		},
-		{
-			label: "Dirt Road Dev Docs",
-			url: "https://docs.dirtroad.dev",
-			description: "3rd party contributor Dirt Road Development docs which contains key SKALE contributions"
-		},
-		{
-			label: "Eidolon Docs",
-			url: "https://docs.eidolon.gg",
-			description: "3rd party contributor Eidolon Labs docs which contains key SKALE contributions"
-		}
-	]
+		}	]
 })
 
 // https://astro.build/config
