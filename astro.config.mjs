@@ -31,6 +31,7 @@ export default defineConfig({
 			customCss: [
 				'./src/styles/global.css'
 			],
+			favicon: "./skale_token_b.png",
 			locales: {
 				root: {
 					label: 'English',
