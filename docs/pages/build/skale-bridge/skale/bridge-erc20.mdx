@@ -1,0 +1,129 @@
+---
+title: Bridge ERC-20 Tokens
+description: Guide on bridging ERC-20 tokens on SKALE
+---
+
+
+# Bridge ERC-20 Tokens
+
+SKALE's Interchain Messaging Agent (IMA) Bridge allows for direct communication and bridging between SKALE Chains (without ever going to Mainnet).
+
+The following walks you through setting up an ERC-20 token between two SKALE Chains and how to programatically bridge.
+
+## Important Information
+- When a SKALE Chain is created, there are no ERC-20 tokens mapped by default
+- A token being bridged between two chains should have its supply **issued** (i.e minted) on one chain. The second SKALE Chain mints by design via IMA, however, the token should not be mintable any other way
+- Tokens being bridged from SKALE Chain to SKALE Chain are locked in TokenManagerERC20 on the origin chain
+- Tokens being bridged from SKALE Chain to SKALE Chain are minted by IMA on the destination chain
+
+## Bridge Setup
+
+::::note
+If the SKALE Chains you are mapping the ERC-20 token from/to are not connected, please [connect the SKALE Chains](/build/skale-bridge/skale/connect-schains).
+
+::::
+
+### 1. Prepare the ERC-20
+
+ERC-20 tokens that are being bridged between SKALE Chains should follow two basic requirements in order to be compatible with the SKALE IMA
+bridging layer:
+
+1. Have a **mint** function that is locked down to TokenManagerERC20
+2. Have a **burn** function that is locked down to TokenManagerERC20
+
+::::danger
+**Caution on Minting**
+
+If the mint function is not locked down to just TokenManagerERC20 there is a chance that
+the supply on the destination chain could be larger than what is actually locked in the bridge on the origin SKALE Chain.
+
+
+::::danger
+**Caution on Burning**
+
+If the burn function is not locked down to just TokenManagerERC20 there is a chance that
+the supply on the SKALE Chain side could be "burned", while the tokens still exist on the origin SKALE Chain which could later be withdrawn under
+certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for the bridged tokens.
+
+
+The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
+
+```solidity title="InterchainERC20.sol"
+// [!include ~/snippets/skale-bridge/InterchainERC20.sol
+```
+
+### 2. Deploy the ERC-20 on SKALE Chain
+
+Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-20 token to the SKALE Chain you want to be able to bridge assets too.
+
+
+
+```solidity title="InterchainSKL.sol
+*This is an example of an 18 decimal ERC-20 token that would be deployed on SKALE*
+// [!include ~/snippets/skale-bridge/InterchainSKL.sol
+```
+
+```solidity title="InterchainUSDT.sol
+*This is an example of an 6 decimal ERC-20 token that would be deployed on SKALE*
+// [!include ~/snippets/skale-bridge/InterchainUSDT.sol
+```
+
+
+
+> *InterchainERC20.sol is inherited from the code above*
+
+### 3. Map the SKALE Token
+
+::::note
+If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
+
+
+#### Add the token on SKALE Chain TokenManagerERC20
+
+- **DST_SCHAIN_NAME** is the name of the sChain that the transaction should execute on
+- **ORIGIN_SCHAIN_NAME** is the name of the sChain that the token is being mapped from
+- **0x_ORIGIN_TOKEN** is the original token address on the ORIGIN_SCHAIN_NAME
+- **0x_DST_TOKEN** is the destination token address on the DST_SCHAIN_NAME
+
+
+
+```shell title="Multisigwallet CLI
+npx msig encodeData [DST_SCHAIN_NAME] TokenManagerERC20 addERC20TokenByOwner [ORIGIN_SCHAIN_NAME] [0x_ORIGIN_TOKEN] [0x_DST_TOKEN
+```
+
+After this, execute by following the steps on [Using SAFE](/skale-chain/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+
+
+#### Verify the mapping
+
+To verify the mapping, TokenManagerERC20 on the SKALE Chain (DST_CHAIN_NAME from above) should emit an event - `event ERC20TokenAdded(SchainHash indexed chainHash, address indexed erc20OnMainChain, address indexed erc20OnSchain);`
+
+## Bridging ERC-20
+
+The following does not require you to setup your own token. This works with **ANY** ERC-20 token that is mapped from a SKALE Chain to any other SKALE Chain as long as the actual ERC-20 token on each side does not have additional restrictions around who can transfer.
+
+The flow for bridging an ERC-20 from sChain to sChain follows a very similar flow to a standard ERC-20 transfer:
+
+1. Approve the origin chain bridge contract on the ERC-20 token to allow it to control some amount of funds
+2. Call the origin bridge directly to transfer the asset from SKALE Chain -> SKALE Chain
+3. Wait for the message to be posted by the validator set on the destination SKALE Chain, which is where the net-new minted tokens corresponding to the value locked on the origin SKALE Chain during the bridge are created
+
+### Bridge Tokens
+
+If bridging a token natively deployed on a SKALE Chain to another SKALE Chain, the process for bridging in either direction is identical. The action taken by the chain is slightly different (i.e lock and mint vs burn and unlock), however, for the end user the flow is identical i.e receive N new tokens in their wallet.
+
+::::note
+A normal ERC-20 bridge will result in tokens being delivered to the same wallet on the new SKALE Chain.
+A direct ERC-20 bridge will result in tokens being delivered to the specified wallet on the new SKALE Chain.
+
+
+
+
+```js title="bridge.js
+// [!include ~/snippets/skale-bridge/bridge-erc20.js
+```
+
+```js title="bridgeDirect.js
+// [!include ~/snippets/skale-bridge/bridge-erc20-direct.js
+```
+

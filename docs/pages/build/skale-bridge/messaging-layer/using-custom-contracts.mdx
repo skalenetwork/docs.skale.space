@@ -1,0 +1,56 @@
+---
+title: Using Custom Contracts
+description: Using Custom SKALE IMA Contracts
+---
+
+
+# Using Custom Contracts
+
+## Recap
+
+1. We have created a [custom contract](/build/skale-bridge/messaging-layer/create-custom-contracts)
+2. We have [connected](/build/skale-bridge/messaging-layer/connect-custom-contracts) the custom Contracts
+3. Now we are ready to test them! Follow the steps below.
+
+::::note
+Having trouble setting up or using your custom IMA connected contracts?
+Join the team in [Discord](https://discord.gg/skale) for suppport!
+
+
+```ts title="Ethers v6 Example"
+/**
+* Run:
+* npm install ethers dotenv
+*/
+
+import { Contract, JsonRpcProvider, Wallet } from "ethers";
+import dotenv from "dotenv";
+dotenv.config();
+
+const SEND_NUMBER_ADDR_A = "0xd2AAa00100000000000000000000000000000000"; // Contract on sChain A
+const SEND_NUMBER_ADDR_B = "0xd2AAa00100000000000000000000000000000000"; // Contract on sChain B
+const SEND_NUMBER_ABI = [
+	"function sendNumber(uint256 number) external",
+	"function lastNumber() external view returns (uint256)"
+];
+
+const sChainAProvider = new JsonRpcProvider(process.env.RPC_URL);
+const sChainBProvider = new JsonRpcProvider(process.env.RPC_URL_B);
+
+const wallet = new Wallet(process.env.PRIVATE_KEY, sChainAProvider);
+const contractA = new Contract(SEND_NUMBER_ADDR_A, SEND_NUMBER_ABI, wallet);
+const contractB = new Contract(SEND_NUMBER_ADDR_B, SEND_NUMBER_ABI, sChainBProvider);
+const txA = await contractA.sendNumber(BigInt(5));
+await txA.ok();
+
+// The following can be replaced with "listening for an event", however,
+// a while loop is more intuitive for a new developer
+while (true) {
+	const lastNumber = await contractB.lastNumber();
+	if (lastNumber === BigInt(5)) {
+		console.log("Posted!");
+		break;
+	}
+	await new Promise(res => setTimeout(res, 2000)); // Sleep 2 seconds
+}
+```

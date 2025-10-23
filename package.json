@@ -1,24 +1,22 @@
 {
   "name": "docs.skale.space",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "version": "2.0.0",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "linkcheck": "CHECK_LINKS=true astro build"
+    "dev": "vocs dev",
+    "build": "vocs build",
+    "preview": "vocs preview"
   },
   "dependencies": {
-    "@astrojs/react": "^4.3.0",
-    "@astrojs/starlight": "^0.34.4",
-    "astro": "^5.10.1",
-    "sharp": "^0.32.5",
-    "starlight-llms-txt": "^0.5.1",
-    "viem": "^2.23.13"
+    "react": "latest",
+    "react-dom": "latest",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "vocs": "latest"
   },
   "devDependencies": {
-    "starlight-links-validator": "^0.17.0"
+    "@types/react": "latest",
+    "typescript": "latest"
   }
 }

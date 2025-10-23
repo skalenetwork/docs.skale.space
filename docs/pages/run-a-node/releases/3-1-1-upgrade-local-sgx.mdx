@@ -1,0 +1,117 @@
+---
+title: SKALE 3.1.1 upgrade
+description: SKALE node upgrade steps from 3.1.0 to 3.1.1
+---
+# SKALE 3.1.1 Upgrade
+
+::::warning
+The firewall mechanism was updated in version 3.1.1. As a result, please proceed with the following steps with extra caution. Ensure that you perform these actions on each node individually.
+
+
+## Upgrade steps for the node server
+
+::::steps
+
+1. Turn off sgxwallet
+    ```bash
+    cd sgxwallet/run_sgx/ && docker-compose down && cd ../../
+    ```
+
+2. Turn off the node
+
+    ```bash
+    skale node turn-off --unsafe --yes
+    ```
+
+3. Backup the node
+    ```bash
+    skale node backup .
+    ```
+    Save the data on another machine
+
+4. Backup `sgx_data` folder and SGX backup key. Save the data on another machine
+
+5. Upgrade packages
+
+    ```bash
+    sudo apt update && sudo apt upgrade
+    sudo reboot
+    ```
+
+6. Upgrade to Ubuntu 22.04
+    ```bash
+    do-release-upgrade
+    reboot
+    ```
+
+7. Turn off docker-lvmpy
+    ``` bash
+    systemctl stop docker-lvmpy && systemctl disable docker-lvmpy
+    ```
+
+8. Make sure nftables is installed
+    ```bash
+    sudo apt update && sudo apt install nftables docker-compose-plugin
+    ```
+
+7. Disable ufw ipv6 configuration
+    ```bash
+    sed -i 's/IPV6=yes/IPV6=no/' /etc/default/ufw.
+    ```
+
+8. Reload ufw
+    ```bash
+    ufw reload
+    ```
+
+9. Pull latest changes from sgxwallet
+    ```bash
+    cd sgxwallet/run_sgx && git checkout stable && git pull
+    ```
+
+10. Add `-b` option in the `command` section of `run_sgx/docker-compose.yml`
+
+11. Run sgxwallet
+    ```bash
+    cd run_sgx && docker-compose up -d
+    ```
+12. Download new node-cli binary
+
+    ```bash
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.0/skale-2.6.0-Linux-x86_64 > /usr/local/bin/skale
+    ```
+
+13. Verify node-cli binary hash sum
+
+    ```bash
+    sha512sum /usr/local/bin/skale
+    ```
+    Expected checksum
+
+    ```bash
+    15b2aade24223da4f84ec79bd820d57f852fd7a5d78f10652823629da28aab5db49a5815a2be0c894bb00b99324b00b7d9da2ab1518ddc11f304378af54b427c
+    ```
+
+14. Make node-cli executable
+    ```bash
+    chmod +x /usr/local/bin/skale
+    ```
+
+15. Update the following parameters to the new values
+    ```bash
+    CONTAINER_CONFIGS_STREAM=3.1.1
+    ```
+
+16. Execute update
+    ```bash
+    skale node update .env --yes
+    ```
+
+17. Restart nftables and docker services
+    :::warning
+    Proceed with the execution in close collaboration with the core team, ensuring that the chains are fully stable beforehand.
+    :::
+    ```bash
+    systemctl restart nftables && systemctl restart docker
+    nft add rule inet firewall skale tcp dport 1026-1031 drop
+    ```
