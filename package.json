@@ -11,6 +11,8 @@
   "dependencies": {
     "react": "latest",
     "react-dom": "latest",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
     "vocs": "latest"
   },
   "devDependencies": {

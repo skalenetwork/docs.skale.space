@@ -1,0 +1,76 @@
+---
+title: Block Rotation
+description: How SKALE optimizes storage using block rotation for consensus and full-sync nodes.
+---
+
+
+# Block Rotation
+
+Block rotation on a SKALE Chain limits the disk space used by consensus and full-sync nodes by pruning old blocks, ensuring efficient storage and performance.
+
+## Storage Allocation
+
+Each SKALE Chain reserves **12.6 GB** of storage for core blockchain data on consensus and full-sync nodes. This includes:
+
+- `blocks`
+- `transactions` and their receipts
+- `log blooms` (for efficient event filtering)
+- `"best"` — latest block info (`lastBlockHash`)
+- `"chainStart"` — earliest available block (`firstBlockHash`, useful after importing snapshots)
+
+<Aside type="note" title="Developer Note">
+Block rotation does not apply to <strong>SKALE Archive Nodes</strong>or <strong>SKALE Indexer Nodes</strong>, which both store the full block history.
+</Aside>
+
+## How Block Rotation Works
+
+To stay within the 12.6 GB limit, SKALE Chains maintain a dynamic range of block data:
+
+- Only the **most recent 80–100%** of data is retained.
+- The **oldest 20%** is pruned as new blocks are added.
+- The rotation is based on **data size**, not block count.
+
+### Example
+
+If block storage nears the 12.6 GB cap:
+
+- The chain deletes the oldest blocks until usage returns to ~80% of the cap.
+- Only recent blocks remain accessible on consensus and full-sync nodes.
+
+This sliding-window model ensures that the chain operates efficiently without growing indefinitely in size.
+
+## Benefits
+
+- **Efficient resource use** — prevents storage bloat.
+- **High performance** — reduces read/write overhead.
+- **Scalability** — supports many lightweight SKALE Chains running in parallel.
+
+## Full Historical Access
+
+If your app or service requires the entire blockchain history (e.g. for analytics, block explorers, or archival indexing), use a **SKALE Archive Node**, which:
+
+- Stores all past blocks
+- Maintains full transaction and log history
+- Is not affected by block rotation
+
+---
+
+Want to run a SKALE Archive Node or build on top of historical data? Reach out on [SKALE's Discord](https://discord.gg/skale) or explore the [developer docs](https://docs.skale.network/).
+
+## API Changes
+
+| Calls                                   | Changes                                          |
+| --------------------------------------- | ------------------------------------------------ |
+| eth_getBlockByNumber/eth_getBlockByHash | may return null                                  |
+| eth_getBlockTransactionCountByNumber    | may return null                                  |
+| eth_getBlockTransactionCountByHash      | may return null                                  |
+| eth_getUncleCountByBlockNumber          | may return null                                  |
+| eth_getUncleCountByBlockHash            | may return null                                  |
+| eth_getTransactionByBlockHashAndIndex   | may return null                                  |
+| eth_getTransactionByBlockNumberAndIndex | may return null                                  |
+| eth_getUncleByBlockHashAndIndex         | may return null                                  |
+| eth_getUncleByBlockNumberAndIndex       | may return null                                  |
+| eth_getTransactionByHash                | may return null                                  |
+| eth_getTransactionReceipt               | may return null                                  |
+| eth_getFilterLogs                       | will treat removed blocks as if they have 0 logs |
+| eth_getLogs                             | will treat removed blocks as if they have 0 logs |

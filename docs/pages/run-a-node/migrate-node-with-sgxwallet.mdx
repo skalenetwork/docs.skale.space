@@ -1,0 +1,251 @@
+---
+title: Migrate SKALE Node with SGXWallet to New Server
+description: Step-by-step guide for migrating a SKALE node and SGXWallet to a new server
+---
+
+# Migrate SKALE Node with SGXWallet to New Server
+
+This guide provides instructions for migrating a SKALE node and SGXWallet to a new server following the recommended migration process.
+
+## Prerequisites
+
+Before starting the migration, ensure you have:
+
+- Access to both the current and new servers
+- Administrative privileges on both systems
+- Secure network connection between servers
+
+   :::warning
+   Make sure backup is created before starting migration. You can use the `skale node backup .` command to create a backup of your current node and save `sgx_data` folder for SGX wallet as well as `sgxwallet_backup_key.txt`
+   :::
+
+## Migration Steps
+
+
+### Migrate SGX
+
+## Steps
+1. **Setup new server**
+
+   Prepare a new server with:
+   - Ubuntu 22.04 LTS (Jammy Jellyfish)
+   - SGX-enabled Intel processor
+   - 8 physical cores
+   - 16 GB RAM
+   - 200 GB disk mounted as /
+   - Swap size equals to half (1/2) of RAM size
+
+2. **Install packages required for the node**
+
+   ```bash
+   sudo apt-get update && sudo apt-get upgrade -y
+   sudo apt-get install -y docker.io docker-compose-plugin
+   sudo apt-get install -y build-essential make cmake gcc g++ yasm  python libprotobuf10 flex bison automake libtool texinfo libgcrypt20-dev libgnutls28-dev
+   sudo apt-get install -y docker
+   sudo apt-get install -y libelf-dev cpuid
+   ```
+
+3. **Verify your processor supports Intel SGX with:**
+
+   ```shell
+   cpuid | grep SGX:
+   ```
+
+   :::warning
+   After installing docker make sure that `live-restore` option
+   is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
+   :::
+
+4. **Disable automatic updates**
+
+   It's recommended to only update the SGXWallet server if there are critical security fixes. This is because SGXWallet is based on low
+   level technology, and kernel updates may break the system. Currently SGX is tested on 5.15\* kernels. It's best to avoid minor version updates too.
+
+   To make sure `apt update` won't update the kernel you should use apt-mark hold command:
+
+   ```shell
+   sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
+   ```
+
+   Also if you configured unattended upgrades, you should make sure kernel won't update automatically. To do this, add the following lines to `/etc/apt/apt.conf.d/50unattended-upgrades` file:
+
+   ```shell
+   Unattended-Upgrade::Package-Blacklist {
+           "linux-generic";
+           "linux-image-generic";
+           "linux-headers-generic";
+   };
+   ```
+
+   **Output**
+
+   ```shell
+   SGX: Software Guard Extensions supported = true
+   ```
+
+5. Configure firewall between SGX and node servers
+
+
+6. Download SGXWallet source code
+
+   Clone SGX Wallet Repository to your machine:
+
+   ```shell
+   git clone https://github.com/skalenetwork/sgxwallet/
+   cd sgxwallet
+   git checkout stable
+   ```
+
+7. Enable SGX on the new server
+   **SGX Wallet repository includes the sgx_enable utility. To enable SGX run:**
+
+   ```shell
+   sudo ./sgx_enable
+   ```
+
+   **Install SGX driver:**
+
+   ```shell
+   cd scripts
+   sudo ./sgx_linux_x64_driver_2.11.b6f5b4a.bin
+   cd ..
+   ```
+
+   **System Reboot:**
+
+   :::note
+   Reboot your machine after driver install!
+   :::
+
+   **Check driver installation:**
+   To check that isgx device is properly installed run this command:
+
+   ```shell
+   ls /dev/isgx /dev/sg0
+   ```
+
+   If you don't see the isgx device, you need to troubleshoot your driver installation from [here](https://github.com/skalenetwork/sgxwallet/blob/develop/docs/enabling-sgx.md).
+
+8. **Copy sgx_data folder to the new server**
+
+   From your old server, securely transfer the SGX data:
+   ```bash
+   # On old server - create backup
+   tar -czf sgx_data_backup.tar.gz -C sgxwallet/run_sgx sgx_data
+
+   # Transfer to new server (use scp, rsync, or secure method)
+   scp sgx_data_backup.tar.gz user@new-server:/path/to/transfer/
+
+   # On new server - extract to correct location
+   cd sgxwallet/run_sgx
+   tar -xzf /path/to/transfer/sgx_data_backup.tar.gz
+   ```
+
+   :::warning
+   After uploading backup to the new server make sure that sgxwallet_backup_key.txt is stored in sgx_data
+   :::
+
+
+9. **Set the version and -b flag in docker-compose.yml**
+   Edit the `sgxwallet/run_sgx/docker-compose.yml` file:
+
+   - Change the image version to: `skalenetwork/sgxwallet:1.9.0-stable.4`
+   - Add `-b` to the existing command section (don't replace the entire command, just add `-b` to it)
+
+
+10. **Run docker-compose up -d**
+
+      ```bash
+      cd sgxwallet/run_sgx
+      docker-compose up -d
+
+      # Verify SGXWallet is running
+      docker-compose ps
+      docker-compose logs
+      ```
+
+### Migrate Node
+
+## Steps
+1. **Setup new server**
+
+   Prepare a new server with:
+   - Ubuntu 22.04 LTS (Jammy Jellyfish)
+   - 8 physical cores
+   - 32 GB RAM
+   - 16 GB RAM
+   - 100 GB disk mounted as /
+   - 2Tb additional disk (not mounted)
+
+2. **Install packages required for the node**
+
+   ```bash
+   sudo apt-get update && sudo apt-get upgrade -y
+   sudo apt-get install -y docker.io docker-compose-plugin nftables
+   ```
+
+    :::warning
+    After installing docker make sure that `live-restore` option
+    is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
+    :::
+
+3. **Disable automatic updates**
+
+   Currently SKALE Node is tested on 5.15\* kernels. It's best to avoid minor version updates too.
+
+   To make sure `apt update` won't update the kernel you should use apt-mark hold command:
+
+   ```shell
+   sudo apt-mark hold linux-generic linux-image-generic linux-headers-generic
+   ```
+
+   Also if you configured unattended upgrades, you should make sure kernel won't update automatically. To do this, add the following lines to `/etc/apt/apt.conf.d/50unattended-upgrades` file:
+
+   ```shell
+   Unattended-Upgrade::Package-Blacklist {
+           "linux-generic";
+           "linux-image-generic";
+           "linux-headers-generic";
+   };
+   ```
+
+4. **Run node backup on old server**
+
+   ```bash
+   # On old server
+   skale node backup .
+   ```
+
+   This will create a backup tarball (e.g., `skale-node-backup-YYYY-MM-DD-HHMMSS.tar.gz`)
+
+5. **Copy backup tarball and .env config to the new server**
+
+   ```bash
+   # Transfer backup and configuration files
+   scp skale-node-backup-*.tar.gz user@new-server:/path/to/new/location/
+   scp .env user@new-server:/path/to/new/location/
+   ```
+
+6. **Download node-CLI version**
+
+    ```bash
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.2/skale-2.6.2-Linux-x86_64 > /usr/local/bin/skale
+    chmod +x /usr/local/bin/skale
+
+    # Verify installation
+    skale --version
+    ```
+
+7. **Restore node from backup**
+
+    ```bash
+    # Navigate to your working directory
+    cd backup tarball location
+
+    # Restore node using backup and environment file
+    skale node restore skale-node-backup-*.tar.gz .env
+    ```
+
+::::tip
+Keep the old server running until you've fully verified the new setup is working correctly. This allows for quick rollback if needed.
+

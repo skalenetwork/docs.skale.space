@@ -1,0 +1,44 @@
+---
+title: Connect SKALE Chains
+description: Learn to connect SKALE Chains together for gas free bridging
+---
+
+
+# Connect SKALE Chains
+
+Ready to start bridging ERC-20's, ERC-721's, and ERC-1155's between SKALE Chains? Before you proceed to the setup guides for your target token, read through the following to ensure that the SKALE Chains you are moving assets between are able to communicate.
+
+## Background on Connections
+
+All SKALE Chains utilize the same components and contracts to enable bridging. However, while SKALE Chains are all by default connected to Ethereum for operations and bridging; SKALE Chains do not come out of the box with connections to other SKALE Chains.
+
+This is both for security since the SKALE architecture does not define what chains can be used for externally, all chains adhere to an appchain first mentality i.e as siloed and secure as possible allowing the chain owner to setup and connect as they see fit.
+
+**Interested in setting up your own token on multiple SKALE Chains? Connect the chains now!**
+
+::::note
+The connection process requires **BOTH** SKALE Chain Owners to execute the connection. This ensures connections cannot be made unilaterally by a single chain which greatly bolsters natural security and compliance. Contact the SKALE team in [Discord](https://discord.gg/skale) to ask for help!
+
+
+## Connect a SKALE Chain
+
+The following will create a connection from your chain to the target chain. If the other chain is already connected to your SKALE Chain, you can proceed
+with token setup and bridging. If the other chain has not yet connected then bridging will not work until completed.
+
+
+
+```shell title="via Multisigwallet CLI
+npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerLinker connectSchain [TARGET_CHAIN_NAME
+```
+
+After this, execute by following the steps on [Using SAFE](/skale-chain/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+```
+
+```js title="connect.js
+// [!include ~/snippets/skale-bridge/connect-schain.js
+```
+
+
+
+::::note
+The above call requires **REGISTRAR_ROLE** which is an OpenZeppelin AccessControl role defined within the TokenManagerLinker smart contract.

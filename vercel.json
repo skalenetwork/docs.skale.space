@@ -1,8 +1,13 @@
 {
     "redirects": [
         {
-            "source": "/introduction/mainnet-beta",
-            "destination": "/how-skale-works/mainnet-beta",
+            "source": "/",
+            "destination": "/get-started/skale",
+            "permanent": true
+        },
+        {
+            "source": "/run-a-skale-node/:slug",
+            "destination": "/run-a-node/:slug",
             "permanent": true
         }
     ]

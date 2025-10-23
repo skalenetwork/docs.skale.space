@@ -2,9 +2,8 @@
 title: Consensus
 description: SKALE Mainnet Beta
 ---
-import ByzantineFormula from "../../../formulas/ByzantineFormula.astro";
-import ByzantineFormula2 from "../../../formulas/ByzantineFormula2.astro";
-import MaxByzantineNodes from "../../../formulas/MaxByzantineNodes.astro";
+
+# Consensus
 
 ## Protocol Overview
 
@@ -25,15 +24,15 @@ EVM processes `committed blocks` one `transaction` at a time. For each `transact
 
 The purpose of SKALE chain is to order `transactions` into `blocks` and then process them by `EVM`.
 
-SKALE chain is composed of a fixed set of `N` network `nodes` that process user `transactions` in the following phases
+SKALE chain is composed of a fixed set of $N$ network nodes that process user `transactions` in the following phases
 
 - accept and validate user `transactions` (_submission phase_)
 - broadcast `transactions` to peer nodes (_broadcast phase_)
 - store `transactions` into `pending queues` (_pending queue phase_)
-- create `block proposal` for each `block number` and broadcast it to peers, collecting `2/3 N` `data availability signatures` and creating `DA proofs`. (_block proposal phase_)
+- create `block proposal` for each `block number` and broadcast it to peers, collecting $\frac{2}{3} N$ `data availability signatures` and creating `DA proofs`. (_block proposal phase_)
 - broadcast `DA proofs` to peers (_DA broadcast phase_)
 - run `block consensus` for each `block proposal` to select a `winning proposal` (_block consensus phase_)
-- sign the statement on which proposal won (`block signature share`) and broadcast it to other nodes. Wait until receipt of 2/3 of `block signature shares` and merge them 
+- sign the statement on which proposal won (`block signature share`) and broadcast it to other nodes. Wait until receipt of $\frac{2}{3}$ of `block signature shares` and merge them 
 into `block signature`. (_block signature phase_)
 - commit the `winning proposal` if `node` has it, otherwise download it from other nodes and commit it. The `winning proposal` becomes a`committed block` (_block finalization phase_)
 - process the `committed block` through `Ethereum Virtual Machine` to transition to the new `EVM state`. (_EVM processing phase_)
@@ -100,11 +99,11 @@ The mathematical assumptions for provable security are specified below.
 
 #### Node security assumptions 
 
-We assume that out of `N` `nodes`, `t` `nodes` at maximum are Byzantine (malicious), where
+We assume that out of $N$ nodes, $t$ nodes at maximum are Byzantine (malicious), where
 
-<ByzantineFormula />
+$$3t + 1 \leq N$$
 
-Simply speaking, not more than 1/3 of nodes can be malicious. For instance, if `N = 16`, the maximum number of malicious `nodes` is `5`.
+Simply speaking, not more than 1/3 of nodes can be malicious. For instance, if $N = 16$, the maximum number of malicious nodes is $5$.
 
 The identity of malicious nodes is not known. A malicious node will typically pretend being an honest node.
 
@@ -155,7 +154,7 @@ Once a `node` created a proposal, it will broadcast `compressed proposal` to all
 
 Once the `receiving node` receives the `block proposal`, it will sign a `Data Availability Signature` and pass it to the `sending node`. 
 
-Once the `sending node` collects `DA signatures` from `2/3` of nodes, it will merge the signatures into a `DA proof`. The `DA proof` proves that the proposal has been widely distributed over the network.
+Once the `sending node` collects `DA signatures` from `$\frac{2}{3}$` of nodes, it will merge the signatures into a `DA proof`. The `DA proof` proves that the proposal has been widely distributed over the network.
 
 #### DA broadcast phase
 
@@ -165,15 +164,15 @@ Note that `DA proof` requirement solves two problems:
 
 First, a `block proposal` that has a `DA proof` is _guaranteed to be widely distributed_.
 
-Second, since `DA proof` creation requires a 2/3 signature of nodes, the proposal is _guaranteed to be unique_. 
+Second, since `DA proof` creation requires a $\frac{2}{3}$ signature of nodes, the proposal is _guaranteed to be unique_. 
 A malicious proposal is not able to create two different proposals an obtain DA proofs for both of them.
 
 
 #### Block consensus phase
 
-Once a node receives `DA proofs` from 2/3 of nodes, the node will start the block consensus phase.
+Once a node receives `DA proofs` from $\frac{2}{3}$ of nodes, the node will start the block consensus phase.
 
-During block consensus phase, the `node` will vote `1` if it received `DA proof` for a particular proposal, and vote `0` otherwise.
+During block consensus phase, the `node` will vote $1$ if it received `DA proof` for a particular proposal, and vote $0$ otherwise.
 
 The nodes will then executed asynchronous binary consensus algorithm, also known as `Byzantine Generals problem`. https://en.wikipedia.org/wiki/Byzantine_fault
 
@@ -181,14 +180,14 @@ The particular binary consensus algorithm implemented in SKALE is specified in
 
 https://inria.hal.science/hal-00944019/file/RR-2016-Consensus-optimal-V5.pdf
 
-Once the binary consensus completed, it guarantees that all honest node will reach consensus of `1` or `0'. If honest nodes reach `1` it is guaranteed
-that `1` was initially voted by at least `1' honest nodes. That, in turn, guarantees that the `block proposal` is `DA safe`, or that it is widely distributed over the network.
-
-If a `block consensus` phase outputs `1` for several proposals, the proposal with highest priority is selected. The priority changes from one block to another so that on average each node has similar probability to win.
+Once the binary consensus completed, it guarantees that all honest node will reach consensus of $1$ or $0$. If honest nodes reach $1$ it is guaranteed
+that $1$ was initially voted by at least $1$ honest nodes. That, in turn, guarantees that the `block proposal` is `DA safe`, or that it is widely distributed over the network.
+te
+If a `block consensus` phase outputs $1$ for several proposals, the proposal with highest priority is selected. The priority changes from one block to another so that on average each node has similar probability to win.
 
 #### Block  signature phase
 
-After `block consensus` decides on the winning block, each node will sign the statement specifying the winning proposal (`block signature share`) and broadcast it to other nodes. The node will then wait until receipt of 2/3 of `block signature shares` and merge the shares into `block signature`.
+After `block consensus` decides on the winning block, each node will sign the statement specifying the winning proposal (`block signature share`) and broadcast it to other nodes. The node will then wait until receipt of $\frac{2}{3}$ of `block signature shares` and merge the shares into `block signature`.
 
 #### Block  finalization phase.
 
@@ -200,7 +199,7 @@ Fortunately, `DA proof` requirement solves the problem.  It is guaranteed, that 
 
 Therefore, during _block finalization_phase_ If a `node` does not happen to have the `winning proposal`, it will simply connect to other `nodes` to download it from them. 
 
-Note that 2/3 of the nodes are guaranteed to have a copy of the proposal after _DA proof phase_
+Note that $\frac{2}{3}$ of the nodes are guaranteed to have a copy of the proposal after _DA proof phase_
 
 #### EVM processing phase
 
@@ -294,53 +293,41 @@ The goal of a Byzantine node is to either violate the liveliness property of the
 
 It is assumed that out of `*N*` total nodes, $t$ nodes are Byzantine, where less the following condition is satisfied.
 
-<ByzantineFormula />
+$$3t + 1 \leq N$$
 or
-<ByzantineFormula2 />
+$t \leq \lfloor\frac{N-1}{3}\rfloor$
 
 The above condition is well known in the consensus theory. There is a proof that shows that secure asynchronous consensus is impossible for larger values of $t$.
 
 It is easy to show that if a security proof works for a certain number of Byzantine nodes, it will work for a fewer Byzantine nodes. Indeed, an honest node can always be viewed as a Byzantine node that decided to behave honestly. Therefore, in proofs, we always assume that the system has the maximum allowed number of Byzantine nodes
 
-<ByzantineFormula2 />
+$t \leq \lfloor\frac{N-1}{3}\rfloor$
 
 In this case the number of honest nodes is
 
-<MaxByzantineNodes />
+$h = N - t = N - \lfloor\frac{N-1}{3}\rfloor = \lfloor\frac{2n-1}{3}\rfloor$
 
 
 Note, that it is beneficial to select `*N*` in such a way that
-<math display="inline"><mfrac><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
-is divisible by `3`. Otherwise an increase in `*N*` does not lead to an increase in the maximum allowed number of Byzantine nodes.
+$\frac{N-1}{3}$
+is divisible by $3$. Otherwise an increase in `*N*` does not lead to an increase in the maximum allowed number of Byzantine nodes.
 
 As an example, for
-<math display="inline"><mi>N</mi><mo>=</mo><mn>17</mn></math>
+$N = 17$
 we get
-<math display="inline"><mi>t</mi><mo>=</mo><mn>5</mn></math>
+$t = 5$
 too so an increase in `*N*` does not improve Byzantine tolerance.
 
-In this specification, we assume that the `*N*` is always selected in such a way that 
-<math display="inline"><mi>N</mi><mo>=</mo><mn>1</mn></math>
+In this specification, we assume that the `*N*` is always selected in such a way that
+$N = 1$
 is divisible by 3.
 
 In this case, expressions simplify as follows
 
-<ByzantineFormula2 />
+$t \leq \lfloor\frac{N-1}{3}\rfloor$
 
 <br />
-<math>
-	<mn>h</mn>
-	<mo>=</mo>
-	<mfrac>
-		<mrow>
-			<mn>2</mn>
-			<mi>N</mi>
-			<mo>+</mo>
-			<mn>1</mn>
-		</mrow>
-		<mi>3</mi>
-	</mfrac>
-</math>
+$h = \frac{2n + 1}{3}$
 
 ### Mathematical properties of node voting
 
@@ -351,54 +338,25 @@ Typically, a node will vote by signing a value and transmitting it to other node
 The number of Byzantine nodes is less than a simple majority of honest nodes.
 
 This directly follows from the fact that
-<math display="inline"><mi>h</mi><mo>=</mo><mn>2</mn><mi>t</mi><mo>+</mo><mn>1</mn></math>
+$h = 2t + 1$
 and, therefore, a simple majority of honest nodes is
 
-<math>
-	<mi>s</mi>
-	<mo>=</mo>
-	<mi>t</mi>
-	<mo>+</mo>
-	<mn>1</mn>
-</math>
+$s = t + 1$
 
 We define _supermajority_ as a vote of at least
-<math display="inline"><mfrac><mrow><mi>2</mi><mn>N</mn><mo>+</mo><mn>1</mn></mrow><mi>3</mi></mfrac></math>
+$\frac{2n + 1}{3}$
 nodes.
 
 _A vote of all honest nodes is a supermajority_.
 
-Proof: this comes from the fact that 
-<math display="inline"><mn>h</mn><mo>=</mo><mfrac><mrow><mi>2</mi><mn>N</mn><mo>+</mo><mn>1</mn></mrow><mi>3</mi></mfrac></math>
+Proof: this comes from the fact that
+$h = \frac{2n + 1}{3}$
 
 If a particular message was signed by a supermajority vote, at least a simple majority of honest nodes signed this message
 
 Even if all Byzantine nodes participate in a supermajority vote, the number of honest votes it needs to receive is
 
-<math>
-    <mfrac>
-    	<mrow>
-    		<mn>2</mn>
-    		<mi>N</mi>
-    		<mo>+</mo>
-    		<mn>1</mn>
-    	</mrow>
-    	<mn>3</mn>
-    </mfrac>
-    <mo>-</mo>
-    <mi>t</mi>
-    <mo>=</mo>
-    <mn>2</mn>
-    <mi>t</mi>
-    <mo>+</mo>
-    <mn>1</mn>
-    <mo>-</mo>
-    <mi>t</mi>
-    <mo>=</mo>
-    <mi>t</mi>
-    <mo>+</mo>
-    <mn>1</mn>
-</math>
+$\frac{2n + 1}{3} - t = 2t + 1 - t = t + 1$
 
 which is exactly the simple majority of honest nodes `*s*`.
 
@@ -415,8 +373,8 @@ Our protocol uses threshold signatures for supermajority voting.
 Each node is supposed to be in possession of BLS private key share `*PKS~I~*`. Initial generation of key shares is performed using joint-Feldman Distributed Key Generation (DKG) algorithm that is described in this document. DKG algorithm is executed when an schain is created.
 
 Nodes are able to collectively issue supermajority threshold signatures on messages, where the threshold value is equal to the supermajority vote
-<math display="inline"><mfrac><mrow><mn>2</mn><mi>N</mi><mo>+</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
-. For instance for `N = 16`, the threshold value is `11`.
+$\frac{2n + 1}{3}$
+. For instance for $N = 16$, the threshold value is $11$.
 
 BLS threshold signatures are implemented as described in the paper of by Boldyreva. BLS threshold signatures require a choice of elliptic curve and group pairing. We use elliptic curve (altBN256) and group pairing (optimal-Ate) implemented in Ethereum Constantinople release.
 
@@ -553,12 +511,12 @@ algorithm guarantees eventual catchup, and if the number of nodes in a
 hard crashed state at a given time plus the number of Byzantine nodes is
 less or equal `*N ⅓*`.
 
-Since the normal consensus algorithm is resilient to having 
-<math display="inline"><mfrac><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
+Since the normal consensus algorithm is resilient to having
+$\frac{N-1}{3}$
 Byzantine nodes, normal consensus will still proceed if we count crashed
 nodes as Byzantine nodes and guarantee that the total number of
 Byzantine nodes is less than
-<math display="inline"><mfrac><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
+$\frac{N-1}{3}$ 
 . When a node that crashed joins
 the system back, it will immediately start participating in the new
 consensus rounds. For the consensus rounds that it missed, it will use
@@ -754,10 +712,10 @@ supermajority of nodes.
 It will vote `yes` for each block proposal that it received, and `no`
 for each block proposal that it did not receive.
 
-Vote of each honest node will include 
-<math display="inline"><mfrac><mrow><mn>2</mn><mi>N</mi><mo>+</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
+Vote of each honest node will include
+$\frac{2n + 1}{3}$
  `yes` votes and
-<math display="inline"><mfrac><mrow><mn>2</mn><mi>N</mi><mo>-</mo><mn>1</mn></mrow><mn>3</mn></mfrac></math> 
+$\frac{2n - 1}{3}$
 `no` votes
 
 This simply follows from the fact, that node `*A*` votes immediately after
@@ -784,10 +742,10 @@ proposal and commit it to the chain.
 
 The proposal download algorithm is specified below. The proposal assumes
 that the proposal is split in $N-1$ chunks of equal size
-<math display="inline"><mo>&lceil;</mo><mfrac><mrow><mi>size</mi><mi>(P)</mi></mrow><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></mfrac><mo>&rceil;</mo></math>
+$\lceil\frac{size(P)}{N-1}\rceil$
 except the last chunk the size of
-which will be the remainder of 
-<math display="inline"><mfrac><mrow><mi>size</mi><mi>(P)</mi></mrow><mrow><mi>N</mi><mo>-</mo><mn>1</mn></mrow></mfrac></math>
+which will be the remainder of
+$\frac{size(P)}{N-1}$
 
 The purpose of the algorithm is to minimize network traffic.
 
@@ -851,13 +809,9 @@ amount of gas that the transaction would have used if we would charge
 for transactions. We are currently using the same PoW algorithm as
 Ethereum.
 
-<math display="inline">
-	<mi>POW</mi>
-	<mo>=</mo>
-	<mi>k</mi>
-	<mo>*</mo>
-	<mi>gas</mi>
-</math>
+$$
+POW = k * gas
+$$
 
 This PoW is calculated in the browser or other client that submits a
 transaction and is passed together with the transaction. If the

@@ -1,0 +1,149 @@
+---
+title: Compliance Requirements
+description: Requirements for Validator Compliance
+---
+
+
+# Compliance Requirements
+
+The following document outlines compliance requirements for SKALE Network supernodes.
+Failure to follow these requirements will result in a supernode forfeiting bounty for each month
+that it's not in compliance as well as SKALE Chain payment claims. Please be sure to follow
+the entire proper setup and backup procedures described in Validator Denali Upgrade documentation
+to ensure your supernode is operating as intended.
+
+## Compliance Requirements
+
+The following compliance requirements are required to ensure all supernodes meet a standard of performance.
+
+::::danger
+Failure to meet ANY ONE of the following Denali compliance requirements will result in a supernode being
+marked "Out of Compliance" by the NODE Foundation and the supernode may be forced to forfeit monthly bounties
+if it is unable to return to "In Compliance" by the time the monthly `getBounty` is called.
+
+
+::::note
+Compliance requirements may be reviewed and modified at any given time.
+
+
+## General Check
+
+Supernode operators can use this general PASS/FAIL check to confirm whether a supernode meets the compliance requirements.
+
+https://dune.com/skale/metrics
+
+## Wallet Balances
+
+- At least 0.5 ETH in self-recharging validator wallet (should be >= NODES_NUMBER * 0.5)
+- At least 1 ETH in each supernode wallet
+
+## Hardware
+
+- A Linux x86_84 machine
+- At least 8 physical cores (benchmark AWS t2.2xlarge)
+- At least 32 GB RAM
+- At least 100 GB root storage (not tested at the moment, recommended)
+- At minimum, separate not mounted block device - 2 Tb TB (1.9 TB actual measure) attached and unformatted non-boot storage (Note that separate not mounted block device - 2Tb TB storage results in < separate not mounted block device - 2Tb TB actual physical storage)
+- At least 16 GB swap
+
+Test: `http://YOUR_SKALE_NODE_IP:3009/status/hardware`
+
+Example response: 
+
+```shell
+{"data": {"cpu_total_cores": 8, "cpu_physical_cores": 8, "memory": 33675792384, "swap": 67350032384, "system_release": "Linux-5.4.0-1045-aws", "uname_version": "#47~18.04.1-Ubuntu SMP Tue Apr 13 15:58:14 UTC 2021", "attached_storage_size": 214748364800}, "error": null}
+```
+
+## Networking
+
+- Non-expired SSL certificates for each supernode.
+    - The certificate file should be issued in PEM format, issued by a trusted authority, and contain a full certificate chain.
+    - Certificate should always be renewed to avoid expiry
+
+- Don't touch machine firewall (iptables installed by skale supernode software automatically sets machine firewall rules), external
+VPC or networking firewall ensure __some_port_range__.
+
+## Servers
+
+### SGXWallet
+
+- 1 SGX server for up to 5 SKALE supernodes (not tested, but required)
+- 6 cores (not tested, but required)
+- 8GB RAM (not tested, but required)
+
+Test: `http://YOUR_SKALE_NODE_IP:3009/status/sgx`
+
+Example response:
+```shell
+{"data": {"status": 0, "status_name": "CONNECTED", "sgx_wallet_version": "1.75.0"}, "error": null}
+```
+
+### ETH Mainnet Endpoint
+
+After the merge a Mainnet supernode operator must run both an execution client and a consensus client at the same time. 
+
+::::note
+It is a requirement to run Geth as an execution client.
+
+
+We highly recommend using Prysm as a consensus client because it's the one which SKALE software is being tested on.
+You can find complete installation instructions [here](https://docs.prylabs.network/docs/install/install-with-script). 
+
+Test: `http://YOUR_SKALE_NODE_IP:3009/status/endpoint`
+
+Example Response:
+
+```shell
+{"data": {"block_number": 8728517, "syncing": false, "trusted": true, "client": "Geth/v1.10.2-stable-c2d2f4ed/linux-amd64/go1.16"}, "error": null}
+```
+
+## Software
+
+Latest Mainnet software versions are defined [here](https://github.com/skalenetwork/skale-network/tree/master/releases):
+
+- Supernode software versions must be updated to the latest Denali requirements
+- SGXWallet software versions must be updated to the latest Denali requirements
+- SGX container should be up and running and should be responding to health check request
+- FILEBEAT_HOST should be defined in .env and the filebeat container should be up and running. The supernode must be sending logs to elastic server
+- All skale-containers are always running on the supernode
+    - filebeat
+    - skale-admin
+    - bounty
+    - transaction-manager
+    - nginx
+    - skale-api
+    - celery
+    - schain (if selected for SKALE Chain)
+
+Test: `http://YOUR_SKALE_NODE_IP:3009/status/meta-info`
+
+Example response:
+```shell
+{"data": {"version": "1.1.0", "config_stream": "1.2.1", "docker_lvmpy_stream": "1.0.1-stable.1"}, "error": null}
+```
+
+Test: `http://YOUR_SKALE_NODE_IP:3009/status/schain-containers-versions`
+
+Example response:
+```shell
+{"data": {"skaled_version": "3.5.12-stable.1", "ima_version": "1.0.0-develop.148"}, "error": null}
+```
+
+Test: `http://YOUR_SKALE_NODE_IP:3009/status/core`
+
+Example response:
+```shell
+{"data": [{"image": "skalenetwork/schain:3.5.12-stable.1", "name": "skale_schain_beautiful-al-anz", "state": {"Status": "running", "Running": true, "Paused": false, "Restarting": false, "OOMKilled": false, "Dead": false, "Pid": 21709, "ExitCode": 0, "Error": "", "StartedAt": "2021-04-26T14:49:51.705052477Z", "FinishedAt": "0001-01-01T00:00:00Z"}}, ...
+```
+
+BTRFS kernel module must be enabled.  `http://YOUR_SKALE_NODE_IP:3009/status/btrfs` returns information about btrfs kernel module (enabled/disabled).
+
+Public IP must be the same as the registered supernode IP. `http://YOUR_SKALE_NODE_IP:3009/status/public-ip` returns public ip address (source of the packets that your supernode is sending to other supernodes)
+
+IMA Container must pass healthcheck. `http://YOUR_SKALE_NODE_IP:3009/status/ima` returns information about basic ima healthcheck
+
+## Networking
+
+- Check key-cert pair validity using `http://YOUR_SKALE_NODE_IP:3009/status/ssl`
+- Test ssl certificates using `skale ssl check`
+- Don't touch machine firewall (iptables installed by supernode software automatically sets machine firewall rules), external VPC or networking firewall ensure Ports open on **80, 311, 443,** 3009, 8080, 9100, 10000–18192, and ICMP IPv4  (in other words, not closed by an external firewall).
