@@ -24,10 +24,6 @@ The SKALE on Base testnet deployment retains 100% of the features you know and l
 - Leaderless consensus + High Performance C++ EVM
 - Native SKALE Oracle
 
-<Aside type="note">
-This testnet chain is 100% permissionless.
-</Aside>
-
 ## Testnet
 
 | Name | Value | 
@@ -53,14 +49,11 @@ This testnet chain is 100% permissionless.
 | Wrapped Ether | WETH | 6 | [0x420...006](https://basescan.org/token/0x4200000000000000000000000000000000000006) | [0xf94...fc0](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xf94056bd7f6965db3757e1b145f200b7346b4fc0) |
 | ETH (ERC-20) | ETHC | 6 | Native ETH (Gas) on Base | [0xD2Aaa007...000](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xD2Aaa00700000000000000000000000000000000) |
 
-:::note
-When bridging ETH from Base Sepolia to the SKALE Chain, the ETH is locked as native ETH (msg.value) and is minted as an ERC-20 called ETHC on the SKALE Chain.
+#### Notes
+- When bridging ETH from Base Sepolia to the SKALE Chain, the ETH is locked as native ETH (msg.value) and is minted as an ERC-20 called ETHC on the SKALE Chain.
 On the frontend you can show it as ETH.
-:::
-
-:::note
-WETH and ETHC are both ERC-20 on the SKALE Chain but are deposited differently. WETH is deposited as WETH on Base.
-:::
-
+- WETH and ETHC are both ERC-20 on the SKALE Chain but are deposited differently. WETH is deposited as WETH on Base.
+- This testnet chain is 100% permissionless.
+- CREATE2Factory, SingletonFactory, and Multicall3 are deployed to their canonical addresses on this chain
 
 Join us in [Telegram](https://t.me/+o_7DCw9qcbI2NDYx) and ask for additional tokens.
