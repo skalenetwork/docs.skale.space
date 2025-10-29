@@ -42,7 +42,7 @@ export default [
     },
     {
         label: "Faucet",
-        link: "https://sfuelstation.com",
+        link: "https://base-sepolia-faucet.skale.space",
         badge: {
             text: "External",
             variant: "caution"
