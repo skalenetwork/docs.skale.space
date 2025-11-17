@@ -1,0 +1,98 @@
+---
+title: Using SAFE
+description: Guidance on using SAFE to manage a SKALE Chain 
+---
+
+The Ethereum-based SAFE can be used to manage a SKALE Chain, IF set as the SKALE Chain owner during creation.
+It operates using SKALE's Native IMA bridge to execute on a SKALE Chain.
+
+<Warning>
+SKALE only supports SAFE ownership assigned to Ethereum SAFE's. While SAFE does support cross-chain address ownership (in many cases),
+utilizing an address that is not attainable on Ethereum may result in issues with SKALE Chain operations.
+</Note>
+
+## Sending Transactions on SKALE Chain
+
+Sending transactions to your SKALE Chain requires encoding the function data to execute via both Marionette and IMA.
+The recommended way for this is to [use the multisigwallet CLI](/developers/run-a-skale-chain/using-multisig-wallet-cli) from SKALE.
+
+### Prepare Transaction Data
+
+> This uses the [encodeData](/developers/run-a-skale-chain/using-multisig-wallet-cli#encode-function-data) command from MultisigWallet CLI
+
+The following example will help you grant a specific role to an externally owned account (EOA) on your SKALE Chain. This can be useful in the early days of setting up your chain to help distribute sFUEL with scripts as needed.
+
+| Name | Value |
+| - | - |
+| Contract Name | Etherbase |
+| Role | ETHER_MANAGER_ROLE |
+| Role Id (keccak256) | 0xe0ba7b49edc651b7ad93b374c67f1e9a0d37370168bbb86b81c569ebfa15f046 |
+| Receiver | 0xa9E1712086412A157A2A187A111bFAb203C73F6E |
+| SKALE Chain Name | juicy-low-small-testnet |
+
+<Note>
+juicy-low-small-testnet is SKALE Europa Testnet. Make sure to substitute with your own.
+</Note>
+
+```shell
+npx msig encodeData juicy-low-small-testnet Etherbase grantRole 0xe0ba7b49edc651b7ad93b374c67f1e9a0d37370168bbb86b81c569ebfa15f046 0xa9E1712086412A157A2A187A111bFAb203C73F6E
+```
+
+```shell
+# Output
+0x9448920200000561bf78bd39c8e04acfad7995005495094c7d395d405c3288f009efc402000000000000000000000000d2c0deface000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000d2ba3e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000442f2ff15de0ba7b49edc651b7ad93b374c67f1e9a0d37370168bbb86b81c569ebfa15f046000000000000000000000000a9e1712086412a157a2a187a111bfab203c73f6e00000000000000000000000000000000000000000000000000000000
+```
+
+<Warning>
+The above example uses **Europa Testnet** SKALE Chain Name. Your SKALE Chain name will be a unique
+	identifier. Make sure to use the right SKALE Chain name otherwise the transaction will fail and consume gas. The output should change slightly to match your SKALE Chain Name.
+</Note>
+
+### Submit Transaction to SAFE
+
+<Note>
+The below may look slightly different as it uses Holesky Protofire frontend.
+</Note>
+
+1. Go to [SAFE App](https://safe.global) or your preferred frontend for SAFE.
+2. Press **New Transaction** and then **Transaction Builder**
+
+![Click on Transaction Builder](../../../assets/developers/run-a-skale-chain/safe-transaction-builder.png)
+
+3. Enable the toggle **Custom Data**
+
+![Enable the custom data toggle](../../../assets/developers/run-a-skale-chain/safe-custom-data-toggle.png)
+
+4. Input the MessageProxy address for your correct environment into the **Contract Address** field and select **Use Implementation ABI**
+
+<Tip>
+Each SKALE Manager deployment -- Mainnet, Testnet, etc. -- has a smart contract called MessageProxy which is what sends data between Ethereum and SKALE Chains. Grab the correct address from the table below and verify by visiting the SKALE Network [Releases Repo](https://github.com/skalenetwork/concepts/tree/master/releases).
+</Note>
+
+**MessageProxy Contract Addresses**
+| Network | Contract Address |
+| - | - | 
+| Ethereum Mainnet | 0x8629703a9903515818C2FeB45a6f6fA5df8Da404 |
+| Ethereum Holesky Testnet | 0x682ef859e1cE314ceD13A6FA32cE77AaeCE98e28 |
+
+5. Input **0** for ETH Value
+6. Input the above **Output** from the `npx msig...` command into the **Data (Hex Encoded)** field (see image).
+
+![Transaction Prepared in SAFE](../../../assets/developers/run-a-skale-chain/safe-transaction-prepared.png)
+
+7. Click **Add transaction**, scroll down, and click **Create Batch**, then click **Send Batch**. [Tenderly](https://tenderly.co/) simulation is generally available, even on testnet, and is encouraged to be used to see all the changes occuring on the Ethereum side before they occur.
+
+<Tip>
+You can execute multiple SKALE Chain adminsistrative commands in one single "batch".
+This is recommended in production when you have many commands to execute.
+</Note>
+
+### Executing the Transaction
+
+Executing the transaction is equivalent to sending a transaction to the blockchain.
+As this requires the SKALE Network validators to pickup the message from Ethereum and post it to the SKALE Chain, please allow time for the Ethereum transaction to be included and for the message to post to SKALE.
+
+<Note>
+SAFEs in production should generally not have only 1 signer allowed to execute once the chain is out of the "setup" stage. Note that transactions will not execute until sufficient signers have confirmed/signed the transaction on SAFE.
+</Note>
+

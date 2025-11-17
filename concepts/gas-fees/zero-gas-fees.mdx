@@ -1,0 +1,43 @@
+---
+title: "Zero Gas Fees"
+description: "Understanding SKALE's zero gas fee model"
+---
+
+## Overview
+
+SKALE solves the gas fee barrier with a unique design known as **zero gas fees**. There is a gas token on SKALE, however, it has no monetary or economic value.
+This token operates just like Ether on Ethereum, however, with no monetary value it cannot be traded or sold.
+
+The token on SKALE exists for two (2) reasons:
+
+1. To ensure compatibility with popular EVM tooling. This allows developers on existing EVM based blockchains like Ethereum to quickly start building on SKALE
+2. To prevent spam and DDoS attacks on the network
+
+<Note>
+Zero Gas Fees is NOT the same thing as gasless transactions. While they are often used interchangeably, they are two different ways of transacting on SKALE each with their own pros and cons.
+</Note>
+
+## SKALE Fuel (sFUEL)
+
+The native gas token on every SKALE Chain is known as SKALE Fuel or sFUEL for short. sFUEL is distributed by either the SKALE Chain Operator, 
+the dApp to users, or a [public faucet](https://sfuelstation.com).
+
+- **For Developers:** With the zero gas fee model, developers can start building on SKALE instantly without having to first purchase gas tokens.
+Additionally, putting more onchain and having larger smart contracts or many smart contracts is no longer a concern.
+
+- **For Users:** Even better, users do not need to purchase gas tokens to interact with dApps on SKALE. With sFUEL being given to users invisibly during onboarding
+to a dApp -- which is a process called sFUEL Distribution -- users can start interacting with applications on SKALE and never even know they are "onchain".
+
+## Benefits
+
+- **No barrier to entry** - Users don't need to purchase tokens to interact with dApps
+- **Predictable costs** - Chain owners pay a flat monthly fee, not per-transaction
+- **EVM compatibility** - Works with all existing Ethereum tooling
+- **Spam protection** - DDoS protection mechanisms prevent network abuse
+
+## Related Topics
+
+- [Optional Gas Fees](/concepts/gas-fees/optional-gas-fees)
+- [Gasless Transactions](/concepts/gas-fees/gasless-transactions)
+- [sFUEL Distribution](/developers/run-a-skale-chain/managing-sfuel-distribution)
+

@@ -1,0 +1,212 @@
+---
+title: "Block Explorer Integration"
+description: "Guide for integrating SKALE JSON-RPC methods in block explorers"
+---
+
+## Overview
+
+This guide provides examples and best practices for building block explorers on SKALE Chains using the JSON-RPC API. Block explorers are essential tools for users to view transactions, blocks, and account information.
+
+## Key Methods for Block Explorers
+
+### Block Information
+
+#### Get Latest Block Number
+
+```bash
+curl -X POST https://your-chain.skalenodes.com/v1/your-endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_blockNumber",
+    "params": [],
+    "id": 1
+  }'
+```
+
+#### Get Block by Number
+
+```bash
+curl -X POST https://your-chain.skalenodes.com/v1/your-endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockByNumber",
+    "params": ["0x1234", true],
+    "id": 1
+  }'
+```
+
+**Note**: SKALE blocks include additional fields: `author`, `boundary`, and `seedHash`.
+
+### Transaction Information
+
+#### Get Transaction by Hash
+
+```bash
+curl -X POST https://your-chain.skalenodes.com/v1/your-endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionByHash",
+    "params": ["0x..."],
+    "id": 1
+  }'
+```
+
+#### Get Transaction Receipt
+
+```bash
+curl -X POST https://your-chain.skalenodes.com/v1/your-endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionReceipt",
+    "params": ["0x..."],
+    "id": 1
+  }'
+```
+
+**Note**: SKALE transaction receipts may not include `effectiveGasPrice` or `type` fields.
+
+### Account Information
+
+#### Get Account Balance
+
+```bash
+curl -X POST https://your-chain.skalenodes.com/v1/your-endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBalance",
+    "params": ["0x...", "latest"],
+    "id": 1
+  }'
+```
+
+**Note**: On Core and Full Sync nodes, only `"latest"` is supported. Archive nodes support historical block queries.
+
+### Event Logs
+
+#### Get Logs
+
+```bash
+curl -X POST https://your-chain.skalenodes.com/v1/your-endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getLogs",
+    "params": [{
+      "fromBlock": "0x0",
+      "toBlock": "latest",
+      "address": "0x...",
+      "topics": []
+    }],
+    "id": 1
+  }'
+```
+
+**Note**: On Core and Full Sync nodes, logs from rotated blocks are ignored. Use Archive nodes for complete historical logs.
+
+## Node Type Recommendations
+
+### For Public Block Explorers
+
+- **Use Archive Nodes** - Required for complete historical data
+- **Fallback to Full Sync** - For recent block queries if Archive is unavailable
+- **Avoid Core Nodes** - Reserved for consensus, not recommended for public queries
+
+### For Internal Tools
+
+- **Full Sync Nodes** - Good balance of data availability and resource usage
+- **Archive Nodes** - Only if historical data is required
+
+## Block Rotation Considerations
+
+SKALE Chains implement [block rotation](/concepts/block-rotation) to manage storage. This means:
+
+- **Core/Full Sync Nodes** - Only store recent blocks (~80-100% of storage capacity)
+- **Archive Nodes** - Store complete history
+- **Historical Queries** - May return `null` on Core/Full Sync for old blocks
+
+### Handling Rotated Blocks
+
+```javascript
+async function getBlock(blockNumber, nodeType) {
+  const block = await rpc.call('eth_getBlockByNumber', [blockNumber, true]);
+  
+  if (block === null && nodeType !== 'archive') {
+    // Block may be rotated out
+    // Try Archive node or inform user
+    console.warn('Block may have been rotated out. Try Archive node.');
+  }
+  
+  return block;
+}
+```
+
+## SKALE-Specific Fields
+
+SKALE blocks include additional fields not in standard Ethereum:
+
+- `author` - Block proposer address
+- `boundary` - Consensus boundary value
+- `seedHash` - Random seed hash
+
+These can be displayed in your block explorer for additional transparency.
+
+## Performance Tips
+
+1. **Use Batch Requests** - Group multiple queries into a single request
+2. **Cache Block Data** - Blocks don't change once committed
+3. **Use Filters** - For real-time updates, use `eth_newBlockFilter`
+4. **Archive Node for History** - Route historical queries to Archive nodes
+
+## Example: Simple Block Explorer
+
+```javascript
+class SKALEBlockExplorer {
+  constructor(rpcUrl) {
+    this.rpcUrl = rpcUrl;
+  }
+
+  async getLatestBlock() {
+    const blockNumber = await this.rpc('eth_blockNumber');
+    return this.rpc('eth_getBlockByNumber', [blockNumber, true]);
+  }
+
+  async getTransaction(txHash) {
+    const tx = await this.rpc('eth_getTransactionByHash', [txHash]);
+    const receipt = await this.rpc('eth_getTransactionReceipt', [txHash]);
+    return { ...tx, receipt };
+  }
+
+  async getAccount(address) {
+    const balance = await this.rpc('eth_getBalance', [address, 'latest']);
+    const txCount = await this.rpc('eth_getTransactionCount', [address, 'latest']);
+    return { address, balance, txCount };
+  }
+
+  async rpc(method, params = []) {
+    const response = await fetch(this.rpcUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method,
+        params,
+        id: 1
+      })
+    });
+    const data = await response.json();
+    return data.result;
+  }
+}
+```
+
+## Related Topics
+
+- [JSON-RPC Compatibility](/api-reference/compatibility)
+- [Block Rotation](/concepts/block-rotation)
+- [Connect to SKALE](/get-started/chain-info)
+

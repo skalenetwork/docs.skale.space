@@ -1,0 +1,35 @@
+---
+title: "Transaction Finality"
+description: "Understanding transaction finality on SKALE"
+---
+
+## Overview
+
+SKALE achieves instant finality for transactions, meaning transactions are confirmed immediately without waiting for multiple block confirmations. This is critical for applications requiring immediate state confirmation, especially for autonomous agents.
+
+## Instant Finality
+
+Unlike many blockchains that require multiple block confirmations, SKALE transactions achieve finality in a single block. Once a transaction is included in a block and the block is committed, the transaction is final and cannot be reverted.
+
+## Benefits
+
+- **Immediate confirmation** - Transactions are final as soon as they're included in a block
+- **Agent-friendly** - Autonomous agents can make decisions immediately based on confirmed state
+- **Real-time applications** - Enables real-time payment systems and interactive applications
+- **Reduced latency** - No waiting for multiple confirmations
+
+## How It Works
+
+SKALE's consensus mechanism ensures that once a block is committed with a supermajority threshold signature, it is final. The BLS threshold signature provides cryptographic proof that the block has been agreed upon by the required majority of nodes.
+
+## Use Cases
+
+- **Payments** - Instant payment confirmation
+- **Agent operations** - Agents can react immediately to state changes
+- **Gaming** - Real-time game state updates
+- **DeFi** - Immediate settlement of trades and swaps
+
+## Related Topics
+
+- [Consensus](/concepts/consensus)
+- [Threshold Schemes](/concepts/threshold-schemes)

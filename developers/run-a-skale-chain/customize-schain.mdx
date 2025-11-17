@@ -1,0 +1,29 @@
+---
+title: Customize SKALE Chain
+description: Explore the various configuration and features available to configure on your SKALE Chain
+---
+
+This page explores the various ways that SKALE Chains can be configured. Want to customize your chain in a way not found here?
+Head over to the [SKALE Forum](https://forum.skale.network) and share your ideas or join the SKALE team in [Discord](https://discord.gg/skale) to share
+your idea(s)!
+
+## State Configuration
+
+One of the most important decisions made when creating a new SKALE Chain is where the state is going to be allocated.
+There are three areas that node storage is allocatable too:
+
+1. **Consensus Database**: the area of the node responsible for storing block data
+2. **Contract Storage**: the area of the node that stores active contract state
+3. **Filestorage**: the area of the node responsible for storing files uploaded or replicated via SKALE Filestorage
+
+The following configurations are available:
+
+<img src="/storage-locations.jpg" alt="SKALE Chain Storage Key" />
+<img src="/storage-options.jpg" alt="SKALE Chain Storage Options" />
+
+## Transaction Processing
+
+SKALE Chains have two options when it comes to transaction processing.
+
+- **Standard Processing**: allows for a single transaction per account/wallet per block. Great for chains interested matching Ethereum's transaction processing architecture
+- **Multi-transaction Mode (Recommended)**: great for chains catering to high-throughput applications

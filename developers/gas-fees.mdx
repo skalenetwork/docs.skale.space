@@ -1,0 +1,119 @@
+---
+title: Zero Gas Fees
+description: Exploring the gas fee model on SKALE
+---
+
+## Gas Fees
+
+Blockchains contain a fee model that requires users and developers to pay for transactions. This fee is often known as a gas fee [or sometimes a transaction fee].
+Gas fees are utilized for two (2) reasons:
+
+1. To pay for the compute resources requires to execute a transaction
+2. To prevent spam and DDoS attacks on the network
+
+While gas tokens are not always bad, they can be a barrier of entry for users and developers. The most common issues found with valuable gas are:
+
+1. Users and developers must purchase gas tokens to interact with the network
+2. Users and developers must manage gas tokens to ensure they have enough to interact with the network
+3. Network congestion can lead to spikes in gas consumption which can lead to high gas fees
+
+While solving the first two (2) issues is ideal for building applications that can be adopted globally, the third issue is a bit more complex.
+Network congestion is a common issue on blockchains and often results in dApps becoming unusable or unavailable during periods of congestion.
+
+## Zero Gas Fees
+
+SKALE solves the above issues with a unique design known as **zero gas fees**. There is a gas token on SKALE, however, it has no monetary or economic value.
+This token operates just like Ether on Ethereum, however, with no monetary value it cannot be traded or sold.
+
+The token on SKALE exists for two (2) reasons:
+
+1. To ensure compatibility with popular EVM tooling. This allows developers on existing EVM based blockchains like Ethereum to quickly start building on SKALE
+2. To prevent spam and DDoS attacks on the network
+
+<Note>
+Zero Gas Fees is NOT the same thing as gasless transactions. While they are often used interchangeably, they are two different ways of transacting on SKALE each with their own pros and cons.
+</Note>
+
+### SKALE Fuel
+The native gas token on every SKALE Chain is known as SKALE Fuel or sFUEL for short. sFUEL is something that is distributed by either the SKALE Chain Operator, 
+the dApp to users, or a [public faucet](https://sfuelstation.com).
+
+- **For Developers:** With the zero gas fee model, developers can start building on SKALE instantly without having to first purchase gas tokens.
+Additionally, putting more onchain and having larger smart contracts or many smart contracts is no longer a concern.
+
+- **For Users:** Even better, users do not need to purchase gas tokens to interact with dApps on SKALE. With sFUEL being given to users invisibly during onboarding
+to a dApp -- which is a process called sFUEL Distribution -- users can start interacting with applications on SKALE and never even know they are "onchain".
+
+### SKALE Gasless Transactions
+
+A gasless transaction is a blockchain transaction native to SKALE Network that does not require the user to have any gas in their wallet to interact with the network. The steps of a gasless transaction are as follows:
+
+1. Determine the **sender address**, the **sender address nonce**, and the **gas limit** of the transaction.
+2. Use [Proof of Work](#exploring-proof-of-work) to generate a [magic number](#understanding-magic-numbers).
+3. Build the transaction with the gasPrice of the transaction set to the value of the magic number
+4. Execute the transaction, even without sFUEL in the sender's account
+
+#### Exploring Proof of Work
+
+Proof of Work [on SKALE] is a method that allows wallets to *mine* sufficient amount of sFUEL to any address to send a transaction.
+The act of mining is computationally expensive and requires a user to solve a complex mathematical problem to generate a magic number.
+This computation cost is what makes it such a great deterrent from being used to spam the network since it would cost a bad actor a significant amount of money to do so.
+
+#### Understanding Magic Numbers
+
+SKALE uses the concept of "the magic number" in conjunction with Proof of Work to allow the sender (i.e the client) and SKALE Chain to agree that a transaction is valid
+EVEN IF there is not a sufficient amount of sFUEL (inclusive of 0 sFUEL) in the sender's account. This also allows gasless transactions to remain fully compatible with the
+Ethereum Virtual Machine and most popular tools.
+
+#### Proof of Work Algorithm
+
+1. The client generates a random 256-bit X (i.e the magic number) by a formula which is equal to a unique gasPrice value
+
+<Latex>X = sha3(address) \oplus sha3(nonce) \oplus sha3(gasPrice)</Latex>
+
+<Latex>freeGas = \frac{2^{256}-1}{X \cdot difficulty}</Latex>
+
+2. Check whether X is allow to run transaction
+
+<Latex>freeGas(X) > estimateGas(tx)</Latex>
+
+3. If false, then back to the first step
+4. If true, then send the transaction with gasPrice = `X` and `gasLimit` = freeGas(X)
+
+<Note>
+- ⊕ is the bitwise XOR operator
+- KECCAK256(SHA3) is the hashing algorithm that should be used
+</Note>
+
+<Warning>
+MetaMask and other popular browser wallets with which SKALE Chains are compatible do not always support gasless transaction. This is
+because the magic number generated is generally very, very large and the wallets either have a limitation on the number size or on the lack of gas in the user wallet.
+</Note>
+
+## Popular Usecases
+
+### Invisible Transactions
+Building using gasless transactions allows developers to create applications that have no "blockchain" that is visible to the user.
+Creating seamless experiences that have no friction for new users is critical toward building applications that can be adopted globally and pass
+the grandma test (yes, even grandma can use it)!
+
+While invisible transactions can be done with [zero gas fees](/developers/gas-fees) gasless transactions can really help take your dApp to the next level.
+
+### sFUEL Distribution
+sFUEL Distribution is a process that allows developers to invisibly give users gas to interact with their dApp.
+This process is critical to ensuring that users can interact with your dApp especially with the sFUEL token being unpurchasable.
+While many developers choose to lean on servers to operate the distribution, using gasless transactions allows developers to lean on public faucet infrastructure or custom
+distribution contracts that have no operational overhead. This can greatly reduce the costs of operating a dApp and greatly increase security for applications that may be popular targets
+for bad actors.
+
+### True Decentralization &amp; Enhanced Security
+With sFUEL on SKALE being metered by operators and developers to properly secure the chain from being spammed; the truest path towards decentralization of your application
+is using gasless transactions. Switching or starting with the proof of work method means that you as a developer never have to worry about having "enough gas".
+
+## Community Tools
+
+| Name | Description | Language |
+| ---- | ----------- | -------- |
+| [@eidolon-labs/gasless](https://www.npmjs.com/package/@eidolon-labs/gasless) | Generate magic numbers using SKALE Proof of Work with Rust | JS/TS/Rust |
+| [skale.dart](https://pub.dev/packages/skale) | Generate magic numbers with Dart | Dart |
+| [skale-gas-miner](https://github.com/cryptopia-com/skale-gas-miner) | Generate magic numbers in Unity | C++/C# |

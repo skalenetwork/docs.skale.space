@@ -1,0 +1,210 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SKALE JSON-RPC API",
+    "description": "Ethereum-compatible JSON-RPC API for SKALE Chains. All methods follow the JSON-RPC 2.0 specification.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "SKALE Support",
+      "email": "hi@skale.network"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
+      "description": "Calypso Mainnet - Social, DePIN"
+    },
+    {
+      "url": "https://mainnet.skalenodes.com/v1/elated-tan-skat",
+      "description": "Europa Mainnet - DeFi & Liquidity"
+    },
+    {
+      "url": "https://mainnet.skalenodes.com/v1/green-giddy-denebola",
+      "description": "Nebula Mainnet - Gaming"
+    },
+    {
+      "url": "https://mainnet.skalenodes.com/v1/parallel-stormy-spica",
+      "description": "Titan Mainnet - AI"
+    },
+    {
+      "url": "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
+      "description": "Calypso Testnet - Social, DePIN"
+    },
+    {
+      "url": "https://testnet.skalenodes.com/v1/elated-tan-skat",
+      "description": "Europa Testnet - DeFi & Liquidity"
+    },
+    {
+      "url": "https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet",
+      "description": "Nebula Testnet - Gaming"
+    },
+    {
+      "url": "https://testnet.skalenodes.com/v1/aware-fake-trim-testnet",
+      "description": "Titan Testnet - AI"
+    },
+    {
+      "url": "https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha",
+      "description": "SKALE Base Sepolia Testnet - SKALE on Base"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "JSON-RPC Endpoint",
+        "description": "All JSON-RPC methods are sent as POST requests to this endpoint. The method name is specified in the request body.",
+        "operationId": "jsonRpc",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonRpcRequest"
+              },
+              "examples": {
+                "eth_blockNumber": {
+                  "summary": "Get latest block number",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_blockNumber",
+                    "params": [],
+                    "id": 1
+                  }
+                },
+                "eth_getBalance": {
+                  "summary": "Get account balance",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getBalance",
+                    "params": ["0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb", "latest"],
+                    "id": 1
+                  }
+                },
+                "eth_getBlockByNumber": {
+                  "summary": "Get block by number",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getBlockByNumber",
+                    "params": ["latest", true],
+                    "id": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonRpcResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful response",
+                    "value": {
+                      "jsonrpc": "2.0",
+                      "id": 1,
+                      "result": "0x1234"
+                    }
+                  },
+                  "error": {
+                    "summary": "Error response",
+                    "value": {
+                      "jsonrpc": "2.0",
+                      "id": 1,
+                      "error": {
+                        "code": -32602,
+                        "message": "Invalid params"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "JsonRpcRequest": {
+        "type": "object",
+        "required": ["jsonrpc", "method", "id"],
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "enum": ["2.0"],
+            "description": "JSON-RPC version"
+          },
+          "method": {
+            "type": "string",
+            "description": "JSON-RPC method name (e.g., eth_blockNumber, eth_getBalance)",
+            "examples": ["eth_blockNumber", "eth_getBalance", "eth_getBlockByNumber", "eth_call", "eth_sendRawTransaction"]
+          },
+          "params": {
+            "type": "array",
+            "description": "Method parameters (varies by method)",
+            "items": {}
+          },
+          "id": {
+            "oneOf": [
+              { "type": "integer" },
+              { "type": "string" }
+            ],
+            "description": "Request ID for matching responses"
+          }
+        }
+      },
+      "JsonRpcResponse": {
+        "type": "object",
+        "required": ["jsonrpc", "id"],
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "enum": ["2.0"],
+            "description": "JSON-RPC version"
+          },
+          "id": {
+            "oneOf": [
+              { "type": "integer" },
+              { "type": "string" }
+            ],
+            "description": "Request ID matching the request"
+          },
+          "result": {
+            "description": "Method result (varies by method)"
+          },
+          "error": {
+            "$ref": "#/components/schemas/JsonRpcError"
+          }
+        }
+      },
+      "JsonRpcError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "Error code",
+            "examples": [-32700, -32600, -32601, -32602, -32603, -32000, -32001, -32002, -32003, -32004, -32005]
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "data": {
+            "description": "Additional error data"
+          }
+        }
+      }
+    }
+  },
+  "x-mint": {
+    "title": "JSON-RPC API",
+    "description": "Interactive JSON-RPC API playground for SKALE Chains"
+  }
+}
+

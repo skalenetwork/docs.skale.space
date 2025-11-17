@@ -1,0 +1,85 @@
+---
+title: "JSON-RPC API Reference"
+description: "Complete reference for SKALE JSON-RPC methods and endpoints"
+openapi: "api-reference/openapi.json POST /"
+---
+
+## Overview
+
+SKALE Chains implement the Ethereum JSON-RPC API specification, providing full compatibility with Ethereum tooling and libraries. This reference documents all available JSON-RPC methods, their parameters, return values, and compatibility across different node types.
+
+<Note>
+Use the interactive API playground above to test JSON-RPC methods against different SKALE chains. Select your chain from the server dropdown and try the example requests.
+</Note>
+
+## Node Types
+
+SKALE supports three types of nodes, each with different capabilities:
+
+- **Core Node** - Participates in consensus and block production
+- **Full Sync Node** - Syncs all blocks but doesn't participate in consensus
+- **Archive Node** - Stores complete historical data including rotated blocks
+
+## Method Compatibility
+
+Methods are marked with compatibility indicators:
+
+- 🟢 **Fully Supported** - Works as expected on all node types
+- 🟡 **Partially Supported** - Works with limitations (see notes)
+- 🔴 **Not Supported** - Method is not available
+
+## Quick Links
+
+<CardGroup cols={3}>
+  <Card title="Compatibility Table" href="/api-reference/compatibility">
+    Complete compatibility reference for all methods
+  </Card>
+  <Card title="Block Explorer Integration" href="/api-reference/block-explorer">
+    Examples for block explorer developers
+  </Card>
+  <Card title="Chain Info" href="/get-started/chain-info">
+    Find RPC endpoints and chain details
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+To interact with a SKALE Chain via JSON-RPC:
+
+1. **Select a Chain** - Choose from the server dropdown above (includes all mainnet and testnet chains)
+2. **Choose Node Type** - Select Core, Full Sync, or Archive based on your needs
+3. **Make Requests** - Use standard JSON-RPC 2.0 format
+
+### Interactive API Playground
+
+The API playground above allows you to:
+
+- **Test Methods** - Try different JSON-RPC methods interactively
+- **Switch Chains** - Test against different SKALE chains using the server dropdown
+- **View Responses** - See real responses from the selected chain
+- **Copy Examples** - Use the examples as templates for your code
+
+### Available Chains
+
+The playground includes the following SKALE chains:
+
+**Mainnet:**
+- Calypso (honorable-steel-rasalhague) - Social, DePIN
+- Europa (elated-tan-skat) - DeFi & Liquidity
+- Nebula (green-giddy-denebola) - Gaming
+- Titan (parallel-stormy-spica) - AI
+
+**Testnet:**
+- Calypso Testnet (giant-half-dual-testnet) - Social, DePIN
+- Europa Testnet (elated-tan-skat) - DeFi & Liquidity
+- Nebula Testnet (lanky-ill-funny-testnet) - Gaming
+- Titan Testnet (aware-fake-trim-testnet) - AI
+- SKALE Base Sepolia (jubilant-horrible-ancha) - SKALE on Base
+
+For a complete list with chain IDs and explorers, see [Chain Info](/get-started/chain-info).
+
+## Related Topics
+
+- [JSON-RPC Interface Compatibility](/api-reference/compatibility)
+- [Connect to SKALE](/get-started/chain-info)
+- [Block Rotation](/concepts/block-rotation)

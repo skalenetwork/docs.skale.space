@@ -1,0 +1,48 @@
+---
+title: Payments on SKALE
+description: Deep dive into the proper way to handle payments with zero gas
+---
+
+import nativePaymentCode from "./code/native-payment.sol?raw";
+import erc20PaymentCode from "./code/erc20-payment.sol?raw";
+
+Payments and tokenization is currently one of the most common usecases within the blockchain space.
+It's important to recognize that with [zero gas fees](/developers/gas-fees) on SKALE, the way you handle payments and tokenization
+may require a small change compared to other networks.
+
+## Background
+
+There are two types of tokens that are generally used for "payments" or "fungible value transfer" on most blockchains:
+
+1. **Native Token:** the native token of the blockchain (e.g. ETH on Ethereum, etc.)
+2. **ERC-20 Tokens:** tokens that are built on top of the blockchain (e.g. DAI, USDC, etc.)
+
+When you're building an application that faciliates payments on Ethereum and other chains that have gas fees, many developers utilize the native gas
+token as a primary form of payment. This is because the gas token is generally the most liquid asset and easiest to attain for users since they need it to execute
+transactions.
+
+However, on SKALE, with zero gas fees or gasless transactions; you <span style="color: red;">cannot use</span> the native token as form of payment at all
+as it has **0 monetary value**. Therefore, you should use other forms of value such as ERC-20 tokens or other tokens that have value on the network.
+
+## Technical Comparison
+
+### Using Native Gas for Payments (BAD)
+
+The following is how to transfer assets into a smart contract as a payment using the native gas token. In Solidity, this is msg.value.
+This should <span style="color: red;">not</span> be done on SKALE as the native token has no value.
+
+<Code code={nativePaymentCode} lang="solidity" title="NativePayment.sol" />
+
+<Aside type="danger">
+DO NOT DO THIS ON ANY SKALE CHAIN. THIS WILL RESULT IN TAKING PAYMENT IN A TOKEN THAT HAS NO VALUE.
+</Note>
+
+### Using ERC-20 for Payments (GOOD)
+
+The following is how to use an ERC-20 token for payments. This is the recommended way to handle payments on SKALE.
+<Code code={erc20PaymentCode} lang="solidity" title="ERC20Payment.sol" />
+
+<Note>
+- Many tokens such as USDC, USDT, etc. are ERC-20 tokens on SKALE already. You can use any ERC-20 either pre-existing or your own.
+- Don't forget to approve the the contract spending tokens before you call `purchase` function, otherwise it will fail.
+</Note>

@@ -1,0 +1,103 @@
+---
+title: "SKALE Manager"
+description: "Comprehensive overview of SKALE Manager components"
+---
+
+## Overview
+
+SKALE Manager is the core set of smart contracts deployed on Ethereum mainnet that coordinate and manage the SKALE Network. It serves as the "brain" of SKALE, handling chain creation, validator management, staking, delegation, and network operations.
+
+## Core Components
+
+### ContractManager
+
+The central registry that manages all other SKALE Manager contracts. It provides a single entry point for accessing all network components.
+
+### SKALE Chains
+
+Manages SKALE Chain creation, configuration, and lifecycle. Handles chain registration, metadata, and status tracking.
+
+### SchainsInternal
+
+Internal contract handling chain state and operations not exposed through the public interface.
+
+### Nodes
+
+Manages validator nodes in the network. Tracks node registration, status, and participation in chains.
+
+### ValidatorService
+
+Handles validator registration, configuration, and management. Validators register here to participate in the network.
+
+### DelegationController
+
+Manages SKL token delegation from delegators to validators. Handles delegation amounts, periods, and rewards distribution.
+
+### DelegationPeriodManager
+
+Manages delegation periods and their associated parameters. Delegators can choose different staking periods with varying rewards.
+
+### Distributor
+
+Distributes rewards to validators and delegators based on their participation and delegation amounts.
+
+### BountyV2
+
+Manages bounty payments to validators for securing the network. Bounties are distributed monthly based on validator performance.
+
+### Punisher
+
+Handles slashing and penalties for validators that violate network rules or fail to meet compliance requirements.
+
+### SlashingTable
+
+Defines the slashing rules and penalties for various types of validator misbehavior.
+
+### NodeRotation
+
+Manages the rotation of nodes across different SKALE Chains. Ensures fair distribution of validator resources.
+
+### ConstantsHolder
+
+Stores network-wide constants and configuration parameters that can be updated through governance.
+
+### Wallets
+
+Manages validator wallets and their associated permissions. Handles wallet creation and access control.
+
+### TimeHelpers
+
+Provides time-based utilities for the network, including block timestamp management and time-based operations.
+
+### Pricing
+
+Manages pricing for SKALE Chain creation and operation. Handles payment processing and fee collection.
+
+## Network Operations
+
+SKALE Manager coordinates:
+
+- **Chain Creation** - New SKALE Chains are created through SKALE Chains contract
+- **Validator Management** - Validators register and manage their nodes
+- **Staking & Delegation** - SKL tokens are staked and delegated through DelegationController
+- **Rewards Distribution** - Rewards are distributed through Distributor and BountyV2
+- **Node Rotation** - Nodes are rotated across chains through NodeRotation
+- **Compliance** - Validator compliance is monitored through Punisher and SlashingTable
+
+## Integration Points
+
+SKALE Manager integrates with:
+
+- **Ethereum Mainnet** - All contracts are deployed on Ethereum
+- **SKALE Chains** - Chains interact with Manager for coordination
+- **Validators** - Validators interact with Manager for registration and rewards
+- **Delegators** - Delegators interact with Manager for staking
+- **Chain Owners** - Chain owners interact with Manager for chain creation
+
+## Related Topics
+
+- [SKALE Network](/concepts/skale-network)
+- [Staking](/staking/overview)
+- [Governance](/governance/overview)
+- [Run a SKALE Chain](/developers/run-a-skale-chain/intro-to-schains)
+

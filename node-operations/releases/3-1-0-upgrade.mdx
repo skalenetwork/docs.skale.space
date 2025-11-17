@@ -1,0 +1,51 @@
+---
+title: SKALE 3.1.0 upgrade
+description: SKALE node upgrade steps from 3.0.3 to 3.1.0
+---
+
+## Upgrade steps from 3.0.3 to 3.1.0
+
+<Steps>
+
+1. Download new node-cli binary
+
+    ```bash
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.5.0/skale-2.5.0-Linux-x86_64 > /usr/local/bin/skale
+    ```
+
+2. Verify checksum using sha512sum command
+
+    ```bash
+    sha512sum /usr/local/bin/skale
+    ```
+    Expected checksum
+
+    ```bash
+    2a409323eae26b14e4c5c018ae0b164da81a67793bcc1fcb96a266afab4e8672c587f1a6c4fd2e4c1d8ee1644616efc2e28249549108c0711c9cdce59b9047a8
+    ```
+
+3. Make node-cli executable
+
+    ```bash
+    chmod +x /usr/local/bin/skale
+    ```
+
+4. Update the following parameters to the new values
+
+    ```bash
+    CONTAINER_CONFIGS_STREAM=3.1.0
+    ```
+
+5. Execute update
+
+    <Note>
+    From 3.1.0 it will not be possible to run upgrade while critical network operation is in progress.
+
+    But before changes are made --unsafe option is required to run upgrade.
+    </Note>
+
+    ```bash
+    skale node update .env --yes --unsafe
+    ```
+
+</Steps>
