@@ -293,15 +293,6 @@
     "default": "light",
     "isHidden": false
   },
-  "head": [
-    {
-      "tag": "link",
-      "attributes": {
-        "rel": "stylesheet",
-        "href": "/custom.css"
-      }
-    }
-  ],
   "contextual": {
     "options": [
       "copy",
