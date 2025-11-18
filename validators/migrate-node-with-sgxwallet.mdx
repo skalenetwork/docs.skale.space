@@ -13,16 +13,17 @@ Before starting the migration, ensure you have:
 - Administrative privileges on both systems
 - Secure network connection between servers
 
-   <Warning>
-     Make sure backup is created before starting migration. You can use the `skale node backup .` command to create a backup of your current node and save `sgx_data` folder for SGX wallet as well as `sgxwallet_backup_key.txt`
-   </Warning>
+<Warning>
+Make sure backup is created before starting migration. You can use the `skale node backup .` command to create a backup of your current node and save `sgx_data` folder for SGX wallet as well as `sgxwallet_backup_key.txt`
+</Warning>
 
 ## Migration Steps
 
 ### Migrate SGX
 
 <Steps>
-1. **Setup new server**
+
+1. **Setup new SGX server**
 
    Prepare a new server with:
    - Ubuntu 22.04 LTS (Jammy Jellyfish)
@@ -32,7 +33,7 @@ Before starting the migration, ensure you have:
    - 200 GB disk mounted as /
    - Swap size equals to half (1/2) of RAM size
 
-2. **Install packages required for the node**
+2. **Install packages required for SGX**
 
    ```bash
    sudo apt-get update && sudo apt-get upgrade -y
@@ -42,7 +43,7 @@ Before starting the migration, ensure you have:
    sudo apt-get install -y libelf-dev cpuid
    ```
 
-3. **Verify your processor supports Intel SGX with:**
+3. **Verify processor supports Intel SGX**
 
    ```shell
    cpuid | grep SGX:
@@ -80,9 +81,9 @@ Before starting the migration, ensure you have:
    SGX: Software Guard Extensions supported = true
    ```
 
-5. Configure firewall between SGX and node servers
+5. **Configure firewall between SGX and node servers**
 
-6. Download SGXWallet source code
+6. **Download SGXWallet source code**
 
    Clone SGX Wallet Repository to your machine:
 
@@ -92,8 +93,9 @@ Before starting the migration, ensure you have:
    git checkout stable
    ```
 
-7. Enable SGX on the new server
-   **SGX Wallet repository includes the sgx_enable utility. To enable SGX run:**
+7. **Enable SGX on the new server**
+
+   SGX Wallet repository includes the sgx_enable utility. To enable SGX run:
 
    ```shell
    sudo ./sgx_enable
@@ -142,6 +144,7 @@ Before starting the migration, ensure you have:
    </Warning>
 
 9. **Set the version and -b flag in docker-compose.yml**
+
    Edit the `sgxwallet/run_sgx/docker-compose.yml` file:
 
    - Change the image version to: `skalenetwork/sgxwallet:1.9.0-stable.4`
@@ -149,21 +152,22 @@ Before starting the migration, ensure you have:
 
 10. **Run docker-compose up -d**
 
-      ```bash
-      cd sgxwallet/run_sgx
-      docker-compose up -d
+    ```bash
+    cd sgxwallet/run_sgx
+    docker-compose up -d
 
-      # Verify SGXWallet is running
-      docker-compose ps
-      docker-compose logs
-      ```
+    # Verify SGXWallet is running
+    docker-compose ps
+    docker-compose logs
+    ```
 
 </Steps>
 
 ### Migrate Node
 
 <Steps>
-1. **Setup new server**
+
+1. **Setup new node server**
 
    Prepare a new server with:
    - Ubuntu 22.04 LTS (Jammy Jellyfish)
@@ -179,10 +183,10 @@ Before starting the migration, ensure you have:
    sudo apt-get install -y docker.io docker-compose-plugin nftables
    ```
 
-    <Warning>
-    After installing docker make sure that `live-restore` option
-    is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
-    </Warning>
+   <Warning>
+   After installing docker make sure that `live-restore` option
+   is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
+   </Warning>
 
 3. **Disable automatic updates**
 
@@ -223,23 +227,24 @@ Before starting the migration, ensure you have:
 
 6. **Download node-CLI version**
 
-    ```bash
-    curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.2/skale-2.6.2-Linux-x86_64 > /usr/local/bin/skale
-    chmod +x /usr/local/bin/skale
+   ```bash
+   curl -L https://github.com/skalenetwork/node-cli/releases/download/2.6.2/skale-2.6.2-Linux-x86_64 > /usr/local/bin/skale
+   chmod +x /usr/local/bin/skale
 
-    # Verify installation
-    skale --version
-    ```
+   # Verify installation
+   skale --version
+   ```
 
 7. **Restore node from backup**
 
-    ```bash
-    # Navigate to your working directory
-    cd backup tarball location
+   ```bash
+   # Navigate to your working directory
+   cd backup tarball location
 
-    # Restore node using backup and environment file
-    skale node restore skale-node-backup-*.tar.gz .env
-    ```
+   # Restore node using backup and environment file
+   skale node restore skale-node-backup-*.tar.gz .env
+   ```
+
 </Steps>
 
 <Tip>

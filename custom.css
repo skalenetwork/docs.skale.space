@@ -84,3 +84,58 @@ a.nav-tabs-item {
   width: auto !important;
   max-width: none !important;
 }
+
+/* Fix global hover text color in light theme - override any white text on hover */
+/* Target all links and text elements that might have hover states */
+/* Use very high specificity to override Tailwind and Mintlify defaults */
+[data-theme="light"] a:hover,
+[data-theme="light"] a:focus,
+html[data-theme="light"] a:hover,
+html[data-theme="light"] a:focus,
+body[data-theme="light"] a:hover,
+body[data-theme="light"] a:focus,
+html[data-theme="light"] body a:hover,
+html[data-theme="light"] body a:focus,
+[data-theme="light"] a[class*="hover"]:hover,
+[data-theme="light"] a[class*="text-white"]:hover,
+[data-theme="light"] a[class*="text-gray"]:hover,
+[data-theme="light"] a.link:hover,
+[data-theme="light"] a[href]:hover,
+[data-theme="light"] p a:hover,
+[data-theme="light"] div a:hover,
+[data-theme="light"] span a:hover,
+[data-theme="light"] li a:hover,
+[data-theme="light"] td a:hover,
+[data-theme="light"] th a:hover {
+  color: #6b7280 !important; /* Medium gray text for light backgrounds - more visible than dark gray */
+}
+
+/* Override any Tailwind hover:text-white classes */
+[data-theme="light"] a.hover\:text-white:hover,
+[data-theme="light"] a[class*="hover:text-white"]:hover {
+  color: #6b7280 !important;
+}
+
+/* Ensure primary/accent colored links maintain their color on hover in light mode */
+[data-theme="light"] a.text-primary:hover,
+[data-theme="light"] a.text-accent:hover,
+[data-theme="light"] a[class*="text-primary"]:hover,
+[data-theme="light"] a[class*="text-accent"]:hover,
+[data-theme="light"] a[class*="primary"]:hover {
+  color: #bd0249 !important; /* Use accent color for primary links */
+}
+
+/* Target content area links specifically - Mintlify content links */
+[data-theme="light"] main a:hover,
+[data-theme="light"] article a:hover,
+[data-theme="light"] .content a:hover,
+[data-theme="light"] [class*="content"] a:hover,
+[data-theme="light"] [class*="markdown"] a:hover,
+[data-theme="light"] [class*="prose"] a:hover {
+  color: #6b7280 !important;
+}
+
+/* Override any computed white color on hover - use attribute selector for inline styles */
+html[data-theme="light"] a:hover {
+  color: #6b7280 !important;
+}
