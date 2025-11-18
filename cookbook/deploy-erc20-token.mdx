@@ -1,27 +1,181 @@
 ---
 title: "Deploy an ERC-20 Token"
-description: "Step-by-step guide to deploying an ERC-20 token on SKALE"
+description: "Step-by-step guide to deploying an ERC-20 token on SKALE using Foundry and OpenZeppelin Contracts"
 ---
 
 ## Deploy an ERC-20 Token
 
-This tutorial will walk you through deploying an ERC-20 token on SKALE.
+This tutorial will walk you through deploying an ERC-20 token on SKALE using Foundry and OpenZeppelin Contracts. OpenZeppelin provides secure, community-vetted smart contract templates that follow best practices.
 
 ## Prerequisites
 
-- Node.js and npm installed
+- [Rust](https://www.rust-lang.org/tools/install) installed on your machine
+- [Foundry](https://getfoundry.sh) installed
 - A wallet with sFUEL
 - Basic knowledge of Solidity
+- A SKALE Chain endpoint
 
-## Steps
+<Note>
+If you are on a Windows machine, you will need to use Windows Subsystem for Linux (WSL), since Foundry doesn't work natively on Windows.
+</Note>
 
-1. Set up your development environment
-2. Write the ERC-20 contract
-3. Compile the contract
-4. Deploy to SKALE
-5. Verify the deployment
+## Step 1: Install Foundry
+
+If you haven't already installed Foundry, run:
+
+```shell
+foundryup
+```
+
+## Step 2: Create a New Foundry Project
+
+Run the following in your terminal:
+
+```shell
+forge init my-erc20-token
+cd my-erc20-token
+```
+
+## Step 3: Install OpenZeppelin Contracts
+
+Install OpenZeppelin Contracts using Foundry:
+
+```shell
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+This will add OpenZeppelin Contracts to your `lib` directory.
+
+## Step 4: Configure Remappings
+
+Update your `remappings.txt` file (or create it if it doesn't exist) to include:
+
+```
+@openzeppelin/=lib/openzeppelin-contracts/
+```
+
+## Step 5: Update Foundry Configuration
+
+Update the `foundry.toml` file to add your SKALE Chain endpoint:
+
+```toml
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+# SKALE Chain Configuration
+[rpc_endpoints]
+skale_testnet = "https://testnet.skalenodes.com/v1/juicy-low-small-testnet"
+# Replace with your SKALE Chain endpoint
+```
+
+## Step 6: Create the ERC-20 Contract
+
+Create a new file `src/MyERC20.sol`:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MyERC20 is ERC20 {
+    constructor() ERC20("MyToken", "MTK") {
+        // Mint 1 million tokens to the deployer (18 decimals)
+        _mint(msg.sender, 1000000 * 10 ** decimals());
+    }
+}
+```
+
+This contract:
+- Inherits from OpenZeppelin's `ERC20` contract
+- Sets the token name to "MyToken" and symbol to "MTK"
+- Mints 1,000,000 tokens to the deployer address upon deployment
+
+## Step 7: Compile the Contract
+
+Compile your contract:
+
+```shell
+forge build
+```
+
+## Step 8: Prepare Signer for Deployment
+
+This tutorial uses the Foundry Keystore for increased security. Create a new keystore:
+
+```shell
+cast wallet import skale-deployer --private-key $(cast wallet new | grep 'Private key:' | awk '{print $3}')
+```
+
+<Note>
+Provide a password to encrypt the keystore file when running the above command. If you forget this password, you will not be able to recover it.
+</Note>
+
+Get your wallet address:
+
+```shell
+cast wallet address --account skale-deployer
+```
+
+Copy the address and head over to the [sFUEL Station](https://sfuelstation). Input the address, toggle testnet, and fill up on your SKALE Chain.
+
+<Tip>
+Make sure you toggle testnet on first if you're using a testnet chain!
+</Tip>
+
+## Step 9: Deploy the Contract
+
+Deploy your ERC-20 token to SKALE:
+
+```shell
+forge create src/MyERC20.sol:MyERC20 \
+    --account skale-deployer \
+    --rpc-url skale_testnet \
+    --broadcast \
+    --legacy
+```
+
+<Note>
+The `--legacy` flag is required for SKALE Chains. For more information, see [Troubleshooting](/developers/troubleshooting).
+</Note>
+
+A successful deployment should look something like this:
+
+```shell
+Enter keystore password:
+Deployer: 0x63a38D694de837dDF765f9b2704814275586D812
+Deployed to: 0x4A435f6E471f773173774E860EBDcd17B132a2b4
+Transaction hash: 0x3f6cc66e860cb82a6a62e3f5181c401e5558d60d622a9157437002e16c1ce488
+```
+
+## Step 10: Verify Your Smart Contract
+
+Verify your smart contract on the block explorer:
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    <DEPLOYED_ADDRESS> \
+    src/MyERC20.sol:MyERC20 \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+Replace `<DEPLOYED_ADDRESS>` with your deployed contract address.
+
+## Next Steps
+
+Congratulations! You've successfully deployed an ERC-20 token on SKALE. You can now:
+
+- Transfer tokens to other addresses
+- Approve spending allowances
+- Integrate the token into your dApp
 
 ## Related Topics
 
 - [Solidity Quickstart](/developers/solidity-quickstart)
 - [Deploy on SKALE](/developers/deploy-on-skale)
+- [Payments on SKALE](/developers/payments-on-skale)
+- [Troubleshooting](/developers/troubleshooting)

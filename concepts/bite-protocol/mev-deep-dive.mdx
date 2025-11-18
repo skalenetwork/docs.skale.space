@@ -1,0 +1,97 @@
+---
+title: "MEV Deep Dive"
+description: "Understanding Maximum Extractable Value (MEV) in the context of BITE Protocol and SKALE"
+---
+
+## Overview
+
+Maximum Extractable Value (MEV), also known as Miner Extractable Value, refers to the maximum value that can be extracted from block production in excess of the standard block reward and gas fees by including, excluding, or reordering transactions within blocks.
+
+## What is MEV?
+
+MEV represents the profit that can be made by strategically ordering transactions in a block. This includes:
+
+- **Arbitrage** - Exploiting price differences across DEXs
+- **Liquidation** - Liquidating undercollateralized positions
+- **Front-running** - Placing transactions ahead of known profitable transactions
+- **Back-running** - Placing transactions after known transactions
+- **Sandwich Attacks** - Placing transactions before and after a target transaction
+
+## MEV on Traditional Blockchains
+
+On traditional blockchains like Ethereum:
+
+- **Public Mempool** - All pending transactions are visible
+- **Competitive Extraction** - Multiple parties compete to extract MEV
+- **User Impact** - Users may experience front-running and higher gas costs
+- **Centralization Pressure** - MEV extraction favors sophisticated actors
+
+## MEV and BITE Protocol
+
+BITE Protocol addresses MEV concerns through:
+
+### Confidential Transaction Ordering
+
+BITE enables confidential applications (cApps) where transaction details are not publicly visible, reducing the ability to extract MEV through front-running or sandwich attacks.
+
+### Trustless Execution
+
+BITE's trustless execution model ensures that cross-chain operations maintain security guarantees while reducing MEV extraction opportunities.
+
+### Privacy-Preserving Transactions
+
+By enabling privacy-preserving transactions, BITE reduces the information available for MEV extraction, protecting users from front-running and other MEV attacks.
+
+## MEV Mitigation Strategies
+
+SKALE and BITE Protocol employ several strategies to mitigate MEV:
+
+### Instant Finality
+
+SKALE's instant finality reduces the window for MEV extraction by finalizing transactions immediately.
+
+### Zero Gas Fees
+
+SKALE's zero gas fee model reduces the economic incentive for MEV extraction related to gas price manipulation.
+
+### Privacy Features
+
+BITE Protocol's privacy features protect transaction details, making MEV extraction more difficult.
+
+### Fair Ordering
+
+SKALE's consensus mechanism provides fair transaction ordering, reducing the advantage of sophisticated MEV extractors.
+
+## Impact on Users
+
+MEV mitigation benefits users by:
+
+- **Reduced Front-Running** - Users are less vulnerable to front-running attacks
+- **Lower Costs** - Reduced MEV extraction means lower effective costs for users
+- **Fairer Access** - More equitable access to transaction inclusion
+- **Better Privacy** - Confidential transactions protect user information
+
+## MEV in Cross-Chain Context
+
+BITE Protocol's cross-chain capabilities introduce additional considerations:
+
+- **Cross-Chain Arbitrage** - Opportunities for arbitrage across chains
+- **Bridge MEV** - MEV extraction related to cross-chain bridges
+- **Interoperability MEV** - MEV opportunities in multi-chain environments
+
+## Best Practices
+
+When building on SKALE with BITE Protocol:
+
+- **Use Confidential Applications** - Leverage cApps to protect transaction details
+- **Consider Transaction Ordering** - Be aware of how transaction ordering affects MEV
+- **Monitor Cross-Chain Operations** - Understand MEV implications in cross-chain scenarios
+- **Implement Privacy** - Use BITE's privacy features to protect sensitive operations
+
+## Related Topics
+
+- [BITE Protocol Introduction](/concepts/bite-protocol) - Overview of BITE Protocol
+- [Phases of BITE](/concepts/bite-protocol/phases) - Evolution of BITE Protocol
+- [Privacy](/concepts/privacy) - How privacy mitigates MEV
+- [Instant Finality](/concepts/instant-finality) - How instant finality reduces MEV opportunities
+

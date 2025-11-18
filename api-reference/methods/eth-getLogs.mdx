@@ -1,0 +1,106 @@
+---
+title: eth_getLogs
+description: Returns an array of all logs matching a given filter object
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getLogs" />
+
+
+Returns an array of all logs matching a given filter object.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getLogs",
+  "params": [
+    {
+      "fromBlock": "latest",
+      "toBlock": "latest",
+      "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "topics": []
+    }
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **filter options** (`object`, required):
+   - **fromBlock** (`string`, optional): Block number or `"latest"`, `"earliest"`, `"pending"`
+   - **toBlock** (`string`, optional): Block number or `"latest"`, `"earliest"`, `"pending"`
+   - **address** (`string` | `array`, optional): Contract address or array of addresses
+   - **topics** (`array`, optional): Array of topic filters
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": [
+    {
+      "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "topics": ["0x..."],
+      "data": "0x...",
+      "blockNumber": "0x1a2b3c",
+      "blockHash": "0x...",
+      "transactionHash": "0x...",
+      "transactionIndex": "0x0",
+      "logIndex": "0x0",
+      "removed": false
+    }
+  ]
+}
+```
+
+### Response Types
+
+- **result** (`array`): Array of log objects
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getLogs",
+    "params": [
+      {
+        "fromBlock": "latest",
+        "toBlock": "latest",
+        "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+      }
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": []
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Ignores logs from rotated blocks on Core/Full Sync nodes
+- Archive nodes have access to all historical logs
+- Available on all node types (with limitations on Core/Full Sync)
+- Use topic filters to narrow down event searches
+
+## Related Methods
+
+- [eth_newFilter](/api-reference/methods/eth-newFilter) - Create a filter for incremental updates
+- [eth_getFilterLogs](/api-reference/methods/eth-getFilterLogs) - Get logs from a filter
+

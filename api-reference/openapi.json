@@ -87,6 +87,105 @@
                     "params": ["latest", true],
                     "id": 1
                   }
+                },
+                "eth_getBlockByHash": {
+                  "summary": "Get block by hash",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getBlockByHash",
+                    "params": ["0x...", true],
+                    "id": 1
+                  }
+                },
+                "eth_call": {
+                  "summary": "Execute a call",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_call",
+                    "params": [{"to": "0x...", "data": "0x..."}, "latest"],
+                    "id": 1
+                  }
+                },
+                "eth_sendRawTransaction": {
+                  "summary": "Send raw transaction",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_sendRawTransaction",
+                    "params": ["0x..."],
+                    "id": 1
+                  }
+                },
+                "eth_getTransactionReceipt": {
+                  "summary": "Get transaction receipt",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getTransactionReceipt",
+                    "params": ["0x..."],
+                    "id": 1
+                  }
+                },
+                "eth_getTransactionByHash": {
+                  "summary": "Get transaction by hash",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getTransactionByHash",
+                    "params": ["0x..."],
+                    "id": 1
+                  }
+                },
+                "eth_getTransactionCount": {
+                  "summary": "Get transaction count (nonce)",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getTransactionCount",
+                    "params": ["0x...", "latest"],
+                    "id": 1
+                  }
+                },
+                "eth_estimateGas": {
+                  "summary": "Estimate gas for transaction",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_estimateGas",
+                    "params": [{"to": "0x...", "data": "0x..."}],
+                    "id": 1
+                  }
+                },
+                "eth_getCode": {
+                  "summary": "Get contract code",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getCode",
+                    "params": ["0x...", "latest"],
+                    "id": 1
+                  }
+                },
+                "eth_getStorageAt": {
+                  "summary": "Get storage at position",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getStorageAt",
+                    "params": ["0x...", "0x0", "latest"],
+                    "id": 1
+                  }
+                },
+                "eth_gasPrice": {
+                  "summary": "Get current gas price",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_gasPrice",
+                    "params": [],
+                    "id": 1
+                  }
+                },
+                "eth_getLogs": {
+                  "summary": "Get event logs",
+                  "value": {
+                    "jsonrpc": "2.0",
+                    "method": "eth_getLogs",
+                    "params": [{"fromBlock": "latest", "toBlock": "latest", "address": "0x..."}],
+                    "id": 1
+                  }
                 }
               }
             }
@@ -141,8 +240,35 @@
           },
           "method": {
             "type": "string",
-            "description": "JSON-RPC method name (e.g., eth_blockNumber, eth_getBalance)",
-            "examples": ["eth_blockNumber", "eth_getBalance", "eth_getBlockByNumber", "eth_call", "eth_sendRawTransaction"]
+            "description": "JSON-RPC method name. SKALE supports all standard Ethereum JSON-RPC methods.",
+            "examples": [
+              "eth_blockNumber",
+              "eth_getBalance",
+              "eth_getBlockByNumber",
+              "eth_getBlockByHash",
+              "eth_call",
+              "eth_sendRawTransaction",
+              "eth_getTransactionReceipt",
+              "eth_getTransactionByHash",
+              "eth_getTransactionCount",
+              "eth_estimateGas",
+              "eth_getCode",
+              "eth_getStorageAt",
+              "eth_gasPrice",
+              "eth_getLogs",
+              "eth_accounts",
+              "eth_coinbase",
+              "eth_mining",
+              "eth_hashrate",
+              "eth_getWork",
+              "eth_submitWork",
+              "eth_syncing",
+              "net_version",
+              "net_listening",
+              "net_peerCount",
+              "web3_clientVersion",
+              "web3_sha3"
+            ]
           },
           "params": {
             "type": "array",
@@ -204,7 +330,74 @@
   },
   "x-mint": {
     "title": "JSON-RPC API",
-    "description": "Interactive JSON-RPC API playground for SKALE Chains"
+    "description": "Interactive JSON-RPC API playground for SKALE Chains. SKALE Chains implement the full Ethereum JSON-RPC API specification, providing compatibility with all standard Ethereum methods.",
+    "apiSections": [
+      {
+        "title": "Block Methods",
+        "methods": [
+          "eth_blockNumber",
+          "eth_getBlockByNumber",
+          "eth_getBlockByHash",
+          "eth_getBlockTransactionCountByNumber",
+          "eth_getBlockTransactionCountByHash"
+        ]
+      },
+      {
+        "title": "Account Methods",
+        "methods": [
+          "eth_getBalance",
+          "eth_getTransactionCount",
+          "eth_getCode",
+          "eth_getStorageAt"
+        ]
+      },
+      {
+        "title": "Transaction Methods",
+        "methods": [
+          "eth_sendRawTransaction",
+          "eth_getTransactionByHash",
+          "eth_getTransactionReceipt",
+          "eth_getTransactionByBlockHashAndIndex",
+          "eth_getTransactionByBlockNumberAndIndex",
+          "eth_estimateGas",
+          "eth_gasPrice"
+        ]
+      },
+      {
+        "title": "Execution Methods",
+        "methods": [
+          "eth_call",
+          "eth_createAccessList"
+        ]
+      },
+      {
+        "title": "Event Logs",
+        "methods": [
+          "eth_getLogs",
+          "eth_newFilter",
+          "eth_newBlockFilter",
+          "eth_newPendingTransactionFilter",
+          "eth_uninstallFilter",
+          "eth_getFilterChanges",
+          "eth_getFilterLogs"
+        ]
+      },
+      {
+        "title": "Network Methods",
+        "methods": [
+          "net_version",
+          "net_listening",
+          "net_peerCount"
+        ]
+      },
+      {
+        "title": "Web3 Methods",
+        "methods": [
+          "web3_clientVersion",
+          "web3_sha3"
+        ]
+      }
+    ]
   }
 }
 

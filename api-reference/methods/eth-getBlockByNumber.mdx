@@ -1,0 +1,131 @@
+---
+title: eth_getBlockByNumber
+description: Returns information about a block by block number
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getBlockByNumber" />
+
+
+Returns information about a block by block number.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getBlockByNumber",
+  "params": [
+    "latest",
+    true
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+2. **fullTransactions** (`boolean`, required): If `true`, returns full transaction objects; if `false`, returns only transaction hashes
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "number": "0x1a2b3c",
+    "hash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+    "parentHash": "0x9646252be9520f6e71339a8df9c55e4d7619deeb018d2a3c2d950ed0f2e5f8e8",
+    "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+    "transactionsRoot": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+    "stateRoot": "0xd5855eb08b3387c0af375e9cdb6acfc05eb8f519e4192fdafd2f764b1b5927a0",
+    "miner": "0x0000000000000000000000000000000000000000",
+    "difficulty": "0x0",
+    "totalDifficulty": "0x0",
+    "extraData": "0x",
+    "size": "0x27f",
+    "gasLimit": "0x9f759",
+    "gasUsed": "0x9f759",
+    "timestamp": "0x5ba22882",
+    "transactions": [
+      {
+        "hash": "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b",
+        "nonce": "0x15",
+        "blockHash": "0xfd43a1c2fd43a1c2fd43a1c2fd43a1c2fd43a1c2fd43a1c2fd43a1c2fd43a1c2",
+        "blockNumber": "0x1a2b3c",
+        "transactionIndex": "0x0",
+        "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "to": "0x3535353535353535353535353535353535353535",
+        "value": "0x0",
+        "gasPrice": "0x4a817c800",
+        "gas": "0x5208",
+        "input": "0x",
+        "v": "0x1c",
+        "r": "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b",
+        "s": "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b"
+      }
+    ],
+    "uncles": []
+  }
+}
+```
+
+### Response Types
+
+- **number** (`string`): Block number, hex-encoded
+- **hash** (`string`): Block hash, 32 bytes hex-encoded
+- **parentHash** (`string`): Hash of the parent block
+- **transactionsRoot** (`string`): Root of the transaction trie
+- **stateRoot** (`string`): Root of the state trie
+- **gasLimit** (`string`): Maximum gas allowed in this block
+- **gasUsed** (`string`): Total gas used by all transactions in this block
+- **timestamp** (`string`): Unix timestamp of when the block was mined
+- **transactions** (`array`): Array of transaction objects or transaction hashes (depending on `fullTransactions` parameter)
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockByNumber",
+    "params": ["latest", true],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "number": "0x1a2b3c",
+    "hash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+    "parentHash": "0x9646252be9520f6e71339a8df9c55e4d7619deeb018d2a3c2d950ed0f2e5f8e8",
+    "gasLimit": "0x9f759",
+    "gasUsed": "0x9f759",
+    "timestamp": "0x5ba22882",
+    "transactions": []
+  }
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Use `"latest"` to get the most recent block
+- Set `fullTransactions` to `false` for faster responses when you only need transaction hashes
+- SKALE blocks are produced approximately every 1 second
+- This method is available on all node types
+
+## Related Methods
+
+- [eth_getBlockByHash](/api-reference/methods/eth-getBlockByHash) - Get block by hash
+- [eth_blockNumber](/api-reference/methods/eth-blockNumber) - Get latest block number
+

@@ -1,0 +1,71 @@
+---
+title: eth_mining
+description: Returns true if client is actively mining new blocks
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_mining" />
+
+
+Returns `true` if client is actively mining new blocks.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_mining",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": false
+}
+```
+
+### Response Types
+
+- **result** (`boolean`): `true` if mining, `false` otherwise
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_mining",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": false
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Always returns `false` on SKALE nodes
+- Available on all node types (with limitation)
+- SKALE uses Proof of Stake consensus, not mining
+

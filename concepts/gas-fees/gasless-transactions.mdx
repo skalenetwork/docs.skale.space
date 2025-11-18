@@ -28,13 +28,13 @@ Ethereum Virtual Machine and most popular tools.
 
 1. The client generates a random 256-bit X (i.e the magic number) by a formula which is equal to a unique gasPrice value
 
-<Latex>X = sha3(address) \oplus sha3(nonce) \oplus sha3(gasPrice)</Latex>
+$$X = sha3(address) \oplus sha3(nonce) \oplus sha3(gasPrice)$$
 
-<Latex>freeGas = \frac{2^{256}-1}{X \cdot difficulty}</Latex>
+$$freeGas = \frac{2^{256}-1}{X \cdot difficulty}$$
 
 2. Check whether X is allowed to run transaction
 
-<Latex>freeGas(X) > estimateGas(tx)</Latex>
+$$freeGas(X) > estimateGas(tx)$$
 
 3. If false, then back to the first step
 4. If true, then send the transaction with gasPrice = `X` and `gasLimit` = freeGas(X)

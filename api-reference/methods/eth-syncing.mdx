@@ -1,0 +1,74 @@
+---
+title: eth_syncing
+description: Returns an object with data about the sync status or false
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_syncing" />
+
+
+Returns an object with data about the sync status or `false` if not syncing.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_syncing",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": false
+}
+```
+
+### Response Types
+
+- **result** (`boolean` | `object`): `false` if not syncing, or an object with sync status:
+  - **startingBlock** (`string`): Block number where sync started
+  - **currentBlock** (`string`): Current block number
+  - **highestBlock** (`string`): Highest block number known
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_syncing",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": false
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Always returns `false` on SKALE nodes
+- Available on all node types (with limitation)
+- SKALE nodes don't report sync status through this method
+

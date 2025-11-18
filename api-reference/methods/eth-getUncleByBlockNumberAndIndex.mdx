@@ -1,0 +1,83 @@
+---
+title: eth_getUncleByBlockNumberAndIndex
+description: Returns information about an uncle block by number and uncle index position
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getUncleByBlockNumberAndIndex" />
+
+
+Returns information about an uncle block by number and uncle index position.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getUncleByBlockNumberAndIndex",
+  "params": [
+    "0x1a2b3c",
+    "0x0"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+2. **uncleIndex** (`string`, required): Uncle index position, hex-encoded
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": null
+}
+```
+
+### Response Types
+
+- **result** (`object` | `null`): Uncle block object or `null` if not found
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getUncleByBlockNumberAndIndex",
+    "params": [
+      "0x1a2b3c",
+      "0x0"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": null
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Always returns `null` - SKALE does not have uncles
+- Available on all node types
+- SKALE uses Proof of Stake consensus, not Proof of Work
+
+## Related Methods
+
+- [eth_getUncleByBlockHashAndIndex](/api-reference/methods/eth-getUncleByBlockHashAndIndex) - Get uncle by block hash and index
+- [eth_getUncleCountByBlockNumber](/api-reference/methods/eth-getUncleCountByBlockNumber) - Get uncle count by block number
+

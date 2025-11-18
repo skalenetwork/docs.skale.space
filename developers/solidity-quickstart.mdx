@@ -24,9 +24,9 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
     foundryup
     ```
 
-    <Note>
+    <Aside type="note">
     If you are on a Windows machine, you will need to use Window Subystem for Linux (WSL); since Foundry doesn't work nativley on Windows.
-    </Note>
+    </Aside>
 2. ### Create a New Foundry Project
 
     Run the following in your terminal:
@@ -91,10 +91,10 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
     cast wallet import skale-deployer --private-key $(cast wallet new | grep 'Private key:' | awk '{print $3}')
     ```
 
-    <Note>
+    <Aside type="note">
     Provide a password to encrypt the keystore file when running the above command.
     If you forget this password you will not be able to recover it and the SKALE team will not be able to help you recover it.
-    </Note>
+    </Aside>
 
     The above command:
 
@@ -111,9 +111,9 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
     Copy the address from your console and head over to the [sFUEL Station](https://sfuelstation). Input the address, toggle testnet, and fill up
     on Europa Testnet (the blue one).
 
-    <Tip>
+    <Aside type="tip">
     Make sure you toggle testnet on first!
-    </Note>
+    </Aside>
 
 7. ### Deploy the Smart Contract
 
@@ -135,9 +135,9 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
 
     To verify your smart contract, run the following in your terminal:
 
-    <Note>
+    <Aside type="note">
     Make sure you input the address of your deployed contract for [address]
-    </Note>
+    </Aside>
 
     ```shell
     forge verify-contract \
@@ -148,9 +148,9 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
         --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
     ```
 
-    <Note>
+    <Aside type="note">
     The below prompt is a full example of the verification request and successful output!
-    </Note>
+    </Aside>
     ```shell
     # The following is an example of what the full verification request looks like
     forge verify-contract \
@@ -172,5 +172,28 @@ building on SKALE, head over to the [SKALE Discord](https://discord.gg/skale) fo
 ## Next Steps
 
 Great work! You successfully deployed your first contract to SKALE making use of the zero gas fees and a number of popular tools.
-Head over to the [Foundry](https://book.getfoundry.sh/getting-started/first-steps) documentation to learn more about the tool, join us in [Discord](https://discord.gg/skale)
-to start asking questions, or start hacking away on your smart contracts! Welcome to the SKALEVerse!
+
+### Continue Learning
+
+<CardGroup cols={2}>
+  <Card title="Using Filestorage" href="/developers/using-filestorage">
+    Store files and websites onchain
+  </Card>
+  <Card title="SKALE Bridge" href="/developers/skale-bridge/overview">
+    Bridge assets between chains
+  </Card>
+  <Card title="Random Number Generation" href="/developers/random-number-generation">
+    Use onchain randomness in your dApp
+  </Card>
+  <Card title="Gas and Compute" href="/developers/gas-and-compute/zero-gas-fee-gasless-chain">
+    Learn about gas models on SKALE
+  </Card>
+</CardGroup>
+
+### Resources
+
+- [Foundry Documentation](https://book.getfoundry.sh/getting-started/first-steps) - Learn more about Foundry
+- [SKALE Discord](https://discord.gg/skale) - Join the community for support
+- [Build a dApp](/developers/build-a-dapp) - Complete guide to building on SKALE
+
+Welcome to the SKALEVerse!

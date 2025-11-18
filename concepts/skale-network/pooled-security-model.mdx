@@ -1,0 +1,103 @@
+---
+title: "Pooled Security Model"
+description: "Understanding SKALE's pooled security model where validators secure multiple chains"
+---
+
+## Overview
+
+SKALE Network employs a pooled security model where validators secure multiple SKALE Chains through a shared validator pool. This model provides strong security guarantees while enabling efficient resource utilization.
+
+## How Pooled Security Works
+
+In SKALE's pooled security model:
+
+- **Shared Validator Pool** - Validators participate in a shared pool that secures multiple chains
+- **Node Rotation** - Nodes are rotated across different SKALE Chains to ensure fair distribution
+- **Unified Validation** - Validators validate multiple chains, not just one
+- **Security Aggregation** - Security is aggregated across all chains in the network
+
+## Key Components
+
+### Validator Pool
+
+The validator pool consists of all validators participating in the SKALE Network. These validators collectively secure all SKALE Chains.
+
+### Node Rotation
+
+Nodes are rotated across different SKALE Chains through the NodeRotation contract. This ensures:
+
+- **Fair Distribution** - Resources are fairly distributed across chains
+- **Security Diversity** - Each chain is secured by a diverse set of validators
+- **Resource Efficiency** - Validators can secure multiple chains efficiently
+
+### Unified Validation
+
+Validators validate multiple chains simultaneously, providing:
+
+- **Economies of Scale** - More efficient use of validator resources
+- **Cross-Chain Security** - Security benefits from the entire network
+- **Reduced Costs** - Lower costs for securing individual chains
+
+## Security Guarantees
+
+The pooled security model provides:
+
+- **High Security** - Each chain benefits from the security of the entire network
+- **Fault Tolerance** - Chains remain secure even if some validators fail
+- **Byzantine Resistance** - Protection against Byzantine failures
+- **Economic Security** - Validators have economic incentives to maintain security
+
+## Benefits
+
+### For Chain Owners
+
+- **Lower Costs** - Reduced costs compared to dedicated validators
+- **High Security** - Benefit from network-wide security
+- **Scalability** - Easy to add new chains without dedicated validators
+
+### For Validators
+
+- **Efficient Resource Use** - Secure multiple chains with the same infrastructure
+- **Diversified Revenue** - Earn rewards from multiple chains
+- **Network Effects** - Benefit from network growth
+
+### For Users
+
+- **Consistent Security** - All chains have similar security guarantees
+- **Lower Fees** - Reduced costs passed on to users
+- **Reliability** - High uptime and reliability
+
+## Comparison to Other Models
+
+### Dedicated Validators
+
+Unlike chains with dedicated validators, SKALE's pooled model:
+
+- **More Efficient** - Better resource utilization
+- **More Secure** - Larger validator set per chain
+- **More Economical** - Lower costs for chain owners
+
+### Shared Security
+
+SKALE's pooled security differs from shared security models by:
+
+- **Independent Chains** - Each chain maintains independent state
+- **Flexible Allocation** - Resources can be allocated dynamically
+- **Network-Wide Benefits** - Security benefits scale with network size
+
+## Implementation
+
+Pooled security is implemented through:
+
+- **SKALE Manager** - Coordinates validator allocation and chain security
+- **NodeRotation** - Manages node rotation across chains
+- **ValidatorService** - Manages validator registration and participation
+- **DelegationController** - Handles staking and delegation
+
+## Related Topics
+
+- [SKALE Manager](/concepts/skale-manager) - Core contracts managing the network
+- [Delegated Proof of Stake](/concepts/skale-network/delegated-proof-of-stake) - Consensus mechanism
+- [Containerized Nodes](/concepts/skale-network/containerized-nodes) - Node architecture
+- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability) - Network scaling
+

@@ -1,0 +1,86 @@
+/* Fix navigation hover background width consistency */
+/* Make all navigation hover backgrounds 100% width for consistency */
+/* Override Tailwind's w-full class */
+
+/* Target Mintlify sidebar navigation links - ensure full width */
+/* Scope to sidebar only to avoid affecting top navigation tabs */
+#sidebar-group a,
+ul#sidebar-group a,
+#sidebar-group li[id] a,
+#sidebar-group a.group.flex.items-center.pr-3,
+#sidebar-group a.group.flex.items-center {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Hover states - ensure width is maintained */
+#sidebar-group a:hover,
+ul#sidebar-group a:hover,
+#sidebar-group li[id] a:hover,
+#sidebar-group a.group.flex.items-center.pr-3:hover,
+#sidebar-group a.group.flex.items-center:hover {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Target list items to ensure full width */
+/* Scope to sidebar only to avoid affecting top navigation tabs */
+#sidebar-group li,
+ul#sidebar-group li,
+#sidebar-group li[id].relative.scroll-m-4 {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix navigation hover text color - ensure dark text on light background */
+/* Scope to sidebar only to avoid affecting top navigation tabs */
+#sidebar-group a:hover,
+ul#sidebar-group a:hover,
+#sidebar-group li[id] a:hover,
+#sidebar-group a.group.flex.items-center.pr-3:hover,
+#sidebar-group a.group.flex.items-center:hover {
+  color: inherit !important;
+}
+
+/* Ensure navigation links maintain readable text color on hover in light mode */
+[data-theme="light"] #sidebar-group a:hover,
+[data-theme="light"] ul#sidebar-group a:hover,
+[data-theme="light"] #sidebar-group li[id] a:hover,
+[data-theme="light"] #sidebar-group a.group.flex.items-center.pr-3:hover,
+[data-theme="light"] #sidebar-group a.group.flex.items-center:hover {
+  color: #1f2937 !important; /* Dark gray text for light backgrounds */
+}
+
+/* Fix top navigation tabs hover text color */
+/* Target Mintlify navigation tabs using the actual class - override Tailwind hover classes */
+a.nav-tabs-item:hover,
+a.link.nav-tabs-item:hover,
+.nav-tabs-item.group:hover {
+  color: inherit !important;
+}
+
+/* Light mode navigation tabs hover - override Tailwind's hover:text-primary */
+[data-theme="light"] a.nav-tabs-item:hover,
+[data-theme="light"] a.link.nav-tabs-item:hover,
+[data-theme="light"] .nav-tabs-item.group:hover,
+html[data-theme="light"] a.nav-tabs-item:hover,
+html[data-theme="light"] a.link.nav-tabs-item:hover,
+body[data-theme="light"] a.nav-tabs-item:hover,
+body[data-theme="light"] a.link.nav-tabs-item:hover,
+[data-mode="light"] a.nav-tabs-item:hover,
+[data-mode="light"] a.link.nav-tabs-item:hover,
+.light a.nav-tabs-item:hover,
+.light a.link.nav-tabs-item:hover,
+html:not([data-theme="dark"]) a.nav-tabs-item:hover,
+html:not([data-theme="dark"]) a.link.nav-tabs-item:hover {
+  color: #1f2937 !important; /* Dark gray text for light backgrounds */
+}
+
+/* Prevent text wrapping in navigation tabs */
+/* Also ensure tabs don't get forced to 100% width from sidebar rules */
+.nav-tabs-item,
+a.nav-tabs-item {
+  white-space: nowrap !important;
+  width: auto !important;
+  max-width: none !important;
+}

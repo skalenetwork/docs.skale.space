@@ -1,0 +1,71 @@
+---
+title: eth_gasPrice
+description: Returns the current price per gas in wei
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_gasPrice" />
+
+
+Returns the current price per gas in wei.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_gasPrice",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x3e8"
+}
+```
+
+### Response Types
+
+- **result** (`string`): Current gas price in wei as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_gasPrice",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x3e8"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Dynamically adjusted from 1000 wei upward
+- Available on all node types
+- On SKALE, gas prices are used for spam protection, not payment
+

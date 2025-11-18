@@ -28,10 +28,10 @@ SKALE's Interchain Messaging Agent includes a native bridging layer for ERC-1155
 - In order to bridge an ERC-1155 token to a SKALE Chain from Ethereum, it must be **added** by the SKALE Chain owner or operator via the standard mapping process
 - All ERC-1155 tokens bridged into SKALE have a set of basic requirements to make them compatible with SKALE's bridging layer
 
-<Note>
+<Aside type="note">
 SKALE utilizes a popular architectural design within bridging which is a liquidity based bridge.
 This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on the target SKALE Chain.
-</Note>
+</Aside>
 
 ## Bridge Setup
 
@@ -45,12 +45,12 @@ ERC-1155 tokens that are being bridged to SKALE should follow two basic requirem
 <Aside type="danger" title="Caution on Minting">
 If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that
 the existing tokens on the SKALE Chain may not match what is secured in the bridge.
-</Note>
+</Aside>
 
 <Aside type="danger" title="Caution on Burning">
 If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that
 the supply on the SKALE Chain side could be "burned", while the tokens still exist on Ethereum which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
-</Note>
+</Aside>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InGameTokens for an example of InterchainERC1155 in use!
 
@@ -65,9 +65,9 @@ Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](h
 
 ### 3. Map the SKALE and Ethereum tokens together
 
-<Note>
+<Aside type="note">
 If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
-</Note>
+</Aside>
 
 #### Add the token on Ethereum via SAFE
 
@@ -81,9 +81,9 @@ Once on your SAFE, start by preparing a transaction via the **Transaction Builde
 4. Input your *SKALE Chain Name* and your ERC-1155 contract address on Ethereum in the fields
 5. Send by itself or via batch
 
-<Warning>
+<Aside type="warning">
 Make sure to replace the values with your SKALE Chain name and the correct token addresses.
-</Note>
+</Aside>
 
 #### Add the token on SKALE Chain TokenManagerERC1155
 
@@ -138,9 +138,9 @@ SKALE's decentralized bridge offers a simple two-step process to bridge from any
 
 2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
 
-<Note>
+<Aside type="note">
 Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
-</Note>
+</Aside>
 
 #### Pre-pay for your Exit
 
@@ -161,7 +161,7 @@ Bridging from SKALE simply requires the `exitToMainERC1155` function to be calle
     <Code code={exitERC1155BatchJs} lang="js" />
   
 
-<Note>
+<Aside type="note">
 If your bridge is not working, it is most likely for one of three reasons:
 
 1. You forgot to prepay for gas
@@ -169,4 +169,4 @@ If your bridge is not working, it is most likely for one of three reasons:
 3. You don't actually own the ERC-1155 Token
 
 Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
-</Note>
+</Aside>

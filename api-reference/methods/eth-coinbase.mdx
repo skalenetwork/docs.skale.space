@@ -1,0 +1,71 @@
+---
+title: eth_coinbase
+description: Returns the client coinbase address
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_coinbase" />
+
+
+Returns the client coinbase address.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_coinbase",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+}
+```
+
+### Response Types
+
+- **result** (`string`): The coinbase address, 20 bytes hex-encoded with `0x` prefix
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_coinbase",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Returns SKALE Chain Owner Address from `config.json`
+- Available on all node types
+- This is the address that receives block rewards (if any)
+

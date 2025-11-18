@@ -1,0 +1,84 @@
+---
+title: eth_getBalance
+description: Returns the balance of an account at a specific block
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getBalance" />
+
+
+Returns the balance of the account of the given address.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getBalance",
+  "params": [
+    "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "latest"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **address** (`string`, required): 20-byte address, hex-encoded with `0x` prefix
+2. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x2386f26fc10000"
+}
+```
+
+### Response Types
+
+- **result** (`string`): The balance in wei as a hexadecimal string (e.g., `"0x2386f26fc10000"`)
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBalance",
+    "params": [
+      "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "latest"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x2386f26fc10000"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- The balance is returned in wei (smallest unit)
+- To convert to SKALE Fuel (sFUEL), divide by 10^18
+- Use `"latest"` for the most recent balance, `"pending"` for pending transactions
+- This method is available on all node types
+
+## Related Methods
+
+- [eth_getTransactionCount](/api-reference/methods/eth-getTransactionCount) - Get account nonce
+- [eth_getCode](/api-reference/methods/eth-getCode) - Get contract code
+

@@ -6,10 +6,10 @@ description: Guidance on using SAFE to manage a SKALE Chain
 The Ethereum-based SAFE can be used to manage a SKALE Chain, IF set as the SKALE Chain owner during creation.
 It operates using SKALE's Native IMA bridge to execute on a SKALE Chain.
 
-<Warning>
+<Aside type="warning">
 SKALE only supports SAFE ownership assigned to Ethereum SAFE's. While SAFE does support cross-chain address ownership (in many cases),
 utilizing an address that is not attainable on Ethereum may result in issues with SKALE Chain operations.
-</Note>
+</Aside>
 
 ## Sending Transactions on SKALE Chain
 
@@ -30,9 +30,9 @@ The following example will help you grant a specific role to an externally owned
 | Receiver | 0xa9E1712086412A157A2A187A111bFAb203C73F6E |
 | SKALE Chain Name | juicy-low-small-testnet |
 
-<Note>
+<Aside type="note">
 juicy-low-small-testnet is SKALE Europa Testnet. Make sure to substitute with your own.
-</Note>
+</Aside>
 
 ```shell
 npx msig encodeData juicy-low-small-testnet Etherbase grantRole 0xe0ba7b49edc651b7ad93b374c67f1e9a0d37370168bbb86b81c569ebfa15f046 0xa9E1712086412A157A2A187A111bFAb203C73F6E
@@ -43,16 +43,16 @@ npx msig encodeData juicy-low-small-testnet Etherbase grantRole 0xe0ba7b49edc651
 0x9448920200000561bf78bd39c8e04acfad7995005495094c7d395d405c3288f009efc402000000000000000000000000d2c0deface000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000d2ba3e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000442f2ff15de0ba7b49edc651b7ad93b374c67f1e9a0d37370168bbb86b81c569ebfa15f046000000000000000000000000a9e1712086412a157a2a187a111bfab203c73f6e00000000000000000000000000000000000000000000000000000000
 ```
 
-<Warning>
+<Aside type="warning">
 The above example uses **Europa Testnet** SKALE Chain Name. Your SKALE Chain name will be a unique
 	identifier. Make sure to use the right SKALE Chain name otherwise the transaction will fail and consume gas. The output should change slightly to match your SKALE Chain Name.
-</Note>
+</Aside>
 
 ### Submit Transaction to SAFE
 
-<Note>
+<Aside type="note">
 The below may look slightly different as it uses Holesky Protofire frontend.
-</Note>
+</Aside>
 
 1. Go to [SAFE App](https://safe.global) or your preferred frontend for SAFE.
 2. Press **New Transaction** and then **Transaction Builder**
@@ -65,9 +65,9 @@ The below may look slightly different as it uses Holesky Protofire frontend.
 
 4. Input the MessageProxy address for your correct environment into the **Contract Address** field and select **Use Implementation ABI**
 
-<Tip>
+<Aside type="tip">
 Each SKALE Manager deployment -- Mainnet, Testnet, etc. -- has a smart contract called MessageProxy which is what sends data between Ethereum and SKALE Chains. Grab the correct address from the table below and verify by visiting the SKALE Network [Releases Repo](https://github.com/skalenetwork/concepts/tree/master/releases).
-</Note>
+</Aside>
 
 **MessageProxy Contract Addresses**
 | Network | Contract Address |
@@ -82,17 +82,17 @@ Each SKALE Manager deployment -- Mainnet, Testnet, etc. -- has a smart contract 
 
 7. Click **Add transaction**, scroll down, and click **Create Batch**, then click **Send Batch**. [Tenderly](https://tenderly.co/) simulation is generally available, even on testnet, and is encouraged to be used to see all the changes occuring on the Ethereum side before they occur.
 
-<Tip>
+<Aside type="tip">
 You can execute multiple SKALE Chain adminsistrative commands in one single "batch".
 This is recommended in production when you have many commands to execute.
-</Note>
+</Aside>
 
 ### Executing the Transaction
 
 Executing the transaction is equivalent to sending a transaction to the blockchain.
 As this requires the SKALE Network validators to pickup the message from Ethereum and post it to the SKALE Chain, please allow time for the Ethereum transaction to be included and for the message to post to SKALE.
 
-<Note>
+<Aside type="note">
 SAFEs in production should generally not have only 1 signer allowed to execute once the chain is out of the "setup" stage. Note that transactions will not execute until sufficient signers have confirmed/signed the transaction on SAFE.
-</Note>
+</Aside>
 

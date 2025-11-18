@@ -7,9 +7,9 @@ While SKALE Chains themselves are Layer 1 blockchains, the architectural design 
 
 Access Control to a SKALE Chain is managed by the Config Controller smart contract which is predeployed on a SKALE Chain. Config Controller makes use of [OpenZeppellin's Access Control](https://openzeppelin.com) to handle roles, events, and management automatically.
 
-<Note>
+<Aside type="note">
 If you encouter the error **Out of Gas** when trying to deploy a smart contract to a SKALE Chain; this likely means that the address is not allowed to deploy smart contracts and is missing deployer access.
-</Note>
+</Aside>
 
 ## Access via Accounts
 
@@ -17,9 +17,9 @@ The most straightforward and common way to access a SKALE Chain for deployment i
 
 See [how to add address to whitelist](#add-to-whitelist) and [how to remove from whitelist](#remove-from-whitelist) to understand how to manage your access control layer.
 
-<Note>
+<Aside type="note">
 DEPLOYER_ROLE is the most elevated deployer permission available for a chain with the permission layer enabled. Deployer Role allows deployment directly and through factories.
-</Note>
+</Aside>
 
 ## Access via Factories
 
@@ -38,7 +38,7 @@ On the [SKALE Europa Hub](https://portal.skale.space/chains/europa), SushiSwap w
 
 <Aside type="danger">
 Open factory usage is generally not recommended on a SKALE Chain with zero gas, however, is necessary and even useful in some cases. Generic factories should not be opened up for public usage on a SKALE Chain with the permission layer enabled and zero gas fees to avoid spam.
-</Note>
+</Aside>
 
 This then allows anyone to deploy a smart contract via the factory regardless of their direct status on the allow list.
 
@@ -95,9 +95,9 @@ SKALE Chains by default come with the permission layer enabled. However, the per
 
 The following is how to add an address to the SKALE Chain whitelist:
 
-<Note>
+<Aside type="note">
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Note>
+</Aside>
 
 	## Ethers v6
 	```ts
@@ -131,9 +131,9 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 
 The following is how to remove an address from the SKALE Chain whitelist:
 
-<Note>
+<Aside type="note">
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Note>
+</Aside>
 
 	## Ethers v6
 		```ts
@@ -167,9 +167,9 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 
 The following is how to add an admin which can manage a smart contract whitelist:
 
-<Note>
+<Aside type="note">
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Note>
+</Aside>
 
 	## Ethers v6
 	```ts
@@ -204,9 +204,9 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 
 The following is how to remove an admin from managing a smart contract whitelist:
 
-<Note>
+<Aside type="note">
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Note>
+</Aside>
 
 	## Ethers v6
 	```ts
@@ -241,9 +241,9 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 
 The following is how to add an address to the SKALE Chain whitelist:
 
-<Note>
+<Aside type="note">
 The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this successfully.
-</Note>
+</Aside>
 
 	## Ethers v6
 	```ts
@@ -278,9 +278,9 @@ The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this succe
 
 The following is how to remove an address from the SKALE Chain whitelist:
 
-<Note>
+<Aside type="note">
 The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this successfully.
-</Note>
+</Aside>
 
 	## Ethers v6
 		```ts

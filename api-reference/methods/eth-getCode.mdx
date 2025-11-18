@@ -1,0 +1,84 @@
+---
+title: eth_getCode
+description: Returns code at a given address
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getCode" />
+
+
+Returns code at a given address.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getCode",
+  "params": [
+    "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "latest"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **address** (`string`, required): 20-byte address, hex-encoded with `0x` prefix
+2. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x608060405234801561001057600080fd5b50..."
+}
+```
+
+### Response Types
+
+- **result** (`string`): The code at the given address, hex-encoded. Returns `"0x"` if the address is not a contract.
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getCode",
+    "params": [
+      "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "latest"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x608060405234801561001057600080fd5b50..."
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- `"latest"` only on Core/Full Sync nodes; Archive nodes support historical blocks
+- Supports EIP-1898 block specification
+- Returns `"0x"` for EOA (Externally Owned Accounts)
+- Available on all node types (with limitations on Core/Full Sync)
+
+## Related Methods
+
+- [eth_getStorageAt](/api-reference/methods/eth-getStorageAt) - Get storage value
+- [eth_call](/api-reference/methods/eth-call) - Execute a call
+

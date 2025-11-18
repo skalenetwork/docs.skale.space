@@ -1,0 +1,233 @@
+---
+title: "Setup Hardhat"
+description: "Guide to setting up Hardhat for SKALE development"
+---
+
+## Setup Hardhat
+
+Hardhat is a development environment for Ethereum software. It helps developers compile, deploy, test, and debug their Ethereum applications. This guide will help you set up Hardhat for developing on SKALE.
+
+## Prerequisites
+
+- Node.js (v16 or higher) installed
+- npm or yarn package manager
+- Basic knowledge of JavaScript/TypeScript
+
+## Step 1: Create a New Project
+
+Create a new directory and initialize a Node.js project:
+
+```shell
+mkdir my-skale-project
+cd my-skale-project
+npm init -y
+```
+
+## Step 2: Install Hardhat
+
+Install Hardhat and its dependencies:
+
+```shell
+npm install --save-dev hardhat @nomicfoundation/hardhat-toolbox
+```
+
+<Note>
+The `@nomicfoundation/hardhat-toolbox` package includes all commonly used plugins and tools for Hardhat development.
+</Note>
+
+## Step 3: Initialize Hardhat
+
+Initialize a Hardhat project:
+
+```shell
+npx hardhat init
+```
+
+Select "Create a JavaScript project" (or TypeScript if preferred) and follow the prompts.
+
+## Step 4: Configure Hardhat for SKALE
+
+Update your `hardhat.config.js` (or `hardhat.config.ts`) file:
+
+```javascript
+require("@nomicfoundation/hardhat-toolbox");
+
+/** @type import('hardhat/config').HardhatUserConfig */
+module.exports = {
+  solidity: {
+    version: "0.8.19",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
+  networks: {
+    skale_testnet: {
+      url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 1444673419,
+    },
+    skale_mainnet: {
+      url: "https://mainnet.skalenodes.com/v1/elated-tan-skat",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 2046399126,
+    },
+  },
+  etherscan: {
+    apiKey: {
+      skale_testnet: "your-api-key", // Not required for Blockscout
+    },
+    customChains: [
+      {
+        network: "skale_testnet",
+        chainId: 1444673419,
+        urls: {
+          apiURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
+          browserURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com",
+        },
+      },
+    ],
+  },
+};
+```
+
+<Note>
+Replace the RPC URLs with your specific SKALE Chain endpoint. You can find SKALE Chain endpoints in the [SKALE Portal](https://portal.skale.space).
+</Note>
+
+## Step 5: Install OpenZeppelin Contracts
+
+Install OpenZeppelin Contracts:
+
+```shell
+npm install @openzeppelin/contracts
+```
+
+## Step 6: Create Environment File
+
+Create a `.env` file in your project root:
+
+```env
+PRIVATE_KEY=your-private-key-here
+```
+
+<Warning>
+Never commit your `.env` file to version control. Add it to your `.gitignore` file.
+</Warning>
+
+Install dotenv package:
+
+```shell
+npm install dotenv
+```
+
+Update your `hardhat.config.js` to load environment variables:
+
+```javascript
+require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
+
+// ... rest of config
+```
+
+## Step 7: Create a Deployment Script
+
+Create a deployment script in `scripts/deploy.js`:
+
+```javascript
+const hre = require("hardhat");
+
+async function main() {
+  const MyContract = await hre.ethers.getContractFactory("MyContract");
+  const myContract = await MyContract.deploy();
+
+  await myContract.waitForDeployment();
+
+  console.log("Contract deployed to:", await myContract.getAddress());
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
+## Step 8: Compile Contracts
+
+Compile your contracts:
+
+```shell
+npx hardhat compile
+```
+
+## Step 9: Run Tests
+
+Run your tests:
+
+```shell
+npx hardhat test
+```
+
+## Step 10: Deploy to SKALE
+
+Deploy your contract to SKALE:
+
+```shell
+npx hardhat run scripts/deploy.js --network skale_testnet
+```
+
+## SKALE-Specific Considerations
+
+When deploying to SKALE with Hardhat:
+
+1. **Transaction Type**: Hardhat automatically handles transaction types, but ensure your Hardhat version supports legacy transactions if needed
+
+2. **Gas Configuration**: SKALE has zero gas fees, but you still need sFUEL for transactions:
+   ```javascript
+   networks: {
+     skale_testnet: {
+       url: "...",
+       accounts: [...],
+       gasPrice: 0, // SKALE has zero gas fees
+     },
+   },
+   ```
+
+3. **Contract Verification**: Verify contracts using Hardhat's verify plugin:
+   ```shell
+   npx hardhat verify --network skale_testnet <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
+   ```
+
+## Project Structure
+
+Your Hardhat project should look like this:
+
+```
+my-skale-project/
+├── contracts/     # Smart contracts
+├── scripts/       # Deployment scripts
+├── test/          # Test files
+├── hardhat.config.js
+├── .env
+└── package.json
+```
+
+## Next Steps
+
+Now that Hardhat is set up, you can:
+
+- [Deploy an ERC-20 Token](/cookbook/deploy-erc20-token)
+- [Deploy an ERC-721 Token](/cookbook/deploy-erc721-token)
+- [Deploy an ERC-1155 Token](/cookbook/deploy-erc1155-token)
+- [Deploy on SKALE](/developers/deploy-on-skale)
+
+## Related Topics
+
+- [Setup Foundry](/cookbook/setup-foundry)
+- [Solidity Quickstart](/developers/solidity-quickstart)
+- [Troubleshooting](/developers/troubleshooting)
+

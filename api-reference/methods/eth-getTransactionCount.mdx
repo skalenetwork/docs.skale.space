@@ -1,0 +1,84 @@
+---
+title: eth_getTransactionCount
+description: Returns the number of transactions sent from an address
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getTransactionCount" />
+
+
+Returns the number of transactions sent from an address (nonce).
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getTransactionCount",
+  "params": [
+    "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "latest"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **address** (`string`, required): 20-byte address, hex-encoded with `0x` prefix
+2. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x5"
+}
+```
+
+### Response Types
+
+- **result** (`string`): The transaction count (nonce) as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionCount",
+    "params": [
+      "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "latest"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x5"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- `"latest"` only on Core/Full Sync nodes; Archive nodes support historical blocks
+- Supports EIP-1898 block specification
+- Use this to get the nonce for the next transaction
+- Available on all node types (with limitations on Core/Full Sync)
+
+## Related Methods
+
+- [eth_sendRawTransaction](/api-reference/methods/eth-sendRawTransaction) - Send a transaction
+- [eth_getBalance](/api-reference/methods/eth-getBalance) - Get account balance
+

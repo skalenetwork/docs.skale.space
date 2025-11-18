@@ -1,0 +1,118 @@
+---
+title: "Containerized Nodes"
+description: "Understanding how SKALE uses containerization to enable efficient node operations"
+---
+
+## Overview
+
+SKALE Network uses containerization technology to enable efficient node operations, allowing a single physical server to support multiple SKALE Chains. This architecture enables horizontal scalability and efficient resource utilization.
+
+## What are Containerized Nodes?
+
+Containerized nodes run SKALE node software in isolated containers (such as Docker containers), allowing:
+
+- **Multiple Chains per Server** - A single physical server can support multiple SKALE Chains
+- **Resource Isolation** - Each chain's resources are isolated from others
+- **Efficient Resource Use** - Better utilization of server resources
+- **Easy Deployment** - Simplified node deployment and management
+
+## Architecture
+
+### Container Technology
+
+SKALE nodes run in virtualization containers:
+
+- **Docker Containers** - Typical implementation uses Docker containers
+- **Isolated Environments** - Each container provides isolated execution environment
+- **Resource Allocation** - Resources allocated per container/chain
+- **Network Isolation** - Network isolation between containers
+
+### Node Implementation
+
+A typical implementation:
+
+- **Network Node** - Runs SKALE consensus and validation
+- **Storage** - Stores chain state and data
+- **Multiple Chains** - Supports multiple SKALE Chains simultaneously
+- **Resource Sharing** - Shares physical resources across chains
+
+## Benefits
+
+### Efficiency
+
+- **Resource Utilization** - Better use of server resources
+- **Cost Reduction** - Lower costs per chain
+- **Scalability** - Easy to scale by adding containers
+- **Flexibility** - Flexible resource allocation
+
+### Operations
+
+- **Easy Deployment** - Simplified node deployment
+- **Management** - Easier node management and updates
+- **Isolation** - Fault isolation between chains
+- **Monitoring** - Easier monitoring and debugging
+
+### Network
+
+- **Horizontal Scaling** - Add capacity by adding containers
+- **Resource Efficiency** - Efficient use of network resources
+- **Cost Effectiveness** - Lower costs for chain owners
+- **Flexibility** - Flexible chain resource allocation
+
+## How It Works
+
+### Container Allocation
+
+When a SKALE Chain is created:
+
+1. **Resource Allocation** - Resources are allocated for the chain
+2. **Container Creation** - A container is created for the chain
+3. **Node Deployment** - SKALE node software is deployed in the container
+4. **Chain Assignment** - The container is assigned to the chain
+5. **Operation** - The node validates and stores chain data
+
+### Multi-Chain Support
+
+A single physical server can support multiple chains:
+
+- **Separate Containers** - Each chain runs in its own container
+- **Resource Allocation** - Resources allocated per chain
+- **Isolated Execution** - Chains operate independently
+- **Shared Infrastructure** - Physical infrastructure shared across chains
+
+## Implementation Details
+
+### Container Technology
+
+SKALE uses containerization technologies such as:
+
+- **Docker** - Most common implementation
+- **Kubernetes** - For orchestration at scale
+- **Container Runtime** - Standard container runtimes
+- **Orchestration** - Container orchestration tools
+
+### Resource Management
+
+Resources are managed through:
+
+- **Allocation** - Resources allocated per container
+- **Limits** - Resource limits per container
+- **Monitoring** - Resource usage monitoring
+- **Scaling** - Dynamic resource scaling
+
+## Use Cases
+
+Containerized nodes enable:
+
+- **Multiple Chains** - Support for multiple chains per server
+- **Cost Efficiency** - Lower costs for chain operations
+- **Scalability** - Easy horizontal scaling
+- **Flexibility** - Flexible resource allocation
+
+## Related Topics
+
+- [Virtualized Blockchains](/concepts/skale-network/virtualized-blockchains) - Virtualization of blockchain resources
+- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability) - How SKALE scales horizontally
+- [SKALE Manager](/concepts/skale-manager) - Network coordination
+- [Pooled Security Model](/concepts/skale-network/pooled-security-model) - Network security model
+

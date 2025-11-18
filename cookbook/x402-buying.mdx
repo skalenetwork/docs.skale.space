@@ -1,0 +1,267 @@
+---
+title: "Buying with x402"
+description: "Guide to implementing buying functionality with x402 payments on SKALE"
+---
+
+## Buying with x402
+
+This guide will show you how to implement buying functionality using x402 payments on SKALE. This covers the buyer's perspective and how to integrate x402 payments into your marketplace or e-commerce application.
+
+## Prerequisites
+
+- Basic understanding of smart contracts and Solidity
+- A SKALE Chain endpoint
+- Understanding of ERC-20 tokens and approvals
+- Familiarity with OpenZeppelin Contracts
+
+## Overview
+
+To enable buying with x402, you need to:
+
+1. Allow users to approve token spending
+2. Implement buy functions that transfer tokens
+3. Handle purchase logic and state updates
+4. Emit events for tracking purchases
+
+## Basic Buy Implementation
+
+Here's a simple marketplace contract that allows buying:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract Marketplace is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    
+    IERC20 public paymentToken;
+    
+    struct Item {
+        uint256 price;
+        address seller;
+        bool available;
+    }
+    
+    mapping(uint256 => Item) public items;
+    uint256 public itemCount;
+    
+    event ItemPurchased(uint256 indexed itemId, address indexed buyer, uint256 price);
+    event ItemListed(uint256 indexed itemId, address indexed seller, uint256 price);
+    
+    constructor(address _paymentToken) {
+        paymentToken = IERC20(_paymentToken);
+    }
+    
+    function listItem(uint256 price) external returns (uint256) {
+        itemCount++;
+        items[itemCount] = Item({
+            price: price,
+            seller: msg.sender,
+            available: true
+        });
+        
+        emit ItemListed(itemCount, msg.sender, price);
+        return itemCount;
+    }
+    
+    function buyItem(uint256 itemId) external nonReentrant {
+        Item storage item = items[itemId];
+        require(item.available, "Item not available");
+        require(item.price > 0, "Invalid price");
+        
+        // Transfer payment from buyer to seller
+        paymentToken.safeTransferFrom(msg.sender, item.seller, item.price);
+        
+        // Mark item as sold
+        item.available = false;
+        
+        emit ItemPurchased(itemId, msg.sender, item.price);
+    }
+}
+```
+
+## Frontend Integration
+
+### Step 1: Approve Token Spending
+
+Before buying, users must approve the contract to spend their tokens:
+
+```javascript
+// Using ethers.js
+const tokenContract = new ethers.Contract(
+    tokenAddress,
+    tokenABI,
+    signer
+);
+
+// Approve marketplace to spend tokens
+const approveTx = await tokenContract.approve(
+    marketplaceAddress,
+    ethers.constants.MaxUint256
+);
+await approveTx.wait();
+```
+
+### Step 2: Execute Purchase
+
+After approval, execute the purchase:
+
+```javascript
+const marketplace = new ethers.Contract(
+    marketplaceAddress,
+    marketplaceABI,
+    signer
+);
+
+// Buy item
+const buyTx = await marketplace.buyItem(itemId);
+await buyTx.wait();
+```
+
+## Advanced: Buy with Escrow
+
+Implement escrow for safer transactions:
+
+```solidity
+contract EscrowMarketplace is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    
+    IERC20 public paymentToken;
+    
+    struct Escrow {
+        uint256 itemId;
+        address buyer;
+        address seller;
+        uint256 amount;
+        bool released;
+    }
+    
+    mapping(uint256 => Escrow) public escrows;
+    uint256 public escrowCount;
+    
+    function buyWithEscrow(uint256 itemId, uint256 price) external nonReentrant {
+        // Transfer payment to escrow
+        paymentToken.safeTransferFrom(msg.sender, address(this), price);
+        
+        escrowCount++;
+        escrows[escrowCount] = Escrow({
+            itemId: itemId,
+            buyer: msg.sender,
+            seller: items[itemId].seller,
+            amount: price,
+            released: false
+        });
+        
+        emit EscrowCreated(escrowCount, msg.sender, price);
+    }
+    
+    function releaseEscrow(uint256 escrowId) external {
+        Escrow storage escrow = escrows[escrowId];
+        require(!escrow.released, "Already released");
+        require(msg.sender == escrow.seller || msg.sender == escrow.buyer, "Unauthorized");
+        
+        // Release payment to seller
+        paymentToken.safeTransfer(escrow.seller, escrow.amount);
+        escrow.released = true;
+        
+        emit EscrowReleased(escrowId);
+    }
+}
+```
+
+## Batch Purchases
+
+Enable buying multiple items in one transaction:
+
+```solidity
+function buyMultipleItems(uint256[] memory itemIds) external nonReentrant {
+    uint256 totalPrice = 0;
+    
+    // Calculate total price and verify availability
+    for (uint256 i = 0; i < itemIds.length; i++) {
+        Item storage item = items[itemIds[i]];
+        require(item.available, "Item not available");
+        totalPrice += item.price;
+    }
+    
+    // Transfer total payment
+    paymentToken.safeTransferFrom(msg.sender, address(this), totalPrice);
+    
+    // Process each purchase
+    for (uint256 i = 0; i < itemIds.length; i++) {
+        Item storage item = items[itemIds[i]];
+        item.available = false;
+        
+        // Distribute payment to seller
+        paymentToken.safeTransfer(item.seller, item.price);
+        
+        emit ItemPurchased(itemIds[i], msg.sender, item.price);
+    }
+}
+```
+
+## Handling Purchase Failures
+
+Implement proper error handling:
+
+```solidity
+function buyItem(uint256 itemId) external nonReentrant {
+    Item storage item = items[itemId];
+    
+    require(item.available, "Item not available");
+    require(item.price > 0, "Invalid price");
+    
+    // Check buyer has sufficient balance
+    require(
+        paymentToken.balanceOf(msg.sender) >= item.price,
+        "Insufficient balance"
+    );
+    
+    // Check allowance
+    require(
+        paymentToken.allowance(msg.sender, address(this)) >= item.price,
+        "Insufficient allowance"
+    );
+    
+    // Transfer payment
+    paymentToken.safeTransferFrom(msg.sender, item.seller, item.price);
+    
+    // Update state
+    item.available = false;
+    
+    emit ItemPurchased(itemId, msg.sender, item.price);
+}
+```
+
+## Best Practices
+
+1. **Check Allowance First**: Verify users have approved sufficient tokens
+2. **Validate State**: Ensure items are available before purchase
+3. **Use Events**: Emit events for all purchases
+4. **Handle Edge Cases**: Consider what happens if transfers fail
+5. **Gas Optimization**: Use batch operations when possible
+
+## Security Considerations
+
+- Always use `safeTransferFrom` for token transfers
+- Implement reentrancy protection
+- Validate all inputs
+- Check balances and allowances before transfers
+- Consider using pull payment patterns
+
+## Related Topics
+
+- [Accepting x402 Payments](/cookbook/x402-accepting-payments)
+- [Running a Facilitator on SKALE](/cookbook/x402-facilitator)
+- [Using Non-USDC Tokens](/cookbook/x402-non-usdc-tokens)
+- [Payments on SKALE](/developers/payments-on-skale)
+
+## Resources
+
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples/tree/main/skale-weather-server)
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts)
+

@@ -1,0 +1,80 @@
+---
+title: eth_getUncleCountByBlockHash
+description: Returns the number of uncles in a block from a block matching the given block hash
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getUncleCountByBlockHash" />
+
+
+Returns the number of uncles in a block from a block matching the given block hash.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getUncleCountByBlockHash",
+  "params": [
+    "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **blockHash** (`string`, required): Block hash, 32 bytes hex-encoded with `0x` prefix
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x0"
+}
+```
+
+### Response Types
+
+- **result** (`string`): Number of uncles in the block as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getUncleCountByBlockHash",
+    "params": [
+      "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x0"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Always returns `"0x0"` - SKALE does not have uncles
+- Available on all node types
+- SKALE uses Proof of Stake consensus, not Proof of Work
+
+## Related Methods
+
+- [eth_getUncleCountByBlockNumber](/api-reference/methods/eth-getUncleCountByBlockNumber) - Get uncle count by block number
+- [eth_getUncleByBlockHashAndIndex](/api-reference/methods/eth-getUncleByBlockHashAndIndex) - Get uncle by block hash and index
+

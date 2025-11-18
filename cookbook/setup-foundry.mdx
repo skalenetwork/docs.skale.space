@@ -1,0 +1,189 @@
+---
+title: "Setup Foundry"
+description: "Guide to setting up Foundry for SKALE development"
+---
+
+## Setup Foundry
+
+Foundry is a blazing fast, portable, and modular toolkit for Ethereum application development written in Rust. This guide will help you set up Foundry for developing on SKALE.
+
+## Prerequisites
+
+- [Rust](https://www.rust-lang.org/tools/install) installed on your machine
+- Basic command-line knowledge
+
+<Note>
+If you are on a Windows machine, you will need to use Windows Subsystem for Linux (WSL), since Foundry doesn't work natively on Windows.
+</Note>
+
+## Step 1: Install Foundry
+
+Install Foundry by running:
+
+```shell
+foundryup
+```
+
+This will install the latest stable release of Foundry, including:
+- **Forge**: Build, test, and deploy smart contracts
+- **Cast**: Interact with EVM smart contracts, send transactions, and read chain data
+- **Anvil**: Local Ethereum node for testing
+- **Chisel**: Solidity REPL
+
+## Step 2: Verify Installation
+
+Verify that Foundry is installed correctly:
+
+```shell
+forge --version
+cast --version
+anvil --version
+```
+
+You should see version numbers for each tool.
+
+## Step 3: Create a New Foundry Project
+
+Create a new Foundry project:
+
+```shell
+forge init my-skale-project
+cd my-skale-project
+```
+
+This creates a new directory with the following structure:
+
+```
+my-skale-project/
+├── src/          # Smart contracts
+├── script/       # Deployment scripts
+├── test/         # Test files
+├── lib/          # Dependencies
+├── foundry.toml  # Configuration file
+└── remappings.txt # Import remappings
+```
+
+## Step 4: Configure Foundry for SKALE
+
+Update the `foundry.toml` file to add SKALE Chain endpoints:
+
+```toml
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+# SKALE Chain Configuration
+[rpc_endpoints]
+skale_testnet = "https://testnet.skalenodes.com/v1/juicy-low-small-testnet"
+skale_mainnet = "https://mainnet.skalenodes.com/v1/elated-tan-skat"
+# Add your custom SKALE Chain endpoint here
+
+[etherscan]
+skale_testnet = { key = "", url = "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api" }
+```
+
+<Note>
+Replace the RPC URLs with your specific SKALE Chain endpoint. You can find SKALE Chain endpoints in the [SKALE Portal](https://portal.skale.space).
+</Note>
+
+## Step 5: Install Dependencies
+
+Install OpenZeppelin Contracts (or other dependencies):
+
+```shell
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+This will add the dependency to your `lib` directory.
+
+## Step 6: Configure Remappings
+
+Update your `remappings.txt` file to include:
+
+```
+@openzeppelin/=lib/openzeppelin-contracts/
+```
+
+## Step 7: Create a Keystore (Optional but Recommended)
+
+For secure deployment, create a Foundry keystore:
+
+```shell
+cast wallet import skale-deployer --private-key $(cast wallet new | grep 'Private key:' | awk '{print $3}')
+```
+
+<Note>
+Provide a password to encrypt the keystore file. If you forget this password, you will not be able to recover it.
+</Note>
+
+Get your wallet address:
+
+```shell
+cast wallet address --account skale-deployer
+```
+
+Copy this address and fund it with sFUEL from the [sFUEL Station](https://sfuelstation).
+
+## Step 8: Test Your Setup
+
+Compile your contracts:
+
+```shell
+forge build
+```
+
+Run tests:
+
+```shell
+forge test
+```
+
+## SKALE-Specific Considerations
+
+When deploying to SKALE, remember to:
+
+1. **Use the `--legacy` flag**: SKALE Chains require legacy transaction format
+   ```shell
+   forge create src/MyContract.sol:MyContract \
+       --account skale-deployer \
+       --rpc-url skale_testnet \
+       --broadcast \
+       --legacy
+   ```
+
+2. **Use `--slow` flag for scripts**: When running scripts with multiple transactions
+   ```shell
+   forge script script/Deploy.s.sol \
+       --account skale-deployer \
+       --rpc-url skale_testnet \
+       --broadcast \
+       --slow \
+       --legacy
+   ```
+
+3. **Verify contracts**: Use the block explorer API for verification
+   ```shell
+   forge verify-contract \
+       --rpc-url skale_testnet \
+       <CONTRACT_ADDRESS> \
+       src/MyContract.sol:MyContract \
+       --verifier blockscout \
+       --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+   ```
+
+## Next Steps
+
+Now that Foundry is set up, you can:
+
+- [Deploy an ERC-20 Token](/cookbook/deploy-erc20-token)
+- [Deploy an ERC-721 Token](/cookbook/deploy-erc721-token)
+- [Deploy an ERC-1155 Token](/cookbook/deploy-erc1155-token)
+- [Solidity Quickstart](/developers/solidity-quickstart)
+
+## Related Topics
+
+- [Setup Hardhat](/cookbook/setup-hardhat)
+- [Deploy on SKALE](/developers/deploy-on-skale)
+- [Troubleshooting](/developers/troubleshooting)
+

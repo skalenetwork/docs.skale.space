@@ -1,0 +1,77 @@
+---
+title: eth_newBlockFilter
+description: Creates a filter in the node to notify when a new block arrives
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_newBlockFilter" />
+
+
+Creates a filter in the node to notify when a new block arrives.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_newBlockFilter",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x1"
+}
+```
+
+### Response Types
+
+- **result** (`string`): Filter ID as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_newBlockFilter",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x1"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Available on all node types
+- Use the filter ID with [eth_getFilterChanges](/api-reference/methods/eth-getFilterChanges) to get new blocks
+- On SKALE, blocks are produced approximately every 1 second
+
+## Related Methods
+
+- [eth_getFilterChanges](/api-reference/methods/eth-getFilterChanges) - Get filter changes
+- [eth_uninstallFilter](/api-reference/methods/eth-uninstallFilter) - Uninstall filter
+- [eth_newPendingTransactionFilter](/api-reference/methods/eth-newPendingTransactionFilter) - Filter for pending transactions
+

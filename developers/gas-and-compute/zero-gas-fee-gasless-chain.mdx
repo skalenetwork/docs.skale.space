@@ -1,0 +1,49 @@
+---
+title: Zero Gas Fee / Gasless Chain
+description: Understanding zero gas fee and gasless transaction models on SKALE
+---
+
+## Zero Gas Fees
+
+SKALE Chains operate with **zero gas fees** by default. This means that the native gas token (sFUEL) has no monetary value and cannot be traded or sold. However, it still functions like Ether on Ethereum for compatibility with EVM tooling.
+
+### Key Points
+
+- **No Monetary Value**: sFUEL cannot be purchased or sold
+- **EVM Compatible**: Works with all standard Ethereum tooling
+- **Spam Prevention**: Still prevents spam and DDoS attacks through computational requirements
+- **Free Forever**: Zero gas fees are permanent on all SKALE Chains
+
+## Gasless Transactions
+
+SKALE also supports **gasless transactions**, which allow users to interact with the network without sFUEL in their wallet. This is achieved through a Proof of Work mechanism that generates "magic numbers" to validate transactions.
+
+### How Gasless Transactions Work
+
+1. The client generates a random 256-bit magic number using Proof of Work
+2. The magic number is used as the gasPrice for the transaction
+3. The transaction is validated based on the computational work performed
+4. No sFUEL balance is required in the user's wallet
+
+### Use Cases
+
+- **Invisible Transactions**: Create seamless user experiences without visible blockchain interactions
+- **True Decentralization**: No need for sFUEL distribution infrastructure
+- **Enhanced Security**: Reduces operational overhead for sFUEL distribution
+
+## Comparison
+
+| Feature | Zero Gas Fees | Gasless Transactions |
+|---------|---------------|---------------------|
+| Requires sFUEL | Yes (but free) | No |
+| User Experience | Invisible after initial sFUEL distribution | Completely invisible |
+| Implementation | Automatic | Requires Proof of Work |
+| Best For | Most applications | Applications requiring true decentralization |
+
+## Related Topics
+
+- [Zero Gas Fees](/developers/gas-fees) - Detailed guide on SKALE's gas fee model
+- [sFUEL Distribution](/developers/run-a-skale-chain/managing-sfuel-distribution) - Managing sFUEL for your dApp
+- [Appchain](/developers/gas-and-compute/appchain) - Learn about dedicated appchains
+- [Credit Chain](/developers/gas-and-compute/credit-chain) - Learn about credit-based chains
+

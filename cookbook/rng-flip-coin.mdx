@@ -1,0 +1,280 @@
+---
+title: "Flip a Coin with RNG"
+description: "Guide to implementing a coin flip using SKALE's random number generation"
+---
+
+## Flip a Coin with RNG
+
+This guide will show you how to implement a coin flip (heads or tails) using SKALE's built-in random number generation. This is a simple example that demonstrates practical use of RNG.
+
+## Prerequisites
+
+- Basic understanding of Solidity
+- A SKALE Chain endpoint
+- Understanding of SKALE RNG (see [Get a Random Number](/cookbook/rng-get-random-number))
+
+## Overview
+
+A coin flip randomly selects between two outcomes:
+- **Heads** (true or 1)
+- **Tails** (false or 0)
+
+## Basic Implementation
+
+Here's a simple coin flip contract:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract CoinFlip {
+    enum CoinSide { Heads, Tails }
+    
+    event CoinFlipped(address indexed player, CoinSide result);
+    
+    function flip() public returns (CoinSide) {
+        uint256 random = getRandomNumber();
+        CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+        
+        emit CoinFlipped(msg.sender, result);
+        return result;
+    }
+    
+    function getRandomNumber() private view returns (uint256) {
+        bytes32 randomBytes;
+        assembly {
+            let freemem := mload(0x40)
+            if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
+                invalid()
+            }
+            randomBytes := mload(freemem)
+        }
+        return uint256(randomBytes);
+    }
+}
+```
+
+## Using SKALE RNG Library
+
+Using the SKALE RNG library makes it even simpler:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+contract CoinFlipWithLibrary is RNG {
+    enum CoinSide { Heads, Tails }
+    
+    event CoinFlipped(address indexed player, CoinSide result);
+    
+    function flip() public returns (CoinSide) {
+        uint256 random = getRandomNumber();
+        CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+        
+        emit CoinFlipped(msg.sender, result);
+        return result;
+    }
+}
+```
+
+## Advanced: Coin Flip with Betting
+
+Add betting functionality:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@dirtroad/skale-rng/contracts/RNG.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract BettingCoinFlip is RNG, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    
+    IERC20 public paymentToken;
+    
+    enum CoinSide { Heads, Tails }
+    
+    struct Bet {
+        address player;
+        CoinSide choice;
+        uint256 amount;
+        bool resolved;
+        CoinSide result;
+    }
+    
+    mapping(uint256 => Bet) public bets;
+    uint256 public betCount;
+    
+    event BetPlaced(uint256 indexed betId, address indexed player, CoinSide choice, uint256 amount);
+    event BetResolved(uint256 indexed betId, address indexed player, CoinSide result, bool won, uint256 payout);
+    
+    constructor(address _paymentToken) {
+        paymentToken = IERC20(_paymentToken);
+    }
+    
+    function placeBet(CoinSide choice, uint256 amount) external nonReentrant returns (uint256) {
+        require(amount > 0, "Amount must be greater than 0");
+        
+        // Transfer bet amount
+        paymentToken.safeTransferFrom(msg.sender, address(this), amount);
+        
+        // Create bet
+        betCount++;
+        bets[betCount] = Bet({
+            player: msg.sender,
+            choice: choice,
+            amount: amount,
+            resolved: false,
+            result: CoinSide.Heads // Placeholder
+        });
+        
+        emit BetPlaced(betCount, msg.sender, choice, amount);
+        
+        // Resolve immediately
+        resolveBet(betCount);
+        
+        return betCount;
+    }
+    
+    function resolveBet(uint256 betId) private {
+        Bet storage bet = bets[betId];
+        require(!bet.resolved, "Bet already resolved");
+        
+        // Flip coin
+        CoinSide result = flipCoin();
+        bet.result = result;
+        bet.resolved = true;
+        
+        // Check if player won
+        bool won = (bet.choice == result);
+        uint256 payout = 0;
+        
+        if (won) {
+            // Player wins: return bet + winnings (1:1 payout)
+            payout = bet.amount * 2;
+            paymentToken.safeTransfer(bet.player, payout);
+        }
+        // If lost, bet amount stays in contract
+        
+        emit BetResolved(betId, bet.player, result, won, payout);
+    }
+    
+    function flipCoin() private view returns (CoinSide) {
+        uint256 random = getRandomNumber();
+        return (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+    }
+    
+    function getBet(uint256 betId) external view returns (Bet memory) {
+        return bets[betId];
+    }
+}
+```
+
+## Frontend Integration
+
+Create a simple frontend to interact with the coin flip:
+
+```javascript
+// Using ethers.js
+const contract = new ethers.Contract(contractAddress, abi, signer);
+
+// Flip coin
+async function flipCoin() {
+    const tx = await contract.flip();
+    await tx.wait();
+    
+    // Listen for event
+    contract.on("CoinFlipped", (player, result) => {
+        const side = result === 0 ? "Heads" : "Tails";
+        console.log(`Coin flipped: ${side}`);
+    });
+}
+
+// Place bet
+async function placeBet(choice, amount) {
+    // Approve token spending first
+    await tokenContract.approve(contractAddress, amount);
+    
+    // Place bet (0 = Heads, 1 = Tails)
+    const tx = await contract.placeBet(choice, amount);
+    await tx.wait();
+    
+    // Listen for resolution
+    contract.on("BetResolved", (betId, player, result, won, payout) => {
+        console.log(`Bet ${betId}: ${won ? "Won" : "Lost"}`);
+        if (won) {
+            console.log(`Payout: ${ethers.utils.formatEther(payout)}`);
+        }
+    });
+}
+```
+
+## Multiple Coin Flips
+
+Implement multiple coin flips in one transaction:
+
+```solidity
+contract MultipleCoinFlip is RNG {
+    function flipMultiple(uint256 count) external returns (CoinSide[] memory) {
+        require(count > 0 && count <= 100, "Invalid count");
+        
+        CoinSide[] memory results = new CoinSide[](count);
+        
+        for (uint256 i = 0; i < count; i++) {
+            uint256 random = getRandomNumber();
+            results[i] = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+        }
+        
+        return results;
+    }
+    
+    function getRandomNumber() private view returns (uint256) {
+        bytes32 randomBytes;
+        assembly {
+            let freemem := mload(0x40)
+            if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
+                invalid()
+            }
+            randomBytes := mload(freemem)
+        }
+        return uint256(randomBytes);
+    }
+}
+```
+
+<Note>
+Remember that RNG values are per-block, so multiple flips in the same transaction will use the same random value. For truly independent flips, you may need to use block numbers or other entropy sources.
+</Note>
+
+## Best Practices
+
+1. **Use Events**: Emit events for all coin flips
+2. **Clear Results**: Make results easy to understand
+3. **Gas Efficiency**: Consider batch operations
+4. **Security**: Use reentrancy guards for betting contracts
+5. **Testing**: Test thoroughly on SKALE testnet
+
+## Security Considerations
+
+- Randomness is secure and cannot be manipulated
+- Use reentrancy protection for contracts handling funds
+- Validate all inputs
+- Use SafeERC20 for token transfers
+- Consider implementing limits on bet amounts
+
+## Related Topics
+
+- [Get a Random Number from SKALE RNG](/cookbook/rng-get-random-number)
+- [Random Number Generation](/developers/random-number-generation)
+- [Payments on SKALE](/developers/payments-on-skale)
+
+## Resources
+
+- [SKALE RNG Library](https://www.npmjs.com/package/@dirtroad/skale-rng)
+- [SKALE Developer Discord](https://discord.gg/skale)
+

@@ -1,0 +1,303 @@
+---
+title: "Using Non-USDC Tokens with x402"
+description: "Guide to using tokens other than USDC for x402 payments on SKALE"
+---
+
+## Using Non-USDC Tokens with x402
+
+While USDC is commonly used with x402, the protocol supports any ERC-20 token. This guide will show you how to integrate non-USDC tokens into your x402 payment system on SKALE.
+
+## Prerequisites
+
+- Understanding of ERC-20 tokens
+- Basic knowledge of x402 protocol
+- A SKALE Chain endpoint
+- Familiarity with smart contracts
+
+## Overview
+
+x402 is token-agnostic and works with any ERC-20 compatible token. You can:
+
+1. Accept multiple payment tokens
+2. Allow users to choose their preferred token
+3. Implement token conversion/swapping
+4. Handle different token decimals
+
+## Multi-Token Payment Contract
+
+Here's a contract that accepts multiple tokens:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract MultiTokenPaymentReceiver is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    
+    // Supported tokens and their price equivalents (in wei)
+    mapping(address => bool) public supportedTokens;
+    mapping(address => uint256) public tokenPrices; // Price in token units
+    
+    event PaymentReceived(
+        address indexed payer,
+        address indexed token,
+        uint256 amount,
+        uint256 equivalentValue
+    );
+    
+    constructor(address[] memory tokens, uint256[] memory prices) {
+        require(tokens.length == prices.length, "Arrays length mismatch");
+        
+        for (uint256 i = 0; i < tokens.length; i++) {
+            supportedTokens[tokens[i]] = true;
+            tokenPrices[tokens[i]] = prices[i];
+        }
+    }
+    
+    function addToken(address token, uint256 price) external {
+        supportedTokens[token] = true;
+        tokenPrices[token] = price;
+    }
+    
+    function acceptPayment(address token, uint256 amount) external nonReentrant {
+        require(supportedTokens[token], "Token not supported");
+        require(amount > 0, "Amount must be greater than 0");
+        
+        IERC20 paymentToken = IERC20(token);
+        
+        // Transfer tokens
+        paymentToken.safeTransferFrom(msg.sender, address(this), amount);
+        
+        // Calculate equivalent value
+        uint256 equivalentValue = (amount * tokenPrices[token]) / 1e18;
+        
+        emit PaymentReceived(msg.sender, token, amount, equivalentValue);
+    }
+}
+```
+
+## Token Selection Interface
+
+Allow users to choose their payment token:
+
+```solidity
+contract TokenSelectorMarketplace {
+    using SafeERC20 for IERC20;
+    
+    struct TokenInfo {
+        bool supported;
+        uint256 priceMultiplier; // Relative to base token
+        string symbol;
+    }
+    
+    mapping(address => TokenInfo) public tokenInfo;
+    address[] public supportedTokenList;
+    
+    function addSupportedToken(
+        address token,
+        uint256 priceMultiplier,
+        string memory symbol
+    ) external onlyOwner {
+        tokenInfo[token] = TokenInfo({
+            supported: true,
+            priceMultiplier: priceMultiplier,
+            symbol: symbol
+        });
+        supportedTokenList.push(token);
+    }
+    
+    function buyWithToken(
+        address token,
+        uint256 itemId
+    ) external nonReentrant {
+        require(tokenInfo[token].supported, "Token not supported");
+        
+        Item storage item = items[itemId];
+        uint256 priceInToken = (item.price * tokenInfo[token].priceMultiplier) / 1e18;
+        
+        IERC20(token).safeTransferFrom(msg.sender, address(this), priceInToken);
+        
+        // Process purchase...
+    }
+    
+    function getSupportedTokens() external view returns (address[] memory) {
+        return supportedTokenList;
+    }
+}
+```
+
+## Handling Different Decimals
+
+Different tokens have different decimal places. Handle this properly:
+
+```solidity
+contract DecimalAwarePayment {
+    using SafeERC20 for IERC20;
+    
+    mapping(address => uint8) public tokenDecimals;
+    
+    function setTokenDecimals(address token, uint8 decimals) external {
+        tokenDecimals[token] = decimals;
+    }
+    
+    function normalizeAmount(address token, uint256 amount) public view returns (uint256) {
+        uint8 decimals = tokenDecimals[token];
+        if (decimals == 18) {
+            return amount;
+        } else if (decimals < 18) {
+            return amount * (10 ** (18 - decimals));
+        } else {
+            return amount / (10 ** (decimals - 18));
+        }
+    }
+    
+    function acceptPayment(address token, uint256 amount) external {
+        uint256 normalizedAmount = normalizeAmount(token, amount);
+        // Use normalized amount for calculations...
+    }
+}
+```
+
+## Token Conversion/Swapping
+
+Implement token conversion within your contract:
+
+```solidity
+contract TokenConverterMarketplace {
+    using SafeERC20 for IERC20;
+    
+    // DEX or conversion contract address
+    address public converter;
+    
+    function buyWithConversion(
+        address fromToken,
+        address toToken,
+        uint256 itemId,
+        uint256 amountIn
+    ) external nonReentrant {
+        Item storage item = items[itemId];
+        
+        // Approve converter
+        IERC20(fromToken).safeApprove(converter, amountIn);
+        
+        // Convert tokens (assuming converter interface)
+        uint256 amountOut = IConverter(converter).swap(
+            fromToken,
+            toToken,
+            amountIn,
+            item.price
+        );
+        
+        // Use converted tokens for purchase
+        IERC20(toToken).safeTransferFrom(msg.sender, address(this), amountOut);
+        
+        // Process purchase...
+    }
+}
+```
+
+## Price Oracle Integration
+
+Use price oracles to get real-time token prices:
+
+```solidity
+contract OracleBasedPayments {
+    using SafeERC20 for IERC20;
+    
+    // Price oracle contract
+    IPriceOracle public oracle;
+    
+    function acceptPaymentWithOracle(
+        address token,
+        uint256 amount,
+        uint256 expectedValueInUSD
+    ) external nonReentrant {
+        // Get current price from oracle
+        uint256 tokenPriceInUSD = oracle.getPrice(token);
+        
+        // Calculate expected amount
+        uint256 expectedAmount = (expectedValueInUSD * 1e18) / tokenPriceInUSD;
+        
+        // Verify amount is sufficient
+        require(amount >= expectedAmount, "Insufficient payment");
+        
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+        
+        // Process payment...
+    }
+}
+```
+
+## Frontend Integration
+
+Allow users to select tokens in your frontend:
+
+```javascript
+// Get supported tokens
+const supportedTokens = await contract.getSupportedTokens();
+
+// Display token options
+const tokenOptions = await Promise.all(
+    supportedTokens.map(async (address) => {
+        const tokenContract = new ethers.Contract(address, erc20ABI, provider);
+        const symbol = await tokenContract.symbol();
+        const balance = await tokenContract.balanceOf(userAddress);
+        return { address, symbol, balance };
+    })
+);
+
+// User selects token
+const selectedToken = tokenOptions[0]; // User selection
+
+// Approve and pay
+const tokenContract = new ethers.Contract(
+    selectedToken.address,
+    erc20ABI,
+    signer
+);
+
+await tokenContract.approve(contractAddress, amount);
+await contract.acceptPayment(selectedToken.address, amount);
+```
+
+## Best Practices
+
+1. **Decimal Handling**: Always normalize amounts when comparing different tokens
+2. **Price Updates**: Keep token prices updated
+3. **Token Validation**: Verify tokens are legitimate ERC-20 contracts
+4. **Slippage Protection**: Implement slippage protection for conversions
+5. **Gas Considerations**: Consider gas costs when supporting many tokens
+
+## Security Considerations
+
+- Validate all token addresses
+- Use SafeERC20 for all transfers
+- Implement reentrancy protection
+- Verify oracle prices
+- Handle token failures gracefully
+
+## Common Token Standards on SKALE
+
+Popular tokens you might want to support:
+
+- **USDC**: Stablecoin, 6 decimals
+- **USDT**: Stablecoin, 6 decimals  
+- **WETH**: Wrapped ETH, 18 decimals
+- **Custom Tokens**: Your own ERC-20 tokens
+
+## Related Topics
+
+- [Accepting x402 Payments](/cookbook/x402-accepting-payments)
+- [Buying with x402](/cookbook/x402-buying)
+- [Running a Facilitator on SKALE](/cookbook/x402-facilitator)
+- [Deploy an ERC-20 Token](/cookbook/deploy-erc20-token)
+
+## Resources
+
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples/tree/main/skale-weather-server)
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts)
+

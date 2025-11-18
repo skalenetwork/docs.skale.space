@@ -1,0 +1,193 @@
+---
+title: "Verify Smart Contracts"
+description: "Guide to verifying ERC-20, ERC-721, and ERC-1155 contracts on SKALE block explorers"
+---
+
+## Verify Smart Contracts
+
+After deploying your smart contracts to SKALE, it's important to verify them on the block explorer. Verification makes your contract source code publicly available, allowing users to interact with your contract with confidence and enabling better transparency.
+
+## Prerequisites
+
+- A deployed smart contract on SKALE
+- The source code and constructor arguments used for deployment
+- Foundry or Hardhat installed (depending on your deployment method)
+
+## Verification Methods
+
+### Using Foundry
+
+Foundry provides a built-in verification command that works with Blockscout (the explorer used by SKALE).
+
+#### Basic Verification
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    <CONTRACT_ADDRESS> \
+    src/MyContract.sol:MyContract \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+#### Verification with Constructor Arguments
+
+If your contract has constructor arguments:
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    <CONTRACT_ADDRESS> \
+    src/MyContract.sol:MyContract \
+    --constructor-args $(cast abi-encode "constructor(string,uint256)" "MyToken" 1000000) \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+#### Verification with Libraries
+
+If your contract uses libraries (like OpenZeppelin):
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    <CONTRACT_ADDRESS> \
+    src/MyERC20.sol:MyERC20 \
+    --libraries @openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20:<LIBRARY_ADDRESS> \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+### Using Hardhat
+
+Hardhat also supports contract verification through the `@nomicfoundation/hardhat-verify` plugin.
+
+#### Basic Verification
+
+```shell
+npx hardhat verify --network skale_testnet <CONTRACT_ADDRESS>
+```
+
+#### Verification with Constructor Arguments
+
+```shell
+npx hardhat verify --network skale_testnet <CONTRACT_ADDRESS> "arg1" "arg2"
+```
+
+#### Configuration
+
+Ensure your `hardhat.config.js` includes the verify plugin configuration:
+
+```javascript
+require("@nomicfoundation/hardhat-verify");
+
+module.exports = {
+  // ... other config
+  etherscan: {
+    apiKey: {
+      skale_testnet: "your-api-key", // Not required for Blockscout
+    },
+    customChains: [
+      {
+        network: "skale_testnet",
+        chainId: 1444673419,
+        urls: {
+          apiURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
+          browserURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com",
+        },
+      },
+    ],
+  },
+};
+```
+
+## Verifying ERC-20 Tokens
+
+### Example: Verify ERC-20 Token
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    0xYourERC20Address \
+    src/MyERC20.sol:MyERC20 \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+## Verifying ERC-721 Tokens
+
+### Example: Verify ERC-721 Token
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    0xYourERC721Address \
+    src/MyERC721.sol:MyERC721 \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+## Verifying ERC-1155 Tokens
+
+### Example: Verify ERC-1155 Token
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    0xYourERC1155Address \
+    src/MyERC1155.sol:MyERC1155 \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+## Finding Your Block Explorer URL
+
+Each SKALE Chain has its own block explorer. To find your chain's explorer URL:
+
+1. Visit the [SKALE Portal](https://portal.skale.space)
+2. Select your chain
+3. Find the "Explorer" link or API endpoint
+
+The API URL format is typically:
+- Testnet: `https://<chain-name>.explorer.testnet.skalenodes.com/api`
+- Mainnet: `https://<chain-name>.explorer.mainnet.skalenodes.com/api`
+
+## Troubleshooting
+
+### Contract Already Verified
+
+If you see "Contract is already verified", the contract has been successfully verified previously.
+
+### Verification Failed
+
+Common issues and solutions:
+
+1. **Wrong Constructor Arguments**: Double-check your constructor arguments
+2. **Compiler Version Mismatch**: Ensure you're using the same Solidity version
+3. **Optimization Settings**: Match your compiler optimization settings
+4. **Library Addresses**: Verify all library addresses are correct
+
+### Manual Verification
+
+If automated verification fails, you can manually verify:
+
+1. Go to your contract's page on the block explorer
+2. Click "Verify and Publish"
+3. Fill in the contract details manually
+4. Paste your source code
+
+## Best Practices
+
+1. **Verify Immediately**: Verify contracts right after deployment
+2. **Save Constructor Args**: Keep a record of constructor arguments
+3. **Use Version Control**: Commit your source code for reference
+4. **Test Verification**: Test verification on testnet before mainnet
+
+## Related Topics
+
+- [Deploy an ERC-20 Token](/cookbook/deploy-erc20-token)
+- [Deploy an ERC-721 Token](/cookbook/deploy-erc721-token)
+- [Deploy an ERC-1155 Token](/cookbook/deploy-erc1155-token)
+- [Setup Foundry](/cookbook/setup-foundry)
+- [Setup Hardhat](/cookbook/setup-hardhat)
+

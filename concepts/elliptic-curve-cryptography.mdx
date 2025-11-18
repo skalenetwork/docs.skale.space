@@ -16,28 +16,28 @@ separate the two paints.
 
 This is where elliptic curves come in. An elliptic curve is an equation of the form
 {/*<!-- y^2 = ax^3 + bx + c. --> */}
-<Latex>y2=ax3+bx+c</Latex>
+$$y2=ax3+bx+c$$
 
 ![Image](https://user-images.githubusercontent.com/12778980/125866627-62950ff3-fffa-40f1-b17a-26131df69058.png)
 
 Note that the curve is symmetric about the x-axis due to the
 {/* y^2 */}
-<Latex>y2</Latex>
+$$y2$$
 term. Given two points P, Q on such a curve, the line crossing through them
 is guaranteed to hit a third point on the curve. In the edge case that this line is vertical, one can say that there is a point at infinity
 at which all vertical lines intersect, and in the case that
 {/* P = Q */}
-<Latex>P = Q</Latex>
+$$P = Q$$
 , one takes the tangent line, which will again only intersect the curve one
 more time. If you take this third point and reflect it over the x-axis to get R, and define
 {/* P + Q = R */}
-<Latex>P+Q=R</Latex>
+$$P+Q=R$$
 according to this process, then + is a
 group operation on this elliptic curve.
 
-Being a group operation means that this binary operation satisfies certain properties; namely, {/*(a + b) + c = a + (b + c),*/} <Latex>(a+b)+c=a+(b+c)</Latex>
-there exists an identity element P (in this case, the point at infinity) that satisfies {/*P + a = a + P = a*/} <Latex>P+a=a+P=a</Latex> (think adding zero), and for every element a, there
-is an inverse element -a, such that {/*a + (-a) = P*/} <Latex>a+(-a)=P</Latex>. To put it simply, one can use + in similar ways as regular addition.
+Being a group operation means that this binary operation satisfies certain properties; namely, {/*(a + b) + c = a + (b + c),*/} $$(a+b)+c=a+(b+c)$$
+there exists an identity element P (in this case, the point at infinity) that satisfies {/*P + a = a + P = a*/} $$P+a=a+P=a$$ (think adding zero), and for every element a, there
+is an inverse element -a, such that {/*a + (-a) = P*/} $$a+(-a)=P$$. To put it simply, one can use + in similar ways as regular addition.
 
 What this means is that one can create an especially nice one-way function. First, let's take the points on an elliptic curve modulo a
 prime; then, choose a generator g, which, when added to itself enough times, runs through all points; then, given an input of integer x, define
@@ -69,14 +69,14 @@ information be unrecoverable given the published information. In this way, we ca
 that others can use this computation to verify it, without knowing the secret information used to create it in the first place.
 
 In the Elliptic Curve Discrete Signature Algorithm (ECDSA)’s case, suppose one wishes to sign a message with secret key x and public key xg.
-First, generate a random number k and compute {/* R = kg */} <Latex>R = kg</Latex>, and let r be the x-coordinate of this point.
-Then, for a hashed message h, compute {/* s = (h + rx) / k mod p */} <Latex>s=(h+rx)/k%p</Latex>. The signature is (r, s).
+First, generate a random number k and compute {/* R = kg */} $$R = kg$$, and let r be the x-coordinate of this point.
+Then, for a hashed message h, compute {/* s = (h + rx) / k mod p */} $$s=(h+rx)/k%p$$. The signature is (r, s).
 
 ![Image](https://user-images.githubusercontent.com/12778980/125866583-196cbffc-e2db-45e3-b411-22c93066601b.png)
 
 {/* P = (h/s)g + (r/s)xg = (h + rx)g/s = kg = R */}
 The main idea outlined before is present here; using this secret k, you can created R = kg, which can be computed in two different ways. To
-see this, for verification, use the published information h, r, s, and xg. Then, compute <Latex>P=(hs)g+(rs)xg=(h+rx)gs=kg=R</Latex>. Finally,
+see this, for verification, use the published information h, r, s, and xg. Then, compute $$P=(hs)g+(rs)xg=(h+rx)gs=kg=R$$. Finally,
 using R, one can recover the x-coordinate r, and verify it's indeed in (r, s). Although verification is straightforward, to replicate the
 signature (r, s) is infeasible without knowledge of k and x.
 
@@ -88,8 +88,8 @@ However, in the case that multiple signatures are required, there arises an issu
 collect several signatures from different nodes for some message. Then, you must collect each individual’s signature, and verify them one-by-one.
 Boneh-Lynn-Shacham (BLS) signatures solves this issue. This algorithm still follows the main idea outlined before; however, by using properties
 unique to elliptic curves (whose details are omitted for the sake of brevity, but available in the DKG/BLS documentation), you are able to generate
-quickly computable, compact, and aggregatable signatures. Given signatures <Latex>s1,s2,...sn,</Latex>, you can combine them together to generate an aggregated
-signature <Latex>s(n+1)</Latex> of the same size. You only need to store and verify this single signature to check that all n signatures are valid.
+quickly computable, compact, and aggregatable signatures. Given signatures $$s1,s2,...sn,$$, you can combine them together to generate an aggregated
+signature $$s(n+1)$$ of the same size. You only need to store and verify this single signature to check that all n signatures are valid.
 
 Other advantages include being deterministic, so you don't run into the issue of having the same signature that may be present in ECDSA, and being
 significantly more compact for the same level of security in the case of just one signature as compared to signatures seen in ECDSA, RSA, etc. Hence,

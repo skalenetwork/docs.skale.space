@@ -1,0 +1,96 @@
+---
+title: eth_call
+description: Executes a new message call immediately without creating a transaction on the blockchain
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_call" />
+
+
+Executes a new message call immediately without creating a transaction on the blockchain. This is useful for reading contract state.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_call",
+  "params": [
+    {
+      "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+      "data": "0x70a08231000000000000000000000000742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+    },
+    "latest"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **transaction object** (`object`, required):
+   - **to** (`string`): 20-byte contract address, hex-encoded with `0x` prefix
+   - **data** (`string`, optional): Hash of the method signature and encoded parameters
+   - **from** (`string`, optional): Address the transaction is sent from
+   - **gas** (`string`, optional): Gas limit for the call
+   - **gasPrice** (`string`, optional): Gas price in wei
+   - **value** (`string`, optional): Value sent with the call in wei
+2. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000"
+}
+```
+
+### Response Types
+
+- **result** (`string`): The return value of the executed contract method, hex-encoded
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_call",
+    "params": [
+      {
+        "to": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+        "data": "0x70a08231000000000000000000000000742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+      },
+      "latest"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- This method does not create a transaction and does not consume gas
+- The `data` field should be the function selector (first 4 bytes) + ABI-encoded parameters
+- Use this method to read contract state or call view/pure functions
+- For state-changing operations, use [eth_sendRawTransaction](/api-reference/methods/eth-sendRawTransaction)
+
+## Related Methods
+
+- [eth_sendRawTransaction](/api-reference/methods/eth-sendRawTransaction) - Send a transaction
+- [eth_estimateGas](/api-reference/methods/eth-estimateGas) - Estimate gas for a transaction
+

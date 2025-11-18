@@ -1,26 +1,134 @@
 ---
-title: "Upload a Website to Filestorage"
-description: "Step-by-step guide to uploading a website to SKALE Filestorage"
+title: "Deploy a Website on SKALE Filestorage"
+description: "Step-by-step guide to deploying a decentralized website using SKALE Filestorage and the built-in Web3 server"
 ---
 
-## Upload a Website to Filestorage
+## Deploy a Website on SKALE Filestorage
 
-This tutorial will show you how to upload a website to SKALE's decentralized filestorage.
+Follow these steps to deploy a decentralized website using SKALE Filestorage and the built-in Web3 server.
 
 ## Prerequisites
 
 - Node.js and npm installed
-- A wallet with sFUEL
-- Website files ready
+- A SKALE Chain endpoint (you can use any SKALE Chain)
+- SKALE Chain owner private key or deployment-authorized private key
+- Basic knowledge of static website development
 
-## Steps
+<Note>
+You will need to have the owner private key or a deployment-authorized private key to permissively upload files.
+</Note>
 
-1. Install filestorage library
-2. Prepare your website files
-3. Upload to filestorage
-4. Access your website
+## Step 1: Get a SKALE Chain Endpoint
+
+The following will work with any SKALE Chain. You can use the [Chaos Testnet Chain](/get-started/chain-info) or any other SKALE chain you have access to.
+
+## Step 2: Prepare Your Files
+
+Assuming you already have built a statically generated website (if not, check out [Next.js](https://nextjs.org/), [Hugo](https://gohugo.io/), [Gatsby](https://www.gatsbyjs.com/), or others - see a list at [JAMstack](https://jamstack.org/generators/)). 
+
+If you haven't already built a site, here is a simple code example that you can copy and paste:
+
+**Save this as `index.html`:**
+
+```html
+<!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="styles.css">
+<html>
+    <body>
+        <h1>SKALE-ING</h1>
+        <p>My first decentralized website.</p>
+    </body>
+</html>
+```
+
+**Save this as `styles.css`:**
+
+```css
+body {
+    background-color: #ccc;
+}
+```
+
+## Step 3: Install Dependencies
+
+Create a new directory for your project and install the required dependencies:
+
+```shell
+npm install @skalenetwork/filestorage.js dotenv
+```
+
+## Step 4: Upload to Your SKALE Chain
+
+Assuming the `index.html` and `styles.css`, or static site files are stored in a folder called `test-skale`, create a script file with the following code:
+
+**Save this as `filestorageUpload.js`:**
+
+```javascript
+#! /usr/bin/env node
+
+const Filestorage = require('@skalenetwork/filestorage.js');
+const fs = require('fs');
+const Web3 = require('web3');
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+// Replace the endpoint below with your SKALE Chain endpoint
+let filestorage = new Filestorage('http://localhost:15000'); 
+
+// Replace with the SKALE Chain owner key and address.
+let privateKey = process.env.PRIVATE_KEY || '<SKALE CHAIN OWNER KEY>';
+let address = process.env.ADDRESS || '<SKALE CHAIN OWNER ADDRESS>';
+
+let directoryPath = 'test-skale';
+
+// Bytes of filestorage space to allocate to an address
+// reservedSpace must be >= sum of uploaded files
+const reservedSpace = 3 * 10 ** 8;
+
+const files = fs.readdirSync(directoryPath);
+
+async function upload() {
+    // Owner must reserve space to an address
+    await filestorage.reserveSpace(address, address, reservedSpace, privateKey);
+    for(let i = 0; i < files.length; ++i)  {
+        let content;
+        let contentPath;
+        content = await fs.readFileSync(directoryPath + '/' + files[i]);
+        contentPath = await filestorage.uploadFile(address, files[i], content, privateKey);
+    }
+}
+
+upload();
+```
+
+<Note>
+When executing, your files are sent to the SKALE Chain endpoint, routed to one of the 16 nodes supporting your chain, and fed into the EVM in chunks, with a specific header to indicate these EVM messages are for filestorage. These messages are broadcast to the other 15 nodes to reach state consensus. On each of these nodes, a specific predeployed contract called Filestorage will process these chunks and store them into specific partitions. This way your files are replicated across 16 nodes, and served using an nginx container on each of the nodes.
+</Note>
+
+## Step 5: Execute the Script
+
+Be sure to add execution permissions and then run the script:
+
+```shell
+chmod +x filestorageUpload.js
+./filestorageUpload.js
+```
+
+## Step 6: Access Your Website
+
+If you are using the SDK, just head over to `http://localhost/fs/<ACCOUNT>/<FILENAME>`, or if using the above example, `http://localhost/fs/<ACCOUNT>/index.html` to see your SKALE Chain hosted index.html file. This is served by the nginx containers hosted on the nodes of your SKALE Chain.
+
+Be sure to replace the `<ACCOUNT>` with the non-0x prefixed address of the account that performed the upload. For example, if `0xA23451234512345123451234512345123451234b` performed the upload, then enter `http://localhost/fs/a23451234512345123451234512345123451234b/index.html`.
+
+<Note>
+The address in URL must be in lowercase.
+</Note>
+
+For more information about the paths, see [Filestorage Storage Paths](/developers/libraries/filestorage-js#additional-notes).
 
 ## Related Topics
 
 - [Using Filestorage](/developers/using-filestorage)
 - [Filestorage.js Library](/developers/libraries/filestorage-js)
+- [Deploy on SKALE](/developers/deploy-on-skale)

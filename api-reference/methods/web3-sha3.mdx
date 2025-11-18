@@ -1,0 +1,71 @@
+---
+title: web3_sha3
+description: Returns Keccak-256 hash of the given data
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="web3_sha3" />
+
+
+Returns Keccak-256 (not the standardized SHA3-256) hash of the given data.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "web3_sha3",
+  "params": ["0x68656c6c6f20776f726c64"],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **data** (`string`, required): Data to hash, hex-encoded with `0x` prefix
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad"
+}
+```
+
+### Response Types
+
+- **result** (`string`): Keccak-256 hash, 32 bytes hex-encoded with `0x` prefix
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "web3_sha3",
+    "params": ["0x68656c6c6f20776f726c64"],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Uses Keccak-256, not the standardized SHA3-256
+- Available on all node types
+- Input must be hex-encoded with `0x` prefix
+

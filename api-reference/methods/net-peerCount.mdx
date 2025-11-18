@@ -1,0 +1,71 @@
+---
+title: net_peerCount
+description: Returns number of peers currently connected to the client
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="net_peerCount" />
+
+
+Returns the number of peers currently connected to the client.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "net_peerCount",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x0"
+}
+```
+
+### Response Types
+
+- **result** (`string`): Number of connected peers as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "net_peerCount",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x0"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Always returns `"0x0"` on SKALE nodes
+- Available on all node types (with limitation)
+- This is a limitation of the current implementation
+

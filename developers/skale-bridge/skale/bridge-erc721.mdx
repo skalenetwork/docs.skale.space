@@ -22,9 +22,9 @@ The following walks you through setting up an ERC-721 token between two SKALE Ch
 
 ## Bridge Setup
 
-<Note>
+<Aside type="note">
 If the SKALE Chains you are mapping the ERC-721 token from/to are not connected, please [connect the SKALE Chains](/developers/skale-bridge/skale/connect-schains).
-</Note>
+</Aside>
 
 ### 1. Prepare the ERC-721
 
@@ -32,11 +32,11 @@ ERC-721 tokens that are being bridged between SKALE Chains should have the **min
 
 <Aside type="danger" title="Caution on Minting">
 If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that the existing tokens on the SKALE Chain may not match what is secured in the bridge.
-</Note>
+</Aside>
 
 <Aside type="caution" title="Caution on Burning">
 If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that the supply on the SKALE Chain side could be "burned", while the tokens still exist on the original SKALE Chain which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
-</Note>
+</Aside>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See **YourInterchainNFT.sol** for an example.
 
@@ -51,9 +51,9 @@ Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](h
 
 ### 3. Map the SKALE Token
 
-<Note>
+<Aside type="note">
 If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
-</Note>
+</Aside>
 
 #### Add the token on SKALE Chain TokenManagerERC721
 - **DST_SCHAIN_NAME** is the name of the SKALE Chain that the transaction should execute on

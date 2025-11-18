@@ -1,0 +1,278 @@
+---
+title: "Deploy an ERC-1155 Token"
+description: "Step-by-step guide to deploying an ERC-1155 (Multi-Token) on SKALE using Foundry and OpenZeppelin Contracts"
+---
+
+## Deploy an ERC-1155 Token
+
+This tutorial will walk you through deploying an ERC-1155 token on SKALE using Foundry and OpenZeppelin Contracts. ERC-1155 is a multi-token standard that can represent both fungible and non-fungible tokens in a single contract, making it ideal for games, marketplaces, and applications that need to manage multiple token types efficiently.
+
+## Prerequisites
+
+- [Rust](https://www.rust-lang.org/tools/install) installed on your machine
+- [Foundry](https://getfoundry.sh) installed
+- A wallet with sFUEL
+- Basic knowledge of Solidity
+- A SKALE Chain endpoint
+
+<Note>
+If you are on a Windows machine, you will need to use Windows Subsystem for Linux (WSL), since Foundry doesn't work natively on Windows.
+</Note>
+
+## Step 1: Install Foundry
+
+If you haven't already installed Foundry, run:
+
+```shell
+foundryup
+```
+
+## Step 2: Create a New Foundry Project
+
+Run the following in your terminal:
+
+```shell
+forge init my-erc1155-token
+cd my-erc1155-token
+```
+
+## Step 3: Install OpenZeppelin Contracts
+
+Install OpenZeppelin Contracts using Foundry:
+
+```shell
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+This will add OpenZeppelin Contracts to your `lib` directory.
+
+## Step 4: Configure Remappings
+
+Update your `remappings.txt` file (or create it if it doesn't exist) to include:
+
+```
+@openzeppelin/=lib/openzeppelin-contracts/
+```
+
+## Step 5: Update Foundry Configuration
+
+Update the `foundry.toml` file to add your SKALE Chain endpoint:
+
+```toml
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+# SKALE Chain Configuration
+[rpc_endpoints]
+skale_testnet = "https://testnet.skalenodes.com/v1/juicy-low-small-testnet"
+# Replace with your SKALE Chain endpoint
+```
+
+## Step 6: Create the ERC-1155 Contract
+
+Create a new file `src/MyERC1155.sol`:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+
+contract MyERC1155 is ERC1155 {
+    // Token IDs
+    uint256 public constant GOLD = 0;
+    uint256 public constant SILVER = 1;
+    uint256 public constant SWORD = 2;
+    uint256 public constant SHIELD = 3;
+
+    constructor() ERC1155("https://myapi.com/api/token/{id}.json") {
+        // Mint initial supply
+        _mint(msg.sender, GOLD, 1000, "");      // 1000 gold tokens (fungible)
+        _mint(msg.sender, SILVER, 500, "");     // 500 silver tokens (fungible)
+        _mint(msg.sender, SWORD, 1, "");        // 1 sword (non-fungible)
+        _mint(msg.sender, SHIELD, 1, "");       // 1 shield (non-fungible)
+    }
+
+    function mint(address to, uint256 id, uint256 amount) public {
+        _mint(to, id, amount, "");
+    }
+
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public {
+        _mintBatch(to, ids, amounts, "");
+    }
+}
+```
+
+This contract:
+- Inherits from OpenZeppelin's `ERC1155` contract
+- Defines multiple token types (GOLD, SILVER, SWORD, SHIELD)
+- Sets a base URI for metadata (replace with your own)
+- Includes `mint` function for single token minting
+- Includes `mintBatch` function for efficient batch minting
+- Mints initial supply to the deployer upon deployment
+
+<Note>
+The URI parameter in the constructor uses `{id}` as a placeholder that will be replaced with the actual token ID. Make sure your metadata server handles this correctly.
+</Note>
+
+## Step 7: Compile the Contract
+
+Compile your contract:
+
+```shell
+forge build
+```
+
+## Step 8: Prepare Signer for Deployment
+
+This tutorial uses the Foundry Keystore for increased security. Create a new keystore:
+
+```shell
+cast wallet import skale-deployer --private-key $(cast wallet new | grep 'Private key:' | awk '{print $3}')
+```
+
+<Note>
+Provide a password to encrypt the keystore file when running the above command. If you forget this password, you will not be able to recover it.
+</Note>
+
+Get your wallet address:
+
+```shell
+cast wallet address --account skale-deployer
+```
+
+Copy the address and head over to the [sFUEL Station](https://sfuelstation). Input the address, toggle testnet, and fill up on your SKALE Chain.
+
+<Tip>
+Make sure you toggle testnet on first if you're using a testnet chain!
+</Tip>
+
+## Step 9: Deploy the Contract
+
+Deploy your ERC-1155 token to SKALE:
+
+```shell
+forge create src/MyERC1155.sol:MyERC1155 \
+    --account skale-deployer \
+    --rpc-url skale_testnet \
+    --broadcast \
+    --legacy
+```
+
+<Note>
+The `--legacy` flag is required for SKALE Chains. For more information, see [Troubleshooting](/developers/troubleshooting).
+</Note>
+
+A successful deployment should look something like this:
+
+```shell
+Enter keystore password:
+Deployer: 0x63a38D694de837dDF765f9b2704814275586D812
+Deployed to: 0x4A435f6E471f773173774E860EBDcd17B132a2b4
+Transaction hash: 0x3f6cc66e860cb82a6a62e3f5181c401e5558d60d622a9157437002e16c1ce488
+```
+
+## Step 10: Mint Additional Tokens
+
+After deployment, you can mint additional tokens. For example, to mint more gold:
+
+```shell
+cast send <DEPLOYED_ADDRESS> \
+    "mint(address,uint256,uint256)" \
+    <RECIPIENT_ADDRESS> \
+    0 \
+    100 \
+    --account skale-deployer \
+    --rpc-url skale_testnet \
+    --legacy
+```
+
+This mints 100 GOLD tokens (ID 0) to the recipient address.
+
+To mint multiple token types in a single transaction (batch minting):
+
+```shell
+cast send <DEPLOYED_ADDRESS> \
+    "mintBatch(address,uint256[],uint256[])" \
+    <RECIPIENT_ADDRESS> \
+    "[2,3]" \
+    "[1,1]" \
+    --account skale-deployer \
+    --rpc-url skale_testnet \
+    --legacy
+```
+
+This mints 1 SWORD (ID 2) and 1 SHIELD (ID 3) to the recipient in a single transaction.
+
+## Step 11: Verify Your Smart Contract
+
+Verify your smart contract on the block explorer:
+
+```shell
+forge verify-contract \
+    --rpc-url skale_testnet \
+    <DEPLOYED_ADDRESS> \
+    src/MyERC1155.sol:MyERC1155 \
+    --verifier blockscout \
+    --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+```
+
+Replace `<DEPLOYED_ADDRESS>` with your deployed contract address.
+
+## Advanced: Adding Access Control
+
+To restrict minting to only the contract owner, you can add OpenZeppelin's `Ownable`:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract MyERC1155WithOwnable is ERC1155, Ownable {
+    uint256 public constant GOLD = 0;
+    uint256 public constant SILVER = 1;
+
+    constructor(address initialOwner)
+        ERC1155("https://myapi.com/api/token/{id}.json")
+        Ownable(initialOwner)
+    {}
+
+    function mint(address to, uint256 id, uint256 amount) public onlyOwner {
+        _mint(to, id, amount, "");
+    }
+
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts
+    ) public onlyOwner {
+        _mintBatch(to, ids, amounts, "");
+    }
+}
+```
+
+## Next Steps
+
+Congratulations! You've successfully deployed an ERC-1155 token on SKALE. You can now:
+
+- Mint both fungible and non-fungible tokens in a single contract
+- Use batch operations for gas-efficient transfers
+- Build games, marketplaces, or multi-token applications
+- Transfer multiple token types in a single transaction
+
+## Related Topics
+
+- [Solidity Quickstart](/developers/solidity-quickstart)
+- [Deploy on SKALE](/developers/deploy-on-skale)
+- [Deploy an ERC-20 Token](/cookbook/deploy-erc20-token)
+- [Deploy an ERC-721 Token](/cookbook/deploy-erc721-token)
+- [Troubleshooting](/developers/troubleshooting)
+

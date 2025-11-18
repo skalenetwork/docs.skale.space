@@ -1,0 +1,80 @@
+---
+title: eth_getBlockTransactionCountByNumber
+description: Returns the number of transactions in a block from a block matching the given block number
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getBlockTransactionCountByNumber" />
+
+
+Returns the number of transactions in a block from a block matching the given block number.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getBlockTransactionCountByNumber",
+  "params": [
+    "0x1a2b3c"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **block** (`string`, required): Block number or one of `"latest"`, `"earliest"`, `"pending"`
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x5"
+}
+```
+
+### Response Types
+
+- **result** (`string`): Number of transactions in the block as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockTransactionCountByNumber",
+    "params": [
+      "0x1a2b3c"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x5"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Old blocks are rotated out on Core/Full Sync nodes (see [Block Rotation](/concepts/block-rotation))
+- Available on all node types (with limitations)
+- Archive nodes have access to all historical blocks
+
+## Related Methods
+
+- [eth_getBlockTransactionCountByHash](/api-reference/methods/eth-getBlockTransactionCountByHash) - Get transaction count by block hash
+- [eth_getBlockByNumber](/api-reference/methods/eth-getBlockByNumber) - Get block by number
+

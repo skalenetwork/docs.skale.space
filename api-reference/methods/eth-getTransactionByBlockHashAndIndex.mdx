@@ -1,0 +1,107 @@
+---
+title: eth_getTransactionByBlockHashAndIndex
+description: Returns information about a transaction by block hash and transaction index position
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_getTransactionByBlockHashAndIndex" />
+
+
+Returns information about a transaction by block hash and transaction index position.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_getTransactionByBlockHashAndIndex",
+  "params": [
+    "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+    "0x0"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **blockHash** (`string`, required): Block hash, 32 bytes hex-encoded with `0x` prefix
+2. **transactionIndex** (`string`, required): Transaction index position in the block, hex-encoded
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "hash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+    "nonce": "0x15",
+    "blockHash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+    "blockNumber": "0x1a2b3c",
+    "transactionIndex": "0x0",
+    "from": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    "to": "0x3535353535353535353535353535353535353535",
+    "value": "0x0",
+    "gasPrice": "0x4a817c800",
+    "gas": "0x5208",
+    "input": "0x"
+  }
+}
+```
+
+### Response Types
+
+- **hash** (`string`): Transaction hash
+- **blockHash** (`string`): Hash of the block containing this transaction
+- **blockNumber** (`string`): Block number containing this transaction
+- **transactionIndex** (`string`): Transaction index position in the block
+- **from** (`string`): Address of the sender
+- **to** (`string`): Address of the receiver
+- **value** (`string`): Value transferred in wei
+- **gasPrice** (`string`): Gas price in wei
+- **gas** (`string`): Gas limit
+- **input** (`string`): Transaction data
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionByBlockHashAndIndex",
+    "params": [
+      "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+      "0x0"
+    ],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "hash": "0xe670ec64341771606e55d6b4ca35a1a6b75ee3d28b9e5c6b5b5b5b5b5b5b5b5b",
+    "blockNumber": "0x1a2b3c"
+  }
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Available on all node types
+- Returns `null` if transaction not found
+- Transaction index is 0-based
+
+## Related Methods
+
+- [eth_getTransactionByBlockNumberAndIndex](/api-reference/methods/eth-getTransactionByBlockNumberAndIndex) - Get transaction by block number and index
+- [eth_getTransactionByHash](/api-reference/methods/eth-getTransactionByHash) - Get transaction by hash
+

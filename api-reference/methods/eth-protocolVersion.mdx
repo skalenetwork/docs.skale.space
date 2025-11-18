@@ -1,0 +1,70 @@
+---
+title: eth_protocolVersion
+description: Returns the current Ethereum protocol version
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_protocolVersion" />
+
+
+Returns the current Ethereum protocol version.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_protocolVersion",
+  "params": [],
+  "id": 1
+}
+```
+
+### Parameters
+
+None.
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x41"
+}
+```
+
+### Response Types
+
+- **result** (`string`): The current Ethereum protocol version as a hexadecimal string
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_protocolVersion",
+    "params": [],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": "0x41"
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Available on all node types
+- Result is hex-encoded (e.g., `"0x41"` = version 65)
+

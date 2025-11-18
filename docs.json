@@ -1,12 +1,16 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "maple",
   "name": "SKALE Documentation",
-  "tagline": "The blockchain for billions of agents",
+  "tagline": "Blockchain for the agentic era",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#0000FF",
+    "light": "#0000FF",
+    "dark": "#0000FF"
+  },
+  "appearance": {
+    "default": "light",
+    "strict": true
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -14,23 +18,31 @@
       {
         "tab": "Get Started",
         "pages": [
-        "get-started/introduction/start-here",
-        "get-started/get-started",
-        "get-started/chain-info",
-        "get-started/go-live",
-        "get-started/skale-on-base",
-        "get-started/mainnet-beta",
         {
-          "group": "Use Cases",
+          "group": "Introduction",
           "pages": [
-            "get-started/use-cases/payments",
-            "get-started/use-cases/enterprise-government",
-            "get-started/use-cases/agents",
-            "get-started/use-cases/artificial-intelligence",
-            "get-started/use-cases/consumer-applications",
-            "get-started/use-cases/finance",
-            "get-started/use-cases/healthcare",
-            "get-started/use-cases/supply-chain"
+            "get-started/introduction/start-here"
+          ]
+        },
+        {
+          "group": "Developers",
+          "pages": [
+            "get-started/go-live",
+            {
+              "page": "get-started/skale-on-base",
+              "badge": {
+                "text": "New",
+                "variant": "success"
+              }
+            },
+            "get-started/chain-info"
+          ]
+        },
+        {
+          "group": "Why SKALE",
+          "pages": [
+            "get-started/products",
+            "get-started/use-cases"
           ]
         },
         {
@@ -44,109 +56,131 @@
       {
         "tab": "Concepts",
         "pages": [
-        "concepts/consensus",
-        "concepts/block-rotation",
-        "concepts/ddos-protection",
-        "concepts/dkg-with-bls",
-        "concepts/elliptic-curve-cryptography",
-        "concepts/precompiled-contracts",
-        "concepts/skl-token",
-        "concepts/snapshots",
-        "concepts/threshold-schemes",
-        "concepts/schain-types",
-        "concepts/transaction-finality",
-        "concepts/bite-protocol",
         {
-          "group": "Gas Fees",
+          "group": "SKALE Chain",
           "pages": [
-            "concepts/gas-fees/zero-gas-fees",
-            "concepts/gas-fees/optional-gas-fees",
-            "concepts/gas-fees/gasless-transactions"
+            "concepts/block-rotation",
+            "concepts/consensus",
+            "concepts/ddos-protection",
+            "concepts/precompiled-contracts",
+            "concepts/snapshots",
+            "concepts/instant-finality",
+            "concepts/privacy",
+            "concepts/tees"
           ]
         },
-        "concepts/skale-network",
-        "concepts/skale-manager",
-        "concepts/tees",
+        {
+          "group": "BITE Protocol",
+          "pages": [
+            "concepts/bite-protocol",
+            "concepts/bite-protocol/phases",
+            "concepts/bite-protocol/mev-deep-dive"
+          ]
+        },
+        {
+          "group": "SKL Token",
+          "pages": [
+            "concepts/skl-token",
+            "concepts/skl-token/tokenomics",
+            "concepts/skl-token/supply-ui"
+          ]
+        },
+        {
+          "group": "SKALE Network",
+          "pages": [
+            "concepts/skale-manager",
+            "concepts/skale-network/pooled-security-model",
+            "concepts/skale-network/delegated-proof-of-stake",
+            "concepts/skale-network/containerized-nodes",
+            "concepts/skale-network/virtualized-blockchains",
+            "concepts/skale-network/horizontal-scalability"
+          ]
+        },
         {
           "group": "Staking",
           "pages": [
             "concepts/staking/overview",
             "concepts/staking/getting-started",
-            "concepts/staking/delegation",
-            "concepts/staking/rewards",
+            "concepts/staking/staking-lifecycle",
+            "concepts/staking/bounties",
             "concepts/staking/validators"
           ]
         },
         {
           "group": "Governance",
           "pages": [
-            "concepts/governance/overview",
             "concepts/governance/skale-dao",
             "concepts/governance/voting",
-            "concepts/governance/proposals",
-            "concepts/governance/participation"
+            "concepts/governance/proposals"
           ]
         },
         {
-          "group": "Architecture",
+          "group": "Cryptography",
           "pages": [
-            "concepts/architecture/overview",
-            "concepts/architecture/network-structure",
-            "concepts/architecture/consensus-mechanism",
-            "concepts/architecture/security-model",
-            "concepts/architecture/scalability"
+            "concepts/elliptic-curve-cryptography",
+            "concepts/threshold-schemes",
+            "concepts/dkg-with-bls"
           ]
         }
       ]
     },
       {
-        "tab": "Node Operations",
+        "tab": "Validators",
         "pages": [
-        "node-operations/overview",
-        "node-operations/run-supernode",
-        "node-operations/run-archive-node",
-        "node-operations/run-sync-node",
-        "node-operations/migrate-node-with-sgxwallet",
-        "node-operations/compliance-requirements",
-        "node-operations/hardware",
-        "node-operations/faq",
-        "node-operations/troubleshooting",
-        "node-operations/swap-limit-fix",
-        "node-operations/network-upgrades",
+        {
+          "group": "Validators",
+          "pages": [
+            "validators/run-supernode",
+            "validators/overview",
+            "validators/compliance-requirements",
+            "validators/faq",
+            "validators/troubleshooting",
+            "validators/migrate-node-with-sgxwallet",
+            "validators/hardware",
+            "validators/swap-limit-fix"
+          ]
+        },
+        {
+          "group": "Network Releases",
+          "pages": [
+            "validators/releases/4-0-1-upgrade",
+            "validators/releases/4-0-0-upgrade",
+            "validators/releases/3-1-2-upgrade",
+            "validators/releases/3-1-1-upgrade",
+            "validators/releases/3-1-1-upgrade-local-sgx",
+            "validators/releases/3-1-0-upgrade",
+            "validators/releases/3-0-3-upgrade"
+          ]
+        },
+        {
+          "group": "Passive Nodes",
+          "pages": [
+            "validators/run-archive-node",
+            "validators/run-sync-node"
+          ]
+        },
         {
           "group": "Node CLI",
           "pages": [
-            "node-operations/node-cli/overview",
-            "node-operations/node-cli/changing-node-ip",
-            "node-operations/node-cli/node-ssl-setup",
-            "node-operations/node-cli/releases/v2-0"
+            "validators/node-cli/overview",
+            "validators/node-cli/changing-node-ip",
+            "validators/node-cli/node-ssl-setup",
+            "validators/node-cli/releases/v2-0"
           ]
         },
         {
           "group": "Validator CLI",
           "pages": [
-            "node-operations/validator-cli/overview",
-            "node-operations/validator-cli/self-recharging-wallets",
-            "node-operations/validator-cli/releases/v1-2-0"
+            "validators/validator-cli/overview",
+            "validators/validator-cli/self-recharging-wallets",
+            "validators/validator-cli/releases/v1-2-0"
           ]
         },
         {
           "group": "Watchdog",
           "pages": [
-            "node-operations/watchdog/overview",
-            "node-operations/watchdog/apis"
-          ]
-        },
-        {
-          "group": "Releases",
-          "pages": [
-            "node-operations/releases/3-0-3-upgrade",
-            "node-operations/releases/3-1-0-upgrade",
-            "node-operations/releases/3-1-1-upgrade-local-sgx",
-            "node-operations/releases/3-1-1-upgrade",
-            "node-operations/releases/3-1-2-upgrade",
-            "node-operations/releases/4-0-0-upgrade",
-            "node-operations/releases/4-0-1-upgrade"
+            "validators/watchdog/overview",
+            "validators/watchdog/apis"
           ]
         }
       ]
@@ -154,22 +188,38 @@
       {
         "tab": "Developers",
         "pages": [
-        "developers/solidity-quickstart",
-        "developers/pick-a-chain",
-        "developers/skale-vs-ethereum",
-        "developers/deploy-on-skale",
-        "developers/payments-on-skale",
-        "developers/random-number-generation",
-        "developers/using-contract-factories",
-        "developers/using-filestorage",
-        "developers/troubleshooting",
-        "developers/build-a-dapp",
-        "developers/oracle",
-        "developers/sdks",
         {
-          "group": "Libraries",
+          "group": "Getting Started",
           "pages": [
-            "developers/libraries/filestorage-js"
+            "developers/build-a-dapp",
+            "developers/solidity-quickstart",
+            "developers/pick-a-chain",
+            "developers/troubleshooting",
+            "developers/skale-vs-ethereum",
+            "developers/deploy-on-skale",
+            "api-reference/compatibility"
+          ]
+        },
+        {
+          "group": "Gas and Compute",
+          "pages": [
+            "developers/gas-and-compute/appchain",
+            "developers/gas-and-compute/credit-chain",
+            "developers/gas-and-compute/zero-gas-fee-gasless-chain"
+          ]
+        },
+        {
+          "group": "Native Features",
+          "pages": [
+            "developers/using-filestorage",
+            "developers/random-number-generation"
+          ]
+        },
+        {
+          "group": "SDKs",
+          "pages": [
+            "developers/sdks/overview",
+            "developers/sdks/filestorage-js"
           ]
         },
         {
@@ -221,11 +271,50 @@
         },
         {
           "group": "API Reference",
-          "openapi": "api-reference/openapi.json",
           "pages": [
             "api-reference/introduction",
-            "api-reference/compatibility",
-            "api-reference/block-explorer"
+            "api-reference/methods/web3-clientVersion",
+            "api-reference/methods/web3-sha3",
+            "api-reference/methods/net-version",
+            "api-reference/methods/net-listening",
+            "api-reference/methods/net-peerCount",
+            "api-reference/methods/eth-protocolVersion",
+            "api-reference/methods/eth-syncing",
+            "api-reference/methods/eth-coinbase",
+            "api-reference/methods/eth-mining",
+            "api-reference/methods/eth-hashrate",
+            "api-reference/methods/eth-gasPrice",
+            "api-reference/methods/eth-accounts",
+            "api-reference/methods/eth-blockNumber",
+            "api-reference/methods/eth-getBalance",
+            "api-reference/methods/eth-getStorageAt",
+            "api-reference/methods/eth-getTransactionCount",
+            "api-reference/methods/eth-getBlockTransactionCountByHash",
+            "api-reference/methods/eth-getBlockTransactionCountByNumber",
+            "api-reference/methods/eth-getUncleCountByBlockHash",
+            "api-reference/methods/eth-getUncleCountByBlockNumber",
+            "api-reference/methods/eth-getCode",
+            "api-reference/methods/eth-sendTransaction",
+            "api-reference/methods/eth-sendRawTransaction",
+            "api-reference/methods/eth-call",
+            "api-reference/methods/eth-estimateGas",
+            "api-reference/methods/eth-getBlockByHash",
+            "api-reference/methods/eth-getBlockByNumber",
+            "api-reference/methods/eth-getTransactionByHash",
+            "api-reference/methods/eth-getTransactionByBlockHashAndIndex",
+            "api-reference/methods/eth-getTransactionByBlockNumberAndIndex",
+            "api-reference/methods/eth-getTransactionReceipt",
+            "api-reference/methods/eth-getUncleByBlockHashAndIndex",
+            "api-reference/methods/eth-getUncleByBlockNumberAndIndex",
+            "api-reference/methods/eth-newFilter",
+            "api-reference/methods/eth-newBlockFilter",
+            "api-reference/methods/eth-newPendingTransactionFilter",
+            "api-reference/methods/eth-uninstallFilter",
+            "api-reference/methods/eth-getFilterChanges",
+            "api-reference/methods/eth-getFilterLogs",
+            "api-reference/methods/eth-getLogs",
+            "api-reference/methods/eth-getWork",
+            "api-reference/methods/eth-submitHashrate"
           ]
         }
       ]
@@ -233,8 +322,44 @@
       {
         "tab": "Cookbook",
         "pages": [
-          "cookbook/deploy-erc20-token",
-          "cookbook/upload-website-filestorage"
+          {
+            "group": "Deployment",
+            "pages": [
+              "cookbook/setup-foundry",
+              "cookbook/setup-hardhat"
+            ]
+          },
+          {
+            "group": "Smart Contracts",
+            "pages": [
+              "cookbook/deploy-erc20-token",
+              "cookbook/deploy-erc721-token",
+              "cookbook/deploy-erc1155-token",
+              "cookbook/verify-smart-contracts"
+            ]
+          },
+          {
+            "group": "x402",
+            "pages": [
+              "cookbook/x402-accepting-payments",
+              "cookbook/x402-buying",
+              "cookbook/x402-facilitator",
+              "cookbook/x402-non-usdc-tokens"
+            ]
+          },
+          {
+            "group": "Filestorage",
+            "pages": [
+              "cookbook/upload-website-filestorage"
+            ]
+          },
+          {
+            "group": "Random Numbers",
+            "pages": [
+              "cookbook/rng-get-random-number",
+              "cookbook/rng-flip-coin"
+            ]
+          }
         ]
       }
     ]
@@ -266,12 +391,20 @@
       {
         "label": "GitHub",
         "href": "https://github.com/skalenetwork"
+      },
+      {
+        "label": "Website",
+        "href": "https://skale.space"
+      },
+      {
+        "label": "Forum",
+        "href": "https://forum.skale.network"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "SKALE Dashboard",
-      "href": "https://skale.network/dashboard"
+      "label": "SKALE Portal",
+      "href": "https://portal.skale.space"
     }
   },
   "api": {
@@ -293,6 +426,7 @@
     "default": "light",
     "isHidden": false
   },
+  "css": "/custom.css",
   "contextual": {
     "options": [
       "copy",
@@ -314,11 +448,12 @@
   },
   "redirects": [
     { "source": "/welcome/intro-to-skale", "destination": "/get-started/introduction/start-here" },
-    { "source": "/welcome/get-started", "destination": "/get-started/get-started" },
+    { "source": "/welcome/get-started", "destination": "/get-started/introduction/start-here" },
     { "source": "/welcome/chain-info", "destination": "/get-started/chain-info" },
     { "source": "/welcome/go-live", "destination": "/get-started/go-live" },
     { "source": "/welcome/skale-on-base", "destination": "/get-started/skale-on-base" },
-    { "source": "/how-skale-works/mainnet-beta", "destination": "/get-started/mainnet-beta" },
+    { "source": "/get-started/mainnet-beta", "destination": "/get-started/introduction/start-here" },
+    { "source": "/how-skale-works/mainnet-beta", "destination": "/get-started/introduction/start-here" },
     { "source": "/how-skale-works/consensus", "destination": "/concepts/consensus" },
     { "source": "/how-skale-works/block-rotation", "destination": "/concepts/block-rotation" },
     { "source": "/how-skale-works/ddos-protection", "destination": "/concepts/ddos-protection" },
@@ -328,32 +463,32 @@
     { "source": "/how-skale-works/skl-token", "destination": "/concepts/skl-token" },
     { "source": "/how-skale-works/snapshots", "destination": "/concepts/snapshots" },
     { "source": "/how-skale-works/threshold-schemes", "destination": "/concepts/threshold-schemes" },
-    { "source": "/run-a-skale-node/overview", "destination": "/node-operations/overview" },
-    { "source": "/run-a-skale-node/run-supernode", "destination": "/node-operations/run-supernode" },
-    { "source": "/run-a-skale-node/run-archive-node", "destination": "/node-operations/run-archive-node" },
-    { "source": "/run-a-skale-node/run-sync-node", "destination": "/node-operations/run-sync-node" },
-    { "source": "/run-a-skale-node/migrate-node-with-sgxwallet", "destination": "/node-operations/migrate-node-with-sgxwallet" },
-    { "source": "/run-a-skale-node/compliance-requirements", "destination": "/node-operations/compliance-requirements" },
-    { "source": "/run-a-skale-node/hardware", "destination": "/node-operations/hardware" },
-    { "source": "/run-a-skale-node/faq", "destination": "/node-operations/faq" },
-    { "source": "/run-a-skale-node/troubleshooting", "destination": "/node-operations/troubleshooting" },
-    { "source": "/run-a-skale-node/swap-limit-fix", "destination": "/node-operations/swap-limit-fix" },
-    { "source": "/run-a-skale-node/node-cli/overview", "destination": "/node-operations/node-cli/overview" },
-    { "source": "/run-a-skale-node/node-cli/changing-node-ip", "destination": "/node-operations/node-cli/changing-node-ip" },
-    { "source": "/run-a-skale-node/node-cli/node-ssl-setup", "destination": "/node-operations/node-cli/node-ssl-setup" },
-    { "source": "/run-a-skale-node/node-cli/releases/v2-0", "destination": "/node-operations/node-cli/releases/v2-0" },
-    { "source": "/run-a-skale-node/validator-cli/overview", "destination": "/node-operations/validator-cli/overview" },
-    { "source": "/run-a-skale-node/validator-cli/self-recharging-wallets", "destination": "/node-operations/validator-cli/self-recharging-wallets" },
-    { "source": "/run-a-skale-node/validator-cli/releases/v1-2-0", "destination": "/node-operations/validator-cli/releases/v1-2-0" },
-    { "source": "/run-a-skale-node/watchdog/overview", "destination": "/node-operations/watchdog/overview" },
-    { "source": "/run-a-skale-node/watchdog/apis", "destination": "/node-operations/watchdog/apis" },
-    { "source": "/run-a-skale-node/releases/3-0-3-upgrade", "destination": "/node-operations/releases/3-0-3-upgrade" },
-    { "source": "/run-a-skale-node/releases/3-1-0-upgrade", "destination": "/node-operations/releases/3-1-0-upgrade" },
-    { "source": "/run-a-skale-node/releases/3-1-1-upgrade-local-sgx", "destination": "/node-operations/releases/3-1-1-upgrade-local-sgx" },
-    { "source": "/run-a-skale-node/releases/3-1-1-upgrade", "destination": "/node-operations/releases/3-1-1-upgrade" },
-    { "source": "/run-a-skale-node/releases/3-1-2-upgrade", "destination": "/node-operations/releases/3-1-2-upgrade" },
-    { "source": "/run-a-skale-node/releases/4-0-0-upgrade", "destination": "/node-operations/releases/4-0-0-upgrade" },
-    { "source": "/run-a-skale-node/releases/4-0-1-upgrade", "destination": "/node-operations/releases/4-0-1-upgrade" },
+    { "source": "/run-a-skale-node/overview", "destination": "/validators/overview" },
+    { "source": "/run-a-skale-node/run-supernode", "destination": "/validators/run-supernode" },
+    { "source": "/run-a-skale-node/run-archive-node", "destination": "/validators/run-archive-node" },
+    { "source": "/run-a-skale-node/run-sync-node", "destination": "/validators/run-sync-node" },
+    { "source": "/run-a-skale-node/migrate-node-with-sgxwallet", "destination": "/validators/migrate-node-with-sgxwallet" },
+    { "source": "/run-a-skale-node/compliance-requirements", "destination": "/validators/compliance-requirements" },
+    { "source": "/run-a-skale-node/hardware", "destination": "/validators/hardware" },
+    { "source": "/run-a-skale-node/faq", "destination": "/validators/faq" },
+    { "source": "/run-a-skale-node/troubleshooting", "destination": "/validators/troubleshooting" },
+    { "source": "/run-a-skale-node/swap-limit-fix", "destination": "/validators/swap-limit-fix" },
+    { "source": "/run-a-skale-node/node-cli/overview", "destination": "/validators/node-cli/overview" },
+    { "source": "/run-a-skale-node/node-cli/changing-node-ip", "destination": "/validators/node-cli/changing-node-ip" },
+    { "source": "/run-a-skale-node/node-cli/node-ssl-setup", "destination": "/validators/node-cli/node-ssl-setup" },
+    { "source": "/run-a-skale-node/node-cli/releases/v2-0", "destination": "/validators/node-cli/releases/v2-0" },
+    { "source": "/run-a-skale-node/validator-cli/overview", "destination": "/validators/validator-cli/overview" },
+    { "source": "/run-a-skale-node/validator-cli/self-recharging-wallets", "destination": "/validators/validator-cli/self-recharging-wallets" },
+    { "source": "/run-a-skale-node/validator-cli/releases/v1-2-0", "destination": "/validators/validator-cli/releases/v1-2-0" },
+    { "source": "/run-a-skale-node/watchdog/overview", "destination": "/validators/watchdog/overview" },
+    { "source": "/run-a-skale-node/watchdog/apis", "destination": "/validators/watchdog/apis" },
+    { "source": "/run-a-skale-node/releases/3-0-3-upgrade", "destination": "/validators/releases/3-0-3-upgrade" },
+    { "source": "/run-a-skale-node/releases/3-1-0-upgrade", "destination": "/validators/releases/3-1-0-upgrade" },
+    { "source": "/run-a-skale-node/releases/3-1-1-upgrade-local-sgx", "destination": "/validators/releases/3-1-1-upgrade-local-sgx" },
+    { "source": "/run-a-skale-node/releases/3-1-1-upgrade", "destination": "/validators/releases/3-1-1-upgrade" },
+    { "source": "/run-a-skale-node/releases/3-1-2-upgrade", "destination": "/validators/releases/3-1-2-upgrade" },
+    { "source": "/run-a-skale-node/releases/4-0-0-upgrade", "destination": "/validators/releases/4-0-0-upgrade" },
+    { "source": "/run-a-skale-node/releases/4-0-1-upgrade", "destination": "/validators/releases/4-0-1-upgrade" },
     { "source": "/building-applications/solidity-quickstart", "destination": "/developers/solidity-quickstart" },
     { "source": "/building-applications/gas-fees", "destination": "/concepts/gas-fees/zero-gas-fees" },
     { "source": "/building-applications/pick-a-chain", "destination": "/developers/pick-a-chain" },
@@ -388,10 +523,10 @@
     { "source": "/run-a-skale-chain/managing-sfuel-distribution", "destination": "/developers/run-a-skale-chain/managing-sfuel-distribution" },
     { "source": "/run-a-skale-chain/using-safe", "destination": "/developers/run-a-skale-chain/using-safe" },
     { "source": "/run-a-skale-chain/using-multisig-wallet-cli", "destination": "/developers/run-a-skale-chain/using-multisig-wallet-cli" },
-    { "source": "/", "destination": "/get-started/get-started" },
+    { "source": "/", "destination": "/get-started/introduction/start-here" },
     { "source": "/introduction", "destination": "/get-started/introduction/start-here" },
-    { "source": "/introduction/mainnet-beta", "destination": "/get-started/mainnet-beta" },
-    { "source": "/introduction/overview", "destination": "/get-started/get-started" },
+    { "source": "/introduction/mainnet-beta", "destination": "/get-started/introduction/start-here" },
+    { "source": "/introduction/overview", "destination": "/get-started/introduction/start-here" },
     { "source": "/introduction/skale-and-ethereum-security", "destination": "/concepts/consensus" },
     { "source": "/introduction/skale-chain-fuel", "destination": "/concepts/gas-fees/zero-gas-fees" },
     { "source": "/introduction/skale-chain-types", "destination": "/developers/pick-a-chain" },
@@ -414,9 +549,9 @@
     { "source": "/develop/hubs", "destination": "/developers/pick-a-chain" },
     { "source": "/delegators", "destination": "/concepts/skl-token" },
     { "source": "/delegators/delegation-faq", "destination": "/concepts/skl-token" },
-    { "source": "/validators", "destination": "/node-operations/overview" },
-    { "source": "/validators/validator-faq", "destination": "/node-operations/faq" },
-    { "source": "/validators/validator-cli", "destination": "/node-operations/validator-cli/overview" },
+    { "source": "/validators", "destination": "/validators/overview" },
+    { "source": "/validators/validator-faq", "destination": "/validators/faq" },
+    { "source": "/validators/validator-cli", "destination": "/validators/validator-cli/overview" },
     { "source": "/governance", "destination": "/concepts/skl-token" },
     { "source": "/governance/how-to-vote", "destination": "/concepts/skl-token" },
     { "source": "/governance/intro-skale-dao", "destination": "/concepts/skl-token" },
@@ -431,7 +566,7 @@
     { "source": "/learn/europa", "destination": "/get-started/chain-info" },
     { "source": "/learn/nebula", "destination": "/get-started/chain-info" },
     { "source": "/learn/titan", "destination": "/get-started/chain-info" },
-    { "source": "/learn/mainnet-beta", "destination": "/get-started/mainnet-beta" },
+    { "source": "/learn/mainnet-beta", "destination": "/get-started/introduction/start-here" },
     { "source": "/learn/advanced/block-rotation", "destination": "/concepts/block-rotation" },
     { "source": "/learn/advanced/consensus", "destination": "/concepts/consensus" },
     { "source": "/learn/advanced/consensus-deep-dive", "destination": "/concepts/consensus" },
@@ -441,8 +576,8 @@
     { "source": "/learn/advanced/snapshots", "destination": "/concepts/snapshots" },
     { "source": "/learn/advanced/topics/elliptic-curve-cryptography", "destination": "/concepts/elliptic-curve-cryptography" },
     { "source": "/learn/advanced/topics/threshold-schemes", "destination": "/concepts/threshold-schemes" },
-    { "source": "/quick-start", "destination": "/get-started/get-started" },
-    { "source": "/quick-start/", "destination": "/get-started/get-started" },
+    { "source": "/quick-start", "destination": "/get-started/introduction/start-here" },
+    { "source": "/quick-start/", "destination": "/get-started/introduction/start-here" },
     { "source": "/quick-start/building-for-skale", "destination": "/developers/build-a-dapp" },
     { "source": "/quick-start/building-for-skale/", "destination": "/developers/build-a-dapp" },
     { "source": "/quick-start/deploy-to-testnet", "destination": "/get-started/go-live" },
@@ -465,49 +600,78 @@
     { "source": "/builders/chain-operators/architecture", "destination": "/developers/run-a-skale-chain/intro-to-schains" },
     { "source": "/builders/chain-operators/skale-chain-wallet", "destination": "/developers/run-a-skale-chain/using-safe" },
     { "source": "/builders/chain-operators/submit-metadata", "destination": "/developers/run-a-skale-chain/customize-schain" },
-    { "source": "/builders/node-operators/overview", "destination": "/node-operations/overview" },
-    { "source": "/builders/node-operators/skale-nodes", "destination": "/node-operations/run-supernode" },
-    { "source": "/builders/node-operators/archive-node", "destination": "/node-operations/run-archive-node" },
-    { "source": "/builders/node-operators/archive-node/", "destination": "/node-operations/run-archive-node" },
-    { "source": "/builders/node-operators/full-sync-node", "destination": "/node-operations/run-sync-node" },
-    { "source": "/builders/node-operators/skale-proxy", "destination": "/node-operations/overview" },
-    { "source": "/ecosystem", "destination": "/get-started/get-started" },
-    { "source": "/ecosystem/validators/overview", "destination": "/node-operations/overview" },
-    { "source": "/ecosystem/validators/compliance-requirements", "destination": "/node-operations/compliance-requirements" },
-    { "source": "/ecosystem/validators/faq", "destination": "/node-operations/faq" },
-    { "source": "/ecosystem/validators/troubleshooting", "destination": "/node-operations/troubleshooting" },
-    { "source": "/ecosystem/validators/swap-limit-fix", "destination": "/node-operations/swap-limit-fix" },
-    { "source": "/ecosystem/validators/validator-setup", "destination": "/node-operations/overview" },
-    { "source": "/ecosystem/validators/node-cli/overview", "destination": "/node-operations/node-cli/overview" },
-    { "source": "/ecosystem/validators/node-cli/changing-node-ip", "destination": "/node-operations/node-cli/changing-node-ip" },
-    { "source": "/ecosystem/validators/node-cli/node-ssl-setup", "destination": "/node-operations/node-cli/node-ssl-setup" },
-    { "source": "/ecosystem/validators/node-cli/releases/v2-0", "destination": "/node-operations/node-cli/releases/v2-0" },
-    { "source": "/ecosystem/validators/releases/3-0-2-upgrade", "destination": "/node-operations/releases/3-0-3-upgrade" },
-    { "source": "/ecosystem/validators/releases/3-0-3-upgrade", "destination": "/node-operations/releases/3-0-3-upgrade" },
-    { "source": "/ecosystem/validators/releases/3-1-0-upgrade", "destination": "/node-operations/releases/3-1-0-upgrade" },
-    { "source": "/ecosystem/validators/releases/3-1-1-upgrade", "destination": "/node-operations/releases/3-1-1-upgrade" },
-    { "source": "/ecosystem/validators/releases/3-1-1-upgrade-local-sgx", "destination": "/node-operations/releases/3-1-1-upgrade-local-sgx" },
-    { "source": "/ecosystem/validators/validator-cli", "destination": "/node-operations/validator-cli/overview" },
-    { "source": "/ecosystem/validators/validator-cli/overview", "destination": "/node-operations/validator-cli/overview" },
-    { "source": "/ecosystem/validators/validator-cli/releases/v1-2-0", "destination": "/node-operations/validator-cli/releases/v1-2-0" },
-    { "source": "/ecosystem/validators/validator-cli/self-recharding-wallets", "destination": "/node-operations/validator-cli/self-recharging-wallets" },
-    { "source": "/ecosystem/validators/validator-cli/self-recharging-wallets", "destination": "/node-operations/validator-cli/self-recharging-wallets" },
-    { "source": "/ecosystem/validators/watchdog/overview", "destination": "/node-operations/watchdog/overview" },
-    { "source": "/ecosystem/validators/watchdog/apis", "destination": "/node-operations/watchdog/apis" },
+    { "source": "/builders/node-operators/overview", "destination": "/validators/overview" },
+    { "source": "/builders/node-operators/skale-nodes", "destination": "/validators/run-supernode" },
+    { "source": "/builders/node-operators/archive-node", "destination": "/validators/run-archive-node" },
+    { "source": "/builders/node-operators/archive-node/", "destination": "/validators/run-archive-node" },
+    { "source": "/builders/node-operators/full-sync-node", "destination": "/validators/run-sync-node" },
+    { "source": "/builders/node-operators/skale-proxy", "destination": "/validators/overview" },
+    { "source": "/ecosystem", "destination": "/get-started/introduction/start-here" },
+    { "source": "/ecosystem/validators/overview", "destination": "/validators/overview" },
+    { "source": "/ecosystem/validators/compliance-requirements", "destination": "/validators/compliance-requirements" },
+    { "source": "/ecosystem/validators/faq", "destination": "/validators/faq" },
+    { "source": "/ecosystem/validators/troubleshooting", "destination": "/validators/troubleshooting" },
+    { "source": "/ecosystem/validators/swap-limit-fix", "destination": "/validators/swap-limit-fix" },
+    { "source": "/ecosystem/validators/validator-setup", "destination": "/validators/overview" },
+    { "source": "/node-operations/validator-setup", "destination": "/validators/overview" },
+    { "source": "/validators/validator-setup", "destination": "/validators/overview" },
+    { "source": "/run-a-skale-node/validator-setup", "destination": "/validators/overview" },
+    { "source": "/ecosystem/validators/node-cli/overview", "destination": "/validators/node-cli/overview" },
+    { "source": "/ecosystem/validators/node-cli/changing-node-ip", "destination": "/validators/node-cli/changing-node-ip" },
+    { "source": "/ecosystem/validators/node-cli/node-ssl-setup", "destination": "/validators/node-cli/node-ssl-setup" },
+    { "source": "/ecosystem/validators/node-cli/releases/v2-0", "destination": "/validators/node-cli/releases/v2-0" },
+    { "source": "/ecosystem/validators/releases/3-0-2-upgrade", "destination": "/validators/releases/3-0-3-upgrade" },
+    { "source": "/ecosystem/validators/releases/3-0-3-upgrade", "destination": "/validators/releases/3-0-3-upgrade" },
+    { "source": "/ecosystem/validators/releases/3-1-0-upgrade", "destination": "/validators/releases/3-1-0-upgrade" },
+    { "source": "/ecosystem/validators/releases/3-1-1-upgrade", "destination": "/validators/releases/3-1-1-upgrade" },
+    { "source": "/ecosystem/validators/releases/3-1-1-upgrade-local-sgx", "destination": "/validators/releases/3-1-1-upgrade-local-sgx" },
+    { "source": "/ecosystem/validators/validator-cli", "destination": "/validators/validator-cli/overview" },
+    { "source": "/ecosystem/validators/validator-cli/overview", "destination": "/validators/validator-cli/overview" },
+    { "source": "/ecosystem/validators/validator-cli/releases/v1-2-0", "destination": "/validators/validator-cli/releases/v1-2-0" },
+    { "source": "/ecosystem/validators/validator-cli/self-recharding-wallets", "destination": "/validators/validator-cli/self-recharging-wallets" },
+    { "source": "/ecosystem/validators/validator-cli/self-recharging-wallets", "destination": "/validators/validator-cli/self-recharging-wallets" },
+    { "source": "/ecosystem/validators/watchdog/overview", "destination": "/validators/watchdog/overview" },
+    { "source": "/ecosystem/validators/watchdog/apis", "destination": "/validators/watchdog/apis" },
     { "source": "/ecosystem/delegators/overview", "destination": "/get-started/introduction/start-here" },
     { "source": "/ecosystem/governance/overview", "destination": "/concepts/skl-token" },
-    { "source": "/tools", "destination": "/get-started/get-started" },
+    { "source": "/tools", "destination": "/get-started/introduction/start-here" },
     { "source": "/tools/skale-specific/ml", "destination": "/developers/build-a-dapp" },
     { "source": "/tools/skale-specific/oracle", "destination": "/developers/build-a-dapp" },
     { "source": "/tools/skale-specific/rng", "destination": "/developers/random-number-generation" },
-    { "source": "/infrastructure/archive-node", "destination": "/node-operations/run-archive-node" },
+    { "source": "/infrastructure/archive-node", "destination": "/validators/run-archive-node" },
     { "source": "/infrastructure/skale-chain-sizes", "destination": "/developers/run-a-skale-chain/customize-schain" },
-    { "source": "/skale-watchdog/2.0.x/", "destination": "/node-operations/watchdog/overview" },
+    { "source": "/skale-watchdog/2.0.x/", "destination": "/validators/watchdog/overview" },
+    { "source": "/node-operations/overview", "destination": "/validators/overview" },
+    { "source": "/node-operations/run-supernode", "destination": "/validators/run-supernode" },
+    { "source": "/node-operations/run-archive-node", "destination": "/validators/run-archive-node" },
+    { "source": "/node-operations/run-sync-node", "destination": "/validators/run-sync-node" },
+    { "source": "/node-operations/migrate-node-with-sgxwallet", "destination": "/validators/migrate-node-with-sgxwallet" },
+    { "source": "/node-operations/compliance-requirements", "destination": "/validators/compliance-requirements" },
+    { "source": "/node-operations/hardware", "destination": "/validators/hardware" },
+    { "source": "/node-operations/faq", "destination": "/validators/faq" },
+    { "source": "/node-operations/troubleshooting", "destination": "/validators/troubleshooting" },
+    { "source": "/node-operations/swap-limit-fix", "destination": "/validators/swap-limit-fix" },
+    { "source": "/node-operations/node-cli/overview", "destination": "/validators/node-cli/overview" },
+    { "source": "/node-operations/node-cli/changing-node-ip", "destination": "/validators/node-cli/changing-node-ip" },
+    { "source": "/node-operations/node-cli/node-ssl-setup", "destination": "/validators/node-cli/node-ssl-setup" },
+    { "source": "/node-operations/node-cli/releases/v2-0", "destination": "/validators/node-cli/releases/v2-0" },
+    { "source": "/node-operations/validator-cli/overview", "destination": "/validators/validator-cli/overview" },
+    { "source": "/node-operations/validator-cli/self-recharging-wallets", "destination": "/validators/validator-cli/self-recharging-wallets" },
+    { "source": "/node-operations/validator-cli/releases/v1-2-0", "destination": "/validators/validator-cli/releases/v1-2-0" },
+    { "source": "/node-operations/watchdog/overview", "destination": "/validators/watchdog/overview" },
+    { "source": "/node-operations/watchdog/apis", "destination": "/validators/watchdog/apis" },
+    { "source": "/node-operations/releases/3-0-3-upgrade", "destination": "/validators/releases/3-0-3-upgrade" },
+    { "source": "/node-operations/releases/3-1-0-upgrade", "destination": "/validators/releases/3-1-0-upgrade" },
+    { "source": "/node-operations/releases/3-1-1-upgrade-local-sgx", "destination": "/validators/releases/3-1-1-upgrade-local-sgx" },
+    { "source": "/node-operations/releases/3-1-1-upgrade", "destination": "/validators/releases/3-1-1-upgrade" },
+    { "source": "/node-operations/releases/3-1-2-upgrade", "destination": "/validators/releases/3-1-2-upgrade" },
+    { "source": "/node-operations/releases/4-0-0-upgrade", "destination": "/validators/releases/4-0-0-upgrade" },
+    { "source": "/node-operations/releases/4-0-1-upgrade", "destination": "/validators/releases/4-0-1-upgrade" },
     { "source": "/skale-chain-administration/skale-chain-access-control", "destination": "/developers/run-a-skale-chain/access-control" },
-    { "source": "/recipes", "destination": "/get-started/get-started" },
+    { "source": "/recipes", "destination": "/get-started/introduction/start-here" },
     { "source": "/recipes/libraries/providers", "destination": "/developers/solidity-quickstart" },
-    { "source": "/technology", "destination": "/get-started/get-started" },
-    { "source": "/partnership/integration", "destination": "/get-started/get-started" },
+    { "source": "/technology", "destination": "/get-started/introduction/start-here" },
+    { "source": "/partnership/integration", "destination": "/get-started/introduction/start-here" },
     { "source": "/skaled/3.16.x-beta", "destination": "/concepts/consensus" },
     { "source": "/building-applications/deploy-on-skale", "destination": "/get-started/go-live" },
     { "source": "/builders/tools/all-in-one", "destination": "/developers/build-a-dapp" },
@@ -669,6 +833,14 @@
     { "source": "/ima/1.4.x/security-methods", "destination": "/developers/skale-bridge/overview" },
     { "source": "/ima/1.4.x/transferring-eth", "destination": "/developers/skale-bridge/ethereum/bridge-eth" },
     { "source": "/ima/1.4.x/troubleshooting", "destination": "/developers/skale-bridge/overview" },
-    { "source": "/ima/1.4.x/whats-new", "destination": "/developers/skale-bridge/overview" }
+    { "source": "/ima/1.4.x/whats-new", "destination": "/developers/skale-bridge/overview" },
+    { "source": "/get-started/use-cases/payments", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/enterprise-government", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/agents", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/artificial-intelligence", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/consumer-applications", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/finance", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/healthcare", "destination": "/get-started/use-cases" },
+    { "source": "/get-started/use-cases/supply-chain", "destination": "/get-started/use-cases" }
   ]
 }

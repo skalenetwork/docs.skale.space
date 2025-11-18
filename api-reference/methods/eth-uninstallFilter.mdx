@@ -1,0 +1,79 @@
+---
+title: eth_uninstallFilter
+description: Uninstalls a filter with given ID
+openapi: api-reference/openapi.json POST /
+---
+
+<Api openapi="api-reference/openapi.json" path="/" method="post" example="eth_uninstallFilter" />
+
+
+Uninstalls a filter with given ID.
+
+## Request
+
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "eth_uninstallFilter",
+  "params": [
+    "0x1"
+  ],
+  "id": 1
+}
+```
+
+### Parameters
+
+1. **filterId** (`string`, required): Filter ID to uninstall, hex-encoded
+
+## Response
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": true
+}
+```
+
+### Response Types
+
+- **result** (`boolean`): `true` if filter was uninstalled, `false` otherwise
+
+## Example
+
+<CodeGroup>
+
+```bash Request
+curl -X POST https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_uninstallFilter",
+    "params": ["0x1"],
+    "id": 1
+  }'
+```
+
+```json Response
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": true
+}
+```
+
+</CodeGroup>
+
+## Notes
+
+- Available on all node types
+- Always uninstall filters when done to free resources
+- Returns `false` if filter doesn't exist
+
+## Related Methods
+
+- [eth_newFilter](/api-reference/methods/eth-newFilter) - Create a log filter
+- [eth_newBlockFilter](/api-reference/methods/eth-newBlockFilter) - Create a block filter
+- [eth_newPendingTransactionFilter](/api-reference/methods/eth-newPendingTransactionFilter) - Create a pending transaction filter
+
