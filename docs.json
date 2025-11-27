@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "mint",
   "name": "SKALE Documentation",
   "tagline": "Blockchain for the agentic era",
   "colors": {
@@ -13,6 +13,31 @@
     "strict": true
   },
   "favicon": "/favicon.svg",
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:hi@skale.network"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/skalenetwork"
+      },
+      {
+        "label": "Website",
+        "href": "https://skale.space"
+      },
+      {
+        "label": "Forum",
+        "href": "https://forum.skale.network"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "SKALE Portal",
+      "href": "https://portal.skale.space"
+    }
+  },
   "navigation": {
     "tabs": [
       {
@@ -57,24 +82,37 @@
         "tab": "Concepts",
         "pages": [
         {
-          "group": "SKALE Chain",
+          "group": "BITE Protocol",
           "pages": [
-            "concepts/block-rotation",
-            "concepts/consensus",
-            "concepts/ddos-protection",
-            "concepts/precompiled-contracts",
-            "concepts/snapshots",
-            "concepts/instant-finality",
-            "concepts/privacy",
-            "concepts/tees"
+            "concepts/bite-protocol/intro-bite-protocol",
+            "concepts/bite-protocol/phases",
+            "concepts/bite-protocol/mev-deep-dive"
           ]
         },
         {
-          "group": "BITE Protocol",
+          "group": "SKALE Network",
           "pages": [
-            "concepts/bite-protocol",
-            "concepts/bite-protocol/phases",
-            "concepts/bite-protocol/mev-deep-dive"
+            "concepts/skale-network/skale-network-101",
+            "concepts/skale-network/skale-manager",
+            "concepts/skale-network/pooled-security-model",
+            "concepts/skale-network/delegated-proof-of-stake",
+            "concepts/skale-network/containerized-nodes",
+            "concepts/skale-network/virtualized-blockchains",
+            "concepts/skale-network/horizontal-scalability"
+          ]
+        },
+        {
+          "group": "SKALE Chain",
+          "pages": [
+            "concepts/skale-chain/101",
+            "concepts/skale-chain/block-rotation",
+            "concepts/skale-chain/consensus",
+            "concepts/skale-chain/ddos-protection",
+            "concepts/skale-chain/precompiled-contracts",
+            "concepts/skale-chain/snapshots",
+            "concepts/skale-chain/instant-finality",
+            "concepts/skale-chain/privacy",
+            "concepts/skale-chain/tees"
           ]
         },
         {
@@ -83,17 +121,6 @@
             "concepts/skl-token",
             "concepts/skl-token/tokenomics",
             "concepts/skl-token/supply-ui"
-          ]
-        },
-        {
-          "group": "SKALE Network",
-          "pages": [
-            "concepts/skale-manager",
-            "concepts/skale-network/pooled-security-model",
-            "concepts/skale-network/delegated-proof-of-stake",
-            "concepts/skale-network/containerized-nodes",
-            "concepts/skale-network/virtualized-blockchains",
-            "concepts/skale-network/horizontal-scalability"
           ]
         },
         {
@@ -130,8 +157,8 @@
         {
           "group": "Validators",
           "pages": [
+            "validators/supernode-overview",
             "validators/run-supernode",
-            "validators/overview",
             "validators/compliance-requirements",
             "validators/faq",
             "validators/troubleshooting",
@@ -211,8 +238,9 @@
         {
           "group": "Native Features",
           "pages": [
-            "developers/using-filestorage",
-            "developers/random-number-generation"
+            "developers/native-features/ima-bridge",
+            "developers/native-features/using-filestorage",
+            "developers/native-features/random-number-generation"
           ]
         },
         {
@@ -381,31 +409,6 @@
         "icon": "discord"
       }
     ]
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@skale.network"
-      },
-      {
-        "label": "GitHub",
-        "href": "https://github.com/skalenetwork"
-      },
-      {
-        "label": "Website",
-        "href": "https://skale.space"
-      },
-      {
-        "label": "Forum",
-        "href": "https://forum.skale.network"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "SKALE Portal",
-      "href": "https://portal.skale.space"
-    }
   },
   "api": {
     "baseUrl": "https://api.skale.network",

@@ -5,7 +5,7 @@ description: SKALE Chain Snapshots
 
 ## Introduction
 
-One of the main features of SKALE Network is **node rotation**, and this is performed through a **BLS Snapshot** process. Briefly, if node **A** leaves a SKALE Chain for any reason (e.g. random rotation, node exit, etc.), another node **B** will be chosen to replace it. Once node **B** is chosen, it needs all the information about previous blocks, transactions, etc. from the SKALE chain.
+One of the main features of SKALE Network is [node rotation](../skale-network/pooled-security-model#node-rotation), and this is performed through a **BLS Snapshot** process. Briefly, if node **A** leaves a SKALE Chain for any reason (e.g. random rotation, node exit, etc.), another node **B** will be chosen to replace it. Once node **B** is chosen, it needs all the information about previous blocks, transactions, etc. from the SKALE chain.
 
 SKALE Network solves this by periodically performing snapshots of the SKALE chain file system on each node so that nodes can share the latest snapshot with incoming node **B**.
 
@@ -13,7 +13,16 @@ Additionally, a node can be restarted from a snapshot if the node was offline fo
 
 ## Design
 
-**skaled** uses the **btrfs** file system to create snapshots.
+**skaled** uses the **btrfs** to create snapshots.
+
+<Note>
+**btrfs (B-tree File System)**
+
+Linux filesystem designed for high performance and reliability, featuring built-in support for snapshots, checksums, compression, and pooling of multiple storage devices.
+
+Instead of overwriting data in place, Btrfs writes new changes to a fresh location and updates pointers to them. This makes it possible to take instant, space-efficient snapshots, detect data corruption using checksums, and roll back safely without slowing the system down.
+</Note>
+
 
 **Assumptions:**
 
