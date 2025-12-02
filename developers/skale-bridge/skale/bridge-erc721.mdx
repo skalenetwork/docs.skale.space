@@ -3,13 +3,6 @@ title: Bridge ERC-721 Tokens
 description: Guide on bridging ERC-721 tokens on SKALE
 ---
 
-{/* Solidity Code Example Imports */}
-import InterchainERC721Code from "../ethereum/examples/InterchainERC721.sol?raw";
-import InterchainNFTCode from "../ethereum/examples/InterchainNFT.sol?raw";
-
-{/* Deposit Code Example Imports */}
-import bridgeERC721Js from "./examples/bridge-erc721.js?raw";
-
 SKALE's Interchain Messaging Agent (IMA) Bridge allows for direct communication and bridging between SKALE Chains (without ever going to Mainnet).
 
 The following walks you through setting up an ERC-721 token between two SKALE Chains and how to programatically bridge.
@@ -40,12 +33,66 @@ If the burn function is not locked down to just the IMA Bridge, specifically Tok
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See **YourInterchainNFT.sol** for an example.
 
-<Code code={InterchainERC721Code} lang="solidity" title="InterchainERC721.sol" />
+```solidity:InterchainERC721.sol
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+/**
+ * @title InterchainERC721
+ * @dev ERC-721 with role-based minting and dynamic token URI.
+ */
+contract InterchainERC721 is AccessControl, ERC721 {
+
+    using Strings for uint256;
+
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string private _baseTokenURI;
+
+    constructor(
+        string memory contractName,
+        string memory contractSymbol,
+        string memory baseTokenURI
+    )
+        ERC721(contractName, contractSymbol)
+    {
+        _setRoleAdmin(MINTER_ROLE, 0xD2aaa00600000000000000000000000000000000); // example admin role
+        _grantRole(MINTER_ROLE, _msgSender());
+        _baseTokenURI = baseTokenURI;
+    }
+
+    function mint(address to, uint256 tokenId) external returns (bool) {
+        require(hasRole(MINTER_ROLE, _msgSender()), "Sender is not a Minter");
+        _safeMint(to, tokenId);
+        return true;
+    }
+
+    /// @notice Override to return dynamic token URI
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721: URI query for nonexistent token");
+        return string(abi.encodePacked(_baseTokenURI, tokenId.toString(), ".json"));
+    }
+
+    /// @notice Allows admin to update base URI
+    function setBaseURI(string calldata newBaseURI) external onlyRole(MINTER_ROLE) {
+        _baseTokenURI = newBaseURI;
+    }
+}
+```
 ### 2. Deploy the ERC-721 on SKALE
 
 Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-721 token to the SKALE Chain you want to be able to bridge assets too.
 
-<Code code={InterchainNFTCode} lang="solidity" title="YourInterchainNFT.sol" />
+```solidity:YourInterchainNFT.sol
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+import { InterchainERC721 } from "./InterchainERC721.sol";
+
+contract InterchainNFT is InterchainERC721("NFT Name", "NFT Symbol", "ipfs://<cid>/") {}
+```
 
 > *InterchainERC721.sol is inherited from the code above*
 
@@ -86,4 +133,36 @@ The flow for bridging an ERC-721 from SKALE Chain to SKALE Chain follows a very 
 
 The following will help you bridge an NFT from one SKALE Chain to another.
 
-<Code code={bridgeERC721Js} lang="js" title="bridge.js" />
+```js:bridge.js
+import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
+
+const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+const ERC721_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+const ERC721_ABI = [ "function approve(address spender, uint256 tokenId) external" ];
+const TOKEN_MANAGER_ERC721_ADDRESS = "0xD2aaa00600000000000000000000000000000000"; // DO NOT CHANGE THIS
+const TOKEN_MANAGER_ERC721_ABI = [ "function transferToSchainERC721(string calldata targetSchainName, address contractOnMainnet, uint256 tokenId) external" ];
+const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+const TOKEN_ID = BigInt(1);
+
+// Setup the RPC Provider to connect to Ethereum
+const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+// Setup the wallet with your private key and default to the Ethereum provider
+const wallet = new Wallet(PRIVATE_KEY, provider);
+
+// Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC721_ADDRESS, TOKEN_MANAGER_ERC721_ABI, wallet);
+const tokenContract = new Contract(ERC721_ADDRESS, ERC721_ABI, wallet);
+
+// 1. Approve the bridge to move ERC-721 Token Id #1
+const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC721_ADDRESS, TOKEN_ID);
+await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+// 2. Deposit ERC-721 Token Id #1 into bridge, will receive on same address on SKALE
+const bridgeTx = await tokenManagerContract.transferToSchainERC721(DST_SKALE_CHAIN_NAME, ERC721_ADDRESS, TOKEN_ID);
+await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+// Success! Now watch for delivery on Destination Chain
+console.log("Success!");
+```

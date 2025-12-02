@@ -3,14 +3,6 @@ title: Bridge ERC-1155 Tokens
 description: Guide on bridging ERC-1155 tokens on SKALE
 ---
 
-{/* Solidity Code Example Imports */}
-import InterchainERC1155Code from "../ethereum/examples/InterchainERC1155.sol?raw";
-import InGameTokensCode from "../ethereum/examples/InGameTokens.sol?raw";
-
-{/* Deposit Code Example Imports */}
-import bridgeERC1155Js from "./examples/bridge-erc1155.js?raw";
-import bridgeERC1155BatchJs from "./examples/bridge-erc1155-batch.js?raw";
-
 SKALE's Interchain Messaging Agent (IMA) Bridge allows for direct communication and bridging between SKALE Chains (without ever going to Mainnet).
 
 The following walks you through setting up an ERC-1155 token between two SKALE Chains and how to programatically bridge.
@@ -41,12 +33,66 @@ If the burn function is not locked down to just the IMA Bridge, specifically Tok
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See **YourInterchainNFT.sol** for an example.
 
-<Code code={InterchainERC1155Code} lang="solidity" title="InterchainERC1155.sol" />
+```solidity:InterchainERC1155.sol
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.9;
+
+import { ERC1155 } from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+
+contract InterchainERC1155 is AccessControl, ERC1155 {
+    using Strings for uint256;
+
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string private _baseUri;
+
+    constructor(string memory baseUri) ERC1155("") {
+        _grantRole(MINTER_ROLE, 0xD2aaA00900000000000000000000000000000000);
+        _baseUri = baseUri; // e.g. "ipfs://QmSomeCID/"
+    }
+
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        return string(abi.encodePacked(_baseUri, tokenId.toString(), ".json"));
+    }
+
+    function mint(
+        address account,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) external {
+        require(hasRole(MINTER_ROLE, _msgSender()), "Sender is not a Minter");
+        _mint(account, id, amount, data);
+    }
+
+    function mintBatch(
+        address account,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) external {
+        require(hasRole(MINTER_ROLE, _msgSender()), "Sender is not a Minter");
+        _mintBatch(account, ids, amounts, data);
+    }
+
+    function setBaseUri(string memory newBaseUri) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _baseUri = newBaseUri;
+    }
+}
+```
 ### 2. Deploy the ERC-1155 on SKALE
 
 Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-1155 token to the SKALE Chain you want to be able to bridge assets too.
 
-<Code code={InGameTokensCode} lang="solidity" title="InGameTokens.sol" />
+```solidity:InGameTokens.sol
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+import { InterchainERC1155 } from "./InterchainERC1155.sol";
+
+contract InGameTokens is InterchainERC1155("ipfs://<cid>") {}
+```
 
 > *InterchainERC1155.sol is inherited from the code above*
 
@@ -92,8 +138,74 @@ The flow for bridging an ERC-1155 from SKALE Chain to SKALE Chain follows a very
 The following will help you bridge an ERC-1155 NFT from one SKALE Chain to another.
 
   ## bridge.js
-    <Code code={bridgeERC1155Js} lang="js" />
+    ```js
+    import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+    const ERC1155_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const TOKEN_MANAGER_ERC1155_ADDRESS = "0xD2aaA00900000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC1155_ABI = [ "function transferToSchainERC1155(string calldata targetSchainName, address contractOnMainnet, uint256 id, uint256 amount) external" ];
+    const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+    const NUMBER_TOKENS_TO_TRANSFER = parseEther("100"); // 100 tokens in wei format
+    const TOKEN_ID = BigInt(1);
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC1155_ADDRESS, TOKEN_MANAGER_ERC1155_ABI, wallet);
+    const tokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-1155 Tokens
+    const approvalTx = await tokenContract.setApprovalForAll(TOKEN_MANAGER_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // 2. Bridge 100 of ERC-1155 Token Id #1, will receive on same address on new skale chain
+    const bridgeTx = await tokenManagerContract.transferToSchainERC1155(DST_SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_ID, NUMBER_TOKENS_TO_TRANSFER);
+    await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // Success! Now watch for delivery on Destination Chain
+    console.log("Success!");
+    ```
   
   ## bridgeBatch.js
-    <Code code={bridgeERC1155BatchJs} lang="js" />
+    ```js
+    import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+    const ERC1155_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const TOKEN_MANAGER_ERC1155_ADDRESS = "0xD2aaA00900000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC1155_ABI = [ "function transferToSchainERC1155Batch(string calldata targetSchainName, address contractOnMainnet, uint256[] calldata ids, uint256[] calldata amounts) external" ];
+    const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+    const NUMBER_TOKENS_TO_TRANSFER = [parseEther("5"), parseEther("100")]; // 100 tokens in wei format
+    const TOKEN_IDS = [BigInt(1), BigInt(5)];
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC1155_ADDRESS, TOKEN_MANAGER_ERC1155_ABI, wallet);
+    const tokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-1155 Tokens
+    const approvalTx = await tokenContract.setApprovalForAll(TOKEN_MANAGER_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // 2. Bridge 5 of ERC-1155 Token Id #1 and 100 of Token Id #5, will receive on same address on new skale chain
+    const bridgeTx = await tokenManagerContract.transferToSchainERC1155Batch(DST_SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_IDS, NUMBER_TOKENS_TO_TRANSFER);
+    await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // Success! Now watch for delivery on Destination Chain
+    console.log("Success!");
+    ```
   

@@ -3,10 +3,6 @@ title: Using Filestorage
 description: Use the only native decentralized onchain filestorage
 ---
 
-import indexHtmlCode from "./code/index.html?raw";
-import stylesCssCode from "./code/styles.css?raw";
-import filestorageUploadCode from "./code/filestorageUploadScript?raw";
-
 SKALE Filestorage is the only onchain and decentralized filestorage in blockchain. The following walks through an example of how to use filestorage on your SKALE Chain.
 
 > Filestorage capacity is dependent on each SKALE Chain. Different size chains and configurations result in different allocations to filestorage, which is a capped resource. Filestorage is ideal for storing static data (i.e one off sets of metadata or images) but not for data that may grow exponentially (i.e user uploads).
@@ -29,8 +25,23 @@ Storage space must be provided by a SKALE Chain owner. Please contact the SKALE 
 
 Anything that builds into HTML, CSS, JS, and media files will work. If you haven't already built a site, you can use the below:
 
-<Code code={indexHtmlCode} lang="html" title="index.html" />
-<Code code={stylesCssCode} lang="css" title="styles.css" />
+```html:index.html
+<!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="styles.css">
+<html>
+    <body>
+        <h1>SKALE Filestorage Demo</h1>
+        <p>My first decentralized website!</p>
+        <a href="https://skale.space" target="_blank" rel="noreferrer">SKALE Website</a>
+    </body>
+</html>
+```
+
+```css:styles.css
+body {
+    background-color: #ccc;
+}
+```
 
 ### 2. Upload to your SKALE Chain
 
@@ -64,7 +75,44 @@ Once complete, copy the above files into their respective files.
 
 Open the `index.js` file and copy in the following:
 
-<Code code={filestorageUploadCode} lang="js" title="index.js" />
+```js:index.js
+#! /usr/bin/env node
+
+const Filestorage = require('@skalenetwork/filestorage.js');
+const fs = require('fs');
+const Web3 = require('web3');
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+// If not using the SDK, replace the endpoint below with your SKALE Chain endpoint
+let filestorage = new Filestorage('http://localhost:15000');
+
+// If not using the SDK, replace with the SKALE Chain owner key and address.
+let privateKey = process.env.PRIVATE_KEY || '<SKALE CHAIN OWNER KEY>';
+let address = process.env.ADDRESS || '<SKALE CHAIN OWNER ADDRESS>';
+
+let directoryPath = 'test-skale';
+
+// Bytes of filestorage space to allocate to an address
+// reservedSpace must be >= sum of uploaded files
+const reservedSpace = 3 * 10 ** 8;
+
+const files = fs.readdirSync(directoryPath);
+
+async function upload() {
+    // Owner must reserve space to an address
+    await filestorage.reserveSpace(address, address, reservedSpace, privateKey);
+    for(let i = 0; i < files.length; ++i)  {
+        let content;
+        let contentPath;
+        content = await fs.readFileSync(directoryPath + '/' + files[i]);
+        contentPath = await filestorage.uploadFile(address, files[i], content, privateKey);
+    }
+}
+
+upload();
+```
 
 Open the `.env` file and copy in the following:
 
