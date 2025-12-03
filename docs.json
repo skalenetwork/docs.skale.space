@@ -186,7 +186,6 @@
             "pages": [
               "developers/build-a-dapp",
               "developers/solidity-quickstart",
-              "developers/pick-a-chain",
               "developers/troubleshooting",
               "developers/skale-vs-ethereum",
               "developers/deploy-on-skale"
@@ -561,7 +560,11 @@
     },
     {
       "source": "/building-applications/pick-a-chain",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/developers/pick-a-chain",
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/building-applications/skale-vs-ethereum",
@@ -713,7 +716,7 @@
     },
     {
       "source": "/introduction/skale-chain-types",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/introduction/skale-hybrid-layer",
@@ -781,7 +784,7 @@
     },
     {
       "source": "/develop/hubs",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/delegators",
@@ -837,7 +840,7 @@
     },
     {
       "source": "/learn/hub-chain",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/learn/app-chain",
@@ -1345,23 +1348,23 @@
     },
     {
       "source": "/builders/tools/gaming",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/builders/tools/gaming/eidolon",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/builders/tools/gaming/emergence",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/builders/tools/gaming/mirage",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/builders/tools/gaming/web3unreal",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/builders/tools/libraries",
@@ -1941,7 +1944,7 @@
     },
     {
       "source": "/how-skale-works/chain-types",
-      "destination": "/developers/pick-a-chain"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/how-skale-works/technology",
