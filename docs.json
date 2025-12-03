@@ -52,8 +52,29 @@
         "tab": "Concepts",
         "pages": [
           {
+            "group": "BITE Protocol",
+            "pages": [
+              "concepts/bite-protocol/intro-bite-protocol",
+              "concepts/bite-protocol/phases",
+              "concepts/bite-protocol/mev-deep-dive"
+            ]
+          },
+          {
+            "group": "SKALE Network",
+            "pages": [
+              "concepts/skale-network/skale-network-101",
+              "concepts/skale-network/skale-manager",
+              "concepts/skale-network/pooled-security-model",
+              "concepts/skale-network/delegated-proof-of-stake",
+              "concepts/skale-network/containerized-nodes",
+              "concepts/skale-network/virtualized-blockchains",
+              "concepts/skale-network/horizontal-scalability"
+            ]
+          },
+          {
             "group": "SKALE Chain",
             "pages": [
+              "concepts/skale-chain/skale-chain-101",
               "concepts/skale-chain/block-rotation",
               "concepts/skale-chain/consensus",
               "concepts/skale-chain/ddos-protection",
@@ -65,30 +86,11 @@
             ]
           },
           {
-            "group": "BITE Protocol",
-            "pages": [
-              "concepts/bite-protocol/intro-bite-protocol",
-              "concepts/bite-protocol/phases",
-              "concepts/bite-protocol/mev-deep-dive"
-            ]
-          },
-          {
             "group": "SKL Token",
             "pages": [
               "concepts/skl-token",
               "concepts/skl-token/tokenomics",
               "concepts/skl-token/supply-ui"
-            ]
-          },
-          {
-            "group": "SKALE Network",
-            "pages": [
-              "concepts/skale-network/skale-manager",
-              "concepts/skale-network/pooled-security-model",
-              "concepts/skale-network/delegated-proof-of-stake",
-              "concepts/skale-network/containerized-nodes",
-              "concepts/skale-network/virtualized-blockchains",
-              "concepts/skale-network/horizontal-scalability"
             ]
           },
           {
@@ -191,7 +193,8 @@
               "developers/pick-a-chain",
               "developers/troubleshooting",
               "developers/skale-vs-ethereum",
-              "developers/deploy-on-skale"
+              "developers/deploy-on-skale",
+              "api-reference/compatibility"
             ]
           },
           {
@@ -205,6 +208,7 @@
           {
             "group": "Native Features",
             "pages": [
+              "developers/native-features/ima-bridge",
               "developers/native-features/using-filestorage",
               "developers/native-features/random-number-generation"
             ]
