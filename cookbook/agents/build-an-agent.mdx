@@ -52,33 +52,23 @@ class SimpleAgent {
   }
 
   async accessResource(url: string): Promise<any> {
-    try {
-      // Try to access the resource
-      const response = await fetch(url);
+    const response = await fetch(url);
+    
+    if (response.status === 402) {
+      const paymentInfo = await response.json();
+      const payment = await this.x402Client.createPayment(paymentInfo);
+      await this.x402Client.settle(payment);
       
-      // If we get a 402, handle payment
-      if (response.status === 402) {
-        const paymentInfo = await response.json();
-        
-        // Make payment using x402
-        const payment = await this.x402Client.createPayment(paymentInfo);
-        await this.x402Client.settle(payment);
-        
-        // Retry the request with payment header
-        const retryResponse = await fetch(url, {
-          headers: {
-            'X-PAYMENT': JSON.stringify(payment),
-          },
-        });
-        
-        return await retryResponse.json();
-      }
+      const retryResponse = await fetch(url, {
+        headers: {
+          'X-PAYMENT': JSON.stringify(payment),
+        },
+      });
       
-      return await response.json();
-    } catch (error) {
-      console.error('Error accessing resource:', error);
-      throw error;
+      return await retryResponse.json();
     }
+    
+    return await response.json();
   }
 }
 ```
@@ -105,7 +95,6 @@ class AIAgent {
       facilitatorURL: facilitatorURL,
     });
 
-    // Create payment tool for the agent
     const paymentTool = {
       name: 'make_payment',
       description: 'Make an x402 payment to access a paywalled resource',
@@ -114,7 +103,6 @@ class AIAgent {
       },
     };
 
-    // Create agent with payment capability
     const llm = new ChatOpenAI({ modelName: 'gpt-4' });
     this.agent = createReactAgent({
       llm,
@@ -172,20 +160,10 @@ const agent = createReactAgent({
   tools: [paymentTool, ...otherTools],
 });
 
-// Agent can now autonomously make payments
 const result = await agent.invoke({
   input: 'Get data from http://localhost:3000/premium-data',
 });
 ```
-
-## Agent Architecture
-
-Agents typically consist of:
-
-1. **x402 Client** - Handles payment creation and settlement
-2. **AI Model** - Processes requests and makes decisions
-3. **HTTP Client** - Interacts with paywalled APIs
-4. **Payment Tool** - Integrates payment capability into agent workflows
 
 ## Resources
 

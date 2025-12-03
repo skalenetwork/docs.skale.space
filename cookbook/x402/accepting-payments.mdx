@@ -148,7 +148,6 @@ const middleware = await createMiddleware({
       scheme: "exact",
       network: "skale-base-sepolia",
       maxAmountRequired: "1.5",
-      // resource will be set to the request URL
     },
   ],
 });
@@ -156,8 +155,7 @@ const middleware = await createMiddleware({
 
 ## Error Handling
 
-- Invalid facilitator responses throw an exception (HTTP 500). Instrument upstream logging to detect schema regressions quickly.
-- When settlement fails (e.g., wrong amount or expired signature), the middleware replays the facilitator payload to the client, prompting another payment.
+Invalid facilitator responses throw an exception (HTTP 500). When settlement fails, the middleware replays the facilitator payload to the client.
 
 ## Next Steps
 

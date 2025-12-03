@@ -46,20 +46,13 @@ const x402Client = new X402Client({
 });
 
 async function accessPaywalledResource(url: string) {
-  // Try to access the resource
   const response = await fetch(url);
   
-  // If we get a 402, handle payment
   if (response.status === 402) {
     const paymentInfo = await response.json();
-    
-    // Create payment
     const payment = await x402Client.createPayment(paymentInfo);
-    
-    // Settle payment
     await x402Client.settle(payment);
     
-    // Retry the request with payment header
     const retryResponse = await fetch(url, {
       headers: {
         'X-PAYMENT': JSON.stringify(payment),
@@ -103,9 +96,6 @@ async function accessResourceWithOptions(url: string) {
   
   if (response.status === 402) {
     const paymentInfo = await response.json();
-    
-    // Payment info may contain multiple options
-    // Select the best option (e.g., cheapest, preferred network)
     const selectedOption = paymentInfo.accepts[0];
     
     const payment = await x402Client.createPayment({
@@ -130,59 +120,31 @@ async function accessResourceWithOptions(url: string) {
 
 ## Error Handling
 
-Handle payment errors gracefully:
-
 ```typescript
 async function accessResource(url: string) {
-  try {
-    const response = await fetch(url);
+  const response = await fetch(url);
+  
+  if (response.status === 402) {
+    const paymentInfo = await response.json();
+    const payment = await x402Client.createPayment(paymentInfo);
+    await x402Client.settle(payment);
     
-    if (response.status === 402) {
-      const paymentInfo = await response.json();
-      
-      try {
-        const payment = await x402Client.createPayment(paymentInfo);
-        await x402Client.settle(payment);
-        
-        const retryResponse = await fetch(url, {
-          headers: {
-            'X-PAYMENT': JSON.stringify(payment),
-          },
-        });
-        
-        if (retryResponse.status === 402) {
-          // Payment failed, try again
-          throw new Error('Payment settlement failed');
-        }
-        
-        return await retryResponse.json();
-      } catch (paymentError) {
-        if (paymentError.code === 'INSUFFICIENT_BALANCE') {
-          throw new Error('Insufficient balance for payment');
-        }
-        if (paymentError.code === 'EXPIRED_PAYMENT') {
-          // Retry with new payment
-          return accessResource(url);
-        }
-        throw paymentError;
-      }
+    const retryResponse = await fetch(url, {
+      headers: {
+        'X-PAYMENT': JSON.stringify(payment),
+      },
+    });
+    
+    if (retryResponse.status === 402) {
+      throw new Error('Payment settlement failed');
     }
     
-    return await response.json();
-  } catch (error) {
-    console.error('Error accessing resource:', error);
-    throw error;
+    return await retryResponse.json();
   }
+  
+  return await response.json();
 }
 ```
-
-## Best Practices
-
-1. **Handle 402 Responses**: Always check for 402 status codes
-2. **Retry Logic**: Implement retry logic for failed payments
-3. **Error Handling**: Provide clear error messages
-4. **Payment Caching**: Cache payments for repeated requests
-5. **Balance Checks**: Check balance before attempting payment
 
 ## Next Steps
 

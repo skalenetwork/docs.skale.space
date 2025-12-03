@@ -108,12 +108,11 @@ async function accessResource(url: string, preferredToken?: string) {
   if (response.status === 402) {
     const paymentInfo = await response.json();
     
-    // Select preferred token if available
     let selectedOption = paymentInfo.accepts[0];
     
     if (preferredToken) {
       const matchingOption = paymentInfo.accepts.find(
-        (option: any) => option.asset?.toLowerCase() === preferredToken.toLowerCase()
+        (option) => option.asset?.toLowerCase() === preferredToken.toLowerCase()
       );
       if (matchingOption) {
         selectedOption = matchingOption;
@@ -176,15 +175,7 @@ const accepts = [
 
 ## Handling Different Decimals
 
-Different tokens have different decimal places. The x402 SDK handles this automatically, but you can configure amounts:
-
 ```typescript
-// USDC has 6 decimals
-const usdcAmount = '1500000'; // 1.5 USDC
-
-// WETH has 18 decimals
-const wethAmount = '1500000000000000'; // 0.0015 WETH
-
 const accepts = [
   {
     scheme: 'exact',
@@ -200,14 +191,6 @@ const accepts = [
   },
 ];
 ```
-
-## Best Practices
-
-1. **Token Validation**: Verify tokens are legitimate ERC-20 contracts
-2. **Price Updates**: Keep token prices updated
-3. **Decimal Handling**: Use proper decimal handling for amounts
-4. **User Experience**: Allow users to see and select payment options
-5. **Fallback Options**: Provide fallback to USDC if preferred token fails
 
 ## Common Tokens on SKALE Base Sepolia
 
