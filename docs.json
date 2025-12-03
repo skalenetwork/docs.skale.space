@@ -41,6 +41,28 @@
             ]
           },
           {
+            "group": "SKL Token",
+            "pages": [
+              "get-started/skl-token",
+              "get-started/skl-token/tokenomics"
+            ]
+          },
+          {
+            "group": "Staking SKL",
+            "pages": [
+              "get-started/staking/staking-skl",
+              "get-started/staking/how-to-stake-skl"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "get-started/governance/skale-dao",
+              "get-started/governance/proposals",
+              "get-started/governance/voting"
+            ]
+          },
+          {
             "group": "Resources",
             "pages": [
               "get-started/resources/official-links"
@@ -83,32 +105,6 @@
               "concepts/skale-chain/instant-finality",
               "concepts/skale-chain/privacy",
               "concepts/skale-chain/tees"
-            ]
-          },
-          {
-            "group": "SKL Token",
-            "pages": [
-              "concepts/skl-token",
-              "concepts/skl-token/tokenomics",
-              "concepts/skl-token/supply-ui"
-            ]
-          },
-          {
-            "group": "Staking",
-            "pages": [
-              "concepts/staking/overview",
-              "concepts/staking/getting-started",
-              "concepts/staking/staking-lifecycle",
-              "concepts/staking/bounties",
-              "concepts/staking/validators"
-            ]
-          },
-          {
-            "group": "Governance",
-            "pages": [
-              "concepts/governance/skale-dao",
-              "concepts/governance/voting",
-              "concepts/governance/proposals"
             ]
           },
           {
@@ -193,8 +189,7 @@
               "developers/pick-a-chain",
               "developers/troubleshooting",
               "developers/skale-vs-ethereum",
-              "developers/deploy-on-skale",
-              "api-reference/compatibility"
+              "developers/deploy-on-skale"
             ]
           },
           {
@@ -398,15 +393,15 @@
     },
     {
       "source": "/welcome/chain-info",
-      "destination": "/get-started/chain-info"
+      "destination": "/developers/chain-info"
     },
     {
       "source": "/welcome/go-live",
-      "destination": "/get-started/go-live"
+      "destination": "/get-started/quick-start/go-live"
     },
     {
       "source": "/welcome/skale-on-base",
-      "destination": "/get-started/skale-on-base"
+      "destination": "/get-started/quick-start/skale-on-base"
     },
     {
       "source": "/get-started/mainnet-beta",
@@ -442,7 +437,7 @@
     },
     {
       "source": "/how-skale-works/skl-token",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/skl-token"
     },
     {
       "source": "/how-skale-works/snapshots",
@@ -790,11 +785,11 @@
     },
     {
       "source": "/delegators",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/skl-token"
     },
     {
       "source": "/delegators/delegation-faq",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/skl-token"
     },
     {
       "source": "/validators",
@@ -810,23 +805,23 @@
     },
     {
       "source": "/governance",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/governance/skale-dao"
     },
     {
       "source": "/governance/how-to-vote",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/governance/voting"
     },
     {
       "source": "/governance/intro-skale-dao",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/governance/skale-dao"
     },
     {
       "source": "/governance/skale-dao",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/governance/skale-dao"
     },
     {
       "source": "/governance/skl-token",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/skl-token"
     },
     {
       "source": "/learn/about-skale-network",
@@ -838,7 +833,7 @@
     },
     {
       "source": "/learn/skale-chain-overview",
-      "destination": "/concepts/skale-chain/schain-101"
+      "destination": "/concepts/skale-chain/skale-chain-101"
     },
     {
       "source": "/learn/hub-chain",
@@ -850,19 +845,19 @@
     },
     {
       "source": "/learn/calypso",
-      "destination": "/get-started/chain-info"
+      "destination": "/developers/chain-info"
     },
     {
       "source": "/learn/europa",
-      "destination": "/get-started/chain-info"
+      "destination": "/developers/chain-info"
     },
     {
       "source": "/learn/nebula",
-      "destination": "/get-started/chain-info"
+      "destination": "/developers/chain-info"
     },
     {
       "source": "/learn/titan",
-      "destination": "/get-started/chain-info"
+      "destination": "/developers/chain-info"
     },
     {
       "source": "/learn/mainnet-beta",
@@ -914,11 +909,11 @@
     },
     {
       "source": "/quick-start/deploy-to-testnet",
-      "destination": "/get-started/go-live"
+      "destination": "/get-started/quick-start/go-live"
     },
     {
       "source": "/quick-start/go-live",
-      "destination": "/get-started/go-live"
+      "destination": "/get-started/quick-start/go-live"
     },
     {
       "source": "/builders",
@@ -1114,7 +1109,7 @@
     },
     {
       "source": "/ecosystem/governance/overview",
-      "destination": "/concepts/skl-token"
+      "destination": "/get-started/governance/skale-dao"
     },
     {
       "source": "/tools",
@@ -1274,7 +1269,7 @@
     },
     {
       "source": "/building-applications/deploy-on-skale",
-      "destination": "/get-started/go-live"
+      "destination": "/get-started/quick-start/go-live"
     },
     {
       "source": "/builders/tools/all-in-one",
