@@ -1,0 +1,81 @@
+---
+title: "Introduction"
+description: "BITE Protocol on SKALE - Proof of Encryption and MEV Resistance"
+---
+
+## What Is Proof‑of‑Encryption?
+
+Proof of Encryption (PoE) is a foundational security protocol within the SKALE blockchain that guarantees the confidentiality and integrity of every transaction from initiation to final consensus.
+
+Unlike traditional blockchain systems—where transaction data is visible or partially exposed during propagation and validation—PoE enforces full end-to-end encryption throughout the entire transaction lifecycle.
+
+This ensures that:
+
+* Transaction details remain cryptographically sealed and inaccessible to validators, network nodes, or adversaries.
+* No party can view transaction contents until after they are irreversibly committed by consensus.
+* Risks such as premature parsing, front-running, manipulation, and data leakage are eliminated.
+
+PoE uses threshold encryption, where decryption is only possible when the active validator committee collaborates. After inclusion and finality, encrypted transactions can be securely decrypted for execution.
+
+## How BITE Enables Proof‑of‑Encryption
+
+The BITE Protocol implements Proof of Encryption on the SKALE blockchain. It builds on years of research and production operation of SKALE Consensus, extending the Ethereum Virtual Machine (EVM) and Solidity to handle threshold‑encrypted user transactions and data.
+
+The goals of BITE are:
+
+* Eliminate all MEV (Maximal Extractable Value) by encrypting transaction data until after block finality.
+* Enable privacy-first capabilities that match or exceed traditional Web2 application functionality.
+* Maintain full compatibility with Ethereum/EVM tooling, wallets, and developer workflows such as Metamask, Foundry, Ethers, Viem, etc.
+
+BITE development is divided into four phases:
+
+1. Threshold decryption during consensus.
+2. Threshold decryption on smart contract data.
+3. Threshold re-encryption.
+4. Threshold fully homomorphic encryption (THFE) within smart contracts.
+
+Check out the [Phases of BITE](/concepts/bite-protocol/phases) for more information
+
+## Native MEV Resistance
+
+BITE achieves provable MEV resistance by encrypting the destination address and data field of transactions before submission to the blockchain.
+
+How it works:
+
+1. User transaction payload is encrypted via SKALE's threshold encryption algorithm.
+2. Encryption is applied directly on top of the Ethereum transaction format.
+3. Wallets, RPCs, and client software require no modification.
+
+In Ethereum:
+
+* Destination address → identifies the smart contract to be invoked.
+* Data field → contains function selector, price, amount, asset pair, etc.
+
+MEV actors target these fields to extract value. BITE conceals them until after block finality, making front-running impossible.
+
+## Two‑Phase Execution Model
+
+1. Inclusion Phase – Encrypted transactions are verified and finalized onchain.
+2. Execution Phase – After block finality, the validator committee runs threshold decryption and reveals the transaction for EVM execution.
+
+Because inclusion happens before decryption, SKALE achieves commit‑then‑reveal semantics, preventing frontrunning and censorship at the protocol layer.
+
+## Censorship Resistance
+
+With BITE Protocol:
+
+* The transaction to field is encrypted.
+* Similar transactions (same gas/data patterns) cannot be easily correlated or censored.
+* Routine activity becomes opaque to outside observers.
+
+## Consensus And Key Management
+
+* Threshold encryption is built directly into SKALE consensus.
+* Fresh public/private keys are generated each epoch using an onchain Distributed Key Generation (DKG) protocol.
+* A new random committee is selected each epoch for encryption and decryption duties.
+* SKALE combines DKG, threshold BLS signatures, and encrypted mempool‑less execution.
+
+## Learn More
+
+- [Phases of BITE](/concepts/bite-protocol/phases) - Evolution and phases of BITE Protocol
+- [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive) - Understanding MEV in the context of BITE

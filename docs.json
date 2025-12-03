@@ -43,7 +43,7 @@
           {
             "group": "Resources",
             "pages": [
-              "get-started/official-links"
+              "get-started/resources/official-links"
             ]
           }
         ]
@@ -54,20 +54,20 @@
           {
             "group": "SKALE Chain",
             "pages": [
-              "concepts/block-rotation",
-              "concepts/consensus",
-              "concepts/ddos-protection",
-              "concepts/precompiled-contracts",
-              "concepts/snapshots",
-              "concepts/instant-finality",
-              "concepts/privacy",
-              "concepts/tees"
+              "concepts/skale-chain/block-rotation",
+              "concepts/skale-chain/consensus",
+              "concepts/skale-chain/ddos-protection",
+              "concepts/skale-chain/precompiled-contracts",
+              "concepts/skale-chain/snapshots",
+              "concepts/skale-chain/instant-finality",
+              "concepts/skale-chain/privacy",
+              "concepts/skale-chain/tees"
             ]
           },
           {
             "group": "BITE Protocol",
             "pages": [
-              "concepts/bite-protocol",
+              "concepts/bite-protocol/intro-bite-protocol",
               "concepts/bite-protocol/phases",
               "concepts/bite-protocol/mev-deep-dive"
             ]
@@ -83,7 +83,7 @@
           {
             "group": "SKALE Network",
             "pages": [
-              "concepts/skale-manager",
+              "concepts/skale-network/skale-manager",
               "concepts/skale-network/pooled-security-model",
               "concepts/skale-network/delegated-proof-of-stake",
               "concepts/skale-network/containerized-nodes",
@@ -126,7 +126,7 @@
             "group": "Validators",
             "pages": [
               "validators/run-supernode",
-              "validators/overview",
+              "validators/supernode-overview",
               "validators/compliance-requirements",
               "validators/faq",
               "validators/troubleshooting",
@@ -191,8 +191,7 @@
               "developers/pick-a-chain",
               "developers/troubleshooting",
               "developers/skale-vs-ethereum",
-              "developers/deploy-on-skale",
-              "api-reference/compatibility"
+              "developers/deploy-on-skale"
             ]
           },
           {
@@ -206,8 +205,8 @@
           {
             "group": "Native Features",
             "pages": [
-              "developers/using-filestorage",
-              "developers/random-number-generation"
+              "developers/native-features/using-filestorage",
+              "developers/native-features/random-number-generation"
             ]
           },
           {
@@ -311,7 +310,7 @@
       }
     ]
   },
-  "logo": "/logo/logo-docs.svg",
+  "logo": "/logo/logo-docs.webp",
   "topbar": {
     "links": [
       {
@@ -415,15 +414,15 @@
     },
     {
       "source": "/how-skale-works/consensus",
-      "destination": "/concepts/consensus"
+      "destination": "/concepts/skale-chain/consensus"
     },
     {
       "source": "/how-skale-works/block-rotation",
-      "destination": "/concepts/block-rotation"
+      "destination": "/concepts/skale-chain/block-rotation"
     },
     {
       "source": "/how-skale-works/ddos-protection",
-      "destination": "/concepts/ddos-protection"
+      "destination": "/concepts/skale-chain/ddos-protection"
     },
     {
       "source": "/how-skale-works/dkg-with-bls",
@@ -435,7 +434,7 @@
     },
     {
       "source": "/how-skale-works/precompiled-contracts",
-      "destination": "/concepts/precompiled-contracts"
+      "destination": "/concepts/skale-chain/precompiled-contracts"
     },
     {
       "source": "/how-skale-works/skl-token",
@@ -443,7 +442,7 @@
     },
     {
       "source": "/how-skale-works/snapshots",
-      "destination": "/concepts/snapshots"
+      "destination": "/concepts/skale-chain/snapshots"
     },
     {
       "source": "/how-skale-works/threshold-schemes",
@@ -451,7 +450,7 @@
     },
     {
       "source": "/run-a-skale-node/overview",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/run-a-skale-node/run-supernode",
@@ -579,7 +578,7 @@
     },
     {
       "source": "/building-applications/random-number-generation",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/building-applications/using-contract-factories",
@@ -587,7 +586,7 @@
     },
     {
       "source": "/building-applications/using-filestorage",
-      "destination": "/developers/using-filestorage"
+      "destination": "/developers/native-features/using-filestorage"
     },
     {
       "source": "/building-applications/troubleshooting",
@@ -707,7 +706,7 @@
     },
     {
       "source": "/introduction/skale-and-ethereum-security",
-      "destination": "/concepts/consensus"
+      "destination": "/concepts/skale-chain/consensus"
     },
     {
       "source": "/introduction/skale-chain-fuel",
@@ -719,7 +718,7 @@
     },
     {
       "source": "/introduction/skale-hybrid-layer",
-      "destination": "/concepts/consensus"
+      "destination": "/concepts/skale-chain/consensus"
     },
     {
       "source": "/introduction/zero-gas-fees",
@@ -795,7 +794,7 @@
     },
     {
       "source": "/validators",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/validators/validator-faq",
@@ -867,19 +866,19 @@
     },
     {
       "source": "/learn/advanced/block-rotation",
-      "destination": "/concepts/block-rotation"
+      "destination": "/concepts/skale-chain/block-rotation"
     },
     {
       "source": "/learn/advanced/consensus",
-      "destination": "/concepts/consensus"
+      "destination": "/concepts/skale-chain/consensus"
     },
     {
       "source": "/learn/advanced/consensus-deep-dive",
-      "destination": "/concepts/consensus"
+      "destination": "/concepts/skale-chain/consensus"
     },
     {
       "source": "/learn/advanced/ddos-protection",
-      "destination": "/concepts/ddos-protection"
+      "destination": "/concepts/skale-chain/ddos-protection"
     },
     {
       "source": "/learn/advanced/dkg-bls",
@@ -887,11 +886,11 @@
     },
     {
       "source": "/learn/advanced/precompiled-contracts",
-      "destination": "/concepts/precompiled-contracts"
+      "destination": "/concepts/skale-chain/precompiled-contracts"
     },
     {
       "source": "/learn/advanced/snapshots",
-      "destination": "/concepts/snapshots"
+      "destination": "/concepts/skale-chain/snapshots"
     },
     {
       "source": "/learn/advanced/topics/elliptic-curve-cryptography",
@@ -999,7 +998,7 @@
     },
     {
       "source": "/builders/node-operators/overview",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/builders/node-operators/skale-nodes",
@@ -1019,7 +1018,7 @@
     },
     {
       "source": "/builders/node-operators/skale-proxy",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/ecosystem",
@@ -1027,7 +1026,7 @@
     },
     {
       "source": "/ecosystem/validators/overview",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/ecosystem/validators/compliance-requirements",
@@ -1047,19 +1046,19 @@
     },
     {
       "source": "/ecosystem/validators/validator-setup",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/node-operations/validator-setup",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/validators/validator-setup",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/run-a-skale-node/validator-setup",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/ecosystem/validators/node-cli/overview",
@@ -1147,7 +1146,7 @@
     },
     {
       "source": "/tools/skale-specific/rng",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/infrastructure/archive-node",
@@ -1163,7 +1162,7 @@
     },
     {
       "source": "/node-operations/overview",
-      "destination": "/validators/overview"
+      "destination": "/validators/supernode-overview"
     },
     {
       "source": "/node-operations/run-supernode",
@@ -1287,7 +1286,7 @@
     },
     {
       "source": "/skaled/3.16.x-beta",
-      "destination": "/concepts/consensus"
+      "destination": "/concepts/skale-chain/consensus"
     },
     {
       "source": "/building-applications/deploy-on-skale",
@@ -1443,15 +1442,15 @@
     },
     {
       "source": "/builders/tools/oracles",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/builders/tools/oracles/razor",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/builders/tools/oracles/skale-connect",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/builders/tools/payments",
@@ -1463,15 +1462,15 @@
     },
     {
       "source": "/builders/tools/rng",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/builders/tools/rng/",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/builders/tools/rng/skale-rng",
-      "destination": "/developers/random-number-generation"
+      "destination": "/developers/native-features/random-number-generation"
     },
     {
       "source": "/builders/tools/wallets",

@@ -1,3 +1,19 @@
+/* Override Mintlify/Starlight CSS variables for hover colors */
+:root {
+  --sl-color-white: #000000 !important; /* Override white to dark gray for light mode */
+}
+
+/* Alternative: Target the exact selector Mintlify uses */
+a:hover, a[aria-current="true"] {
+  color: #000000 !important; /* Your desired hover color */
+}
+
+/* For light mode specifically */
+[data-theme="light"] a:hover,
+[data-theme="light"] a[aria-current="true"] {
+  color: #000000 !important;
+}
+
 /* Fix navigation hover background width consistency */
 /* Make all navigation hover backgrounds 100% width for consistency */
 /* Override Tailwind's w-full class */
