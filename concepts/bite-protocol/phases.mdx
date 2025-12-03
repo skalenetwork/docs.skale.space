@@ -5,56 +5,52 @@ description: "Understanding the phases and evolution of the BITE Protocol"
 
 ## Overview
 
-The BITE (Blockchain Interoperability and Trustless Execution) protocol has evolved through multiple phases, each building upon the previous to enable increasingly sophisticated cross-chain operations and confidential applications.
+BITE development is divided into four phases, each building upon the previous to enable increasingly sophisticated privacy-preserving and MEV-resistant capabilities on SKALE.
 
 ## BITE Protocol Phases
 
-### Phase 1: Foundation
+### Phase 1: Threshold Decryption During Consensus
 
-The initial phase establishes the core infrastructure for cross-chain communication:
+The first phase establishes threshold decryption capabilities during the consensus process:
 
-- **Message Passing** - Secure message transmission between chains
-- **State Verification** - Cryptographic verification of cross-chain state
-- **Basic Interoperability** - Connect SKALE Chains with Ethereum and other networks
+- **Encrypted Transaction Inclusion** - Transactions are encrypted before entering the mempool
+- **Threshold Decryption** - Validator committee collaborates to decrypt transactions after block finality
+- **MEV Resistance** - Transaction details remain hidden until after consensus commitment
+- **Commit-Then-Reveal** - Ensures transactions cannot be front-run or manipulated
 
-### Phase 2: Trustless Execution
+### Phase 2: Threshold Decryption on Smart Contract Data
 
-Building on the foundation, Phase 2 introduces trustless execution capabilities:
+Building on Phase 1, Phase 2 extends threshold decryption to smart contract data:
 
-- **Cross-Chain Operations** - Execute operations across chains without trusted intermediaries
-- **Execution Guarantees** - Cryptographic guarantees for cross-chain execution
-- **Agent Support** - Enable agents to operate across multiple chains
+- **Encrypted State** - Smart contract data can be stored in encrypted form
+- **On-Demand Decryption** - Data is decrypted only when needed for execution
+- **Enhanced Privacy** - Contract state remains confidential throughout its lifecycle
+- **Confidential Applications (cApps)** - Enables applications that process sensitive data securely
 
-### Phase 3: Confidential Applications
+### Phase 3: Threshold Re-encryption
 
-The current phase focuses on enabling confidential applications (cApps):
+Phase 3 introduces threshold re-encryption capabilities:
 
-- **Privacy-Preserving Computation** - Execute computations on confidential data
-- **Data Confidentiality** - Protect sensitive data while maintaining blockchain benefits
-- **Enterprise Features** - Support for enterprise use cases requiring data privacy
+- **Key Rotation** - Ability to re-encrypt data with new keys without decryption
+- **Access Control** - Fine-grained control over who can decrypt specific data
+- **Dynamic Privacy** - Privacy settings can be adjusted without exposing data
+- **Advanced Use Cases** - Supports more complex privacy-preserving applications
 
-## Current Capabilities
+### Phase 4: Threshold Fully Homomorphic Encryption (THFE) Within Smart Contracts
 
-BITE Protocol currently enables:
+The final phase enables computation on encrypted data:
 
-- **Cross-Chain Agents** - Agents operating across multiple blockchain networks
-- **Confidential AI** - AI applications that process sensitive data securely
-- **Private Finance** - Financial applications with confidential transaction details
-- **Healthcare Data** - Healthcare applications that protect patient privacy
-- **Supply Chain Privacy** - Supply chain tracking with confidential business data
+- **Homomorphic Operations** - Perform computations directly on encrypted data
+- **Zero-Knowledge Execution** - Execute smart contracts without revealing inputs or outputs
+- **Maximum Privacy** - Data never needs to be decrypted for computation
+- **Next-Generation Applications** - Enables previously impossible privacy-preserving use cases
 
-## Future Phases
+## Current Status
 
-Future phases will continue to expand BITE's capabilities:
-
-- **Enhanced Privacy** - Advanced privacy-preserving techniques
-- **Broader Interoperability** - Support for additional blockchain networks
-- **Performance Optimization** - Improved throughput and latency
-- **Developer Tools** - Enhanced tooling for building cApps
+BITE Protocol is actively being developed across these phases, with Phase 1 providing the foundation for MEV resistance and transaction privacy on SKALE.
 
 ## Related Topics
 
-- [BITE Protocol Introduction](/concepts/bite-protocol) - Overview of BITE Protocol
+- [BITE Protocol Introduction](/concepts/bite-protocol/intro-bite-protocol) - Overview of BITE Protocol
 - [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive) - Understanding MEV in the context of BITE
-- [Privacy](/concepts/privacy) - How BITE enables privacy
 
