@@ -1,0 +1,195 @@
+---
+title: "Build an Agent"
+description: "Build AI agents that interact with onchain data, accept payments, and make autonomous decisions"
+---
+
+Build AI-powered agents that can autonomously interact with APIs, accept x402 payments, communicate with users, and make decisions. Based on the [Coinbase x402 dynamic_agent example](https://github.com/coinbase/x402/tree/main/examples/typescript/dynamic_agent), agents can dynamically handle payments and interact with paywalled resources.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Understanding of x402 protocol
+- Familiarity with TypeScript/JavaScript
+- A facilitator service (see [Running a Facilitator](/cookbook/x402/facilitator))
+
+## Overview
+
+Agents built with x402 can:
+
+- Make autonomous payments to access paywalled resources
+- Handle dynamic payment requirements
+- Interact with HTTP APIs protected by x402 middleware
+- Process AI responses that require payment
+
+## Quick Start
+
+Install the x402 SDK:
+
+```bash
+npm install @coinbase/x402-sdk
+```
+
+## Basic Agent
+
+Here's a simple agent that can make x402 payments:
+
+```typescript
+import { X402Client } from '@coinbase/x402-sdk';
+import { ethers } from 'ethers';
+
+class SimpleAgent {
+  private x402Client: X402Client;
+  private wallet: ethers.Wallet;
+
+  constructor(privateKey: string, facilitatorURL: string) {
+    const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+    this.wallet = new ethers.Wallet(privateKey, provider);
+    this.x402Client = new X402Client({
+      wallet: this.wallet,
+      facilitatorURL: facilitatorURL,
+    });
+  }
+
+  async accessResource(url: string): Promise<any> {
+    try {
+      // Try to access the resource
+      const response = await fetch(url);
+      
+      // If we get a 402, handle payment
+      if (response.status === 402) {
+        const paymentInfo = await response.json();
+        
+        // Make payment using x402
+        const payment = await this.x402Client.createPayment(paymentInfo);
+        await this.x402Client.settle(payment);
+        
+        // Retry the request with payment header
+        const retryResponse = await fetch(url, {
+          headers: {
+            'X-PAYMENT': JSON.stringify(payment),
+          },
+        });
+        
+        return await retryResponse.json();
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error accessing resource:', error);
+      throw error;
+    }
+  }
+}
+```
+
+## Dynamic Agent with AI
+
+An agent that uses AI to decide when to make payments:
+
+```typescript
+import { X402Client } from '@coinbase/x402-sdk';
+import { ChatOpenAI } from '@langchain/openai';
+import { AgentExecutor, createReactAgent } from 'langchain/agents';
+
+class AIAgent {
+  private x402Client: X402Client;
+  private agent: AgentExecutor;
+
+  constructor(privateKey: string, facilitatorURL: string) {
+    const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+    const wallet = new ethers.Wallet(privateKey, provider);
+    
+    this.x402Client = new X402Client({
+      wallet: wallet,
+      facilitatorURL: facilitatorURL,
+    });
+
+    // Create payment tool for the agent
+    const paymentTool = {
+      name: 'make_payment',
+      description: 'Make an x402 payment to access a paywalled resource',
+      execute: async (url: string) => {
+        return await this.accessPaywalledResource(url);
+      },
+    };
+
+    // Create agent with payment capability
+    const llm = new ChatOpenAI({ modelName: 'gpt-4' });
+    this.agent = createReactAgent({
+      llm,
+      tools: [paymentTool],
+    });
+  }
+
+  async accessPaywalledResource(url: string): Promise<any> {
+    const response = await fetch(url);
+    
+    if (response.status === 402) {
+      const paymentInfo = await response.json();
+      const payment = await this.x402Client.createPayment(paymentInfo);
+      await this.x402Client.settle(payment);
+      
+      const retryResponse = await fetch(url, {
+        headers: {
+          'X-PAYMENT': JSON.stringify(payment),
+        },
+      });
+      
+      return await retryResponse.json();
+    }
+    
+    return await response.json();
+  }
+
+  async processRequest(userRequest: string): Promise<string> {
+    const result = await this.agent.invoke({
+      input: userRequest,
+    });
+    
+    return result.output;
+  }
+}
+```
+
+## Agent with LangChain Integration
+
+Integrate x402 payments with LangChain agents:
+
+```typescript
+import { createX402PaymentTool } from '@openlibx402/langchain';
+import { ChatOpenAI } from '@langchain/openai';
+import { AgentExecutor, createReactAgent } from 'langchain/agents';
+
+const paymentTool = createX402PaymentTool({
+  walletKeypair: yourKeypair,
+  maxPayment: '5.0',
+  facilitatorURL: 'https://facilitator.dirtroad.dev',
+});
+
+const agent = createReactAgent({
+  llm: new ChatOpenAI(),
+  tools: [paymentTool, ...otherTools],
+});
+
+// Agent can now autonomously make payments
+const result = await agent.invoke({
+  input: 'Get data from http://localhost:3000/premium-data',
+});
+```
+
+## Agent Architecture
+
+Agents typically consist of:
+
+1. **x402 Client** - Handles payment creation and settlement
+2. **AI Model** - Processes requests and makes decisions
+3. **HTTP Client** - Interacts with paywalled APIs
+4. **Payment Tool** - Integrates payment capability into agent workflows
+
+## Resources
+
+- [AI Agents Use Case](/get-started/use-cases/ai-agents)
+- [Become an x402 Seller](/cookbook/x402/become-an-x402-seller)
+- [Coinbase x402 Examples](https://github.com/coinbase/x402/tree/main/examples/typescript/dynamic_agent)
+- [Faremeter Middleware](https://docs.corbits.dev/api/reference/middleware/overview)

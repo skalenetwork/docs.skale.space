@@ -271,39 +271,46 @@
           {
             "group": "Deployment",
             "pages": [
-              "cookbook/setup-foundry",
-              "cookbook/setup-hardhat"
+              "cookbook/deployment/setup-foundry",
+              "cookbook/deployment/setup-hardhat"
             ]
           },
           {
             "group": "Smart Contracts",
             "pages": [
-              "cookbook/deploy-erc20-token",
-              "cookbook/deploy-erc721-token",
-              "cookbook/deploy-erc1155-token",
-              "cookbook/verify-smart-contracts"
+              "cookbook/smart-contracts/deploy-erc20-token",
+              "cookbook/smart-contracts/deploy-erc721-token",
+              "cookbook/smart-contracts/deploy-erc1155-token",
+              "cookbook/smart-contracts/verify-smart-contracts"
+            ]
+          },
+          {
+            "group": "Agents",
+            "pages": [
+              "cookbook/agents/build-an-agent"
             ]
           },
           {
             "group": "x402",
             "pages": [
-              "cookbook/x402-accepting-payments",
-              "cookbook/x402-buying",
-              "cookbook/x402-facilitator",
-              "cookbook/x402-non-usdc-tokens"
+              "cookbook/x402/become-an-x402-seller",
+              "cookbook/x402/accepting-payments",
+              "cookbook/x402/buying",
+              "cookbook/x402/facilitator",
+              "cookbook/x402/non-usdc-tokens"
             ]
           },
           {
             "group": "Filestorage",
             "pages": [
-              "cookbook/upload-website-filestorage"
+              "cookbook/filestorage/upload-website-filestorage"
             ]
           },
           {
             "group": "Random Numbers",
             "pages": [
-              "cookbook/rng-get-random-number",
-              "cookbook/rng-flip-coin"
+              "cookbook/random-numbers/rng-get-random-number",
+              "cookbook/random-numbers/rng-flip-coin"
             ]
           }
         ]

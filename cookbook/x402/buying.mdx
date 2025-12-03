@@ -1,0 +1,198 @@
+---
+title: "Buying with x402"
+description: "Make x402 payments to access paywalled resources"
+---
+
+This guide shows how to make x402 payments from the buyer's perspective. Use the x402 SDK to handle payment flows, interact with paywalled resources, and process 402 Payment Required responses.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Understanding of x402 protocol
+- Familiarity with TypeScript/JavaScript
+
+## Overview
+
+To buy with x402, you need to:
+
+1. Install the x402 SDK
+2. Handle 402 Payment Required responses
+3. Create and settle payments
+4. Retry requests with payment headers
+
+## Quick Start
+
+Install the x402 SDK:
+
+```bash
+npm install @coinbase/x402-sdk
+```
+
+## Basic Payment Flow
+
+Here's how to make a payment to access a paywalled resource:
+
+```typescript
+import { X402Client } from '@coinbase/x402-sdk';
+import { ethers } from 'ethers';
+
+const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+const x402Client = new X402Client({
+  wallet: wallet,
+  facilitatorURL: 'https://facilitator.dirtroad.dev',
+});
+
+async function accessPaywalledResource(url: string) {
+  // Try to access the resource
+  const response = await fetch(url);
+  
+  // If we get a 402, handle payment
+  if (response.status === 402) {
+    const paymentInfo = await response.json();
+    
+    // Create payment
+    const payment = await x402Client.createPayment(paymentInfo);
+    
+    // Settle payment
+    await x402Client.settle(payment);
+    
+    // Retry the request with payment header
+    const retryResponse = await fetch(url, {
+      headers: {
+        'X-PAYMENT': JSON.stringify(payment),
+      },
+    });
+    
+    return await retryResponse.json();
+  }
+  
+  return await response.json();
+}
+```
+
+## Using @faremeter/fetch
+
+The Faremeter fetch wrapper automatically handles 402 responses:
+
+```typescript
+import { createX402Fetch } from '@faremeter/fetch';
+import { ethers } from 'ethers';
+
+const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+
+const x402Fetch = createX402Fetch({
+  wallet: wallet,
+  facilitatorURL: 'https://facilitator.dirtroad.dev',
+});
+
+// Automatically handles 402 responses
+const data = await x402Fetch('https://api.example.com/premium-data');
+```
+
+## Payment Options
+
+Handle multiple payment options:
+
+```typescript
+async function accessResourceWithOptions(url: string) {
+  const response = await fetch(url);
+  
+  if (response.status === 402) {
+    const paymentInfo = await response.json();
+    
+    // Payment info may contain multiple options
+    // Select the best option (e.g., cheapest, preferred network)
+    const selectedOption = paymentInfo.accepts[0];
+    
+    const payment = await x402Client.createPayment({
+      ...selectedOption,
+      resource: url,
+    });
+    
+    await x402Client.settle(payment);
+    
+    const retryResponse = await fetch(url, {
+      headers: {
+        'X-PAYMENT': JSON.stringify(payment),
+      },
+    });
+    
+    return await retryResponse.json();
+  }
+  
+  return await response.json();
+}
+```
+
+## Error Handling
+
+Handle payment errors gracefully:
+
+```typescript
+async function accessResource(url: string) {
+  try {
+    const response = await fetch(url);
+    
+    if (response.status === 402) {
+      const paymentInfo = await response.json();
+      
+      try {
+        const payment = await x402Client.createPayment(paymentInfo);
+        await x402Client.settle(payment);
+        
+        const retryResponse = await fetch(url, {
+          headers: {
+            'X-PAYMENT': JSON.stringify(payment),
+          },
+        });
+        
+        if (retryResponse.status === 402) {
+          // Payment failed, try again
+          throw new Error('Payment settlement failed');
+        }
+        
+        return await retryResponse.json();
+      } catch (paymentError) {
+        if (paymentError.code === 'INSUFFICIENT_BALANCE') {
+          throw new Error('Insufficient balance for payment');
+        }
+        if (paymentError.code === 'EXPIRED_PAYMENT') {
+          // Retry with new payment
+          return accessResource(url);
+        }
+        throw paymentError;
+      }
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error accessing resource:', error);
+    throw error;
+  }
+}
+```
+
+## Best Practices
+
+1. **Handle 402 Responses**: Always check for 402 status codes
+2. **Retry Logic**: Implement retry logic for failed payments
+3. **Error Handling**: Provide clear error messages
+4. **Payment Caching**: Cache payments for repeated requests
+5. **Balance Checks**: Check balance before attempting payment
+
+## Next Steps
+
+- [Become an x402 Seller](/cookbook/x402/become-an-x402-seller)
+- [Accepting x402 Payments](/cookbook/x402/accepting-payments)
+- [Running a Facilitator](/cookbook/x402/facilitator)
+- [Using Non-USDC Tokens](/cookbook/x402/non-usdc-tokens)
+
+## Resources
+
+- [Coinbase x402 SDK](https://github.com/coinbase/x402)
+- [Faremeter Fetch](https://docs.corbits.dev/api/reference/fetch/overview)
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)

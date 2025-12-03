@@ -1,0 +1,235 @@
+---
+title: "Using Non-USDC Tokens with x402"
+description: "Accept payments in tokens other than USDC using x402"
+---
+
+While USDC is commonly used with x402, the protocol supports any ERC-20 token. Configure your facilitator and middleware to accept multiple payment tokens.
+
+## Prerequisites
+
+- Understanding of ERC-20 tokens
+- Basic knowledge of x402 protocol
+- A SKALE Chain endpoint
+- Node.js and npm installed
+
+## Overview
+
+x402 is token-agnostic and works with any ERC-20 compatible token. You can:
+
+1. Accept multiple payment tokens
+2. Allow users to choose their preferred token
+3. Configure different prices for different tokens
+4. Handle different token decimals
+
+## Multiple Payment Options in Middleware
+
+Configure your middleware to accept multiple tokens:
+
+```javascript
+import { createMiddleware } from "@faremeter/middleware/express";
+
+const paywalled = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    [
+      {
+        scheme: "exact",
+        network: "skale-base-sepolia",
+        asset: "0x2e08028E3C4c2356572E096d8EF835cD5C6030bD",
+        maxAmountRequired: "1.5",
+        description: "SKALE USDC payment",
+      },
+      {
+        scheme: "exact",
+        network: "skale-base-sepolia",
+        asset: "0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf",
+        maxAmountRequired: "1.5",
+        description: "SKALE USDT payment",
+      },
+      {
+        scheme: "exact",
+        network: "skale-base-sepolia",
+        asset: "0xf94056bd7f6965db3757e1b145f200b7346b4fc0",
+        maxAmountRequired: "0.001",
+        description: "SKALE WETH payment",
+      },
+    ],
+  ],
+});
+```
+
+## Facilitator Configuration
+
+Configure your facilitator to handle multiple tokens:
+
+```typescript
+import { createFacilitator } from '@faremeter/facilitator';
+import { createPaymentHandler } from '@faremeter/payment-evm';
+
+const usdcHandler = createPaymentHandler({
+  network: 'skale-base-sepolia',
+  asset: '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD',
+  rpcUrl: 'YOUR_SKALE_RPC_URL',
+});
+
+const usdtHandler = createPaymentHandler({
+  network: 'skale-base-sepolia',
+  asset: '0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf',
+  rpcUrl: 'YOUR_SKALE_RPC_URL',
+});
+
+const facilitator = createFacilitator({
+  network: 'skale-base-sepolia',
+  paymentHandlers: [
+    {
+      scheme: 'exact',
+      network: 'skale-base-sepolia',
+      asset: '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD',
+      handler: usdcHandler,
+    },
+    {
+      scheme: 'exact',
+      network: 'skale-base-sepolia',
+      asset: '0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf',
+      handler: usdtHandler,
+    },
+  ],
+});
+```
+
+## Token Selection
+
+Allow clients to choose their payment token:
+
+```typescript
+async function accessResource(url: string, preferredToken?: string) {
+  const response = await fetch(url);
+  
+  if (response.status === 402) {
+    const paymentInfo = await response.json();
+    
+    // Select preferred token if available
+    let selectedOption = paymentInfo.accepts[0];
+    
+    if (preferredToken) {
+      const matchingOption = paymentInfo.accepts.find(
+        (option: any) => option.asset?.toLowerCase() === preferredToken.toLowerCase()
+      );
+      if (matchingOption) {
+        selectedOption = matchingOption;
+      }
+    }
+    
+    const payment = await x402Client.createPayment({
+      ...selectedOption,
+      resource: url,
+    });
+    
+    await x402Client.settle(payment);
+    
+    const retryResponse = await fetch(url, {
+      headers: {
+        'X-PAYMENT': JSON.stringify(payment),
+      },
+    });
+    
+    return await retryResponse.json();
+  }
+  
+  return await response.json();
+}
+```
+
+## Price Conversion
+
+Handle different token prices:
+
+```typescript
+const tokenPrices = {
+  '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD': 1.0,  // USDC - Base price
+  '0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf': 1.0,  // USDT - Same as USDC
+  '0xf94056bd7f6965db3757e1b145f200b7346b4fc0': 3000.0, // WETH - ETH price in USD
+};
+
+function calculateAmount(tokenAddress: string, usdAmount: number): string {
+  const price = tokenPrices[tokenAddress.toLowerCase()];
+  const tokenAmount = usdAmount / price;
+  return tokenAmount.toFixed(6);
+}
+
+// Use in middleware accepts
+const accepts = [
+  {
+    scheme: 'exact',
+    network: 'skale-base-sepolia',
+    asset: '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD',
+    maxAmountRequired: '1.5',
+  },
+  {
+    scheme: 'exact',
+    network: 'skale-base-sepolia',
+    asset: '0xf94056bd7f6965db3757e1b145f200b7346b4fc0',
+    maxAmountRequired: calculateAmount('0xf94056bd7f6965db3757e1b145f200b7346b4fc0', 1.5),
+  },
+];
+```
+
+## Handling Different Decimals
+
+Different tokens have different decimal places. The x402 SDK handles this automatically, but you can configure amounts:
+
+```typescript
+// USDC has 6 decimals
+const usdcAmount = '1500000'; // 1.5 USDC
+
+// WETH has 18 decimals
+const wethAmount = '1500000000000000'; // 0.0015 WETH
+
+const accepts = [
+  {
+    scheme: 'exact',
+    network: 'skale-base-sepolia',
+    asset: '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD',
+    maxAmountRequired: ethers.parseUnits('1.5', 6).toString(),
+  },
+  {
+    scheme: 'exact',
+    network: 'skale-base-sepolia',
+    asset: '0xf94056bd7f6965db3757e1b145f200b7346b4fc0',
+    maxAmountRequired: ethers.parseUnits('0.001', 18).toString(),
+  },
+];
+```
+
+## Best Practices
+
+1. **Token Validation**: Verify tokens are legitimate ERC-20 contracts
+2. **Price Updates**: Keep token prices updated
+3. **Decimal Handling**: Use proper decimal handling for amounts
+4. **User Experience**: Allow users to see and select payment options
+5. **Fallback Options**: Provide fallback to USDC if preferred token fails
+
+## Common Tokens on SKALE Base Sepolia
+
+Popular tokens available on SKALE Base Sepolia:
+
+- **USDC**: `0x2e08028E3C4c2356572E096d8EF835cD5C6030bD` - Stablecoin, 6 decimals
+- **USDT**: `0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf` - Stablecoin, 6 decimals
+- **WBTC**: `0x4512eacd4186b025186e1cf6cc0d89497c530e87` - Wrapped Bitcoin, 8 decimals
+- **ETH (ERC-20)**: `0xD2Aaa00700000000000000000000000000000000` - Native ETH as ERC-20
+- **WETH**: `0xf94056bd7f6965db3757e1b145f200b7346b4fc0` - Wrapped ETH, 18 decimals
+- **SKL**: `0xaf2e0ff5b5f51553fdb34ce7f04a6c3201cee57b` - SKALE Token, 18 decimals
+- **AxiosUSD**: `0x61a26022927096f444994dA1e53F0FD9487EAfcf` - Test stablecoin
+
+## Next Steps
+
+- [Become an x402 Seller](/cookbook/x402/become-an-x402-seller)
+- [Accepting x402 Payments](/cookbook/x402/accepting-payments)
+- [Buying with x402](/cookbook/x402/buying)
+- [Running a Facilitator](/cookbook/x402/facilitator)
+
+## Resources
+
+- [Corbits/Faremeter Documentation](https://docs.corbits.dev)
+- [Coinbase x402 SDK](https://github.com/coinbase/x402)
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)
