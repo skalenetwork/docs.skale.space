@@ -34,10 +34,12 @@
           {
             "group": "Use Cases",
             "pages": [
-              "get-started/use-cases/agentic-commerce",
-              "get-started/use-cases/agentic-discovery",
+              "get-started/use-cases/ai-agents",
+              "get-started/use-cases/gaming",
+              "get-started/use-cases/build-your-own-chain",
               "get-started/use-cases/government-blockchains",
-              "get-started/use-cases/private-payments"
+              "get-started/use-cases/private-payments",
+              "get-started/use-cases/more-use-cases"
             ]
           },
           {
