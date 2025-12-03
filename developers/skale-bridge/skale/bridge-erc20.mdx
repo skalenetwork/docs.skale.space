@@ -3,15 +3,6 @@ title: Bridge ERC-20 Tokens
 description: Guide on bridging ERC-20 tokens on SKALE
 ---
 
-{/* Solidity Code Example Imports */}
-import InterchainERC20Code from "../ethereum/examples/InterchainERC20.sol?raw";
-import InterchainSKLCode from "../ethereum/examples/InterchainSKL.sol?raw";
-import InterchainUSDTCode from "../ethereum/examples/InterchainUSDT.sol?raw";
-
-{/* Bridge Example Imports */}
-import bridgeERC20Js from "./examples/bridge-erc20.js?raw";
-import bridgeERC20DirectJs from "./examples/bridge-erc20-direct.js?raw";
-
 SKALE's Interchain Messaging Agent (IMA) Bridge allows for direct communication and bridging between SKALE Chains (without ever going to Mainnet).
 
 The following walks you through setting up an ERC-20 token between two SKALE Chains and how to programatically bridge.
@@ -49,7 +40,49 @@ certain circumstances. It is recommended that explicit burns on a SKALE Chain sh
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
 
-<Code code={InterchainERC20Code} lang="solidity" title="InterchainERC20.sol" />
+```solidity:InterchainERC20.sol
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+// Importing the ERC20 standard contract and AccessControl for role-based access management.
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+
+/**
+ * @title InterchainERC20
+ * @dev This contract is an ERC20 token implementation with role-based access control for minting and burning.
+ * It utilizes OpenZeppelin's ERC20 and AccessControl for functionality.
+ */
+contract InterchainERC20 is ERC20, AccessControl {
+    // Define roles using hashed constants for efficient comparison.
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        // Assign the minter role to a predefined address.
+        _grantRole(MINTER_ROLE, 0xD2aAA00500000000000000000000000000000000);
+
+        // Assign the burner role to a predefined address.
+        _grantRole(BURNER_ROLE, 0xD2aAA00500000000000000000000000000000000);
+    }
+
+    function mint(address to, uint256 amount) public virtual {
+        // Ensure that the caller has the MINTER_ROLE.
+        require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
+
+        // Mint the specified amount of tokens to the target address.
+        _mint(to, amount);
+    }
+
+    function burn(uint256 amount) public virtual {
+        // Ensure that the caller has the BURNER_ROLE.
+        require(hasRole(BURNER_ROLE, msg.sender), "Caller is not a burner");
+
+        // Burn the specified amount of tokens from the caller's account.
+        _burn(msg.sender, amount);
+    }
+}
+```
 
 ### 2. Deploy the ERC-20 on SKALE Chain
 
@@ -57,11 +90,29 @@ Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](h
 
   ## InterchainSKL.sol
     *This is an example of an 18 decimal ERC-20 token that would be deployed on SKALE*
-    <Code code={InterchainSKLCode} lang="solidity" />
+    ```solidity
+    // SPDX-License-Identifier: MIT
+    pragma solidity 0.8.19;
+
+    import { InterchainERC20 } from "./InterchainERC20.sol";
+
+    contract InterchainSKL is InterchainERC20("Skale Token", "SKL") {}
+    ```
   
   ## InterchainUSDT.sol
     *This is an example of an 6 decimal ERC-20 token that would be deployed on SKALE*
-    <Code code={InterchainUSDTCode} lang="solidity" />
+    ```solidity
+    // SPDX-License-Identifier: MIT
+    pragma solidity 0.8.19;
+
+    import { InterchainERC20 } from "./InterchainERC20.sol";
+
+    contract InterchainUSDT is InterchainERC20("Tether USD", "USDT") {
+    	function decimals() public view override returns (uint8) {
+    		return 6;
+    	}
+    }
+    ```
   
 
 > *InterchainERC20.sol is inherited from the code above*
@@ -111,8 +162,73 @@ A direct ERC-20 bridge will result in tokens being delivered to the specified wa
 </Aside>
 
   ## bridge.js
-    <Code code={bridgeERC20Js} lang="js" />
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+    const ERC20_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+    const ERC20_ABI = [ "function approve(address spender, uint256 amount) external" ];
+    const TOKEN_MANAGER_ERC20_ADDRESS = "0xD2aAA00500000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC20_ABI = [ "function transferToSchainERC20(string calldata targetSchainName, address contractOnMainnet, uint256 amount) external" ];
+    const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+    const NUMBER_TOKENS_TO_TRANSFER = parseEther("100"); // 100 tokens in wei format
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC20_ADDRESS, TOKEN_MANAGER_ERC20_ABI, wallet);
+    const tokenContract = new Contract(ERC20_ADDRESS, ERC20_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-20
+    const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1s seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on same address on SKALE
+    const bridgeTx = await tokenManagerContract.transferToSchainERC20(DST_SKALE_CHAIN_NAME, ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
+    await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // Success! Now watch for delivery on Destination Chain
+    console.log("Success!");
+    ```
   
   ## bridgeDirect.js
-    <Code code={bridgeERC20DirectJs} lang="js" />
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+    const ERC20_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+    const ERC20_ABI = [ "function approve(address spender, uint256 amount) external" ];
+    const TOKEN_MANAGER_ERC20_ADDRESS = "0xD2aAA00500000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC20_ABI = [ "function transferToSchainERC20Direct(string calldata targetSchainName, address contractOnMainnet, uint256 amount, address receiver) external" ];
+    const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+    const NUMBER_TOKENS_TO_TRANSFER = parseEther("100"); // 100 tokens in wei format
+    const CUSTOM_RECEIVER_ADDRESS = "[CUSTOM_RECEIVER_ADDRESS]";
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC20_ADDRESS, TOKEN_MANAGER_ERC20_ABI, wallet);
+    const tokenContract = new Contract(ERC20_ADDRESS, ERC20_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-20
+    const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on the custom receiver address on SKALE
+    const bridgeTx = await tokenManagerContract.transferToSchainERC20Direct(DST_SKALE_CHAIN_NAME, ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER, CUSTOM_RECEIVER_ADDRESS);
+    await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // Success! Now watch for delivery on Destination Chain
+    console.log("Success!");
+    ```
   
