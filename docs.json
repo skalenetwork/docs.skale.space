@@ -386,11 +386,11 @@
   "redirects": [
     {
       "source": "/welcome/intro-to-skale",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/welcome/get-started",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/welcome/chain-info",
@@ -406,11 +406,11 @@
     },
     {
       "source": "/get-started/mainnet-beta",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/how-skale-works/mainnet-beta",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/how-skale-works/consensus",
@@ -690,19 +690,19 @@
     },
     {
       "source": "/",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/introduction",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/introduction/mainnet-beta",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/introduction/overview",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/introduction/skale-and-ethereum-security",
@@ -726,7 +726,7 @@
     },
     {
       "source": "/introduction/faq",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/develop",
@@ -826,15 +826,15 @@
     },
     {
       "source": "/learn/about-skale-network",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/learn/faq",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/learn/skale-chain-overview",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/concepts/skale-chain/schain-101"
     },
     {
       "source": "/learn/hub-chain",
@@ -862,7 +862,7 @@
     },
     {
       "source": "/learn/mainnet-beta",
-      "destination": "/get-started/introduction/start-here"
+      "destination": "/get-started/skale"
     },
     {
       "source": "/learn/advanced/block-rotation",
@@ -901,10 +901,6 @@
       "destination": "/concepts/threshold-schemes"
     },
     {
-      "source": "/quick-start",
-      "destination": "/get-started/introduction/start-here"
-    },
-    {
       "source": "/quick-start/",
       "destination": "/get-started/introduction/start-here"
     },
@@ -913,23 +909,11 @@
       "destination": "/developers/build-a-dapp"
     },
     {
-      "source": "/quick-start/building-for-skale/",
-      "destination": "/developers/build-a-dapp"
-    },
-    {
       "source": "/quick-start/deploy-to-testnet",
       "destination": "/get-started/go-live"
     },
     {
-      "source": "/quick-start/deploy-to-testnet/",
-      "destination": "/get-started/go-live"
-    },
-    {
       "source": "/quick-start/go-live",
-      "destination": "/get-started/go-live"
-    },
-    {
-      "source": "/quick-start/go-live/",
       "destination": "/get-started/go-live"
     },
     {
@@ -1006,10 +990,6 @@
     },
     {
       "source": "/builders/node-operators/archive-node",
-      "destination": "/validators/run-archive-node"
-    },
-    {
-      "source": "/builders/node-operators/archive-node/",
       "destination": "/validators/run-archive-node"
     },
     {
@@ -1462,10 +1442,6 @@
     },
     {
       "source": "/builders/tools/rng",
-      "destination": "/developers/native-features/random-number-generation"
-    },
-    {
-      "source": "/builders/tools/rng/",
       "destination": "/developers/native-features/random-number-generation"
     },
     {
