@@ -139,3 +139,7 @@ html[data-theme="light"] body a:focus,
 html[data-theme="light"] a:hover {
   color: #6b7280 !important;
 }
+
+img.nav-logo {
+  height: 128px;
+}

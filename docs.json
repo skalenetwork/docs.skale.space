@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "maple",
+  "theme": "mint",
   "name": "SKALE Documentation",
   "tagline": "Blockchain for the agentic era",
   "colors": {
@@ -12,7 +12,7 @@
     "default": "light",
     "strict": true
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "navigation": {
     "tabs": [
       {
@@ -21,47 +21,29 @@
           {
             "group": "Introduction",
             "pages": [
-              "get-started/introduction/start-here"
+              "get-started/skale"
             ]
           },
           {
-            "group": "Developers",
+            "group": "Quick Start",
             "pages": [
-              "get-started/go-live",
-              {
-                "page": "get-started/skale-on-base",
-                "badge": {
-                  "text": "New",
-                  "variant": "success"
-                }
-              },
-              "get-started/chain-info"
+              "get-started/quick-start/skale-on-base",
+              "get-started/quick-start/go-live"
             ]
           },
           {
-            "group": "Why SKALE",
+            "group": "Use Cases",
             "pages": [
-              "get-started/products",
-              "get-started/use-cases",
-              {
-                "group": "Use Cases",
-                "pages": [
-                  "get-started/use-cases/payments",
-                  "get-started/use-cases/agents",
-                  "get-started/use-cases/artificial-intelligence",
-                  "get-started/use-cases/consumer-applications",
-                  "get-started/use-cases/finance",
-                  "get-started/use-cases/healthcare",
-                  "get-started/use-cases/supply-chain",
-                  "get-started/use-cases/enterprise-government"
-                ]
-              }
+              "get-started/use-cases/agentic-commerce",
+              "get-started/use-cases/agentic-discovery",
+              "get-started/use-cases/government-blockchains",
+              "get-started/use-cases/private-payments"
             ]
           },
           {
-            "group": "Community",
+            "group": "Resources",
             "pages": [
-              "get-started/community/official-links"
+              "get-started/official-links"
             ]
           }
         ]
@@ -281,54 +263,6 @@
               "developers/run-a-skale-chain/using-safe",
               "developers/run-a-skale-chain/using-multisig-wallet-cli"
             ]
-          },
-          {
-            "group": "API Reference",
-            "pages": [
-              "api-reference/introduction",
-              "api-reference/methods/web3-clientVersion",
-              "api-reference/methods/web3-sha3",
-              "api-reference/methods/net-version",
-              "api-reference/methods/net-listening",
-              "api-reference/methods/net-peerCount",
-              "api-reference/methods/eth-protocolVersion",
-              "api-reference/methods/eth-syncing",
-              "api-reference/methods/eth-coinbase",
-              "api-reference/methods/eth-mining",
-              "api-reference/methods/eth-hashrate",
-              "api-reference/methods/eth-gasPrice",
-              "api-reference/methods/eth-accounts",
-              "api-reference/methods/eth-blockNumber",
-              "api-reference/methods/eth-getBalance",
-              "api-reference/methods/eth-getStorageAt",
-              "api-reference/methods/eth-getTransactionCount",
-              "api-reference/methods/eth-getBlockTransactionCountByHash",
-              "api-reference/methods/eth-getBlockTransactionCountByNumber",
-              "api-reference/methods/eth-getUncleCountByBlockHash",
-              "api-reference/methods/eth-getUncleCountByBlockNumber",
-              "api-reference/methods/eth-getCode",
-              "api-reference/methods/eth-sendTransaction",
-              "api-reference/methods/eth-sendRawTransaction",
-              "api-reference/methods/eth-call",
-              "api-reference/methods/eth-estimateGas",
-              "api-reference/methods/eth-getBlockByHash",
-              "api-reference/methods/eth-getBlockByNumber",
-              "api-reference/methods/eth-getTransactionByHash",
-              "api-reference/methods/eth-getTransactionByBlockHashAndIndex",
-              "api-reference/methods/eth-getTransactionByBlockNumberAndIndex",
-              "api-reference/methods/eth-getTransactionReceipt",
-              "api-reference/methods/eth-getUncleByBlockHashAndIndex",
-              "api-reference/methods/eth-getUncleByBlockNumberAndIndex",
-              "api-reference/methods/eth-newFilter",
-              "api-reference/methods/eth-newBlockFilter",
-              "api-reference/methods/eth-newPendingTransactionFilter",
-              "api-reference/methods/eth-uninstallFilter",
-              "api-reference/methods/eth-getFilterChanges",
-              "api-reference/methods/eth-getFilterLogs",
-              "api-reference/methods/eth-getLogs",
-              "api-reference/methods/eth-getWork",
-              "api-reference/methods/eth-submitHashrate"
-            ]
           }
         ]
       },
@@ -377,10 +311,7 @@
       }
     ]
   },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
+  "logo": "/logo/logo-docs.svg",
   "topbar": {
     "links": [
       {
@@ -418,12 +349,6 @@
       "type": "button",
       "label": "SKALE Portal",
       "href": "https://portal.skale.space"
-    }
-  },
-  "api": {
-    "baseUrl": "https://api.skale.network",
-    "auth": {
-      "method": "bearer"
     }
   },
   "anchors": {
