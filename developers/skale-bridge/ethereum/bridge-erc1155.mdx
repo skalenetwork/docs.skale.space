@@ -37,7 +37,7 @@ the supply on the SKALE Chain side could be "burned", while the tokens still exi
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InGameTokens for an example of InterchainERC1155 in use!
 
-```solidity:InterchainERC1155.sol
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
@@ -89,7 +89,7 @@ contract InterchainERC1155 is AccessControl, ERC1155 {
 
 Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-1155 token to the SKALE Chain you want to be able to bridge assets too.
 
-```solidity:InGameTokens.sol
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
@@ -318,7 +318,7 @@ Gas Wallet, officially referred to as the community pool, is a smart contract on
 This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
 You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
 
-```js:fillCommunityPool.js
+```js
 import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
 const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";

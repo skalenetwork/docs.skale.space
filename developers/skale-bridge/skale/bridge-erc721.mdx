@@ -33,7 +33,7 @@ If the burn function is not locked down to just the IMA Bridge, specifically Tok
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See **YourInterchainNFT.sol** for an example.
 
-```solidity:InterchainERC721.sol
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
@@ -85,7 +85,7 @@ contract InterchainERC721 is AccessControl, ERC721 {
 
 Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-721 token to the SKALE Chain you want to be able to bridge assets too.
 
-```solidity:YourInterchainNFT.sol
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
@@ -133,7 +133,7 @@ The flow for bridging an ERC-721 from SKALE Chain to SKALE Chain follows a very 
 
 The following will help you bridge an NFT from one SKALE Chain to another.
 
-```js:bridge.js
+```js
 import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
 
 const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";

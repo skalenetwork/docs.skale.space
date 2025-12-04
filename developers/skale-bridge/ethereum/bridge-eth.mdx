@@ -100,7 +100,7 @@ Gas Wallet, officially referred to as the community pool, is a smart contract on
 This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
 You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
 
-```js:fillCommunityPool.js
+```js
 import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
 const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
@@ -137,7 +137,7 @@ console.log("Success!");
 Once the above prepayment steps are completed, you can proceed with the bridging.
 Bridging from SKALE simply requires the `exitToMain` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
 
-```js:exit.js
+```js
 import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
 const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
