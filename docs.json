@@ -45,7 +45,7 @@
           {
             "group": "SKL Token",
             "pages": [
-              "get-started/skl-token",
+              "get-started/skl-token/skl-token",
               "get-started/skl-token/tokenomics"
             ]
           },
