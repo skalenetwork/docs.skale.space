@@ -1,22 +1,27 @@
 ---
 title: "Architecture Overview"
-description: "High-level overview of SKALE architecture"
+description: "How SKALE’s modular architecture delivers elastic, zero-gas L1 chains"
 ---
 
-## Overview
+## How the Pieces Fit Together
 
-SKALE's architecture is designed for scalability, security, and performance.
+SKALE is a modular Layer 1 network where thousands of elastic SKALE Chains run in parallel on a shared validator pool. Ethereum-native smart contracts (SKALE Manager) coordinate validator selection, staking, pricing, and chain lifecycle, while each SKALE Chain executes applications with instant finality and zero gas fees. This separation keeps control logic on Ethereum and high-throughput execution on SKALE, delivering speed without sacrificing security.
 
-## Key Components
+*[Graphic placeholder: Network overview showing Ethereum mainnet → SKALE Manager → rotating validator sets powering many SKALE Chains]*
 
-- **Network Structure** - How the network is organized
-- **Consensus Mechanism** - How consensus is achieved
-- **Security Model** - How security is maintained
-- **Scalability** - How the network scales
+## Design Principles
 
-## Related Topics
+- **Elastic capacity** – Add more SKALE Chains instead of overloading a single chain. Each chain is an independent EVM L1 with its own resources, state, and roadmap.
+- **Shared security** – Validators stake SKL on Ethereum and are randomly rotated across chains, so every chain inherits network-level security and Byzantine fault tolerance.
+- **Developer-first** – Full EVM compatibility, native bridges, file storage, randomness, and gas tokens (sFUEL) that have no economic value, so teams can ship without UX friction.
+- **Resilience by default** – Distributed key generation (DKG), BLS signatures, snapshots, and anti-DDoS controls are built into the runtime to keep chains online and final.
 
-- [Network Structure](/architecture/network-structure)
-- [Consensus Mechanism](/architecture/consensus-mechanism)
-- [Security Model](/architecture/security-model)
-- [Scalability](/architecture/scalability)
+## What Runs Where
+
+On Ethereum mainnet, SKALE Manager contracts orchestrate staking, delegation, validator rotation, chain pricing, and lifecycle. On SKALE Chains, the `skaled` node software runs consensus, executes the EVM, enforces zero-gas/sFUEL rules, and exposes precompiles for randomness, storage, and configuration. Bridges connect SKALE Chains to Ethereum and other ecosystems (via SKALE Expand).
+
+*[Graphic placeholder: Split-view diagram of on-chain SKALE Manager modules vs. on-chain SKALE Chain runtime modules]*
+
+## Why It Matters
+
+This architecture lets product teams launch consumer-grade experiences—free transactions, instant confirmations, and high throughput—while still anchoring economic security and governance to Ethereum. It also opens the door to ecosystem chains and appchains that can be customized without fragmenting security or liquidity.

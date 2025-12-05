@@ -1,25 +1,23 @@
 ---
 title: "SKALE Chains 101"
-description: "Introduction to a SKALE Chain"
+description: "What makes a SKALE Chain a gas-free, instant-finality L1"
 ---
 
 ## Overview
 
-The SKALE Network is the home of multiple SKALE Chains meaning within the SKALE Ecosystem it's possible to create multiple SKALE Chains. 
+SKALE hosts many elastic SKALE Chains—each a full EVM Layer 1 with zero gas fees and instant finality. Chains can be app-specific, ecosystem hubs, or enterprise/private environments, all secured by the shared validator pool that stakes on Ethereum.
 
-All the created SKALE Chains inherit the following features:
-- EVM Compatible
-- Instant finality
-- Zero gas fees
-- Native RNG
-- Native filestorage
-- Native bridge
+Every SKALE Chain comes with:
+- Full EVM compatibility
+- Instant finality via BLS threshold signatures
+- Zero gas fees using sFUEL
+- Native randomness, file storage, and bridging
 
-This SKALE Chains or sChains are uniquely designed to offer both permissioned and permisionless compute; sChains are themselves are Layer 1 blockchains with additional layers of modular management and functionality enabling them to exist as an Appchain or as an ecosystem chain like a hub.
+*[Graphic placeholder: Feature badge stack for a SKALE Chain]*
 
-When a new SKALE Chain is created, the owner of the chain is provided elevated privileges which they can use to setup the chain to their unique needs. Privileges can be provided to others, secured via multisigs, or renounced entirely.
+SKALE Chains support permissionless and permissioned setups. Operators configure validators, access control, and optional gas policies to fit their use case—then rotate privileges, delegate via multisig, or fully renounce for community control.
 ## What's a SKALE Chain?
 
-Every SKALE Chain is a Layer 1 blockchain. SKALE is not a Layer 2 or a sidechain. SKALE Manager — the brain of SKALE — does live on the Ethereum mainnet and Base today, however, each and every SKALE Chain maintains its own state independently of Ethereum and leverages the SKALE shared validator pool, not Ethereum or Base validators.
+Every SKALE Chain is its own L1. SKALE is not a rollup or sidechain; chains keep independent state and consensus while Ethereum (and other bases via SKALE Expand) hosts the control-plane contracts. Validator committees rotate across chains, sign blocks with BLS, and deliver instant finality without sacrificing decentralization.
 
-Each sChain has their own [consensus](./consensus), block production and validator nodes.
+*[Graphic placeholder: Control plane on Ethereum vs. execution on SKALE Chains]*

@@ -1,131 +1,57 @@
 ---
 title: "Horizontal Scalability"
-description: "Understanding how SKALE achieves infinite horizontal scalability"
+description: "Why SKALE scales by adding chains, not inflating block limits"
 ---
 
 ## Overview
 
-SKALE achieves infinite horizontal scalability by adding new SKALE Chains to the network. Unlike vertical scaling (increasing resources of existing chains), horizontal scaling adds capacity by adding new chains, enabling the network to scale linearly with demand.
+SKALE scales out by adding new SKALE Chains whenever demand rises. Each chain is its own EVM L1 with zero gas fees and instant finality. Instead of cramming more into a single chain, SKALE adds fresh capacity in parallel, so throughput grows linearly while UX stays fast.
+
+*[Graphic placeholder: Rising demand → new SKALE Chains added → linear capacity growth]* 
 
 ## What is Horizontal Scalability?
 
-Horizontal scalability means:
-
-- **Add Capacity** - Add new chains to increase network capacity
-- **Linear Scaling** - Capacity scales linearly with number of chains
-- **No Limits** - No theoretical limit on number of chains
-- **Independent Chains** - Each chain operates independently
+Add chains, not hardware. Each new SKALE Chain brings dedicated compute, storage, and bandwidth, while still tapping into the same validator pool and Ethereum-anchored security.
 
 ## How SKALE Scales Horizontally
 
-### Adding New Chains
+1. **Create a chain** via SKALE Manager on Ethereum.
+2. **Allocate resources** (virtualized CPU, RAM, storage) and assign a validator committee.
+3. **Spin up containers** on validator nodes; the chain comes online with instant finality and zero gas fees.
+4. **Repeat** as demand grows—no congestion spillover.
 
-SKALE scales by:
-
-1. **Chain Creation** - New SKALE Chains are created through SKALE Manager
-2. **Resource Allocation** - Resources are allocated to new chains
-3. **Node Assignment** - Nodes are assigned to new chains
-4. **Network Integration** - Chains integrate into the network
-5. **Capacity Addition** - Network capacity increases
-
-### Shared Validator Pool
-
-The shared validator pool enables:
-
-- **Efficient Scaling** - Validators can secure multiple chains
-- **Resource Efficiency** - Better use of validator resources
-- **Cost Effectiveness** - Lower costs for new chains
-- **Network Security** - All chains benefit from network security
+Shared validators and containerized nodes make the economics work: operators secure multiple chains, and chain owners pay predictable monthly fees instead of per-transaction gas.
 
 ## Benefits
 
-### Infinite Capacity
-
-- **No Limits** - No theoretical limit on network capacity
-- **Linear Growth** - Capacity grows linearly with chains
-- **On-Demand Scaling** - Scale capacity as needed
-- **Future-Proof** - Ready for future growth
-
-### Efficiency
-
-- **Resource Utilization** - Efficient use of resources
-- **Cost Reduction** - Lower costs per chain
-- **Flexible Allocation** - Flexible resource allocation
-- **Optimized Operations** - Optimized network operations
-
-### Performance
-
-- **Maintained Performance** - Performance maintained as network grows
-- **Low Latency** - Low latency across all chains
-- **High Throughput** - High throughput per chain
-- **Consistent Experience** - Consistent user experience
+- **On-demand growth** – Add chains as traffic spikes; no theoretical cap on chain count.
+- **Predictable performance** – Each chain keeps low latency and high TPS even during surges.
+- **Cost control** – Flat monthly pricing per chain, not per transaction.
+- **Developer agility** – Launch appchains, ecosystem hubs, or private chains without competing for block space.
 
 ## Scaling Mechanisms
 
-### Chain Creation
-
-New chains are created through:
-
-- **SKALE Manager** - Chain creation via SKALE Manager contracts
-- **Resource Allocation** - Resources allocated per chain
-- **Configuration** - Chain configuration and setup
-- **Integration** - Integration into network
-
-### Resource Management
-
-Resources are managed through:
-
-- **Allocation** - Resources allocated per chain
-- **Virtualization** - Resource virtualization for efficiency
-- **Containerization** - Container-based resource management
-- **Orchestration** - Resource orchestration and management
-
-### Network Growth
-
-Network grows through:
-
-- **Chain Addition** - Adding new chains to network
-- **Validator Growth** - Growing validator pool
-- **Infrastructure Expansion** - Expanding infrastructure
-- **Capacity Planning** - Planning for capacity needs
+- **Virtualization & containers** – Isolate resources per chain on validator hardware.
+- **Node rotation** – Balanced committees keep security consistent as chains proliferate.
+- **Bridges** – Move assets between chains and Ethereum without central chokepoints.
 
 ## Comparison to Vertical Scaling
 
-### Vertical Scaling
-
-Traditional vertical scaling:
-
-- **Resource Increase** - Increase resources of existing chains
-- **Hardware Limits** - Limited by hardware capabilities
-- **Diminishing Returns** - Diminishing returns at scale
-- **Cost Increase** - Costs increase with resource needs
-
-### Horizontal Scaling
-
-SKALE's horizontal scaling:
-
-- **Chain Addition** - Add new chains for capacity
-- **No Hardware Limits** - No hardware-based limits
-- **Linear Returns** - Linear returns at scale
-- **Cost Efficiency** - Cost-efficient scaling
+- **Vertical** – Bigger blocks and higher gas limits hit hardware ceilings and decentralization tradeoffs.
+- **SKALE horizontal** – More chains, same UX, no need to sacrifice security or decentralization.
 
 ## Use Cases
 
-Horizontal scalability enables:
-
-- **Mass Adoption** - Support for mass adoption
-- **Enterprise Scale** - Enterprise-scale applications
-- **Global Reach** - Global reach and scale
-- **Future Growth** - Ready for future growth
+- **Consumer apps** – Keep UX smooth during viral spikes.
+- **Gaming and AI agents** – Dedicated chains for state-heavy workloads.
+- **Enterprises** – Launch isolated environments with predictable performance.
 
 ## Implementation
 
-Horizontal scalability is implemented through:
-
-- **SKALE Manager** - Network coordination and management
-- **Containerization** - Container-based resource management
-- **Virtualization** - Resource virtualization
-- **Node Rotation** - Node rotation across chains
+- **SKALE Manager** for chain creation and pricing.
+- **Containerized nodes** for multi-chain hosting.
+- **Virtualized blockchains** for resource isolation.
+- **Node rotation** to keep committees balanced as the network grows.
 
 ## Related Topics
 

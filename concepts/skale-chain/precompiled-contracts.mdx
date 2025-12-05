@@ -3,7 +3,9 @@ title: Precompiled Contracts
 description: Precompiled Contracts on SKALE
 ---
 
-Every SKALE Chain comes with a set of precompiled contracts in addition to the precompiled contracts included with Ethereum (e.g *ecrecover*, *sha256*, *modexp*, etc.).
+SKALE Chains ship extra precompiled contracts beyond Ethereum’s defaults (e.g., `ecrecover`, `sha256`, `modexp`). These precompiles unlock native file storage, logging, randomness, and configuration helpers without deploying custom contracts—ideal for builders who want performance and simplicity.
+
+*[Graphic placeholder: Quick-call precompile icons for storage, randomness, config]* 
 
 | Address 	| Function					| Sender Who May Call | Description |
 | --------- | ------------------------- | ------------------- | ----------- |
@@ -23,3 +25,5 @@ Every SKALE Chain comes with a set of precompiled contracts in addition to the p
 | 0x16		| getConfigPermissionsFlag	| Any                 | Returns SKALE Chain config boolean for IMA SKALE Chain testing
 | 0x18		| getBlockRandom			| Any                 | Return a random number based on BLS threshold signature common coin of the current block
 | 0x19		| getIMABLSPublicKey		| Any                 | Returns relevant BLSPublicKey according to block timestamp
+
+Use these precompiles to build richer experiences (randomness for gaming, native storage for media, config reads for bridges) without extra gas costs or custom infra.

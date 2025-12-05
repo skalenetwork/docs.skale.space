@@ -1,70 +1,50 @@
 ---
 title: "Privacy"
-description: "Understanding privacy on SKALE and how BITE Protocol enables confidential applications"
+description: "How BITE Protocol brings confidential computing to SKALE"
 ---
 
 ## Overview
 
-Privacy is a fundamental requirement for many blockchain applications, especially those handling sensitive data in industries like healthcare, finance, enterprise, and supply chain management. Traditional blockchains expose all transaction data publicly, which limits their applicability for confidential use cases.
+SKALE is designed for consumer-grade UX, but many industries also need confidentiality. BITE Protocol adds privacy-first capabilities—encrypted transactions, confidential apps (cApps), and cross-chain privacy—without breaking EVM compatibility.
+
+*[Graphic placeholder: Encrypted transaction flow unlocking only after finality]*
 
 ## The Value of Privacy
 
-Privacy enables:
-
-- **Confidential Transactions** - Protect sensitive business information while maintaining blockchain benefits
-- **Regulatory Compliance** - Meet data protection requirements (GDPR, HIPAA, etc.)
-- **Competitive Advantage** - Keep proprietary information private
-- **User Protection** - Safeguard personal and financial data
-- **Enterprise Adoption** - Enable enterprise use cases that require data confidentiality
+Privacy unlocks:
+- Confidential transactions for businesses and consumers
+- Compliance with data protection rules (GDPR, HIPAA, etc.)
+- Competitive advantage by protecting proprietary data
+- User safety across finance, healthcare, AI agents, and enterprise workloads
 
 ## Privacy Challenges on Traditional Blockchains
 
-Most blockchains face privacy limitations:
-
-- **Public Ledger** - All transactions are visible to everyone
-- **No Data Hiding** - Transaction details, amounts, and participants are exposed
-- **Limited Confidentiality** - Difficult to process sensitive data securely
-- **Regulatory Barriers** - Public exposure conflicts with data protection laws
+Public ledgers expose amounts, participants, and intent. That’s incompatible with many real-world use cases and invites MEV and front-running.
 
 ## How BITE Protocol Solves Privacy
 
-The BITE (Blockchain Interoperability and Trustless Execution) protocol enables privacy-preserving applications on SKALE through:
-
-### Confidential Applications (cApps)
-
-BITE enables developers to build confidential applications that can process sensitive data securely within the blockchain environment. cApps maintain the benefits of blockchain technology while protecting data confidentiality.
-
-### Trustless Execution
-
-BITE provides trustless execution of confidential operations without requiring trusted intermediaries. This ensures that privacy-preserving computations maintain the security guarantees of blockchain technology.
-
-### Privacy-Preserving Computation
-
-BITE enables execution of computations on confidential data without exposing the underlying data. This allows applications to leverage blockchain benefits while maintaining data privacy.
-
-### Cross-Chain Privacy
-
-BITE enables privacy-preserving communication between chains, allowing confidential data to flow securely across the SKALE Network and to other blockchain networks.
+BITE (Blockchain Interoperability and Trustless Execution) delivers:
+- **Confidential applications (cApps)** – Encrypted inputs/state with selective disclosure.
+- **Trustless execution** – Threshold encryption and TEEs secure data without trusted middlemen.
+- **Cross-chain privacy** – Keep data confidential while moving between SKALE Chains and beyond.
+- **MEV resistance** – Encrypt destination and calldata until after finality.
 
 ## Use Cases Enabled by Privacy
 
-Privacy on SKALE enables innovative use cases:
-
-- **Confidential AI** - AI applications that process sensitive data securely
-- **Private Finance** - Financial applications with confidential transaction details
-- **Healthcare Data** - Healthcare applications that protect patient privacy
-- **Supply Chain Privacy** - Supply chain tracking with confidential business data
-- **Enterprise Deployments** - Enterprise applications requiring data confidentiality
-- **Regulatory Compliance** - Applications that must meet data protection requirements
+- **Confidential AI** – Process sensitive features safely.
+- **Private finance** – Hide amounts and intent to prevent MEV.
+- **Healthcare** – Keep patient data private while auditable.
+- **Supply chain** – Protect pricing and partner information.
+- **Enterprise** – Meet compliance without giving up blockchain benefits.
 
 ## Implementation
 
-Privacy on SKALE is implemented through:
+- **BITE Protocol** – Threshold encryption and commit-then-reveal flows.
+- **Trusted Execution Environments (TEEs)** – Hardware-backed confidentiality.
+- **Advanced cryptography** – Threshold schemes, encryption, and verifiable randomness.
+- **Secure messaging** – Confidential communication across chains.
 
-- **BITE Protocol** - Core protocol enabling confidential applications
-- **Trusted Execution Environments (TEEs)** - Hardware-based security for sensitive operations
-- **Cryptographic Techniques** - Advanced cryptography for data protection
-- **Messaging Layer** - Secure cross-chain communication
+*[Graphic placeholder: Stack showing TEEs + threshold encryption + BFT consensus]*
 
 ## Related Topics
 

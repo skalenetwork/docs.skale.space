@@ -1,11 +1,13 @@
 ---
 title: "Trusted Execution Environments (TEEs)"
-description: "Understanding Trusted Execution Environments in SKALE"
+description: "How hardware-backed enclaves protect keys and computation on SKALE"
 ---
 
 ## Overview
 
-Trusted Execution Environments (TEEs) provide hardware-based security for sensitive operations in the SKALE Network. TEEs enable secure computation in isolated environments that protect data and code from external access.
+Trusted Execution Environments (TEEs) give SKALE hardware-backed isolation for sensitive operations. They safeguard validator keys, DKG steps, and confidential computations inside secure enclaves.
+
+*[Graphic placeholder: Enclave boundary protecting keys and code]* 
 
 ## What are TEEs?
 
@@ -23,6 +25,8 @@ SKALE utilizes TEEs for:
 - **Key Management** - Secure storage and management of cryptographic keys
 - **DKG Operations** - Secure distributed key generation for BLS signatures
 - **Private Operations** - Secure execution of sensitive computations
+
+These protections reduce trust in node operators and harden the network against key theft or tampering.
 
 ## Benefits
 
@@ -45,6 +49,8 @@ SKALE's TEE implementation uses:
 - **Enterprise Deployments** - Additional security for enterprise chains
 - **Compliance** - Meeting regulatory requirements for data protection
 - **Confidential Computing** - Secure computation of sensitive data
+
+*[Graphic placeholder: Workflow showing attestation before using TEE-hosted keys]* 
 
 ## Related Topics
 

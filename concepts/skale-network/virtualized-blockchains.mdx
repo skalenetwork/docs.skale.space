@@ -1,147 +1,60 @@
 ---
 title: "Virtualized Blockchains"
-description: "Understanding how SKALE virtualizes blockchain resources to enable efficient multi-chain operations"
+description: "How SKALE isolates resources per chain while sharing validator hardware"
 ---
 
 ## Overview
 
-SKALE Network virtualizes blockchain resources, allowing multiple independent blockchains (SKALE Chains) to run on shared infrastructure. This virtualization enables efficient resource utilization and horizontal scalability.
+SKALE virtualizes compute, memory, storage, and networking so many independent SKALE Chains can share the same validator hardware without interfering with each other. Each chain feels like its own dedicated L1 while benefiting from pooled security and efficient hosting.
+
+*[Graphic placeholder: Resource pool sliced into virtualized allocations for multiple chains]* 
 
 ## What are Virtualized Blockchains?
 
-Virtualized blockchains are independent blockchains that share underlying infrastructure:
-
-- **Independent State** - Each chain maintains its own independent state
-- **Shared Infrastructure** - Chains share physical infrastructure
-- **Resource Virtualization** - Resources are virtualized and allocated per chain
-- **Isolated Execution** - Chains execute in isolated environments
+Independent chains with dedicated resources mapped virtually onto shared servers. State, consensus, and networking are isolated; only the physical hardware is shared.
 
 ## Architecture
 
-### Virtualization Layer
-
-SKALE's virtualization layer provides:
-
-- **Resource Abstraction** - Abstracts physical resources
-- **Allocation** - Allocates resources to chains
-- **Isolation** - Isolates chains from each other
-- **Management** - Manages resource lifecycle
-
-### Chain Independence
-
-Each virtualized chain:
-
-- **Independent State** - Maintains its own blockchain state
-- **Independent Consensus** - Runs its own consensus mechanism
-- **Independent Storage** - Has its own storage allocation
-- **Independent Network** - Operates on its own network segment
+- **Resource abstraction** – CPU, RAM, storage, and bandwidth are carved into allocations per chain.
+- **Isolation** – cgroups and network namespaces keep workloads separated.
+- **Management** – SKALE Manager and node orchestration tie allocations to chain assignments.
+- **Chain independence** – Each chain runs its own consensus and EVM state without sharing data paths.
 
 ## Benefits
 
-### Efficiency
-
-- **Resource Utilization** - Better use of infrastructure resources
-- **Cost Reduction** - Lower costs per chain
-- **Scalability** - Easy to add new chains
-- **Flexibility** - Flexible resource allocation
-
-### Operations
-
-- **Easy Deployment** - Simplified chain deployment
-- **Management** - Easier chain management
-- **Isolation** - Fault isolation between chains
-- **Monitoring** - Easier monitoring and debugging
-
-### Network
-
-- **Horizontal Scaling** - Add capacity by adding chains
-- **Resource Efficiency** - Efficient use of network resources
-- **Cost Effectiveness** - Lower costs for chain owners
-- **Flexibility** - Flexible chain configurations
+- **Efficiency** – Maximize hardware utilization across many chains.
+- **Isolation** – Performance issues on one chain don’t impact others.
+- **Fast deployment** – Bring new chains online quickly with predefined resource slices.
+- **Predictability** – Each chain keeps consistent performance regardless of neighbors.
 
 ## How It Works
 
-### Chain Creation
-
-When a SKALE Chain is created:
-
-1. **Resource Allocation** - Resources are allocated for the chain
-2. **Virtualization** - Resources are virtualized for the chain
-3. **Node Assignment** - Nodes are assigned to the chain
-4. **Chain Initialization** - Chain is initialized with its configuration
-5. **Operation** - Chain begins operating independently
-
-### Resource Virtualization
-
-Resources are virtualized through:
-
-- **CPU Virtualization** - CPU resources allocated per chain
-- **Memory Virtualization** - Memory allocated per chain
-- **Storage Virtualization** - Storage allocated per chain
-- **Network Virtualization** - Network resources allocated per chain
-
-### Multi-Chain Operation
-
-Multiple chains operate simultaneously:
-
-- **Shared Infrastructure** - Chains share physical infrastructure
-- **Isolated Execution** - Chains execute in isolated environments
-- **Resource Allocation** - Resources allocated per chain
-- **Independent Operation** - Chains operate independently
+When a chain is commissioned, SKALE Manager assigns validators and the node runtime reserves CPU, RAM, storage, and network capacity for that chain. The chain then runs independently in its own container with virtualized resources and participates in its consensus committee.
 
 ## Implementation
 
-### Containerization
-
-Virtualization is implemented through:
-
-- **Container Technology** - Uses containerization (Docker, etc.)
-- **Resource Limits** - Resource limits per container/chain
-- **Isolation** - Container isolation between chains
-- **Orchestration** - Container orchestration for management
-
-### Node Architecture
-
-Nodes support virtualization through:
-
-- **Multi-Chain Support** - Nodes can support multiple chains
-- **Resource Allocation** - Resources allocated per chain
-- **Isolated Execution** - Chains execute in isolated environments
-- **Shared Infrastructure** - Physical infrastructure shared
+- **Containers** – Docker-style isolation with explicit resource limits.
+- **Scheduler/orchestration** – Cluster tooling (e.g., Kubernetes) to place and monitor chain containers.
+- **Per-chain networking** – Virtual networks to segregate peer traffic and APIs.
 
 ## Use Cases
 
-Virtualized blockchains enable:
-
-- **App Chains** - Dedicated chains for applications
-- **Hub Chains** - Shared chains for multiple applications
-- **Enterprise Chains** - Private chains for enterprises
-- **Test Chains** - Test and development chains
+- **Appchains** – Dedicated performance for a single application.
+- **Hub chains** – Multi-app environments with shared liquidity.
+- **Enterprise/private** – Segmented environments with strict isolation.
+- **Test/dev** – Spin up temporary chains without new hardware.
 
 ## Comparison to Other Models
 
-### Dedicated Chains
+- **Dedicated bare metal** – Higher cost and slower deployment per chain.
+- **Un-virtualized sharing** – Risks noisy-neighbor effects; SKALE avoids that with isolation and quotas.
 
-Unlike chains with dedicated infrastructure:
-
-- **More Efficient** - Better resource utilization
-- **Lower Costs** - Reduced costs per chain
-- **Easier Scaling** - Easier to add new chains
-- **Flexible Allocation** - Flexible resource allocation
-
-### Shared Infrastructure
-
-SKALE's virtualization differs from shared infrastructure by:
-
-- **Independent State** - Each chain maintains independent state
-- **Isolated Execution** - Chains execute in isolated environments
-- **Flexible Allocation** - Flexible resource allocation
-- **Network Benefits** - Benefits from network-wide resources
+*[Graphic placeholder: Comparison chart of dedicated vs. virtualized chain hosting]* 
 
 ## Related Topics
 
-- [Containerized Nodes](/concepts/skale-network/containerized-nodes) - Node containerization
-- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability) - Network scaling
-- [SKALE Manager](/concepts/skale-network/skale-manager) - Network coordination
-- [Pooled Security Model](/concepts/skale-network/pooled-security-model) - Network security
+- [Containerized Nodes](/concepts/skale-network/containerized-nodes)
+- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability)
+- [SKALE Manager](/concepts/skale-network/skale-manager)
+- [Pooled Security Model](/concepts/skale-network/pooled-security-model)
 

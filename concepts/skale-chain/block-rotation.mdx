@@ -1,9 +1,11 @@
 ---
 title: "Block Rotation"
-description: "How SKALE optimizes storage using block rotation for consensus and full-sync nodes"
+description: "How SKALE keeps nodes lightweight while preserving historical access"
 ---
 
 Block rotation on a SKALE Chain limits the disk space used by consensus and full-sync nodes by pruning old blocks, ensuring efficient storage and performance.
+
+*[Graphic placeholder: Sliding window of retained blocks with archive node storing full history]*
 
 ## Storage Allocation
 
@@ -41,6 +43,7 @@ This sliding-window model ensures that the chain operates efficiently without gr
 - **Efficient resource use** — prevents storage bloat.
 - **High performance** — reduces read/write overhead.
 - **Scalability** — supports many lightweight SKALE Chains running in parallel.
+*[Graphic placeholder: Performance vs. storage comparison for rotated vs. full history]* 
 
 ## Full Historical Access
 

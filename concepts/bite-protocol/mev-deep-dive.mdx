@@ -1,66 +1,39 @@
 ---
 title: "MEV Deep Dive"
-description: "Understanding Maximum Extractable Value (MEV) in the context of BITE Protocol and SKALE"
+description: "How BITE removes the data MEV bots need to profit"
 ---
 
 ## Overview
 
-Maximum Extractable Value (MEV), also known as Miner Extractable Value, refers to the maximum value that can be extracted from block production in excess of the standard block reward and gas fees by including, excluding, or reordering transactions within blocks.
+MEV (Maximum Extractable Value) is profit from reordering, inserting, or censoring transactions. BITE Protocol attacks MEV at the source by hiding the data fields bots rely on until after finality.
 
 ## What is MEV?
 
-MEV represents the profit that can be made by strategically ordering transactions in a block. This includes:
-
-- **Arbitrage** - Exploiting price differences across DEXs
-- **Liquidation** - Liquidating undercollateralized positions
-- **Front-running** - Placing transactions ahead of known profitable transactions
-- **Back-running** - Placing transactions after known transactions
-- **Sandwich Attacks** - Placing transactions before and after a target transaction
+MEV thrives on visibility:
+- Arbitrage between venues
+- Liquidations in lending markets
+- Front-running and sandwich attacks on swaps
+- Back-running profitable trades
 
 ## MEV on Traditional Blockchains
 
-On traditional blockchains like Ethereum:
+Public mempools give sophisticated actors a preview of pending trades. They bid up gas, reorder transactions, and capture value—raising costs and creating centralization pressure around specialized MEV infrastructure.
 
-- **Public Mempool** - All pending transactions are visible
-- **Competitive Extraction** - Multiple parties compete to extract MEV
-- **User Impact** - Users may experience front-running and higher gas costs
-- **Centralization Pressure** - MEV extraction favors sophisticated actors
+*[Graphic placeholder: Transparent mempool vs. encrypted mempool outcomes]*
 
 ## MEV and BITE Protocol
 
-BITE Protocol addresses MEV concerns through:
-
-### Confidential Transaction Ordering
-
-BITE enables confidential applications (cApps) where transaction details are not publicly visible, reducing the ability to extract MEV through front-running or sandwich attacks.
-
-### Trustless Execution
-
-BITE's trustless execution model ensures that cross-chain operations maintain security guarantees while reducing MEV extraction opportunities.
-
-### Privacy-Preserving Transactions
-
-By enabling privacy-preserving transactions, BITE reduces the information available for MEV extraction, protecting users from front-running and other MEV attacks.
+BITE closes the visibility gap:
+- **Confidential ordering** – Encrypt `to` and `data` so bots can’t target trades.
+- **Commit-then-reveal** – Consensus finalizes first, then decrypts for execution.
+- **Cross-chain trustlessness** – Keep confidentiality even when bridging or messaging.
 
 ## MEV Mitigation Strategies
 
-SKALE and BITE Protocol employ several strategies to mitigate MEV:
-
-### Instant Finality
-
-SKALE's instant finality reduces the window for MEV extraction by finalizing transactions immediately.
-
-### Zero Gas Fees
-
-SKALE's zero gas fee model reduces the economic incentive for MEV extraction related to gas price manipulation.
-
-### Privacy Features
-
-BITE Protocol's privacy features protect transaction details, making MEV extraction more difficult.
-
-### Fair Ordering
-
-SKALE's consensus mechanism provides fair transaction ordering, reducing the advantage of sophisticated MEV extractors.
+- **Instant finality** – Shrinks the window for manipulation.
+- **Zero gas fees** – Removes gas-price auctions as a lever.
+- **Encrypted payloads** – No readable calldata means no sandwiching.
+- **Fair ordering** – Leaderless consensus with DA proofs reduces proposer advantage.
 
 ## Impact on Users
 
@@ -79,14 +52,15 @@ BITE Protocol's cross-chain capabilities introduce additional considerations:
 - **Bridge MEV** - MEV extraction related to cross-chain bridges
 - **Interoperability MEV** - MEV opportunities in multi-chain environments
 
+BITE’s encrypted messaging reduces the surface area for cross-chain MEV by hiding intent until finality.
+
 ## Best Practices
 
 When building on SKALE with BITE Protocol:
 
-- **Use Confidential Applications** - Leverage cApps to protect transaction details
-- **Consider Transaction Ordering** - Be aware of how transaction ordering affects MEV
-- **Monitor Cross-Chain Operations** - Understand MEV implications in cross-chain scenarios
-- **Implement Privacy** - Use BITE's privacy features to protect sensitive operations
+- **Use cApps** – Keep sensitive flows confidential by default.
+- **Design for commit-then-reveal** – Sequence actions assuming hidden calldata.
+- **Encrypt bridge interactions** – Maintain privacy across chains to limit MEV vectors.
 
 ## Related Topics
 

@@ -5,30 +5,42 @@ description: "Deploy AI agents that interact with onchain data and smart contrac
 
 SKALE supports autonomous agents at scale. Privacy, zero gas fees, instant finality, and high throughput let agents operate without the constraints of traditional blockchains.
 
+Autonomous agents have moved from hackathon demos to production workloads. a16z’s State of Crypto 2025 highlights AI x crypto as a breakout category—agents need low-friction execution, composability, and predictable cost[1], and Coinbase points to onchain AI agents as the next wave of apps and commerce[2]. SKALE gives teams an isolated, gasless execution layer with instant finality so agents can loop, learn, and transact without hitting cost ceilings.
+
 ## Why SKALE for Agents
 
-**Privacy** - Isolated execution environment with access control.
+- **No gas anxiety** — Run millions of onchain actions without pricing users out; predictable flat chain economics remove hidden tax on agent loops.
+- **Instant decisions** — Finality in seconds keeps models and policies synced to onchain truth.
+- **Private coordination** — Isolated chains with access control let you ship sensitive agents (commerce, healthcare, compliance) without leaking strategy.
+- **Deterministic randomness** — Native VRF keeps simulations, loot tables, and strategy sampling unbiased.
+- **Message fabric** — Fast inter-agent messaging plus bridging to Ethereum for settlement when you need it.
 
-**Zero gas fees** - Agents can perform millions of operations without transaction costs.
+> Graphic: Agent feedback loop showing sensor → policy → SKALE transaction → state update → next action.
 
-**Instant finality** - Agents get immediate state confirmation for decision-making.
+## High-Impact Patterns
 
-**High throughput** - Process thousands of transactions per second.
+### Trading copilots
+Agents execute arbitrage, liquidation, and rebalancing in tight loops without gas shocks. Settlement can bridge to Ethereum when liquidity depth is needed.
 
-**Messaging layer** - Direct agent-to-agent communication.
+### Onchain copilots for products
+Embed agents inside apps to recommend bundles, manage loyalty points, or negotiate B2B terms. Access control keeps enterprise data siloed while still interoperating with public rails.
 
-## Use Cases
+### IoT and edge swarms
+Devices post signed telemetry, trigger payments, and coordinate maintenance windows. High throughput keeps fleets in sync; privacy keeps vendor data compartmentalized.
 
-- Trading bots
-- AI-powered smart contract interactions
-- IoT devices
-- Automated DeFi strategies
-- Gaming NPCs
-- Commerce and discovery agents
+### Game NPCs and live ops
+NPCs evolve based on player actions; live ops teams push balance changes continuously. Verifiable randomness and instant finality keep gameplay fair and responsive.
 
-## Resources
+> Graphic: Example architecture with agents, SKALE chain, L1 settlement bridge, and monitoring.
 
-- [Solidity Quickstart](/developers/solidity-quickstart)
-- [Random Number Generation](/developers/native-features/random-number-generation)
-- [SKALE Bridge](/developers/skale-bridge/overview)
+## Build Path
+
+1) Start with the [Solidity Quickstart](/developers/solidity-quickstart) and [Random Number Generation](/developers/native-features/random-number-generation) for policy hooks.  
+2) Wire agent messages to [SKALE Bridge](/developers/skale-bridge/overview) for optional L1 settlement.  
+3) Instrument feedback loops with events and dashboards; ship incremental policies weekly.
+
+## References
+
+[1] a16z, “State of Crypto 2025: The year crypto went mainstream,” 2025. <https://a16zcrypto.com/posts/article/state-of-crypto-report-2025/>  
+[2] Coinbase, “The rise of onchain AI agents, apps, and commerce,” 2025. <https://www.coinbase.com/blog/the-rise-of-onchain-ai-agents-apps-and-commerce>
 

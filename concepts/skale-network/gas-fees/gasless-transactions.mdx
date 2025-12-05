@@ -1,43 +1,28 @@
 ---
 title: "Gasless Transactions"
-description: "Understanding gasless transactions using Proof of Work on SKALE"
+description: "How SKALE’s Proof-of-Work magic numbers let users transact with zero balance"
 ---
 
 ## Overview
 
-A gasless transaction is a blockchain transaction native to SKALE Network that does not require the user to have any gas in their wallet to interact with the network. The steps of a gasless transaction are as follows:
+Gasless transactions let users submit transactions with zero sFUEL in their wallet by performing a small Proof-of-Work (PoW) upfront. The PoW yields a “magic number” that the chain accepts in place of a gas payment, keeping UX frictionless even when wallets are empty.
 
-1. Determine the **sender address**, the **sender address nonce**, and the **gas limit** of the transaction.
-2. Use [Proof of Work](#exploring-proof-of-work) to generate a [magic number](#understanding-magic-numbers).
-3. Build the transaction with the gasPrice of the transaction set to the value of the magic number
-4. Execute the transaction, even without sFUEL in the sender's account
+*[Graphic placeholder: Client computing magic number → submitting tx with zero balance → SKALE accepts]*
 
 ## Exploring Proof of Work
 
-Proof of Work [on SKALE] is a method that allows wallets to *mine* sufficient amount of sFUEL to any address to send a transaction.
-The act of mining is computationally expensive and requires a user to solve a complex mathematical problem to generate a magic number.
-This computation cost is what makes it such a great deterrent from being used to spam the network since it would cost a bad actor a significant amount of money to do so.
+SKALE’s PoW is light enough for clients but costly enough to discourage spam. Wallets compute a magic number tied to sender, nonce, and gas limit, proving work before the chain executes the transaction—even with zero sFUEL on hand.
 
 ## Understanding Magic Numbers
 
-SKALE uses the concept of "the magic number" in conjunction with Proof of Work to allow the sender (i.e the client) and SKALE Chain to agree that a transaction is valid
-EVEN IF there is not a sufficient amount of sFUEL (inclusive of 0 sFUEL) in the sender's account. This also allows gasless transactions to remain fully compatible with the
-Ethereum Virtual Machine and most popular tools.
+The magic number represents the gasPrice value in the transaction. The client calculates it with PoW so the chain can verify work without needing a token balance. This keeps gasless fully EVM-compatible—no protocol forks or custom wallets required.
 
 ## Proof of Work Algorithm
 
-1. The client generates a random 256-bit X (i.e the magic number) by a formula which is equal to a unique gasPrice value
-
-$$X = sha3(address) \oplus sha3(nonce) \oplus sha3(gasPrice)$$
-
-$$freeGas = \frac{2^{256}-1}{X \cdot difficulty}$$
-
-2. Check whether X is allowed to run transaction
-
-$$freeGas(X) > estimateGas(tx)$$
-
-3. If false, then back to the first step
-4. If true, then send the transaction with gasPrice = `X` and `gasLimit` = freeGas(X)
+1. Generate a 256-bit `X` (the magic number) using sender, nonce, and gas limit.
+2. Compute available “free gas” using the chain’s PoW difficulty.
+3. If free gas covers the estimated gas, submit the transaction with `gasPrice = X` and `gasLimit = freeGas(X)`.
+4. Otherwise, repeat until a valid magic number is found.
 
 <Note>
 - ⊕ is the bitwise XOR operator
@@ -51,26 +36,11 @@ because the magic number generated is generally very, very large and the wallets
 
 ## Popular Use Cases
 
-### Invisible Transactions
+- **Invisible onboarding** – Let users transact without ever seeing gas prompts.
+- **Self-serve sFUEL** – Avoid server-side faucets; the client can prove work and proceed.
+- **Extra spam resistance** – Pair with zero-gas chains to add another layer of protection.
 
-Building using gasless transactions allows developers to create applications that have no "blockchain" that is visible to the user.
-Creating seamless experiences that have no friction for new users is critical toward building applications that can be adopted globally and pass
-the grandma test (yes, even grandma can use it)!
-
-While invisible transactions can be done with [zero gas fees](/concepts/gas-fees/zero-gas-fees), gasless transactions can really help take your dApp to the next level.
-
-### sFUEL Distribution
-
-sFUEL Distribution is a process that allows developers to invisibly give users gas to interact with their dApp.
-This process is critical to ensuring that users can interact with your dApp especially with the sFUEL token being unpurchasable.
-While many developers choose to lean on servers to operate the distribution, using gasless transactions allows developers to lean on public faucet infrastructure or custom
-distribution contracts that have no operational overhead. This can greatly reduce the costs of operating a dApp and greatly increase security for applications that may be popular targets
-for bad actors.
-
-### True Decentralization & Enhanced Security
-
-With sFUEL on SKALE being metered by operators and developers to properly secure the chain from being spammed; the truest path towards decentralization of your application
-is using gasless transactions. Switching or starting with the proof of work method means that you as a developer never have to worry about having "enough gas".
+*[Graphic placeholder: User flow showing gasless tx vs. sFUEL-funded tx]*
 
 ## Community Tools
 

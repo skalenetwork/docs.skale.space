@@ -1,15 +1,24 @@
 ---
 title: "Network Structure"
-description: "Understanding SKALE network structure"
+description: "How validators, chains, and Ethereum coordination form the SKALE fabric"
 ---
 
-## Network Structure
+## How the Network Is Organized
 
-The SKALE Network consists of multiple interconnected components.
+The SKALE Network is a fabric of many elastic SKALE Chains that share a single pool of staked validators. Validators stake SKL on Ethereum, are randomly grouped into virtual subnodes, and are rotated across chains to prevent collusion and concentrate security. Each chain runs its own consensus, execution, and storage while inheriting the same validator-grade security assumptions.
 
-## Outline
+*[Graphic placeholder: Validator pool on Ethereum → randomized node rotation → multiple SKALE Chains]*
 
-- Network topology
-- Chain organization
-- Validator distribution
-- Network coordination
+## Chain Topology
+
+Every SKALE Chain is its own Layer 1 with independent state, parameters, and roadmap. Chains can be app-specific, ecosystem hubs, or enterprise/private deployments. Native bridges link chains to Ethereum and to each other, enabling liquidity and asset flow without exposing private state.
+
+## Validator Distribution
+
+Validator nodes are sharded into virtual subnodes and assigned to chains in balanced, random sets. Rotation happens on a set schedule through SKALE Manager, ensuring diversity of operators per chain and reducing correlated risk. Penalties and rewards are enforced on Ethereum, aligning incentives even when chain execution happens off of Ethereum.
+
+## Coordination and Control Plane
+
+SKALE Manager contracts on Ethereum maintain the registry of chains, validator stakes, rotation schedules, pricing, and slashing logic. Because coordination is on Ethereum, anyone can verify assignments and penalties, while chains remain free to run at high throughput with zero gas fees.
+
+*[Graphic placeholder: Control-plane timeline showing epochs, rotations, and staking events]*

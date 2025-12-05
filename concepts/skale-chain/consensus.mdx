@@ -5,6 +5,10 @@ description: SKALE Mainnet Beta
 
 ## Protocol Overview
 
+A quick primer for product teams: SKALE uses leaderless, asynchronous BFT consensus with BLS threshold signatures. Blocks finalize instantly once 2/3 of a chain’s validator committee signs, so there are no reorgs or multi-confirmation waits. Randomized rotation and data-availability proofs keep proposals honest while maintaining high throughput and zero-gas UX.
+
+*[Graphic placeholder: Proposal → DA proof → BFT vote → BLS signature → instant finality]*
+
 A SKALE chain is a Proof-of-Stake blockchain fully compatible with ETH mainnet. It can run ETH wallets, tools and dapps.
 
 As any Ethereum-compatible chain, SKALE chain includes a **blockchain**, which is a chain of transactions ordered into **committed blocks**, and a computing machine denoted as **EVM**. The set of variables stored in EVM is denoted as **EVM state**.

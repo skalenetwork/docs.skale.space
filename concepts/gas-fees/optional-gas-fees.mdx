@@ -1,27 +1,31 @@
 ---
 title: "Optional Gas Fees"
-description: "Understanding optional gas fees on SKALE"
+description: "When and why to turn on gas fees in a zero-gas world"
 ---
 
 ## Overview
 
-While SKALE offers zero gas fees by default, chain operators can optionally enable gas fees for specific use cases or to provide additional economic incentives.
+SKALE defaults to zero gas fees, but chain operators can optionally enable gas pricing for specific behaviors. This lets you add incentives for priority transactions or throttle high-load scenarios while keeping everyday UX free.
+
+*[Graphic placeholder: Toggle illustrating zero-fee mode vs. optional gas pricing]* 
 
 ## When to Use Optional Gas Fees
 
-Optional gas fees can be useful for:
+Use optional fees when you need:
 
-- **Priority transactions** - Users can pay gas to prioritize their transactions
-- **Economic incentives** - Aligning incentives between users and validators
-- **Resource management** - Managing network resources during high load periods
+- **Priority lanes** – Let users pay to jump the queue during spikes.
+- **Economic signals** – Deter abusive workloads or align heavy users with validator costs.
+- **Load shedding** – Add friction during exceptional traffic to protect uptime.
 
 ## Implementation
 
-Optional gas fees on SKALE work similarly to Ethereum's gas model, but are entirely optional. Chain operators can configure:
+Optional gas mirrors Ethereum’s model but is fully configurable:
 
-- Gas price mechanisms
-- Gas limit policies
-- Priority fee structures
+- Set base and priority fee policies.
+- Adjust gas limits per block to match your workload.
+- Combine with sFUEL distribution so most users still feel gasless.
+
+*[Graphic placeholder: Config panel for setting optional gas parameters]* 
 
 ## Related Topics
 
