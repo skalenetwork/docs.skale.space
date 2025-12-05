@@ -58,17 +58,13 @@
             ]
           },
           {
-            "group": "Governance",
-            "pages": [
-              "get-started/governance/skale-dao",
-              "get-started/governance/proposals",
-              "get-started/governance/voting"
-            ]
-          },
-          {
             "group": "Resources",
             "pages": [
-              "get-started/resources/official-links"
+              "get-started/resources/official-links",
+              {
+                "title": "Governance",
+                "href": "https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447"
+              }
             ]
           }
         ]
@@ -213,8 +209,7 @@
           {
             "group": "SDKs",
             "pages": [
-              "developers/sdks/overview",
-              "developers/sdks/filestorage-js"
+              "developers/sdks/overview"
             ]
           },
           {
@@ -299,12 +294,6 @@
               "cookbook/x402/buying",
               "cookbook/x402/facilitator",
               "cookbook/x402/non-usdc-tokens"
-            ]
-          },
-          {
-            "group": "Filestorage",
-            "pages": [
-              "cookbook/filestorage/upload-website-filestorage"
             ]
           },
           {
@@ -610,7 +599,11 @@
     },
     {
       "source": "/building-applications/libraries/filestorage-js",
-      "destination": "/developers/sdks/filestorage-js"
+      "destination": "/developers/native-features/using-filestorage"
+    },
+    {
+      "source": "/developers/sdks/filestorage-js",
+      "destination": "/developers/native-features/using-filestorage"
     },
     {
       "source": "/skale-bridge/overview",
