@@ -28,6 +28,7 @@
             "group": "Quick Start",
             "pages": [
               "get-started/quick-start/skale-on-base",
+              "get-started/quick-start/skale-on-ethereum",
               "get-started/quick-start/go-live"
             ]
           },
