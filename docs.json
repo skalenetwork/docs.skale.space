@@ -61,10 +61,7 @@
             "group": "Resources",
             "pages": [
               "get-started/resources/official-links",
-              {
-                "title": "Governance",
-                "href": "https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447"
-              }
+              "get-started/resources/governance"
             ]
           }
         ]
