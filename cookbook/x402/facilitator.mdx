@@ -1,17 +1,19 @@
 ---
-title: "Running a Facilitator on SKALE"
-description: "Set up an x402 facilitator service for payment processing"
+title: "Run a Facilitator"
+description: "Set up an x402 facilitator service for payment processing on SKALE"
 ---
 
-A facilitator in the x402 protocol is an HTTP service that processes payments and provides settlement. It exposes `/accepts` and `/settle` endpoints that work with x402 middleware to handle payment flows.
+## Run a Facilitator
+
+A facilitator in the x402 protocol is a service that processes payments and provides settlement. It exposes `/accepts` and `/settle` endpoints that work with x402 middleware to handle payment flows.
 
 ## Prerequisites
 
 - Understanding of x402 protocol
 - Node.js and npm installed
 - A SKALE Chain endpoint
-- Understanding of HTTP services
 - Familiarity with TypeScript/JavaScript
+- Basic knowledge of smart contracts (for custom implementation)
 
 ## Overview
 
@@ -22,150 +24,178 @@ A facilitator service:
 3. Handles payment verification
 4. May charge fees for services
 
-## Quick Start
+---
 
-Install the facilitator package:
+## Implementation
 
-```bash
-npm install @faremeter/facilitator
-```
+<Tabs>
+    <Tab title="Faremeter SDK">
 
-## Basic Facilitator Service
+        ### Quick Start
 
-Here's a simple facilitator service:
+        Install the facilitator package:
 
-```typescript
-import express from 'express';
-import { createFacilitator } from '@faremeter/facilitator';
+        ```bash
+        npm install @faremeter/facilitator
+        ```
 
-const app = express();
-app.use(express.json());
+        ### Basic Facilitator Service
 
-const facilitator = createFacilitator({
-  network: 'skale-base-sepolia',
-  paymentHandlers: [
-    {
-      scheme: 'exact',
-      network: 'skale-base-sepolia',
-      handler: async (payment) => {
-        return { success: true };
-      },
-    },
-  ],
-});
+        Here's a simple facilitator service:
 
-// Mount facilitator routes
-app.use('/facilitator', facilitator.router);
+        ```typescript
+        import express from 'express';
+        import { createFacilitator } from '@faremeter/facilitator';
 
-app.listen(3000, () => {
-  console.log('Facilitator running on port 3000');
-});
-```
+        const app = express();
+        app.use(express.json());
 
-## Facilitator Endpoints
+        const facilitator = createFacilitator({
+            network: 'skale-base-sepolia',
+            paymentHandlers: [
+                {
+                    scheme: 'exact',
+                    network: 'skale-base-sepolia',
+                    handler: async (payment) => {
+                        return { success: true };
+                    },
+                },
+            ],
+        });
 
-### `/accepts`
+        // Mount facilitator routes
+        app.use('/facilitator', facilitator.router);
 
-Returns payment requirements for a given resource:
+        app.listen(3000, () => {
+            console.log('Facilitator running on port 3000');
+        });
+        ```
 
-```typescript
-app.get('/accepts', async (req, res) => {
-  const { resource } = req.query;
-  
-  const requirements = {
-    accepts: [
-      {
-        scheme: 'exact',
-        network: 'skale-base-sepolia',
-        maxAmountRequired: '1.5',
-        description: 'SKALE USDC payment',
-      },
-    ],
-  };
-  
-  res.json(requirements);
-});
-```
+        ### Facilitator Endpoints
 
-### `/settle`
+        #### `/accepts`
 
-Validates and processes payment settlements:
+        Returns payment requirements for a given resource:
 
-```typescript
-app.post('/settle', async (req, res) => {
-  const payment = req.body;
-  const isValid = await validatePayment(payment);
-  
-  if (!isValid) {
-    return res.status(400).json({ error: 'Invalid payment' });
-  }
-  
-  const result = await processSettlement(payment);
-  res.json({ success: true, result });
-});
-```
+        ```typescript
+        app.get('/accepts', async (req, res) => {
+            const { resource } = req.query;
+            
+            const requirements = {
+                accepts: [
+                    {
+                        scheme: 'exact',
+                        network: 'skale-base-sepolia',
+                        maxAmountRequired: '1.5',
+                        description: 'SKALE USDC payment',
+                    },
+                ],
+            };
+            
+            res.json(requirements);
+        });
+        ```
 
-## Payment Handler
+        #### `/settle`
 
-Implement payment handlers for different schemes:
+        Validates and processes payment settlements:
 
-```typescript
-import { createPaymentHandler } from '@faremeter/payment-evm';
+        ```typescript
+        app.post('/settle', async (req, res) => {
+            const payment = req.body;
+            const isValid = await validatePayment(payment);
+            
+            if (!isValid) {
+                return res.status(400).json({ error: 'Invalid payment' });
+            }
+            
+            const result = await processSettlement(payment);
+            res.json({ success: true, result });
+        });
+        ```
 
-const paymentHandler = createPaymentHandler({
-  network: 'skale-base-sepolia',
-  rpcUrl: 'YOUR_SKALE_RPC_URL',
-  verifyPayment: async (payment) => {
-    return true;
-  },
-  settlePayment: async (payment) => {
-    return { txHash: '0x...' };
-  },
-});
-```
+        ### Payment Handler
 
-## Fee Management
+        Implement payment handlers for different schemes:
 
-Add fee calculation to your facilitator:
+        ```typescript
+        import { createPaymentHandler } from '@faremeter/payment-evm';
 
-```typescript
-const facilitator = createFacilitator({
-  network: 'skale-base-sepolia',
-  feeBasisPoints: 100,
-  paymentHandlers: [paymentHandler],
-  calculateFee: (amount) => {
-    return (amount * 100) / 10000;
-  },
-});
-```
+        const paymentHandler = createPaymentHandler({
+            network: 'skale-base-sepolia',
+            rpcUrl: 'YOUR_SKALE_RPC_URL',
+            verifyPayment: async (payment) => {
+                return true;
+            },
+            settlePayment: async (payment) => {
+                return { txHash: '0x...' };
+            },
+        });
+        ```
 
-## Error Handling
+        ### Fee Management
 
-```typescript
-app.post('/settle', async (req, res) => {
-  try {
-    const result = await facilitator.settle(req.body);
-    res.json(result);
-  } catch (error) {
-    if (error.code === 'INVALID_SIGNATURE') {
-      return res.status(400).json({ error: 'Invalid payment signature' });
-    }
-    if (error.code === 'EXPIRED_PAYMENT') {
-      return res.status(400).json({ error: 'Payment expired' });
-    }
-    if (error.code === 'INSUFFICIENT_AMOUNT') {
-      return res.status(400).json({ error: 'Insufficient payment amount' });
-    }
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-```
+        Add fee calculation to your facilitator:
+
+        ```typescript
+        const facilitator = createFacilitator({
+            network: 'skale-base-sepolia',
+            feeBasisPoints: 100,
+            paymentHandlers: [paymentHandler],
+            calculateFee: (amount) => {
+                return (amount * 100) / 10000;
+            },
+        });
+        ```
+
+        ### Error Handling
+
+        ```typescript
+        app.post('/settle', async (req, res) => {
+            try {
+                const result = await facilitator.settle(req.body);
+                res.json(result);
+            } catch (error) {
+                if (error.code === 'INVALID_SIGNATURE') {
+                    return res.status(400).json({ error: 'Invalid payment signature' });
+                }
+                if (error.code === 'EXPIRED_PAYMENT') {
+                    return res.status(400).json({ error: 'Payment expired' });
+                }
+                if (error.code === 'INSUFFICIENT_AMOUNT') {
+                    return res.status(400).json({ error: 'Insufficient payment amount' });
+                }
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+        ```
+
+    </Tab>
+</Tabs>
+
+---
+
+## Best Practices
+
+1. **Monitor Events**: Listen for payment requests off-chain
+2. **Error Handling**: Implement robust error handling
+3. **Fee Transparency**: Clearly communicate fees to users
+4. **Security**: Use multi-sig for fee withdrawals
+5. **Monitoring**: Set up monitoring and alerting
+
+## Security Considerations
+
+- Use multi-sig wallets for facilitator operations
+- Implement rate limiting to prevent abuse
+- Monitor for suspicious activity
+- Regular security audits
+- Keep facilitator keys secure
 
 ## Next Steps
 
-- [Become an x402 Seller](/cookbook/x402/become-an-x402-seller)
-- [Accepting x402 Payments](/cookbook/x402/accepting-payments)
-- [Buying with x402](/cookbook/x402/buying)
+- [Accept Payments](/cookbook/x402/accepting-payments)
+- [Make Payments](/cookbook/x402/buying)
+- [Multi-Token Payments](/cookbook/x402/non-usdc-tokens)
 
 ## Resources
 

@@ -1,9 +1,11 @@
 ---
-title: "Buying with x402"
+title: "Make Payments"
 description: "Make x402 payments to access paywalled resources"
 ---
 
-This guide shows how to make x402 payments from the buyer's perspective. Use the x402 SDK to handle payment flows, interact with paywalled resources, and process 402 Payment Required responses.
+## Make Payments
+
+This guide shows how to make x402 payments from the buyer's perspective. Use the SDK to handle payment flows, interact with paywalled resources, and process 402 Payment Required responses.
 
 ## Prerequisites
 
@@ -11,147 +13,314 @@ This guide shows how to make x402 payments from the buyer's perspective. Use the
 - A SKALE Chain endpoint
 - Understanding of x402 protocol
 - Familiarity with TypeScript/JavaScript
+- A wallet with funds (USDC or supported token)
 
 ## Overview
 
-To buy with x402, you need to:
+When accessing a paywalled resource, the flow is:
 
-1. Install the x402 SDK
-2. Handle 402 Payment Required responses
-3. Create and settle payments
-4. Retry requests with payment headers
+1. Make a request to the protected endpoint
+2. Receive a `402 Payment Required` response with payment requirements
+3. Create and settle the payment
+4. Retry the request with the `X-PAYMENT` header
 
-## Quick Start
+---
 
-Install the x402 SDK:
+## Implementation
 
-```bash
-npm install @coinbase/x402-sdk
-```
+<Tabs>
+    <Tab title="Basic Usage">
 
-## Basic Payment Flow
+        ### Step 1: Install Dependencies
 
-Here's how to make a payment to access a paywalled resource:
+        ```bash
+        npm install @coinbase/x402-sdk ethers
+        ```
 
-```typescript
-import { X402Client } from '@coinbase/x402-sdk';
-import { ethers } from 'ethers';
+        ### Step 2: Configure the Wallet
 
-const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
-const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+        ```typescript
+        import { ethers } from 'ethers';
 
-const x402Client = new X402Client({
-  wallet: wallet,
-  facilitatorURL: 'https://facilitator.dirtroad.dev',
-});
+        const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+        ```
 
-async function accessPaywalledResource(url: string) {
-  const response = await fetch(url);
-  
-  if (response.status === 402) {
-    const paymentInfo = await response.json();
-    const payment = await x402Client.createPayment(paymentInfo);
-    await x402Client.settle(payment);
-    
-    const retryResponse = await fetch(url, {
-      headers: {
-        'X-PAYMENT': JSON.stringify(payment),
-      },
-    });
-    
-    return await retryResponse.json();
-  }
-  
-  return await response.json();
-}
-```
+        ### Step 3: Create the x402 Client
 
-## Using @faremeter/fetch
+        ```typescript
+        import { X402Client } from '@coinbase/x402-sdk';
 
-The Faremeter fetch wrapper automatically handles 402 responses:
+        const x402Client = new X402Client({
+            wallet: wallet,
+            facilitatorURL: 'https://facilitator.dirtroad.dev',
+        });
+        ```
 
-```typescript
-import { createX402Fetch } from '@faremeter/fetch';
-import { ethers } from 'ethers';
+        ### Step 4: Access Paywalled Resources
 
-const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
-const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+        ```typescript
+        async function accessPaywalledResource(url: string) {
+            // Step 1: Make initial request
+            const response = await fetch(url);
+            
+            // Step 2: Check for payment required
+            if (response.status === 402) {
+                const paymentInfo = await response.json();
+                
+                // Step 3: Create and settle payment
+                const payment = await x402Client.createPayment(paymentInfo);
+                await x402Client.settle(payment);
+                
+                // Step 4: Retry with payment header
+                const retryResponse = await fetch(url, {
+                    headers: {
+                        'X-PAYMENT': JSON.stringify(payment),
+                    },
+                });
+                
+                return await retryResponse.json();
+            }
+            
+            return await response.json();
+        }
+        ```
 
-const x402Fetch = createX402Fetch({
-  wallet: wallet,
-  facilitatorURL: 'https://facilitator.dirtroad.dev',
-});
+        ### Complete Working Example
 
-// Automatically handles 402 responses
-const data = await x402Fetch('https://api.example.com/premium-data');
-```
+        ```typescript
+        import { X402Client } from '@coinbase/x402-sdk';
+        import { ethers } from 'ethers';
 
-## Payment Options
+        async function main() {
+            // Configure wallet
+            const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+            const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-Handle multiple payment options:
+            // Create x402 client
+            const x402Client = new X402Client({
+                wallet: wallet,
+                facilitatorURL: 'https://facilitator.dirtroad.dev',
+            });
 
-```typescript
-async function accessResourceWithOptions(url: string) {
-  const response = await fetch(url);
-  
-  if (response.status === 402) {
-    const paymentInfo = await response.json();
-    const selectedOption = paymentInfo.accepts[0];
-    
-    const payment = await x402Client.createPayment({
-      ...selectedOption,
-      resource: url,
-    });
-    
-    await x402Client.settle(payment);
-    
-    const retryResponse = await fetch(url, {
-      headers: {
-        'X-PAYMENT': JSON.stringify(payment),
-      },
-    });
-    
-    return await retryResponse.json();
-  }
-  
-  return await response.json();
-}
-```
+            // Access paywalled resource
+            const url = 'https://api.example.com/premium/data';
+            
+            try {
+                const response = await fetch(url);
+                
+                if (response.status === 402) {
+                    const paymentInfo = await response.json();
+                    const payment = await x402Client.createPayment(paymentInfo);
+                    await x402Client.settle(payment);
+                    
+                    const retryResponse = await fetch(url, {
+                        headers: {
+                            'X-PAYMENT': JSON.stringify(payment),
+                        },
+                    });
+                    
+                    const data = await retryResponse.json();
+                    console.log('Premium data:', data);
+                } else {
+                    const data = await response.json();
+                    console.log('Data:', data);
+                }
+            } catch (error) {
+                console.error('Error accessing resource:', error);
+            }
+        }
 
-## Error Handling
+        main();
+        ```
 
-```typescript
-async function accessResource(url: string) {
-  const response = await fetch(url);
-  
-  if (response.status === 402) {
-    const paymentInfo = await response.json();
-    const payment = await x402Client.createPayment(paymentInfo);
-    await x402Client.settle(payment);
-    
-    const retryResponse = await fetch(url, {
-      headers: {
-        'X-PAYMENT': JSON.stringify(payment),
-      },
-    });
-    
-    if (retryResponse.status === 402) {
-      throw new Error('Payment settlement failed');
-    }
-    
-    return await retryResponse.json();
-  }
-  
-  return await response.json();
-}
-```
+        ### Handling Multiple Payment Options
+
+        When the server offers multiple payment methods:
+
+        ```typescript
+        async function accessWithPaymentChoice(url: string, preferredNetwork?: string) {
+            const response = await fetch(url);
+            
+            if (response.status === 402) {
+                const paymentInfo = await response.json();
+                
+                // Select preferred payment option
+                let selectedOption = paymentInfo.accepts[0];
+                
+                if (preferredNetwork) {
+                    const preferred = paymentInfo.accepts.find(
+                        (opt: any) => opt.network === preferredNetwork
+                    );
+                    if (preferred) {
+                        selectedOption = preferred;
+                    }
+                }
+                
+                const payment = await x402Client.createPayment({
+                    ...selectedOption,
+                    resource: url,
+                });
+                
+                await x402Client.settle(payment);
+                
+                const retryResponse = await fetch(url, {
+                    headers: {
+                        'X-PAYMENT': JSON.stringify(payment),
+                    },
+                });
+                
+                return await retryResponse.json();
+            }
+            
+            return await response.json();
+        }
+
+        // Use SKALE network if available
+        const data = await accessWithPaymentChoice(
+            'https://api.example.com/premium/data',
+            'skale-base-sepolia'
+        );
+        ```
+
+        ### Error Handling
+
+        ```typescript
+        async function accessResourceSafely(url: string) {
+            try {
+                const response = await fetch(url);
+                
+                if (response.status === 402) {
+                    const paymentInfo = await response.json();
+                    const payment = await x402Client.createPayment(paymentInfo);
+                    await x402Client.settle(payment);
+                    
+                    const retryResponse = await fetch(url, {
+                        headers: {
+                            'X-PAYMENT': JSON.stringify(payment),
+                        },
+                    });
+                    
+                    // Check if payment was accepted
+                    if (retryResponse.status === 402) {
+                        throw new Error('Payment settlement failed');
+                    }
+                    
+                    if (!retryResponse.ok) {
+                        throw new Error(`Request failed: ${retryResponse.status}`);
+                    }
+                    
+                    return await retryResponse.json();
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`Request failed: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error accessing paywalled resource:', error);
+                throw error;
+            }
+        }
+        ```
+
+    </Tab>
+    <Tab title="Faremeter SDK">
+
+        ### Step 1: Install Dependencies
+
+        ```bash
+        npm install @faremeter/fetch ethers
+        ```
+
+        ### Step 2: Configure the Wallet
+
+        ```typescript
+        import { ethers } from 'ethers';
+
+        const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+        ```
+
+        ### Step 3: Create the x402 Fetch Client
+
+        The Faremeter fetch wrapper automatically handles 402 responses:
+
+        ```typescript
+        import { createX402Fetch } from '@faremeter/fetch';
+
+        const x402Fetch = createX402Fetch({
+            wallet: wallet,
+            facilitatorURL: 'https://facilitator.dirtroad.dev',
+        });
+        ```
+
+        ### Step 4: Access Paywalled Resources
+
+        ```typescript
+        // Automatically handles 402 responses and payments
+        const data = await x402Fetch('https://api.example.com/premium-data');
+        console.log(data);
+        ```
+
+        ### Complete Working Example
+
+        ```typescript
+        import { createX402Fetch } from '@faremeter/fetch';
+        import { ethers } from 'ethers';
+
+        async function main() {
+            // Configure wallet
+            const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
+            const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+            // Create x402-enabled fetch client
+            const x402Fetch = createX402Fetch({
+                wallet: wallet,
+                facilitatorURL: 'https://facilitator.dirtroad.dev',
+            });
+
+            try {
+                // Access premium content - payment handled automatically
+                const premiumData = await x402Fetch('https://api.example.com/premium/data');
+                console.log('Premium data:', premiumData);
+
+                // Access another paywalled resource
+                const weatherData = await x402Fetch('https://api.example.com/premium/weather');
+                console.log('Weather data:', weatherData);
+            } catch (error) {
+                console.error('Error accessing resource:', error);
+            }
+        }
+
+        main();
+        ```
+
+    </Tab>
+</Tabs>
+
+---
+
+## Best Practices
+
+1. **Use Environment Variables**: Never hardcode private keys
+2. **Handle Errors Gracefully**: Always wrap payment logic in try-catch
+3. **Check Balances**: Ensure wallet has sufficient funds before making payments
+4. **Log Transactions**: Keep track of payments for debugging and accounting
+
+## Security Considerations
+
+- Never expose private keys in client-side code
+- Use secure key management (environment variables, secrets manager)
+- Validate payment amounts before approving
+- Consider implementing spending limits
 
 ## Next Steps
 
-- [Become an x402 Seller](/cookbook/x402/become-an-x402-seller)
-- [Accepting x402 Payments](/cookbook/x402/accepting-payments)
-- [Running a Facilitator](/cookbook/x402/facilitator)
-- [Using Non-USDC Tokens](/cookbook/x402/non-usdc-tokens)
+- [Accept Payments (Seller)](/cookbook/x402/accepting-payments)
+- [Run a Facilitator](/cookbook/x402/facilitator)
+- [Multi-Token Payments](/cookbook/x402/non-usdc-tokens)
 
 ## Resources
 

@@ -1,7 +1,9 @@
 ---
-title: "Accepting x402 Payments"
+title: "Accept Payments"
 description: "Protect HTTP endpoints with x402 payments using middleware"
 ---
+
+## Accept Payments
 
 Protect your HTTP endpoints with x402 payments using middleware. The middleware enforces Coinbase's x402 handshake, forwards payment requirements to a facilitator, inspects `X-PAYMENT` headers from clients, and retries settlement before allowing requests to proceed.
 
@@ -10,159 +12,344 @@ Protect your HTTP endpoints with x402 payments using middleware. The middleware 
 - Node.js and npm installed
 - A SKALE Chain endpoint
 - Understanding of x402 protocol
-- Express or Hono framework
-- A facilitator service (see [Running a Facilitator](/cookbook/x402/facilitator))
+- A facilitator service (see [Run a Facilitator](/cookbook/x402/facilitator))
 
 ## Overview
 
-To accept x402 payments, you need to:
-
-1. Set up a facilitator service
-2. Install x402 middleware
-3. Protect your HTTP endpoints
-4. Define payment requirements
-
-## Quick Start (Express)
-
-```javascript
-import express from "express";
-import { createMiddleware } from "@faremeter/middleware/express";
-
-const paywalled = await createMiddleware({
-  facilitatorURL: "https://facilitator.dirtroad.dev",
-  accepts: [
-    {
-      scheme: "exact",
-      network: "skale-base-sepolia",
-      maxAmountRequired: "1.5",
-      description: "SKALE USDC payment",
-    },
-  ],
-});
-
-const app = express();
-app.use("/premium", paywalled, premiumRouter);
-```
-
-When a client reaches `/premium`, the middleware:
+When a client reaches a paywalled endpoint, the middleware:
 
 1. Calls the facilitator's `/accepts` endpoint to produce canonical requirements
-2. Returns a `402 Payment Required` response (with the facilitator payload) if the incoming request lacks a valid `X-PAYMENT` header
-3. When a header is present, forwards it to `/settle`. If settlement succeeds, the request pipeline continues; otherwise another 402 is returned
+2. Returns a `402 Payment Required` response if the incoming request lacks a valid `X-PAYMENT` header
+3. When a header is present, forwards it to `/settle`. If settlement succeeds, the request continues; otherwise another 402 is returned
 
-## Quick Start (Hono)
+---
 
-```javascript
-import { Hono } from "hono";
-import { createMiddleware } from "@faremeter/middleware/hono";
+## Implementation
 
-const paywalled = await createMiddleware({
-  facilitatorURL: "https://facilitator.dirtroad.dev",
-  accepts: [
-    {
-      scheme: "exact",
-      network: "skale-base-sepolia",
-      maxAmountRequired: "1.5",
-      description: "SKALE USDC payment",
-    },
-  ],
-});
+<Tabs>
+    <Tab title="Express">
 
-const app = new Hono();
-app.use("/premium/*", paywalled);
-```
+        ### Step 1: Install Dependencies
 
-## API Surface
+        ```bash
+        npm install express @faremeter/middleware
+        ```
 
-### Express Adapter
+        ### Step 2: Create the Middleware
 
-```javascript
-const middleware = await createMiddleware({
-  facilitatorURL: "https://facilitator.dirtroad.dev",
-  accepts: [
-    {
-      scheme: "exact",
-      network: "skale-base-sepolia",
-      maxAmountRequired: "1.5",
-      description: "SKALE USDC payment",
-    },
-  ],
-  cacheConfig: {
-    capacity: 256,
-    maxAge: 30000, // 30 seconds
-  },
-});
-```
+        ```javascript
+        import { createMiddleware } from "@faremeter/middleware/express";
 
-### Hono Adapter
+        const paywalled = await createMiddleware({
+            facilitatorURL: "https://facilitator.dirtroad.dev",
+            accepts: [
+                {
+                    scheme: "exact",
+                    network: "skale-base-sepolia",
+                    maxAmountRequired: "1.5",
+                    description: "SKALE USDC payment",
+                },
+            ],
+        });
+        ```
 
-```javascript
-const middleware = await createMiddleware({
-  facilitatorURL: "https://facilitator.dirtroad.dev",
-  accepts: [
-    {
-      scheme: "exact",
-      network: "skale-base-sepolia",
-      maxAmountRequired: "1.5",
-      description: "SKALE USDC payment",
-    },
-  ],
-});
-```
+        ### Step 3: Create Protected Routes
+
+        ```javascript
+        import express from "express";
+
+        const app = express();
+        app.use(express.json());
+
+        // Public route - no payment required
+        app.get("/", (req, res) => {
+            res.json({ message: "Welcome to the API" });
+        });
+
+        // Protected route - requires x402 payment
+        app.get("/premium/data", paywalled, (req, res) => {
+            res.json({ 
+                secret: "This is premium content",
+                timestamp: new Date().toISOString()
+            });
+        });
+
+        // Protected route - premium weather data
+        app.get("/premium/weather", paywalled, (req, res) => {
+            res.json({
+                temperature: 72,
+                humidity: 45,
+                forecast: "Sunny with clear skies"
+            });
+        });
+
+        app.listen(3000, () => {
+            console.log("Server running on port 3000");
+        });
+        ```
+
+        ### Step 4: Complete Working Example
+
+        ```javascript
+        import express from "express";
+        import { createMiddleware } from "@faremeter/middleware/express";
+
+        async function main() {
+            const app = express();
+            app.use(express.json());
+
+            // Create paywalled middleware
+            const paywalled = await createMiddleware({
+                facilitatorURL: "https://facilitator.dirtroad.dev",
+                accepts: [
+                    {
+                        scheme: "exact",
+                        network: "skale-base-sepolia",
+                        maxAmountRequired: "1.5",
+                        description: "SKALE USDC payment",
+                    },
+                ],
+                cacheConfig: {
+                    capacity: 256,
+                    maxAge: 30000, // Cache for 30 seconds
+                },
+            });
+
+            // Public endpoint
+            app.get("/", (req, res) => {
+                res.json({ 
+                    message: "Welcome! Access /premium/* endpoints for paid content" 
+                });
+            });
+
+            // Protected endpoints
+            app.get("/premium/data", paywalled, (req, res) => {
+                res.json({ 
+                    secret: "Premium data unlocked!",
+                    timestamp: new Date().toISOString()
+                });
+            });
+
+            app.listen(3000, () => {
+                console.log("Express server running on http://localhost:3000");
+            });
+        }
+
+        main().catch(console.error);
+        ```
+
+        ### Cache Configuration
+
+        The `cacheConfig` option helps reduce calls to the facilitator:
+
+        ```javascript
+        cacheConfig: {
+            capacity: 256,    // Max number of cached entries
+            maxAge: 30000,    // Cache TTL in milliseconds (30 seconds)
+        }
+        ```
+
+    </Tab>
+    <Tab title="Hono">
+
+        ### Step 1: Install Dependencies
+
+        ```bash
+        npm install hono @faremeter/middleware
+        ```
+
+        ### Step 2: Create the Middleware
+
+        ```javascript
+        import { createMiddleware } from "@faremeter/middleware/hono";
+
+        const paywalled = await createMiddleware({
+            facilitatorURL: "https://facilitator.dirtroad.dev",
+            accepts: [
+                {
+                    scheme: "exact",
+                    network: "skale-base-sepolia",
+                    maxAmountRequired: "1.5",
+                    description: "SKALE USDC payment",
+                },
+            ],
+        });
+        ```
+
+        ### Step 3: Create Protected Routes
+
+        ```javascript
+        import { Hono } from "hono";
+
+        const app = new Hono();
+
+        // Public route - no payment required
+        app.get("/", (c) => {
+            return c.json({ message: "Welcome to the API" });
+        });
+
+        // Apply middleware to all /premium/* routes
+        app.use("/premium/*", paywalled);
+
+        // Protected route - requires x402 payment
+        app.get("/premium/data", (c) => {
+            return c.json({ 
+                secret: "This is premium content",
+                timestamp: new Date().toISOString()
+            });
+        });
+
+        // Protected route - premium weather data
+        app.get("/premium/weather", (c) => {
+            return c.json({
+                temperature: 72,
+                humidity: 45,
+                forecast: "Sunny with clear skies"
+            });
+        });
+
+        export default app;
+        ```
+
+        ### Step 4: Complete Working Example
+
+        ```javascript
+        import { Hono } from "hono";
+        import { serve } from "@hono/node-server";
+        import { createMiddleware } from "@faremeter/middleware/hono";
+
+        async function main() {
+            const app = new Hono();
+
+            // Create paywalled middleware
+            const paywalled = await createMiddleware({
+                facilitatorURL: "https://facilitator.dirtroad.dev",
+                accepts: [
+                    {
+                        scheme: "exact",
+                        network: "skale-base-sepolia",
+                        maxAmountRequired: "1.5",
+                        description: "SKALE USDC payment",
+                    },
+                ],
+            });
+
+            // Public endpoint
+            app.get("/", (c) => {
+                return c.json({ 
+                    message: "Welcome! Access /premium/* endpoints for paid content" 
+                });
+            });
+
+            // Apply middleware to premium routes
+            app.use("/premium/*", paywalled);
+
+            // Protected endpoints
+            app.get("/premium/data", (c) => {
+                return c.json({ 
+                    secret: "Premium data unlocked!",
+                    timestamp: new Date().toISOString()
+                });
+            });
+
+            serve({
+                fetch: app.fetch,
+                port: 3000,
+            });
+
+            console.log("Hono server running on http://localhost:3000");
+        }
+
+        main().catch(console.error);
+        ```
+
+        ### Hono with Cloudflare Workers
+
+        Deploy to Cloudflare Workers:
+
+        ```javascript
+        import { Hono } from "hono";
+        import { createMiddleware } from "@faremeter/middleware/hono";
+
+        const app = new Hono();
+
+        const paywalled = await createMiddleware({
+            facilitatorURL: "https://facilitator.dirtroad.dev",
+            accepts: [
+                {
+                    scheme: "exact",
+                    network: "skale-base-sepolia",
+                    maxAmountRequired: "1.5",
+                    description: "SKALE USDC payment",
+                },
+            ],
+        });
+
+        app.get("/", (c) => c.json({ message: "Welcome!" }));
+        app.use("/premium/*", paywalled);
+        app.get("/premium/data", (c) => c.json({ secret: "Premium content" }));
+
+        export default app;
+        ```
+
+    </Tab>
+</Tabs>
+
+---
 
 ## Multiple Payment Options
 
-Provide an array of arrays in `accepts` to describe alternative requirement sets:
+Provide an array of arrays in `accepts` to offer alternative payment methods:
 
 ```javascript
-const middleware = await createMiddleware({
-  facilitatorURL: "https://facilitator.dirtroad.dev",
-  accepts: [
-    [
-      {
-        scheme: "exact",
-        network: "skale-base-sepolia",
-        maxAmountRequired: "1.5",
-        description: "SKALE USDC payment",
-      },
-      {
-        scheme: "exact",
-        network: "ethereum-mainnet",
-        maxAmountRequired: "1.5",
-        description: "Ethereum USDC payment",
-      },
+const paywalled = await createMiddleware({
+    facilitatorURL: "https://facilitator.dirtroad.dev",
+    accepts: [
+        [
+            {
+                scheme: "exact",
+                network: "skale-base-sepolia",
+                maxAmountRequired: "1.5",
+                description: "SKALE USDC payment",
+            },
+            {
+                scheme: "exact",
+                network: "ethereum-mainnet",
+                maxAmountRequired: "1.5",
+                description: "Ethereum USDC payment",
+            },
+        ],
     ],
-  ],
 });
 ```
 
 ## Resource-Specific Requirements
 
-Leave `resource` undefined in the accepts entries to let the middleware fill it with the current request URL:
+Leave `resource` undefined to let the middleware fill it with the current request URL:
 
 ```javascript
-const middleware = await createMiddleware({
-  facilitatorURL: "https://facilitator.dirtroad.dev",
-  accepts: [
-    {
-      scheme: "exact",
-      network: "skale-base-sepolia",
-      maxAmountRequired: "1.5",
-    },
-  ],
+const paywalled = await createMiddleware({
+    facilitatorURL: "https://facilitator.dirtroad.dev",
+    accepts: [
+        {
+            scheme: "exact",
+            network: "skale-base-sepolia",
+            maxAmountRequired: "1.5",
+            // resource is auto-filled with the request URL
+        },
+    ],
 });
 ```
 
 ## Error Handling
 
-Invalid facilitator responses throw an exception (HTTP 500). When settlement fails, the middleware replays the facilitator payload to the client.
+Invalid facilitator responses throw an exception (HTTP 500). When settlement fails, the middleware replays the facilitator payload to the client with a 402 status.
 
 ## Next Steps
 
-- [Become an x402 Seller](/cookbook/x402/become-an-x402-seller)
-- [Buying with x402](/cookbook/x402/buying)
-- [Running a Facilitator](/cookbook/x402/facilitator)
-- [Using Non-USDC Tokens](/cookbook/x402/non-usdc-tokens)
+- [Make Payments (Buyer)](/cookbook/x402/buying)
+- [Run a Facilitator](/cookbook/x402/facilitator)
+- [Multi-Token Payments](/cookbook/x402/non-usdc-tokens)
 
 ## Resources
 

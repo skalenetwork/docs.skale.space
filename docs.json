@@ -285,19 +285,18 @@
             ]
           },
           {
-            "group": "Agents",
+            "group": "x402 Payments",
             "pages": [
-              "cookbook/agents/build-an-agent"
+              "cookbook/x402/facilitator",
+              "cookbook/x402/accepting-payments",
+              "cookbook/x402/buying",
+              "cookbook/x402/non-usdc-tokens"
             ]
           },
           {
-            "group": "x402",
+            "group": "AI Agents",
             "pages": [
-              "cookbook/x402/become-an-x402-seller",
-              "cookbook/x402/accepting-payments",
-              "cookbook/x402/buying",
-              "cookbook/x402/facilitator",
-              "cookbook/x402/non-usdc-tokens"
+              "cookbook/agents/build-an-agent"
             ]
           },
           {
