@@ -134,8 +134,12 @@ require("dotenv").config();
 
 ## Step 7: Create a Deployment Script
 
-Create a deployment script in `scripts/deploy.js`:
+Create a deployment script in `scripts/deploy.js`. Run:
+```shell
+touch scripts/deploy.js
+```
 
+Add the deployment code:
 ```javascript
 const hre = require("hardhat");
 
@@ -170,14 +174,6 @@ Run your tests:
 
 ```shell
 npx hardhat test
-```
-
-## Step 10: Deploy to SKALE
-
-Deploy your contract to SKALE:
-
-```shell
-npx hardhat run scripts/deploy.js --network skale_testnet
 ```
 
 ## SKALE-Specific Considerations

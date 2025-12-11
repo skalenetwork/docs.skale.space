@@ -19,161 +19,256 @@ A coin flip randomly selects between two outcomes:
 - **Heads** (true or 1)
 - **Tails** (false or 0)
 
-## Basic Implementation
+---
 
-Here's a simple coin flip contract:
+## Implementation
 
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+<Tabs>
+    <Tab title="Direct Precompile Call (0x18)">
 
-contract CoinFlip {
-    enum CoinSide { Heads, Tails }
-    
-    event CoinFlipped(address indexed player, CoinSide result);
-    
-    function flip() public returns (CoinSide) {
-        uint256 random = getRandomNumber();
-        CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
-        
-        emit CoinFlipped(msg.sender, result);
-        return result;
-    }
-    
-    function getRandomNumber() private view returns (uint256) {
-        bytes32 randomBytes;
-        assembly {
-            let freemem := mload(0x40)
-            if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
-                invalid()
+        ### Basic Coin Flip
+
+        Here's a simple coin flip contract using inline assembly to call the RNG precompile:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        contract CoinFlip {
+            enum CoinSide { Heads, Tails }
+            
+            event CoinFlipped(address indexed player, CoinSide result);
+            
+            function flip() public returns (CoinSide) {
+                uint256 random = getRandomNumber();
+                CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+                
+                emit CoinFlipped(msg.sender, result);
+                return result;
             }
-            randomBytes := mload(freemem)
+            
+            function getRandomNumber() private view returns (uint256) {
+                bytes32 randomBytes;
+                assembly {
+                    let freemem := mload(0x40)
+                    if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
+                        invalid()
+                    }
+                    randomBytes := mload(freemem)
+                }
+                return uint256(randomBytes);
+            }
         }
-        return uint256(randomBytes);
-    }
-}
-```
+        ```
 
-## Using SKALE RNG Library
+        ### Multiple Coin Flips
 
-Using the SKALE RNG library makes it even simpler:
+        Implement multiple coin flips in one transaction:
 
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
 
-import "@dirtroad/skale-rng/contracts/RNG.sol";
+        contract MultipleCoinFlip {
+            enum CoinSide { Heads, Tails }
 
-contract CoinFlipWithLibrary is RNG {
-    enum CoinSide { Heads, Tails }
-    
-    event CoinFlipped(address indexed player, CoinSide result);
-    
-    function flip() public returns (CoinSide) {
-        uint256 random = getRandomNumber();
-        CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
-        
-        emit CoinFlipped(msg.sender, result);
-        return result;
-    }
-}
-```
-
-## Advanced: Coin Flip with Betting
-
-Add betting functionality:
-
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
-
-import "@dirtroad/skale-rng/contracts/RNG.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
-contract BettingCoinFlip is RNG, ReentrancyGuard {
-    using SafeERC20 for IERC20;
-    
-    IERC20 public paymentToken;
-    
-    enum CoinSide { Heads, Tails }
-    
-    struct Bet {
-        address player;
-        CoinSide choice;
-        uint256 amount;
-        bool resolved;
-        CoinSide result;
-    }
-    
-    mapping(uint256 => Bet) public bets;
-    uint256 public betCount;
-    
-    event BetPlaced(uint256 indexed betId, address indexed player, CoinSide choice, uint256 amount);
-    event BetResolved(uint256 indexed betId, address indexed player, CoinSide result, bool won, uint256 payout);
-    
-    constructor(address _paymentToken) {
-        paymentToken = IERC20(_paymentToken);
-    }
-    
-    function placeBet(CoinSide choice, uint256 amount) external nonReentrant returns (uint256) {
-        require(amount > 0, "Amount must be greater than 0");
-        
-        // Transfer bet amount
-        paymentToken.safeTransferFrom(msg.sender, address(this), amount);
-        
-        // Create bet
-        betCount++;
-        bets[betCount] = Bet({
-            player: msg.sender,
-            choice: choice,
-            amount: amount,
-            resolved: false,
-            result: CoinSide.Heads // Placeholder
-        });
-        
-        emit BetPlaced(betCount, msg.sender, choice, amount);
-        
-        // Resolve immediately
-        resolveBet(betCount);
-        
-        return betCount;
-    }
-    
-    function resolveBet(uint256 betId) private {
-        Bet storage bet = bets[betId];
-        require(!bet.resolved, "Bet already resolved");
-        
-        // Flip coin
-        CoinSide result = flipCoin();
-        bet.result = result;
-        bet.resolved = true;
-        
-        // Check if player won
-        bool won = (bet.choice == result);
-        uint256 payout = 0;
-        
-        if (won) {
-            // Player wins: return bet + winnings (1:1 payout)
-            payout = bet.amount * 2;
-            paymentToken.safeTransfer(bet.player, payout);
+            function flipMultiple(uint256 count) external view returns (CoinSide[] memory) {
+                require(count > 0 && count <= 100, "Invalid count");
+                
+                CoinSide[] memory results = new CoinSide[](count);
+                
+                for (uint256 i = 0; i < count; i++) {
+                    uint256 random = getRandomNumber();
+                    results[i] = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+                }
+                
+                return results;
+            }
+            
+            function getRandomNumber() private view returns (uint256) {
+                bytes32 randomBytes;
+                assembly {
+                    let freemem := mload(0x40)
+                    if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
+                        invalid()
+                    }
+                    randomBytes := mload(freemem)
+                }
+                return uint256(randomBytes);
+            }
         }
-        // If lost, bet amount stays in contract
-        
-        emit BetResolved(betId, bet.player, result, won, payout);
-    }
-    
-    function flipCoin() private view returns (CoinSide) {
-        uint256 random = getRandomNumber();
-        return (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
-    }
-    
-    function getBet(uint256 betId) external view returns (Bet memory) {
-        return bets[betId];
-    }
-}
-```
+        ```
+
+        <Note>
+        Remember that RNG values are per-block, so multiple flips in the same transaction will use the same random value. For truly independent flips, you may need to use block numbers or other entropy sources.
+        </Note>
+
+    </Tab>
+    <Tab title="SKALE RNG Library">
+
+        ### Step 1: Install the Library
+
+        ```shell
+        npm install @dirtroad/skale-rng
+        ```
+
+        ### Basic Coin Flip
+
+        Using the SKALE RNG library makes it simpler:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+        contract CoinFlipWithLibrary is RNG {
+            enum CoinSide { Heads, Tails }
+            
+            event CoinFlipped(address indexed player, CoinSide result);
+            
+            function flip() public returns (CoinSide) {
+                uint256 random = getRandomNumber();
+                CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+                
+                emit CoinFlipped(msg.sender, result);
+                return result;
+            }
+        }
+        ```
+
+        ### Coin Flip with Betting
+
+        Add betting functionality:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@dirtroad/skale-rng/contracts/RNG.sol";
+        import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+        import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+        import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+        contract BettingCoinFlip is RNG, ReentrancyGuard {
+            using SafeERC20 for IERC20;
+            
+            IERC20 public paymentToken;
+            
+            enum CoinSide { Heads, Tails }
+            
+            struct Bet {
+                address player;
+                CoinSide choice;
+                uint256 amount;
+                bool resolved;
+                CoinSide result;
+            }
+            
+            mapping(uint256 => Bet) public bets;
+            uint256 public betCount;
+            
+            event BetPlaced(uint256 indexed betId, address indexed player, CoinSide choice, uint256 amount);
+            event BetResolved(uint256 indexed betId, address indexed player, CoinSide result, bool won, uint256 payout);
+            
+            constructor(address _paymentToken) {
+                paymentToken = IERC20(_paymentToken);
+            }
+            
+            function placeBet(CoinSide choice, uint256 amount) external nonReentrant returns (uint256) {
+                require(amount > 0, "Amount must be greater than 0");
+                
+                // Transfer bet amount
+                paymentToken.safeTransferFrom(msg.sender, address(this), amount);
+                
+                // Create bet
+                betCount++;
+                bets[betCount] = Bet({
+                    player: msg.sender,
+                    choice: choice,
+                    amount: amount,
+                    resolved: false,
+                    result: CoinSide.Heads // Placeholder
+                });
+                
+                emit BetPlaced(betCount, msg.sender, choice, amount);
+                
+                // Resolve immediately
+                resolveBet(betCount);
+                
+                return betCount;
+            }
+            
+            function resolveBet(uint256 betId) private {
+                Bet storage bet = bets[betId];
+                require(!bet.resolved, "Bet already resolved");
+                
+                // Flip coin
+                CoinSide result = flipCoin();
+                bet.result = result;
+                bet.resolved = true;
+                
+                // Check if player won
+                bool won = (bet.choice == result);
+                uint256 payout = 0;
+                
+                if (won) {
+                    // Player wins: return bet + winnings (1:1 payout)
+                    payout = bet.amount * 2;
+                    paymentToken.safeTransfer(bet.player, payout);
+                }
+                // If lost, bet amount stays in contract
+                
+                emit BetResolved(betId, bet.player, result, won, payout);
+            }
+            
+            function flipCoin() private view returns (CoinSide) {
+                uint256 random = getRandomNumber();
+                return (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+            }
+            
+            function getBet(uint256 betId) external view returns (Bet memory) {
+                return bets[betId];
+            }
+        }
+        ```
+
+        ### Multiple Coin Flips
+
+        Implement multiple coin flips in one transaction:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+        contract MultipleCoinFlipWithLibrary is RNG {
+            enum CoinSide { Heads, Tails }
+
+            function flipMultiple(uint256 count) external view returns (CoinSide[] memory) {
+                require(count > 0 && count <= 100, "Invalid count");
+                
+                CoinSide[] memory results = new CoinSide[](count);
+                
+                for (uint256 i = 0; i < count; i++) {
+                    uint256 random = getRandomNumber();
+                    results[i] = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+                }
+                
+                return results;
+            }
+        }
+        ```
+
+        <Note>
+        Remember that RNG values are per-block, so multiple flips in the same transaction will use the same random value. For truly independent flips, you may need to use block numbers or other entropy sources.
+        </Note>
+
+    </Tab>
+</Tabs>
+
+---
 
 ## Frontend Integration
 
@@ -195,7 +290,7 @@ async function flipCoin() {
     });
 }
 
-// Place bet
+// Place bet (for betting contract)
 async function placeBet(choice, amount) {
     // Approve token spending first
     await tokenContract.approve(contractAddress, amount);
@@ -213,43 +308,6 @@ async function placeBet(choice, amount) {
     });
 }
 ```
-
-## Multiple Coin Flips
-
-Implement multiple coin flips in one transaction:
-
-```solidity
-contract MultipleCoinFlip is RNG {
-    function flipMultiple(uint256 count) external returns (CoinSide[] memory) {
-        require(count > 0 && count <= 100, "Invalid count");
-        
-        CoinSide[] memory results = new CoinSide[](count);
-        
-        for (uint256 i = 0; i < count; i++) {
-            uint256 random = getRandomNumber();
-            results[i] = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
-        }
-        
-        return results;
-    }
-    
-    function getRandomNumber() private view returns (uint256) {
-        bytes32 randomBytes;
-        assembly {
-            let freemem := mload(0x40)
-            if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
-                invalid()
-            }
-            randomBytes := mload(freemem)
-        }
-        return uint256(randomBytes);
-    }
-}
-```
-
-<Note>
-Remember that RNG values are per-block, so multiple flips in the same transaction will use the same random value. For truly independent flips, you may need to use block numbers or other entropy sources.
-</Note>
 
 ## Best Practices
 
@@ -277,4 +335,3 @@ Remember that RNG values are per-block, so multiple flips in the same transactio
 
 - [SKALE RNG Library](https://www.npmjs.com/package/@dirtroad/skale-rng)
 - [SKALE Developer Discord](https://discord.gg/skale)
-
