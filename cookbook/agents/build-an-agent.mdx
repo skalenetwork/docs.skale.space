@@ -35,7 +35,7 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
         ### Step 1: Install Dependencies
 
         ```bash
-        npm install @coinbase/x402-sdk ethers dotenv
+        npm install @x402/core @x402/evm viem dotenv
         ```
 
         ### Step 2: Set Up Environment Variables
@@ -43,179 +43,218 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
         Create a `.env` file:
 
         ```bash
-        PRIVATE_KEY=your_wallet_private_key
-        SKALE_RPC_URL=https://testnet.skalenodes.com/v1/juicy-low-small-testnet
-        FACILITATOR_URL=https://facilitator.dirtroad.dev
+        # Your wallet private key (never commit this!)
+        PRIVATE_KEY=0xYourPrivateKey
+
+        # USDC token contract on SKALE
+        PAYMENT_TOKEN_ADDRESS=0x2e08028E3C4c2356572E096d8EF835cD5C6030bD
+        PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
         ```
 
-        ### Step 3: Create the Agent Class
+        ### Step 3: Define Your Chain
+
+        Create a file `chain.ts`:
+
+        ```typescript
+        import { defineChain } from "viem";
+
+        export const skaleChain = defineChain({
+            id: 324705682,
+            name: "SKALE Base Sepolia",
+            nativeCurrency: { decimals: 18, name: "Credits", symbol: "CREDIT" },
+            rpcUrls: {
+                default: { http: ["https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"] },
+            },
+        });
+        ```
+
+        ### Step 4: Create the Agent Class
 
         Create a file `agent.ts`:
 
         ```typescript
-        import { X402Client } from '@coinbase/x402-sdk';
-        import { ethers } from 'ethers';
-        import 'dotenv/config';
+        import { x402Client, x402HTTPClient } from "@x402/core/client";
+        import { ExactEvmScheme } from "@x402/evm";
+        import { privateKeyToAccount } from "viem/accounts";
+        import { createPublicClient, http, formatEther } from "viem";
+        import { skaleChain } from "./chain";
+        import "dotenv/config";
+
+        type AccessResult = {
+            success: boolean;
+            data?: unknown;
+            error?: string;
+        };
 
         class BasicAgent {
-            private x402Client: X402Client;
-            private wallet: ethers.Wallet;
+            private httpClient: x402HTTPClient;
+            private walletAddress: string;
+            private publicClient: ReturnType<typeof createPublicClient>;
 
-            constructor() {
-                // Initialize wallet with provider
-                const provider = new ethers.JsonRpcProvider(process.env.SKALE_RPC_URL);
-                this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-                
-                // Initialize x402 client for handling payments
-                this.x402Client = new X402Client({
-                    wallet: this.wallet,
-                    facilitatorURL: process.env.FACILITATOR_URL!,
-                });
-
-                console.log(`Agent initialized with wallet: ${this.wallet.address}`);
+            private constructor(
+                httpClient: x402HTTPClient,
+                walletAddress: string,
+                publicClient: ReturnType<typeof createPublicClient>
+            ) {
+                this.httpClient = httpClient;
+                this.walletAddress = walletAddress;
+                this.publicClient = publicClient;
             }
 
-            /**
-             * Access a paywalled resource, automatically handling payment if required
-             */
-            async accessResource(url: string): Promise<any> {
+            static async create(): Promise<BasicAgent> {
+                const privateKey = process.env.PRIVATE_KEY;
+                if (!privateKey) {
+                    throw new Error("PRIVATE_KEY environment variable is required");
+                }
+
+                // Create wallet account from private key
+                const account = privateKeyToAccount(privateKey as `0x${string}`);
+
+                // Create EVM scheme for signing payments
+                const evmScheme = new ExactEvmScheme(account);
+
+                // Register scheme for all EVM networks
+                const coreClient = new x402Client().register("eip155:*", evmScheme);
+                const httpClient = new x402HTTPClient(coreClient);
+
+                // Create public client for balance checks
+                const publicClient = createPublicClient({
+                    chain: skaleChain,
+                    transport: http(),
+                });
+
+                console.log(`Agent initialized with wallet: ${account.address}`);
+
+                return new BasicAgent(httpClient, account.address, publicClient);
+            }
+
+            async accessResource(url: string): Promise<AccessResult> {
                 console.log(`Accessing resource: ${url}`);
-                
-                const response = await fetch(url);
-                
-                // If payment is required, handle it automatically
-                if (response.status === 402) {
-                    console.log('Payment required. Processing payment...');
-                    return await this.handlePayment(url, response);
+
+                try {
+                    const response = await fetch(url, {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    });
+
+                    if (response.status === 402) {
+                        return this.handlePaymentRequired(response, url);
+                    }
+
+                    if (!response.ok) {
+                        return { success: false, error: `Request failed: ${response.status}` };
+                    }
+
+                    const data = await response.json();
+                    return { success: true, data };
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : "Unknown error";
+                    return { success: false, error: message };
                 }
-                
-                // No payment required, return the data
-                return await response.json();
             }
 
-            /**
-             * Handle the x402 payment flow
-             */
-            private async handlePayment(url: string, response: Response): Promise<any> {
-                // Get payment requirements from the 402 response
-                const paymentInfo = await response.json();
-                console.log('Payment info:', JSON.stringify(paymentInfo, null, 2));
-                
-                // Create the payment
-                const payment = await this.x402Client.createPayment(paymentInfo);
-                console.log('Payment created. Settling...');
-                
-                // Settle the payment on-chain
-                await this.x402Client.settle(payment);
-                console.log('Payment settled successfully!');
-                
-                // Retry the request with the payment header
-                const retryResponse = await fetch(url, {
-                    headers: {
-                        'X-PAYMENT': JSON.stringify(payment),
-                    },
-                });
-                
-                if (retryResponse.status === 402) {
-                    throw new Error('Payment was not accepted');
+            private async handlePaymentRequired(
+                response: Response,
+                url: string
+            ): Promise<AccessResult> {
+                console.log("Payment required (402), processing payment...");
+
+                try {
+                    const responseBody = await response.json();
+
+                    // Get payment requirements from response headers and body
+                    const paymentRequired = this.httpClient.getPaymentRequiredResponse(
+                        (name: string) => response.headers.get(name),
+                        responseBody
+                    );
+
+                    console.log(`Payment options: ${paymentRequired.accepts.length}`);
+
+                    // Create signed payment payload
+                    const paymentPayload = await this.httpClient.createPaymentPayload(paymentRequired);
+
+                    // Encode payment headers for the retry request
+                    const paymentHeaders = this.httpClient.encodePaymentSignatureHeader(paymentPayload);
+
+                    // Retry request with payment
+                    const paidResponse = await fetch(url, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            ...paymentHeaders,
+                        },
+                    });
+
+                    if (!paidResponse.ok) {
+                        return { success: false, error: `Payment failed: ${paidResponse.status}` };
+                    }
+
+                    // Check settlement response
+                    const settlement = this.httpClient.getPaymentSettleResponse(
+                        (name: string) => paidResponse.headers.get(name)
+                    );
+
+                    if (settlement?.transaction) {
+                        console.log(`Payment settled, tx: ${settlement.transaction}`);
+                    }
+
+                    const data = await paidResponse.json();
+                    console.log("Resource accessed successfully after payment!");
+                    return { success: true, data };
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : "Unknown error";
+                    console.error("Payment processing failed:", message);
+                    return { success: false, error: message };
                 }
-                
-                return await retryResponse.json();
             }
 
-            /**
-             * Get the agent's wallet address
-             */
             getAddress(): string {
-                return this.wallet.address;
+                return this.walletAddress;
+            }
+
+            async getBalance(): Promise<string> {
+                const balance = await this.publicClient.getBalance({
+                    address: this.walletAddress as `0x${string}`,
+                });
+                return formatEther(balance);
             }
         }
 
         export default BasicAgent;
         ```
 
-        ### Step 4: Use the Agent
+        ### Step 5: Use the Agent
 
         Create a file `index.ts`:
 
         ```typescript
-        import BasicAgent from './agent';
+        import BasicAgent from "./agent";
 
         async function main() {
-            // Create the agent
-            const agent = new BasicAgent();
-            
+            // Create the agent (async factory pattern)
+            const agent = await BasicAgent.create();
+
             console.log(`Agent wallet: ${agent.getAddress()}`);
-            console.log('---');
+            console.log(`Balance: ${await agent.getBalance()} sFUEL`);
+            console.log("---");
 
-            try {
-                // Access a paywalled resource
-                const data = await agent.accessResource('https://api.example.com/premium/weather');
-                console.log('Received data:', data);
-            } catch (error) {
-                console.error('Error:', error);
+            // Access a paywalled resource
+            const result = await agent.accessResource("http://localhost:3000/premium/data");
+
+            if (result.success) {
+                console.log("Received data:", result.data);
+            } else {
+                console.error("Error:", result.error);
             }
-        }
-
-        main();
-        ```
-
-        ### Step 5: Run the Agent
-
-        ```bash
-        npx ts-node index.ts
-        ```
-
-        ### Complete Working Example
-
-        Here's a single-file version you can run immediately:
-
-        ```typescript
-        import { X402Client } from '@coinbase/x402-sdk';
-        import { ethers } from 'ethers';
-        import 'dotenv/config';
-
-        class BasicAgent {
-            private x402Client: X402Client;
-            private wallet: ethers.Wallet;
-
-            constructor() {
-                const provider = new ethers.JsonRpcProvider(process.env.SKALE_RPC_URL);
-                this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-                this.x402Client = new X402Client({
-                    wallet: this.wallet,
-                    facilitatorURL: process.env.FACILITATOR_URL!,
-                });
-            }
-
-            async accessResource(url: string): Promise<any> {
-                const response = await fetch(url);
-                
-                if (response.status === 402) {
-                    const paymentInfo = await response.json();
-                    const payment = await this.x402Client.createPayment(paymentInfo);
-                    await this.x402Client.settle(payment);
-                    
-                    const retryResponse = await fetch(url, {
-                        headers: { 'X-PAYMENT': JSON.stringify(payment) },
-                    });
-                    
-                    return await retryResponse.json();
-                }
-                
-                return await response.json();
-            }
-        }
-
-        // Run the agent
-        async function main() {
-            const agent = new BasicAgent();
-            
-            const data = await agent.accessResource('https://api.example.com/premium/data');
-            console.log('Data:', data);
         }
 
         main().catch(console.error);
+        ```
+
+        ### Step 6: Run the Agent
+
+        ```bash
+        npx tsx index.ts
         ```
 
     </Tab>
