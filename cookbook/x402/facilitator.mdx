@@ -5,191 +5,1098 @@ description: "Set up an x402 facilitator service for payment processing on SKALE
 
 ## Run a Facilitator
 
-A facilitator in the x402 protocol is a service that processes payments and provides settlement. It exposes `/accepts` and `/settle` endpoints that work with x402 middleware to handle payment flows.
+A facilitator in the x402 protocol is a service that processes payments and provides settlement. It exposes `/verify` and `/settle` endpoints that work with x402 middleware to handle payment flows using ERC-3009 `TransferWithAuthorization`.
 
 ## Prerequisites
 
-- Understanding of x402 protocol
-- Node.js and npm installed
+- Node.js 18+
 - A SKALE Chain endpoint
-- Familiarity with TypeScript/JavaScript
-- Basic knowledge of smart contracts (for custom implementation)
+- A wallet private key for signing settlement transactions
+- Basic knowledge of TypeScript
 
 ## Overview
 
 A facilitator service:
 
-1. Exposes `/accepts` endpoint - Returns payment requirements for resources
-2. Exposes `/settle` endpoint - Validates and processes payment settlements
-3. Handles payment verification
-4. May charge fees for services
+1. Exposes `/verify` endpoint - Validates payment authorizations without on-chain settlement
+2. Exposes `/settle` endpoint - Executes on-chain payment settlements
+3. Exposes `/supported` endpoint - Returns supported payment schemes and networks
+4. Handles EIP-712 signature verification
+5. Prevents replay attacks via nonce tracking
 
 ---
 
 ## Implementation
 
-<Tabs>
-    <Tab title="Faremeter SDK">
+### Step 1: Project Setup
 
-        ### Quick Start
+Create a new project and install dependencies:
 
-        Install the facilitator package:
+```bash
+mkdir skale-facilitator
+cd skale-facilitator
+npm init -y
+```
 
-        ```bash
-        npm install @faremeter/facilitator
-        ```
+Install the required packages:
 
-        ### Basic Facilitator Service
+```bash
+npm install hono @hono/node-server ethers dotenv
+npm install -D typescript tsx @types/node
+```
 
-        Here's a simple facilitator service:
+Update your `package.json` scripts:
 
-        ```typescript
-        import express from 'express';
-        import { createFacilitator } from '@faremeter/facilitator';
+```json
+{
+  "name": "x402-facilitator",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts"
+  }
+}
+```
 
-        const app = express();
-        app.use(express.json());
+### Step 2: Environment Configuration
 
-        const facilitator = createFacilitator({
-            network: 'skale-base-sepolia',
-            paymentHandlers: [
-                {
-                    scheme: 'exact',
-                    network: 'skale-base-sepolia',
-                    handler: async (payment) => {
-                        return { success: true };
-                    },
-                },
-            ],
+Create `.env` file in the project roots. Run:
+```shell
+touch .env
+```
+
+Add the variables:
+```bash
+FACILITATOR_SIGNER_PK=your_private_key_here
+PORT=3500
+```
+
+<Warning>
+Never commit your private key to version control. Add `.env` to your `.gitignore` file.
+</Warning>
+
+### Step 3: Project Structure
+
+Create the following folder structure:
+
+```
+src/
+├── index.ts
+├── types.ts
+├── utils.ts
+└── config/
+    ├── networks.ts
+    └── constants.ts
+```
+
+### Step 4: Type Definitions
+
+Create `src/types.ts` with all TypeScript interfaces. Run:
+```shell
+touch src/types.ts
+```
+
+Add the types code:
+```typescript
+export interface PaymentRequirements {
+  scheme: string;
+  network: string;
+  amount?: string;
+  maxAmountRequired?: string;
+  resource?: string;
+  description?: string;
+  mimeType?: string;
+  payTo: string;
+  maxTimeoutSeconds?: number;
+  asset: string;
+  outputSchema?: any;
+  extra?: {
+    name?: string;
+    version?: string;
+  };
+}
+
+export interface VerifyResponse {
+  isValid: boolean;
+  invalidReason?: string;
+  payer?: string;
+}
+
+export interface SettleResponse {
+  success: boolean;
+  transaction: string;
+  txHash: string | null;
+  network: string;
+  networkId: string | null;
+  payer: string;
+  errorReason?: string;
+}
+
+export interface DiscoveryResource {
+  accepts: PaymentRequirements[];
+  lastUpdated: string;
+  metadata: Record<string, any>;
+  resource: string;
+  type: string;
+  x402Version: number;
+}
+
+export interface ListDiscoveryResponse {
+  x402Version: number;
+  items: DiscoveryResource[];
+  pagination?: {
+    limit: number;
+    offset: number;
+    total: number;
+  };
+}
+
+export interface TokenConfig {
+  address: string;
+  name: string;
+  forwarder?: string;
+  forwarderName?: string;
+  forwarderVersion?: string;
+}
+
+export interface NetworkConfig {
+  chainId: number;
+  name: string;
+  defaultRpc: string;
+  tokens: TokenConfig[];
+}
+
+export interface NonceEntry {
+  status: 'pending' | 'confirmed';
+  requestId: string;
+  timestamp: number;
+  txHash?: string;
+  blockNumber?: number;
+}
+```
+
+### Step 5: Network Configuration
+
+Create `src/config/networks.ts` to define supported networks and tokens. Run:
+```shell
+touch src/config/networks.ts
+```
+
+Add the networks cofig code:
+```typescript
+import type { NetworkConfig } from '../types.js';
+
+export const NETWORK_CONFIG: Record<string, NetworkConfig> = {
+  'skale-base-sepolia': {
+    chainId: 324705682,
+    name: 'SKALE Base Sepolia',
+    defaultRpc: 'https://base-sepolia-testnet.skalenodes.com/v1/base-testnet',
+    tokens: [
+      {
+        address: '0x61a26022927096f444994dA1e53F0FD9487EAfcf',
+        name: 'Axios USD',
+        forwarder: '0x61a26022927096f444994dA1e53F0FD9487EAfcf',
+        forwarderName: 'Axios USD',
+        forwarderVersion: '1'
+      },
+      {
+        address: '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD',
+        name: 'Bridged USDC (SKALE Bridge)'
+      },
+      {
+        address: '0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf',
+        name: 'Tether USD',
+        forwarder: '0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf',
+        forwarderName: 'Tether USD',
+        forwarderVersion: '1'
+      },
+      {
+        address: '0x4512eacd4186b025186e1cf6cc0d89497c530e87',
+        name: 'Wrapped BTC',
+        forwarder: '0x4512eacd4186b025186e1cf6cc0d89497c530e87',
+        forwarderName: 'Wrapped BTC',
+        forwarderVersion: '1'
+      },
+      {
+        address: '0xf94056bd7f6965db3757e1b145f200b7346b4fc0',
+        name: 'Wrapped Ether',
+        forwarder: '0xf94056bd7f6965db3757e1b145f200b7346b4fc0',
+        forwarderName: 'Wrapped Ether',
+        forwarderVersion: '1'
+      },
+      {
+        address: '0xaf2e0ff5b5f51553fdb34ce7f04a6c3201cee57b',
+        name: 'Skale Token',
+        forwarder: '0xaf2e0ff5b5f51553fdb34ce7f04a6c3201cee57b',
+        forwarderName: 'Skale Token',
+        forwarderVersion: '1'
+      }
+    ]
+  }
+};
+```
+
+### Step 6: Constants
+
+Create `src/config/constants.ts` with ABI definitions and app metadata. Run:
+```shell
+touch src/config/constants.ts
+```
+
+Add the constants script code:
+```typescript
+export const APP_NAME = 'x402 Facilitator';
+export const APP_VERSION = '1.0.0';
+
+export const TRANSFER_WITH_AUTHORIZATION_ABI = [
+  'function transferWithAuthorization(address from, address to, uint256 value, uint256 validAfter, uint256 validBefore, bytes32 nonce, uint8 v, bytes32 r, bytes32 s) returns (bool)',
+  'function transferWithAuthorization(address from, address to, uint256 value, uint256 validAfter, uint256 validBefore, bytes32 nonce, bytes signature) returns (bool)',
+  'function balanceOf(address account) view returns (uint256)',
+  'function authorizationState(address authorizer, bytes32 nonce) view returns (bool)'
+];
+
+export const EIP712_TYPES = {
+  TransferWithAuthorization: [
+    { name: 'from', type: 'address' },
+    { name: 'to', type: 'address' },
+    { name: 'value', type: 'uint256' },
+    { name: 'validAfter', type: 'uint256' },
+    { name: 'validBefore', type: 'uint256' },
+    { name: 'nonce', type: 'bytes32' }
+  ]
+};
+```
+
+### Step 7: Utility Functions
+
+Create `src/utils.ts` with helper functions. Run:
+```shell
+touch src/utils.ts
+```
+
+Add the utils script code:
+```typescript
+import { NETWORK_CONFIG } from './config/networks.js';
+import type { NetworkConfig, PaymentRequirements, DiscoveryResource } from './types.js';
+
+export function getSellerKey(resource: string): string {
+  const encoded = encodeURIComponent(resource).substring(0, 512);
+  return `seller:${encoded}`;
+}
+
+export function getNetworkConfig(network: string): NetworkConfig | undefined {
+  let config = NETWORK_CONFIG[network];
+  
+  if (!config && network?.startsWith('eip155:')) {
+    const chainId = parseInt(network.split(':')[1]);
+    config = Object.values(NETWORK_CONFIG).find(c => c.chainId === chainId);
+  }
+  
+  return config;
+}
+
+export function getRpcUrl(network: string): string {
+  const networkConfig = getNetworkConfig(network);
+  if (!networkConfig) {
+    throw new Error(`Unsupported network: ${network}`);
+  }
+  return networkConfig.defaultRpc;
+}
+
+export function parseSignature(signature: string): { v: number; r: string; s: string } | null {
+  const sig = signature.startsWith('0x') ? signature.slice(2) : signature;
+  
+  if (sig.length !== 130) {
+    return null;
+  }
+  
+  return {
+    r: '0x' + sig.slice(0, 64),
+    s: '0x' + sig.slice(64, 128),
+    v: parseInt(sig.slice(128, 130), 16)
+  };
+}
+
+export async function registerSeller(
+  paymentRequirements: PaymentRequirements,
+  network: string,
+  requestId: string,
+  sellerStore: Map<string, DiscoveryResource>
+): Promise<void> {
+  if (!paymentRequirements.resource) {
+    console.log(`[${requestId}] No resource URL, skipping seller registration`);
+    return;
+  }
+
+  const sellerKey = getSellerKey(paymentRequirements.resource);
+  
+  try {
+    const existing = sellerStore.get(sellerKey);
+    const now = new Date().toISOString();
+    
+    let discoveryResource: DiscoveryResource;
+    
+    if (existing) {
+      discoveryResource = existing;
+      
+      const lastUpdated = new Date(discoveryResource.lastUpdated);
+      const oneHourAgo = new Date(Date.now() - 3600000);
+      
+      if (lastUpdated > oneHourAgo) {
+        console.log(`[${requestId}] Seller recently updated, skipping`);
+        return;
+      }
+      
+      const reqIndex = discoveryResource.accepts.findIndex(req =>
+        req.payTo.toLowerCase() === paymentRequirements.payTo.toLowerCase() &&
+        req.asset.toLowerCase() === paymentRequirements.asset.toLowerCase() &&
+        req.network === network
+      );
+      
+      if (reqIndex >= 0) {
+        discoveryResource.accepts[reqIndex] = paymentRequirements;
+      } else {
+        discoveryResource.accepts.push(paymentRequirements);
+      }
+      
+      discoveryResource.lastUpdated = now;
+    } else {
+      discoveryResource = {
+        accepts: [paymentRequirements],
+        lastUpdated: now,
+        metadata: {},
+        resource: paymentRequirements.resource,
+        type: 'http',
+        x402Version: 1
+      };
+    }
+    
+    sellerStore.set(sellerKey, discoveryResource);
+    console.log(`[${requestId}] Registered/updated seller: ${paymentRequirements.resource}`);
+  } catch (error) {
+    console.error(`[${requestId}] Failed to register seller:`, error);
+  }
+}
+```
+
+### Step 8: Main Application
+
+Create `src/index.ts` with the server and route handlers. Run:
+```shell
+touch src/index.ts
+```
+
+Add the server and route code:
+```typescript
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { serve } from '@hono/node-server';
+import { ethers } from 'ethers';
+import 'dotenv/config';
+
+import type {
+  PaymentRequirements,
+  VerifyResponse,
+  SettleResponse,
+  ListDiscoveryResponse,
+  DiscoveryResource,
+  NonceEntry
+} from './types.js';
+import { NETWORK_CONFIG } from './config/networks.js';
+import { APP_NAME, APP_VERSION, TRANSFER_WITH_AUTHORIZATION_ABI, EIP712_TYPES } from './config/constants.js';
+import { getNetworkConfig, parseSignature, registerSeller } from './utils.js';
+
+const nonceStore = new Map<string, NonceEntry>();
+const sellerStore = new Map<string, DiscoveryResource>();
+
+const app = new Hono();
+
+app.use('*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'POST', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'X-Request-ID']
+}));
+
+app.use('*', logger());
+
+app.use('*', async (c, next) => {
+  const requestId = c.req.header('X-Request-ID') || crypto.randomUUID();
+  c.set('requestId', requestId);
+  c.header('X-Request-ID', requestId);
+  await next();
+});
+
+app.get('/', (c) => {
+  const networks = Object.keys(NETWORK_CONFIG).map(networkKey => {
+    const config = NETWORK_CONFIG[networkKey];
+    return {
+      id: networkKey,
+      chainId: config.chainId,
+      name: config.name,
+      tokens: config.tokens.map(t => ({
+        address: t.address,
+        name: t.name,
+        forwarder: t.forwarder,
+        forwarderName: t.forwarderName,
+        forwarderVersion: t.forwarderVersion
+      }))
+    };
+  });
+
+  return c.json({
+    name: APP_NAME,
+    version: APP_VERSION,
+    status: 'healthy',
+    endpoints: {
+      verify: '/verify',
+      settle: '/settle',
+      discovery: '/discovery/resources',
+      list: '/list'
+    },
+    networks,
+    schemes: ['exact']
+  });
+});
+
+app.get('/discovery/resources', async (c) => {
+  const requestId = c.get('requestId');
+  
+  try {
+    console.log(`[${requestId}] Processing discovery list request`);
+    
+    const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+    const offset = parseInt(c.req.query('offset') || '0');
+    
+    const resources: DiscoveryResource[] = [];
+    
+    for (const [key, value] of sellerStore.entries()) {
+      if (key.startsWith('seller:')) {
+        resources.push(value);
+      }
+    }
+    
+    resources.sort((a, b) => 
+      new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
+    );
+    
+    const total = resources.length;
+    const paginatedResources = resources.slice(offset, offset + limit);
+    
+    const response: ListDiscoveryResponse = {
+      x402Version: 1,
+      items: paginatedResources,
+      pagination: {
+        limit,
+        offset,
+        total
+      }
+    };
+    
+    return c.json(response);
+    
+  } catch (error: any) {
+    console.error(`[${requestId}] Discovery list error:`, error);
+    return c.json({
+      x402Version: 1,
+      items: [],
+      pagination: { limit: 0, offset: 0, total: 0 }
+    }, 500);
+  }
+});
+
+app.get('/list', async (c) => {
+  const requestId = c.get('requestId');
+  console.log(`[${requestId}] Redirecting /list to /discovery/resources`);
+  
+  const url = new URL(c.req.url);
+  url.pathname = '/discovery/resources';
+  
+  return c.redirect(url.toString());
+});
+
+app.post('/verify', async (c) => {
+  const requestId = c.get('requestId');
+  
+  try {
+    const body = await c.req.json();
+    console.log(`[${requestId}] Processing verify request`);
+    
+    const { paymentPayload, paymentRequirements } = body;
+    
+    if (!paymentPayload || !paymentRequirements) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'missing_payload_or_requirements'
+      });
+    }
+    
+    const payload = paymentPayload.payload;
+    const authorization = payload.authorization;
+    
+    const payloadScheme = paymentPayload.scheme || paymentPayload.accepted?.scheme;
+    if (payloadScheme !== 'exact' || paymentRequirements.scheme !== 'exact') {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'unsupported_scheme',
+        payer: authorization.from
+      });
+    }
+    
+    const payloadNetwork = paymentPayload.network || paymentPayload.accepted?.network;
+    const networkConfig = getNetworkConfig(payloadNetwork);
+    
+    if (!networkConfig) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_network',
+        payer: authorization.from
+      });
+    }
+    
+    const token = networkConfig.tokens.find(
+      t => t.address.toLowerCase() === paymentRequirements.asset.toLowerCase()
+    );
+    
+    if (!token) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_asset_address',
+        payer: authorization.from
+      });
+    }
+    
+    const name = paymentRequirements.extra?.name || token.name;
+    const version = paymentRequirements.extra?.version || token.forwarderVersion || '2';
+    
+    if (authorization.to.toLowerCase() !== paymentRequirements.payTo.toLowerCase()) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_exact_evm_payload_recipient_mismatch',
+        payer: authorization.from
+      });
+    }
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    
+    if (BigInt(authorization.validBefore) < BigInt(currentTime + 6)) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_exact_evm_payload_authorization_valid_before',
+        payer: authorization.from
+      });
+    }
+    
+    if (BigInt(authorization.validAfter) > BigInt(currentTime)) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_exact_evm_payload_authorization_valid_after',
+        payer: authorization.from
+      });
+    }
+    
+    const requiredAmount = paymentRequirements.amount || paymentRequirements.maxAmountRequired;
+    if (BigInt(authorization.value) < BigInt(requiredAmount)) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_exact_evm_payload_authorization_value',
+        payer: authorization.from
+      });
+    }
+    
+    const domain = {
+      name,
+      version,
+      chainId: networkConfig.chainId,
+      verifyingContract: paymentRequirements.asset
+    };
+    
+    const message = {
+      from: authorization.from,
+      to: authorization.to,
+      value: authorization.value,
+      validAfter: authorization.validAfter,
+      validBefore: authorization.validBefore,
+      nonce: authorization.nonce
+    };
+    
+    try {
+      const recoveredAddress = ethers.verifyTypedData(
+        domain,
+        EIP712_TYPES,
+        message,
+        payload.signature
+      );
+      
+      if (recoveredAddress.toLowerCase() !== authorization.from.toLowerCase()) {
+        return c.json<VerifyResponse>({
+          isValid: false,
+          invalidReason: 'invalid_exact_evm_payload_signature',
+          payer: authorization.from
         });
+      }
+    } catch (e) {
+      console.error(`[${requestId}] Signature verification failed:`, e);
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'invalid_exact_evm_payload_signature',
+        payer: authorization.from
+      });
+    }
+    
+    const nonceKey = `nonce:${payloadNetwork}:${authorization.nonce}`;
+    const usedNonce = nonceStore.get(nonceKey);
+    
+    if (usedNonce) {
+      return c.json<VerifyResponse>({
+        isValid: false,
+        invalidReason: 'nonce_already_used',
+        payer: authorization.from
+      });
+    }
+    
+    try {
+      const provider = new ethers.JsonRpcProvider(networkConfig.defaultRpc);
+      const contract = new ethers.Contract(
+        paymentRequirements.asset,
+        TRANSFER_WITH_AUTHORIZATION_ABI,
+        provider
+      );
+      
+      try {
+        const balance = await contract.balanceOf(authorization.from);
+        if (balance < BigInt(requiredAmount)) {
+          return c.json<VerifyResponse>({
+            isValid: false,
+            invalidReason: 'insufficient_funds',
+            payer: authorization.from
+          });
+        }
+      } catch (e) {
+        console.log(`[${requestId}] Balance check failed (non-critical)`);
+      }
+      
+      try {
+        const authState = await contract.authorizationState(
+          authorization.from,
+          authorization.nonce
+        );
+        
+        if (authState) {
+          return c.json<VerifyResponse>({
+            isValid: false,
+            invalidReason: 'authorization_already_used',
+            payer: authorization.from
+          });
+        }
+      } catch (e) {
+        console.log(`[${requestId}] Authorization state check failed (non-critical)`);
+      }
+    } catch (e) {
+      console.log(`[${requestId}] RPC validation skipped`);
+    }
+    
+    registerSeller(paymentRequirements, payloadNetwork, requestId, sellerStore);
+    
+    return c.json<VerifyResponse>({
+      isValid: true,
+      payer: authorization.from
+    });
+    
+  } catch (error: any) {
+    console.error(`[${requestId}] Verification error:`, error);
+    return c.json<VerifyResponse>({
+      isValid: false,
+      invalidReason: 'internal_error'
+    }, 500);
+  }
+});
 
-        // Mount facilitator routes
-        app.use('/facilitator', facilitator.router);
-
-        app.listen(3000, () => {
-            console.log('Facilitator running on port 3000');
+app.post('/settle', async (c) => {
+  const requestId = c.get('requestId');
+  
+  try {
+    const body = await c.req.json();
+    console.log(`[${requestId}] Processing settle request`);
+    
+    const { paymentPayload, paymentRequirements } = body;
+    
+    if (!paymentPayload || !paymentRequirements) {
+      return c.json<SettleResponse>({
+        success: false,
+        errorReason: 'missing_payload_or_requirements',
+        transaction: '',
+        txHash: null,
+        network: '',
+        networkId: null,
+        payer: ''
+      });
+    }
+    
+    const payload = paymentPayload.payload;
+    const authorization = payload.authorization;
+    const payloadNetwork = paymentPayload.network || paymentPayload.accepted?.network;
+    const networkConfig = getNetworkConfig(payloadNetwork);
+    
+    if (!networkConfig) {
+      return c.json<SettleResponse>({
+        success: false,
+        errorReason: 'invalid_network',
+        transaction: '',
+        txHash: null,
+        network: payloadNetwork || '',
+        networkId: payloadNetwork || null,
+        payer: authorization.from
+      });
+    }
+    
+    const nonceKey = `nonce:${payloadNetwork}:${authorization.nonce}`;
+    const existing = nonceStore.get(nonceKey);
+    
+    if (existing) {
+      return c.json<SettleResponse>({
+        success: false,
+        errorReason: 'nonce_already_used',
+        transaction: '',
+        txHash: null,
+        network: payloadNetwork,
+        networkId: payloadNetwork,
+        payer: authorization.from
+      });
+    }
+    
+    nonceStore.set(nonceKey, {
+      status: 'pending',
+      requestId,
+      timestamp: Date.now()
+    });
+    
+    try {
+      const signerPrivateKey = process.env.FACILITATOR_SIGNER_PK;
+      if (!signerPrivateKey) {
+        throw new Error('FACILITATOR_SIGNER_PK not configured');
+      }
+      
+      const provider = new ethers.JsonRpcProvider(networkConfig.defaultRpc);
+      const signer = new ethers.Wallet(signerPrivateKey, provider);
+      
+      const contract = new ethers.Contract(
+        paymentRequirements.asset,
+        TRANSFER_WITH_AUTHORIZATION_ABI,
+        signer
+      );
+      
+      const parsedSig = parseSignature(payload.signature);
+      let tx;
+      
+      if (parsedSig) {
+        tx = await contract.transferWithAuthorization(
+          authorization.from,
+          authorization.to,
+          authorization.value,
+          authorization.validAfter,
+          authorization.validBefore,
+          authorization.nonce,
+          parsedSig.v,
+          parsedSig.r,
+          parsedSig.s
+        );
+      } else {
+        tx = await contract.transferWithAuthorization(
+          authorization.from,
+          authorization.to,
+          authorization.value,
+          authorization.validAfter,
+          authorization.validBefore,
+          authorization.nonce,
+          payload.signature
+        );
+      }
+      
+      console.log(`[${requestId}] Transaction submitted: ${tx.hash}`);
+      
+      const receipt = await tx.wait(1);
+      
+      if (receipt.status !== 1) {
+        nonceStore.delete(nonceKey);
+        return c.json<SettleResponse>({
+          success: false,
+          errorReason: 'invalid_transaction_state',
+          transaction: tx.hash,
+          txHash: tx.hash,
+          network: payloadNetwork,
+          networkId: payloadNetwork,
+          payer: authorization.from
         });
-        ```
+      }
+      
+      nonceStore.set(nonceKey, {
+        status: 'confirmed',
+        requestId,
+        txHash: tx.hash,
+        blockNumber: receipt.blockNumber,
+        timestamp: Date.now()
+      });
+      
+      registerSeller(paymentRequirements, payloadNetwork, requestId, sellerStore);
+      
+      return c.json<SettleResponse>({
+        success: true,
+        transaction: tx.hash,
+        txHash: tx.hash,
+        network: payloadNetwork,
+        networkId: payloadNetwork,
+        payer: authorization.from
+      });
+      
+    } catch (error: any) {
+      nonceStore.delete(nonceKey);
+      console.error(`[${requestId}] Settlement failed:`, error);
+      
+      return c.json<SettleResponse>({
+        success: false,
+        errorReason: error.message || 'settlement_failed',
+        transaction: '',
+        txHash: null,
+        network: payloadNetwork,
+        networkId: payloadNetwork,
+        payer: authorization.from
+      });
+    }
+    
+  } catch (error: any) {
+    console.error(`[${requestId}] Settlement error:`, error);
+    return c.json<SettleResponse>({
+      success: false,
+      errorReason: 'internal_error',
+      transaction: '',
+      txHash: null,
+      network: '',
+      networkId: null,
+      payer: ''
+    }, 500);
+  }
+});
 
-        ### Facilitator Endpoints
+app.post('/accepts', async (c) => {
+  const requestId = c.get('requestId');
 
-        #### `/accepts`
+  try {
+    const body = await c.req.json();
+    console.log(`[${requestId}] Processing accepts request`);
 
-        Returns payment requirements for a given resource:
+    const { x402Version, accepts } = body;
 
-        ```typescript
-        app.get('/accepts', async (req, res) => {
-            const { resource } = req.query;
-            
-            const requirements = {
-                accepts: [
-                    {
-                        scheme: 'exact',
-                        network: 'skale-base-sepolia',
-                        maxAmountRequired: '1.5',
-                        description: 'SKALE USDC payment',
-                    },
-                ],
-            };
-            
-            res.json(requirements);
-        });
-        ```
+    if (!accepts || !Array.isArray(accepts)) {
+      return c.json({ error: 'missing_accepts_array' }, 400);
+    }
 
-        #### `/settle`
+    return c.json({
+      x402Version: x402Version || 1,
+      accepts: accepts.map((req: PaymentRequirements) => ({
+        scheme: req.scheme || 'exact',
+        network: req.network,
+        maxAmountRequired: req.maxAmountRequired,
+        resource: req.resource,
+        description: req.description,
+        mimeType: req.mimeType,
+        payTo: req.payTo,
+        maxTimeoutSeconds: req.maxTimeoutSeconds || 60,
+        asset: req.asset,
+        outputSchema: req.outputSchema,
+        extra: req.extra
+      }))
+    });
 
-        Validates and processes payment settlements:
+  } catch (error: any) {
+    console.error(`[${requestId}] Accepts error:`, error);
+    return c.json({ error: 'internal_error' }, 500);
+  }
+});
 
-        ```typescript
-        app.post('/settle', async (req, res) => {
-            const payment = req.body;
-            const isValid = await validatePayment(payment);
-            
-            if (!isValid) {
-                return res.status(400).json({ error: 'Invalid payment' });
-            }
-            
-            const result = await processSettlement(payment);
-            res.json({ success: true, result });
-        });
-        ```
+app.get('/supported', (c) => {
+  const kinds: Array<{ 
+    x402Version: number; 
+    scheme: string; 
+    network: string;
+    extra?: Record<string, unknown>;
+  }> = [];
+  
+  for (const networkKey of Object.keys(NETWORK_CONFIG)) {
+    const config = NETWORK_CONFIG[networkKey];
+    for (const token of config.tokens) {
+      kinds.push({
+        x402Version: 2,
+        scheme: 'exact',
+        network: `eip155:${config.chainId}`,
+        extra: {
+          name: token.forwarderName || token.name,
+          version: token.forwarderVersion || '1',
+        },
+      });
+    }
+  }
+  
+  return c.json({ kinds });
+});
 
-        ### Payment Handler
+const port = parseInt(process.env.PORT || '3500');
 
-        Implement payment handlers for different schemes:
+console.log(`Starting server on port ${port}...`);
 
-        ```typescript
-        import { createPaymentHandler } from '@faremeter/payment-evm';
+serve({
+  fetch: app.fetch,
+  port
+});
 
-        const paymentHandler = createPaymentHandler({
-            network: 'skale-base-sepolia',
-            rpcUrl: 'YOUR_SKALE_RPC_URL',
-            verifyPayment: async (payment) => {
-                return true;
-            },
-            settlePayment: async (payment) => {
-                return { txHash: '0x...' };
-            },
-        });
-        ```
-
-        ### Fee Management
-
-        Add fee calculation to your facilitator:
-
-        ```typescript
-        const facilitator = createFacilitator({
-            network: 'skale-base-sepolia',
-            feeBasisPoints: 100,
-            paymentHandlers: [paymentHandler],
-            calculateFee: (amount) => {
-                return (amount * 100) / 10000;
-            },
-        });
-        ```
-
-        ### Error Handling
-
-        ```typescript
-        app.post('/settle', async (req, res) => {
-            try {
-                const result = await facilitator.settle(req.body);
-                res.json(result);
-            } catch (error) {
-                if (error.code === 'INVALID_SIGNATURE') {
-                    return res.status(400).json({ error: 'Invalid payment signature' });
-                }
-                if (error.code === 'EXPIRED_PAYMENT') {
-                    return res.status(400).json({ error: 'Payment expired' });
-                }
-                if (error.code === 'INSUFFICIENT_AMOUNT') {
-                    return res.status(400).json({ error: 'Insufficient payment amount' });
-                }
-                res.status(500).json({ error: 'Internal server error' });
-            }
-        });
-        ```
-
-    </Tab>
-</Tabs>
+console.log(`Server running at http://localhost:${port}`);
+```
 
 ---
 
-## Best Practices
+## Running the Facilitator
 
-1. **Monitor Events**: Listen for payment requests off-chain
-2. **Error Handling**: Implement robust error handling
-3. **Fee Transparency**: Clearly communicate fees to users
-4. **Security**: Use multi-sig for fee withdrawals
-5. **Monitoring**: Set up monitoring and alerting
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Or for production:
+
+```bash
+npm start
+```
+
+Your facilitator will be available at `http://localhost:3500`.
+
+---
+
+## API Endpoints
+
+### GET /
+
+Health check and capabilities endpoint.
+
+**Response:**
+
+```json
+{
+  "name": "x402 Facilitator",
+  "version": "1.0.0",
+  "status": "healthy",
+  "endpoints": {
+    "verify": "/verify",
+    "settle": "/settle",
+    "discovery": "/discovery/resources",
+    "list": "/list"
+  },
+  "networks": [...],
+  "schemes": ["exact"]
+}
+```
+
+### POST /verify
+
+Validates payment authorization without on-chain settlement.
+
+**Request:**
+
+```json
+{
+  "paymentPayload": {
+    "payload": {
+      "authorization": {
+        "from": "0x...",
+        "to": "0x...",
+        "value": "1000000",
+        "validAfter": "0",
+        "validBefore": "1234567890",
+        "nonce": "0x..."
+      },
+      "signature": "0x..."
+    },
+    "accepted": {
+      "scheme": "exact",
+      "network": "eip155:324705682"
+    }
+  },
+  "paymentRequirements": {
+    "scheme": "exact",
+    "network": "eip155:324705682",
+    "asset": "0x61a26022927096f444994dA1e53F0FD9487EAfcf",
+    "payTo": "0x...",
+    "maxAmountRequired": "1000000"
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "isValid": true,
+  "payer": "0x..."
+}
+```
+
+### POST /settle
+
+Executes on-chain payment settlement using ERC-3009 `TransferWithAuthorization`.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "transaction": "0x...",
+  "txHash": "0x...",
+  "network": "eip155:324705682",
+  "networkId": "eip155:324705682",
+  "payer": "0x..."
+}
+```
+
+### GET /supported
+
+Returns supported payment schemes and networks.
+
+**Response:**
+
+```json
+{
+  "kinds": [
+    {
+      "x402Version": 2,
+      "scheme": "exact",
+      "network": "eip155:324705682",
+      "extra": {
+        "name": "Axios USD",
+        "version": "1"
+      }
+    }
+  ]
+}
+```
+
+### GET /discovery/resources
+
+Lists all registered x402-compatible services with pagination.
+
+**Query Parameters:**
+- `limit`: Maximum results (default: 100, max: 1000)
+- `offset`: Pagination offset (default: 0)
+
+---
 
 ## Security Considerations
 
-- Use multi-sig wallets for facilitator operations
-- Implement rate limiting to prevent abuse
+- Store private keys securely in environment variables
+- Never commit `.env` files to version control
+- Implement rate limiting for production deployments
 - Monitor for suspicious activity
-- Regular security audits
-- Keep facilitator keys secure
+- Use HTTPS in production
+- Consider using a multi-sig wallet for high-value operations
 
 ## Next Steps
 
@@ -199,6 +1106,6 @@ A facilitator service:
 
 ## Resources
 
-- [Corbits/Faremeter Facilitator](https://docs.corbits.dev/api/reference/facilitator/overview)
-- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)
+- [x402 Protocol](https://x402.org)
+- [ERC-3009 Specification](https://eips.ethereum.org/EIPS/eip-3009)
 - [Coinbase x402 SDK](https://github.com/coinbase/x402)
