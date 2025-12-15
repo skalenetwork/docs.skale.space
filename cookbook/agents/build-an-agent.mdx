@@ -14,14 +14,14 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
 - Understanding of x402 protocol (see [Make Payments](/cookbook/x402/buying))
 - Familiarity with TypeScript/JavaScript
 - A wallet with funds (USDC or supported token)
-- OpenAI API key (for LangChain agent)
+- Anthropic API key (for LangChain agent with Claude)
 
 ## Overview
 
 | Agent Type | Best For |
 |------------|----------|
 | **Basic Agent** | Simple automation, scripts, scheduled tasks |
-| **LangChain Agent** | AI-powered decisions, natural language interaction, complex workflows |
+| **LangChain Agent** | AI-powered services with payment protection, server-side AI integrations |
 
 ---
 
@@ -208,16 +208,6 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
                 }
             }
 
-            getAddress(): string {
-                return this.walletAddress;
-            }
-
-            async getBalance(): Promise<string> {
-                const balance = await this.publicClient.getBalance({
-                    address: this.walletAddress as `0x${string}`,
-                });
-                return formatEther(balance);
-            }
         }
 
         export default BasicAgent;
@@ -234,9 +224,6 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
             // Create the agent (async factory pattern)
             const agent = await BasicAgent.create();
 
-            console.log(`Agent wallet: ${agent.getAddress()}`);
-            console.log(`Balance: ${await agent.getBalance()} sFUEL`);
-            console.log("---");
 
             // Access a paywalled resource
             const result = await agent.accessResource("http://localhost:3000/premium/data");
@@ -260,12 +247,20 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
     </Tab>
     <Tab title="LangChain Agent">
 
-        An AI-powered agent uses LangChain to make intelligent decisions about when and how to access paywalled resources. The agent can understand natural language requests and autonomously decide to make payments.
+        Build an AI-powered weather forecast service that uses LangChain with Claude to generate forecasts, protected by x402 payments. This example demonstrates a complete setup with three components: an AI agent, a payment-protected server, and a client that handles x402 payments automatically.
+
+        ### Architecture Overview
+
+        | Component | Description |
+        |-----------|-------------|
+        | **Agent** (`agent.ts`) | Uses LangChain + Claude to generate AI-powered weather forecasts |
+        | **Server** (`server.ts`) | Hono server with x402 middleware that protects the weather endpoint |
+        | **Client** (`client.ts`) | Handles x402 payment flow automatically when accessing protected resources |
 
         ### Step 1: Install Dependencies
 
         ```bash
-        npm install @coinbase/x402-sdk ethers dotenv @langchain/openai langchain @langchain/core
+        npm install @x402/core @x402/evm @x402/hono @langchain/anthropic @langchain/core hono @hono/node-server viem dotenv
         ```
 
         ### Step 2: Set Up Environment Variables
@@ -273,283 +268,511 @@ Build agents that can autonomously interact with APIs, make x402 payments, and a
         Create a `.env` file:
 
         ```bash
-        PRIVATE_KEY=your_wallet_private_key
-        SKALE_RPC_URL=https://testnet.skalenodes.com/v1/juicy-low-small-testnet
+        # Anthropic API key for Claude. It can also be used other LLMs
+        ANTHROPIC_API_KEY=your_anthropic_api_key
+
+        # Your wallet private key (never commit this!)
+        PRIVATE_KEY=0xYourPrivateKey
+
+        # Address to receive payments
+        RECEIVING_ADDRESS=0x71dc0Bc68e7f0e2c5aaCE661b0F3Fb995a80AAF4
+
+        # Facilitator URL for payment processing
         FACILITATOR_URL=https://facilitator.dirtroad.dev
-        OPENAI_API_KEY=your_openai_api_key
+
+        # Network configuration
+        NETWORK_CHAIN_ID=324705682
+
+        # Payment token (Axios USD on SKALE Base Sepolia)
+        PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
+        PAYMENT_TOKEN_NAME=Axios USD
+
+        # Server port
+        PORT=3001
         ```
 
-        ### Step 3: Create the Payment Tool
+        <Warning>
+        Never commit your private key or API keys to version control. Add `.env` to your `.gitignore` file.
+        </Warning>
 
-        LangChain agents use "tools" to perform actions. We'll create a tool that handles x402 payments:
+        ### Step 3: Define Your Chain
 
-        Create a file `tools/payment-tool.ts`:
+        Create a file `chain.ts`:
 
         ```typescript
-        import { X402Client } from '@coinbase/x402-sdk';
-        import { ethers } from 'ethers';
-        import { DynamicTool } from '@langchain/core/tools';
-
-        export function createPaymentTool(wallet: ethers.Wallet, facilitatorURL: string) {
-            const x402Client = new X402Client({
-                wallet: wallet,
-                facilitatorURL: facilitatorURL,
-            });
-
-            return new DynamicTool({
-                name: 'access_paywalled_resource',
-                description: 'Access a paywalled resource by making an x402 payment. Use this when you need to fetch data from a URL that requires payment. Input should be the full URL.',
-                func: async (url: string) => {
-                    try {
-                        console.log(`[Payment Tool] Accessing: ${url}`);
-                        
-                        const response = await fetch(url);
-                        
-                        if (response.status === 402) {
-                            console.log('[Payment Tool] Payment required, processing...');
-                            
-                            const paymentInfo = await response.json();
-                            const payment = await x402Client.createPayment(paymentInfo);
-                            await x402Client.settle(payment);
-                            
-                            const retryResponse = await fetch(url, {
-                                headers: { 'X-PAYMENT': JSON.stringify(payment) },
-                            });
-                            
-                            const data = await retryResponse.json();
-                            console.log('[Payment Tool] Payment successful!');
-                            return JSON.stringify(data);
-                        }
-                        
-                        const data = await response.json();
-                        return JSON.stringify(data);
-                    } catch (error) {
-                        return `Error accessing resource: ${error}`;
-                    }
-                },
-            });
-        }
+        export const skaleChain = {
+          id: 324705682,
+          name: "SKALE Base Sepolia Testnet",
+          rpcUrls: {
+            default: {
+              http: ["https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"]
+            }
+          },
+          blockExplorers: {
+            default: {
+              name: "Blockscout",
+              url: "https://base-sepolia-testnet-explorer.skalenodes.com/"
+            }
+          },
+          nativeCurrency: {
+            name: "credits",
+            decimals: 18,
+            symbol: "CREDIT"
+          }
+        };
         ```
 
         ### Step 4: Create the AI Agent
 
-        Create a file `langchain-agent.ts`:
+        The agent uses LangChain with Claude to generate realistic weather forecasts. Create a file `agent.ts`:
 
         ```typescript
-        import { ChatOpenAI } from '@langchain/openai';
-        import { AgentExecutor, createOpenAIFunctionsAgent } from 'langchain/agents';
-        import { ChatPromptTemplate, MessagesPlaceholder } from '@langchain/core/prompts';
-        import { ethers } from 'ethers';
-        import { createPaymentTool } from './tools/payment-tool';
-        import 'dotenv/config';
+        import { ChatAnthropic } from "@langchain/anthropic";
+        import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+        import "dotenv/config";
 
-        class LangChainAgent {
-            private agentExecutor: AgentExecutor;
-            private wallet: ethers.Wallet;
+        type WeatherDay = {
+          dayOfWeek: string;
+          date: string;
+          minTemp: number;
+          maxTemp: number;
+          condition: "sunny" | "rainy";
+        };
 
-            constructor() {
-                // Initialize wallet
-                const provider = new ethers.JsonRpcProvider(process.env.SKALE_RPC_URL);
-                this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-                
-                console.log(`Agent initialized with wallet: ${this.wallet.address}`);
+        type WeatherResponse = {
+          city: string;
+          forecast: WeatherDay[];
+        };
+
+        class WeatherAgent {
+          private model: ChatAnthropic;
+
+          constructor() {
+            const apiKey = process.env.ANTHROPIC_API_KEY;
+            if (!apiKey) {
+              throw new Error("ANTHROPIC_API_KEY environment variable is required");
             }
 
-            async initialize() {
-                // Create the payment tool
-                const paymentTool = createPaymentTool(
-                    this.wallet,
-                    process.env.FACILITATOR_URL!
-                );
+            this.model = new ChatAnthropic({
+              model: "claude-sonnet-4-20250514",
+              temperature: 0.7,
+              anthropicApiKey: apiKey,
+            });
 
-                // Initialize the LLM
-                const llm = new ChatOpenAI({
-                    modelName: 'gpt-4',
-                    temperature: 0,
-                });
+            console.log("[WeatherAgent] Initialized");
+          }
 
-                // Create the prompt template
-                const prompt = ChatPromptTemplate.fromMessages([
-                    ['system', `You are a helpful AI agent that can access paywalled resources on behalf of the user. 
-                    
-When the user asks for data from a paywalled API, use the access_paywalled_resource tool to fetch it.
-Always provide a clear summary of the data you retrieve.
-If there's an error, explain what went wrong.`],
-                    ['human', '{input}'],
-                    new MessagesPlaceholder('agent_scratchpad'),
-                ]);
+          async getWeatherForecast(city: string): Promise<WeatherResponse> {
+            console.log(`[WeatherAgent] Getting forecast for: ${city}`);
 
-                // Create the agent
-                const agent = await createOpenAIFunctionsAgent({
-                    llm,
-                    tools: [paymentTool],
-                    prompt,
-                });
+            const systemPrompt = `You are a weather forecast assistant. When asked about weather for a city, respond ONLY with a valid JSON object (no markdown, no explanation).
 
-                // Create the executor
-                this.agentExecutor = new AgentExecutor({
-                    agent,
-                    tools: [paymentTool],
-                    verbose: true, // Set to false in production
-                });
-
-                console.log('Agent ready!');
+        The JSON must have this exact structure:
+        {
+          "city": "City Name",
+          "forecast": [
+            {
+              "dayOfWeek": "Monday",
+              "date": "December 16",
+              "minTemp": 5,
+              "maxTemp": 12,
+              "condition": "sunny"
             }
-
-            /**
-             * Process a natural language request
-             */
-            async chat(message: string): Promise<string> {
-                const result = await this.agentExecutor.invoke({
-                    input: message,
-                });
-                
-                return result.output;
-            }
-
-            getAddress(): string {
-                return this.wallet.address;
-            }
+          ]
         }
 
-        export default LangChainAgent;
-        ```
+        Rules:
+        - Provide exactly 5 days starting from today
+        - dayOfWeek must be the full day name
+        - date must be in "Month Day" format
+        - minTemp and maxTemp must be integers in Celsius
+        - condition must be either "sunny" or "rainy"
+        - Make temperatures realistic for the city and season`;
 
-        ### Step 5: Use the Agent
+            const userPrompt = `Get the weather forecast for ${city} for the next 5 days.`;
 
-        Create a file `index.ts`:
-
-        ```typescript
-        import LangChainAgent from './langchain-agent';
-        import * as readline from 'readline';
-
-        async function main() {
-            // Create and initialize the agent
-            const agent = new LangChainAgent();
-            await agent.initialize();
-            
-            console.log(`\nWallet: ${agent.getAddress()}`);
-            console.log('Agent is ready! Type your requests below.\n');
-
-            // Create interactive prompt
-            const rl = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout,
-            });
-
-            const askQuestion = () => {
-                rl.question('You: ', async (input) => {
-                    if (input.toLowerCase() === 'exit') {
-                        rl.close();
-                        return;
-                    }
-
-                    try {
-                        const response = await agent.chat(input);
-                        console.log(`\nAgent: ${response}\n`);
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
-
-                    askQuestion();
-                });
-            };
-
-            askQuestion();
-        }
-
-        main().catch(console.error);
-        ```
-
-        ### Step 6: Run the Agent
-
-        ```bash
-        npx ts-node index.ts
-        ```
-
-        Example interaction:
-
-        ```
-        You: Get me the premium weather data from https://api.example.com/premium/weather
-        
-        [Payment Tool] Accessing: https://api.example.com/premium/weather
-        [Payment Tool] Payment required, processing...
-        [Payment Tool] Payment successful!
-        
-        Agent: I retrieved the weather data for you. Here's the summary:
-        - Temperature: 72°F
-        - Humidity: 45%
-        - Forecast: Sunny with clear skies
-        ```
-
-        ### Complete Working Example
-
-        Here's a simplified single-file version:
-
-        ```typescript
-        import { X402Client } from '@coinbase/x402-sdk';
-        import { ChatOpenAI } from '@langchain/openai';
-        import { AgentExecutor, createOpenAIFunctionsAgent } from 'langchain/agents';
-        import { ChatPromptTemplate, MessagesPlaceholder } from '@langchain/core/prompts';
-        import { DynamicTool } from '@langchain/core/tools';
-        import { ethers } from 'ethers';
-        import 'dotenv/config';
-
-        async function main() {
-            // Setup wallet
-            const provider = new ethers.JsonRpcProvider(process.env.SKALE_RPC_URL);
-            const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-            
-            // Setup x402 client
-            const x402Client = new X402Client({
-                wallet: wallet,
-                facilitatorURL: process.env.FACILITATOR_URL!,
-            });
-
-            // Create payment tool
-            const paymentTool = new DynamicTool({
-                name: 'access_paywalled_resource',
-                description: 'Access a paywalled resource by making an x402 payment. Input: URL',
-                func: async (url: string) => {
-                    const response = await fetch(url);
-                    
-                    if (response.status === 402) {
-                        const paymentInfo = await response.json();
-                        const payment = await x402Client.createPayment(paymentInfo);
-                        await x402Client.settle(payment);
-                        
-                        const retryResponse = await fetch(url, {
-                            headers: { 'X-PAYMENT': JSON.stringify(payment) },
-                        });
-                        
-                        return JSON.stringify(await retryResponse.json());
-                    }
-                    
-                    return JSON.stringify(await response.json());
-                },
-            });
-
-            // Setup LLM and agent
-            const llm = new ChatOpenAI({ modelName: 'gpt-4', temperature: 0 });
-            
-            const prompt = ChatPromptTemplate.fromMessages([
-                ['system', 'You are a helpful AI agent that can access paywalled resources.'],
-                ['human', '{input}'],
-                new MessagesPlaceholder('agent_scratchpad'),
+            const response = await this.model.invoke([
+              new SystemMessage(systemPrompt),
+              new HumanMessage(userPrompt),
             ]);
 
-            const agent = await createOpenAIFunctionsAgent({ llm, tools: [paymentTool], prompt });
-            const executor = new AgentExecutor({ agent, tools: [paymentTool] });
+            const content = response.content as string;
+            const weatherData = JSON.parse(content) as WeatherResponse;
 
-            // Chat with the agent
-            const result = await executor.invoke({
-                input: 'Get me data from https://api.example.com/premium/data',
+            console.log(`[WeatherAgent] Forecast generated for ${city}`);
+            return weatherData;
+          }
+        }
+
+        export default WeatherAgent;
+        ```
+
+        ### Step 5: Create the Payment-Protected Server
+
+        The server uses x402 middleware to protect the weather endpoint, requiring payment before returning forecasts. Create a file `server.ts`:
+
+        ```typescript
+        import { Hono } from "hono";
+        import { cors } from "hono/cors";
+        import { serve } from "@hono/node-server";
+        import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+        import { ExactEvmScheme } from "@x402/evm/exact/server";
+        import { HTTPFacilitatorClient } from "@x402/core/server";
+        import type { Network } from "@x402/core/types";
+        import WeatherAgent from "./agent.js";
+        import "dotenv/config";
+
+        const app = new Hono();
+        const PORT = Number(process.env.PORT) || 3001;
+
+        app.use("*", cors());
+
+        let agent: WeatherAgent | null = null;
+
+        async function initializeAgent() {
+          try {
+            agent = new WeatherAgent();
+            console.log("[Server] Weather agent initialized");
+          } catch (error) {
+            console.warn("[Server] Agent initialization failed:", error);
+          }
+        }
+
+        app.get("/api/health", (c) => {
+          return c.json({
+            status: "ok",
+            agentInitialized: agent !== null,
+          });
+        });
+
+        async function setupWeatherRoute() {
+          const facilitatorUrl = process.env.FACILITATOR_URL;
+          const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
+          const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+          const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+          const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Axios USD";
+
+          if (!facilitatorUrl || !receivingAddress || !paymentTokenAddress) {
+            console.warn("[Server] Payment middleware not configured");
+            app.get("/api/weather", (c) => {
+              return c.json({ error: "Payment middleware not configured" }, 503);
+            });
+            return;
+          }
+
+          const network: Network = `eip155:${networkChainId}`;
+
+          // Initialize facilitator client
+          const facilitatorClient = new HTTPFacilitatorClient({ url: facilitatorUrl });
+          const resourceServer = new x402ResourceServer(facilitatorClient);
+          resourceServer.register("eip155:*", new ExactEvmScheme());
+
+          // Configure payment middleware for the weather endpoint
+          app.use(
+            paymentMiddleware(
+              {
+                "GET /api/weather": {
+                  accepts: [
+                    {
+                      scheme: "exact",
+                      network: network,
+                      payTo: receivingAddress,
+                      price: {
+                        amount: "10000", // 0.01 tokens (6 decimals)
+                        asset: paymentTokenAddress,
+                        extra: {
+                          name: paymentTokenName,
+                          version: "1",
+                        },
+                      },
+                    },
+                  ],
+                  description: "AI Weather Forecast - 5 day forecast",
+                  mimeType: "application/json",
+                },
+              },
+              resourceServer
+            )
+          );
+
+          // Protected weather endpoint
+          app.get("/api/weather", async (c) => {
+            if (!agent) {
+              return c.json({ error: "Agent not initialized" }, 503);
+            }
+
+            const city = "London"; // Hardcoded for demo
+
+            console.log(`[Server] Generating forecast for: ${city}`);
+
+            try {
+              const forecast = await agent.getWeatherForecast(city);
+
+              return c.json({
+                success: true,
+                timestamp: new Date().toISOString(),
+                data: forecast,
+              });
+            } catch (error) {
+              const message = error instanceof Error ? error.message : "Unknown error";
+              return c.json({ error: message }, 500);
+            }
+          });
+
+          console.log("[Server] Weather route configured with x402 payment protection");
+        }
+
+        async function startServer() {
+          await initializeAgent();
+          await setupWeatherRoute();
+
+          serve({ fetch: app.fetch, port: PORT }, () => {
+            console.log(`[Server] Running on http://localhost:${PORT}`);
+            console.log(`[Server] Weather endpoint: GET /api/weather (payment required)`);
+          });
+        }
+
+        startServer();
+        ```
+
+        ### Step 6: Create the Client
+
+        The client automatically handles the x402 payment flow when it receives a 402 response. Create a file `client.ts`:
+
+        ```typescript
+        import { x402Client, x402HTTPClient } from "@x402/core/client";
+        import { ExactEvmScheme } from "@x402/evm";
+        import { createPublicClient, http, formatEther } from "viem";
+        import { privateKeyToAccount } from "viem/accounts";
+        import { skaleChain } from "./chain.js";
+        import "dotenv/config";
+
+        type WeatherResponse = {
+          success: boolean;
+          timestamp: string;
+          data: {
+            city: string;
+            forecast: Array<{
+              dayOfWeek: string;
+              date: string;
+              minTemp: number;
+              maxTemp: number;
+              condition: "sunny" | "rainy";
+            }>;
+          };
+        };
+
+        type AccessResult<T = unknown> = {
+          success: boolean;
+          data?: T;
+          error?: string;
+        };
+
+        export class WeatherClient {
+          private httpClient: x402HTTPClient;
+          private walletAddress: string;
+          private publicClient: any;
+          private baseUrl: string;
+
+          private constructor(
+            httpClient: x402HTTPClient,
+            walletAddress: string,
+            publicClient: any,
+            baseUrl: string
+          ) {
+            this.httpClient = httpClient;
+            this.walletAddress = walletAddress;
+            this.publicClient = publicClient;
+            this.baseUrl = baseUrl;
+          }
+
+          static async create(baseUrl: string = "http://localhost:3001"): Promise<WeatherClient> {
+            const privateKey = process.env.PRIVATE_KEY;
+            if (!privateKey) {
+              throw new Error("PRIVATE_KEY environment variable is required");
+            }
+
+            // Create wallet from private key
+            const account = privateKeyToAccount(privateKey as `0x${string}`);
+
+            // Setup x402 client with EVM scheme
+            const evmScheme = new ExactEvmScheme(account);
+            const coreClient = new x402Client().register("eip155:*", evmScheme);
+            const httpClient = new x402HTTPClient(coreClient);
+
+            const publicClient = createPublicClient({
+              chain: skaleChain,
+              transport: http(),
             });
 
-            console.log('Agent response:', result.output);
+            console.log(`[Client] Initialized with wallet: ${account.address}`);
+
+            return new WeatherClient(httpClient, account.address, publicClient, baseUrl);
+          }
+
+          async getWeather(): Promise<AccessResult<WeatherResponse>> {
+            const url = `${this.baseUrl}/api/weather`;
+            console.log("[Client] Requesting weather forecast...");
+
+            try {
+              const response = await fetch(url, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+              });
+
+              // Handle 402 Payment Required
+              if (response.status === 402) {
+                return this.handlePaymentRequired(response, url);
+              }
+
+              if (!response.ok) {
+                const errorBody = await response.text();
+                return { success: false, error: `Request failed: ${response.status} - ${errorBody}` };
+              }
+
+              const data = (await response.json()) as WeatherResponse;
+              console.log("[Client] Weather data received!");
+              return { success: true, data };
+            } catch (error) {
+              const message = error instanceof Error ? error.message : "Unknown error";
+              console.error("[Client] Error:", message);
+              return { success: false, error: message };
+            }
+          }
+
+          private async handlePaymentRequired(
+            response: Response,
+            url: string
+          ): Promise<AccessResult<WeatherResponse>> {
+            console.log("[Client] Payment required (402), processing...");
+
+            try {
+              const responseBody = await response.json();
+
+              // Parse payment requirements from response
+              const paymentRequired = this.httpClient.getPaymentRequiredResponse(
+                (name: string) => response.headers.get(name),
+                responseBody
+              );
+
+              console.log("[Client] Payment options:", paymentRequired.accepts.length);
+
+              // Create signed payment payload
+              const paymentPayload = await this.httpClient.createPaymentPayload(paymentRequired);
+              console.log("[Client] Payment payload created");
+
+              // Encode payment headers
+              const paymentHeaders = this.httpClient.encodePaymentSignatureHeader(paymentPayload);
+
+              // Retry request with payment
+              console.log("[Client] Retrying with payment...");
+              const paidResponse = await fetch(url, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...paymentHeaders,
+                },
+              });
+
+              if (!paidResponse.ok) {
+                const errorBody = await paidResponse.text();
+                return { success: false, error: `Payment failed: ${paidResponse.status} - ${errorBody}` };
+              }
+
+              // Check settlement response
+              const settlement = this.httpClient.getPaymentSettleResponse(
+                (name: string) => paidResponse.headers.get(name)
+              );
+
+              if (settlement?.transaction) {
+                console.log("[Client] Payment settled, tx:", settlement.transaction);
+              }
+
+              const data = (await paidResponse.json()) as WeatherResponse;
+              console.log("[Client] Weather data received after payment!");
+              return { success: true, data };
+            } catch (error) {
+              const message = error instanceof Error ? error.message : "Unknown error";
+              console.error("[Client] Payment failed:", message);
+              return { success: false, error: message };
+            }
+          }
+        }
+
+        export default WeatherClient;
+        ```
+
+        ### Step 7: Create a Index.ts to Test
+
+        Create a file `index.ts` to test the full flow:
+
+        ```typescript
+        import { WeatherClient } from "./client.js";
+
+        async function main() {
+          console.log("Initializing Weather Client...\n");
+
+          const client = await WeatherClient.create();
+
+
+          console.log("Requesting weather forecast...\n");
+
+          const result = await client.getWeather();
+
+          if (result.success && result.data) {
+            console.log(`Weather Forecast for ${result.data.data.city}:`);
+            console.log("-".repeat(50));
+            for (const day of result.data.data.forecast) {
+              console.log(`  ${day.dayOfWeek} (${day.date}): ${day.condition} - ${day.minTemp}C to ${day.maxTemp}C`);
+            }
+            console.log("-".repeat(50));
+            console.log(`Generated: ${result.data.timestamp}`);
+          } else {
+            console.error("Failed to get weather:", result.error);
+          }
         }
 
         main().catch(console.error);
+        ```
+
+        ### Step 8: Run the Example
+
+        1. Start the server in one terminal:
+
+        ```bash
+        npx tsx server.ts
+        ```
+
+        2. Run the client in another terminal:
+
+        ```bash
+        npx tsx index.ts
+        ```
+
+        Example output:
+
+        ```
+        Initializing Weather Client...
+
+        Requesting weather forecast...
+
+        [Client] Requesting weather forecast...
+        [Client] Payment required (402), processing...
+        [Client] Payment options: 1
+        [Client] Payment payload created
+        [Client] Retrying with payment...
+        [Client] Payment settled, tx: 0xabc123...
+        [Client] Weather data received after payment!
+
+        Weather Forecast for London:
+        --------------------------------------------------
+          Monday (December 16): rainy - 5C to 9C
+          Tuesday (December 17): rainy - 4C to 8C
+          Wednesday (December 18): sunny - 3C to 7C
+          Thursday (December 19): sunny - 2C to 6C
+          Friday (December 20): rainy - 4C to 8C
+        --------------------------------------------------
+        Generated: 2024-12-16T10:30:00.000Z
         ```
 
     </Tab>
