@@ -9,16 +9,16 @@ The following requires `EXTRA_CONTRACT_REGISTRAR_ROLE` on the account calling **
 
 ## Adding Extra Contract Registrar Role on SKALE Chain
 
-<Tabs syncKey="method">
-	## via SAFE
+<Tabs>
+	<Tab title="via SAFE">
 		1. Encode the function call via [multisigwallet-cli](/developers/run-a-skale-chain/using-multisig-wallet-cli)
 		```shell
 		npx msig encodeData [SKALE Chain-name] MessageProxyForSchain grantRole 0x6155b5aac15ce9aa193c0527a6f43be0a36a7e2e7496c2b615c0e5f922842773 [0x_ACCOUNT_TO_GRANT_EXTRA_CONTRACT_REGISTRAR_ROLE_TO]
 		```
 
 		2. Execute via SAFE by following the steps [here](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
-	
-	## Ethers v6
+	</Tab>
+	<Tab title="Ethers v6">
 		```ts
 		/**
 		* Run:
@@ -39,26 +39,28 @@ The following requires `EXTRA_CONTRACT_REGISTRAR_ROLE` on the account calling **
 		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
 		const res = await contract.grantRole(id("EXTRA_CONTRACT_REGISTRAR_ROLE", "0x..."));
 		```
-	
+		<Note>
+		This is required since the SKALE Chain does default to giving Marionette EXTRA_CONTRACT_REGISTRAR_ROLE
+		</Note>
+	</Tab>
 
-<Note>
-This is required since the SKALE Chain does default to giving Marionette EXTRA_CONTRACT_REGISTRAR_ROLE
-</Note>
+</Tabs>
 
 ## Registering Contracts on a SKALE Chain
-
 - **via SAFE** -- would be if you give Marionette EXTRA_CONTRACT_REGISTRAR_ROLE on MessageProxyForSchain
 - **via Ethers v6** -- would be if you gave an EOA the role and use Ethers
 
-	## via SAFE
+<Tabs>
+	<Tab title="via SAFE">
+
 		1. Encode the function call via [multisigwallet-cli](/developers/run-a-skale-chain/using-multisig-wallet-cli)
 		```shell
 			npx msig encodeData juicy-low-small-testnet MessageProxyForSchain registerExtraContract destination-skale-chain-name local-contract-address
 		```
 
 		2. Execute via SAFE by following the steps [here](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
-	
-	## Ethers v6
+	</Tab>
+	<Tab title="Ethers v6">
 		```ts
 		/**
 		* Run:
@@ -79,7 +81,7 @@ This is required since the SKALE Chain does default to giving Marionette EXTRA_C
 		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
 		const res = await contract.registerExtraContract("elated-tan-skat", "0x...")); // elated-tan-skat is Europa Mainnet
 		```
-	
+	</Tab>
 </Tabs>
 
 ## Registering Contracts on Ethereum
@@ -87,7 +89,7 @@ This is required since the SKALE Chain does default to giving Marionette EXTRA_C
 1. Go to [SAFE App](https://safe.global) or your preferred frontend for SAFE.
 2. Press **New Transaction** and then **Transaction Builder**
 
-![Click on Transaction Builder](../../../../assets/developers/run-a-skale-chain/safe-transaction-builder.png)
+![Click on Transaction Builder](../../../../assets/developers/safe-transaction-builder.png)
 
 3. Input the MessageProxy address for your correct environment into the **Contract Address** field and select **Use Implementation ABI**
 
@@ -103,6 +105,6 @@ Each SKALE Manager deployment -- Mainnet, Testnet, etc. -- has a smart contract 
 
 4. Select `registerExtraContract` from the dropdown list in *Contract Method Selector*, set the *schainName (string)* field (e.g elated-tan-skat), and set the *extraContract (address)* field which is the smart contract on Ethereum
 
-![Input transaction details](../../../../assets/developers/skale-bridge/custom-contract-ethereum-registration.png)
+![Input transaction details](../../../../assets/developers/custom-contract-ethereum-registration.png)
 
 5. Click **Add transaction**, scroll down, and click **Create Batch**, then click **Send Batch**. [Tenderly](https://tenderly.co/) simulation is generally available, even on testnet, and is encouraged to be used to see all the changes occuring on the Ethereum side before they occur.
