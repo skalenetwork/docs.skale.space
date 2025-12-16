@@ -12,7 +12,7 @@ This guide shows how to make x402 payments from the buyer's perspective. Use the
 - Node.js and npm installed
 - A SKALE Chain endpoint
 - Understanding of x402 protocol
-- Familiarity with TypeScript/JavaScript
+- Familiarity with TypeScript
 - A wallet with funds (USDC or supported token)
 
 ## Overview
@@ -21,208 +21,196 @@ When accessing a paywalled resource, the flow is:
 
 1. Make a request to the protected endpoint
 2. Receive a `402 Payment Required` response with payment requirements
-3. Create and settle the payment
-4. Retry the request with the `X-PAYMENT` header
+3. Create and sign a payment authorization
+4. Retry the request with the payment signature header
+
+---
+
+## Environment Setup
+
+Create a `.env` file with the following variables:
+
+```bash
+# Your wallet private key (never commit this!)
+PRIVATE_KEY=0xYourPrivateKey
+
+# USDC token contract on SKALE
+PAYMENT_TOKEN_ADDRESS=0x2e08028E3C4c2356572E096d8EF835cD5C6030bD
+PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
+```
 
 ---
 
 ## Implementation
 
 <Tabs>
-    <Tab title="Basic Usage">
+    <Tab title="Coinbase SDK">
 
         ### Step 1: Install Dependencies
 
         ```bash
-        npm install @coinbase/x402-sdk ethers
+        npm install @x402/core @x402/evm viem dotenv
         ```
 
-        ### Step 2: Configure the Wallet
+        ### Step 2: Define Your Chain
+
+        Create a chain configuration for SKALE:
 
         ```typescript
-        import { ethers } from 'ethers';
+        import { defineChain } from "viem";
 
-        const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
-        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-        ```
-
-        ### Step 3: Create the x402 Client
-
-        ```typescript
-        import { X402Client } from '@coinbase/x402-sdk';
-
-        const x402Client = new X402Client({
-            wallet: wallet,
-            facilitatorURL: 'https://facilitator.dirtroad.dev',
+        export const skaleChain = defineChain({
+            id: 324705682,
+            name: "SKALE Base Sepolia",
+            nativeCurrency: { decimals: 18, name: "Credits", symbol: "CREDIT" },
+            rpcUrls: {
+                default: { http: ["https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"] },
+            },
         });
+        ```
+
+        ### Step 3: Create the Payment Client
+
+        ```typescript
+        import { x402Client, x402HTTPClient } from "@x402/core/client";
+        import { ExactEvmScheme } from "@x402/evm";
+        import { privateKeyToAccount } from "viem/accounts";
+        import "dotenv/config";
+
+        const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
+
+        // Create the x402 client with EVM scheme
+        const evmScheme = new ExactEvmScheme(account);
+        const coreClient = new x402Client().register("eip155:*", evmScheme);
+        const httpClient = new x402HTTPClient(coreClient);
         ```
 
         ### Step 4: Access Paywalled Resources
 
         ```typescript
-        async function accessPaywalledResource(url: string) {
-            // Step 1: Make initial request
-            const response = await fetch(url);
-            
-            // Step 2: Check for payment required
-            if (response.status === 402) {
-                const paymentInfo = await response.json();
-                
-                // Step 3: Create and settle payment
-                const payment = await x402Client.createPayment(paymentInfo);
-                await x402Client.settle(payment);
-                
-                // Step 4: Retry with payment header
-                const retryResponse = await fetch(url, {
-                    headers: {
-                        'X-PAYMENT': JSON.stringify(payment),
-                    },
-                });
-                
-                return await retryResponse.json();
+        async function accessResource(url: string): Promise<unknown> {
+            // Make initial request
+            const response = await fetch(url, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            // If no payment required, return data
+            if (response.status !== 402) {
+                return response.json();
             }
-            
-            return await response.json();
+
+            // Get payment requirements from response
+            const responseBody = await response.json();
+            const paymentRequired = httpClient.getPaymentRequiredResponse(
+                (name: string) => response.headers.get(name),
+                responseBody
+            );
+
+            // Create payment payload (signs the authorization)
+            const paymentPayload = await httpClient.createPaymentPayload(paymentRequired);
+
+            // Get payment headers to send with retry request
+            const paymentHeaders = httpClient.encodePaymentSignatureHeader(paymentPayload);
+
+            // Retry request with payment
+            const paidResponse = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...paymentHeaders,
+                },
+            });
+
+            if (!paidResponse.ok) {
+                throw new Error(`Payment failed: ${paidResponse.status}`);
+            }
+
+            return paidResponse.json();
         }
         ```
 
         ### Complete Working Example
 
         ```typescript
-        import { X402Client } from '@coinbase/x402-sdk';
-        import { ethers } from 'ethers';
+        import { x402Client, x402HTTPClient } from "@x402/core/client";
+        import { ExactEvmScheme } from "@x402/evm";
+        import { privateKeyToAccount } from "viem/accounts";
+        import { createPublicClient, http, formatEther } from "viem";
+        import { defineChain } from "viem";
+        import "dotenv/config";
+
+        export const skaleChain = defineChain({
+            id: 324705682,
+            name: "SKALE Base Sepolia",
+            nativeCurrency: { decimals: 18, name: "Credits", symbol: "CREDIT" },
+            rpcUrls: {
+                default: { http: ["https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"] },
+            },
+        });
 
         async function main() {
-            // Configure wallet
-            const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
-            const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+            const privateKey = process.env.PRIVATE_KEY;
+            if (!privateKey) {
+                throw new Error("PRIVATE_KEY environment variable is required");
+            }
 
-            // Create x402 client
-            const x402Client = new X402Client({
-                wallet: wallet,
-                facilitatorURL: 'https://facilitator.dirtroad.dev',
-            });
+            // Setup wallet
+            const account = privateKeyToAccount(privateKey as `0x${string}`);
+            console.log(`Wallet address: ${account.address}`);
+
+            // Setup x402 client
+            const evmScheme = new ExactEvmScheme(account);
+            const coreClient = new x402Client().register("eip155:*", evmScheme);
+            const httpClient = new x402HTTPClient(coreClient);
 
             // Access paywalled resource
-            const url = 'https://api.example.com/premium/data';
-            
+            const url = "http://localhost:3000/premium/data";
+
             try {
-                const response = await fetch(url);
-                
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
                 if (response.status === 402) {
-                    const paymentInfo = await response.json();
-                    const payment = await x402Client.createPayment(paymentInfo);
-                    await x402Client.settle(payment);
-                    
-                    const retryResponse = await fetch(url, {
+                    console.log("Payment required, processing...");
+
+                    const responseBody = await response.json();
+                    const paymentRequired = httpClient.getPaymentRequiredResponse(
+                        (name: string) => response.headers.get(name),
+                        responseBody
+                    );
+
+                    const paymentPayload = await httpClient.createPaymentPayload(paymentRequired);
+                    const paymentHeaders = httpClient.encodePaymentSignatureHeader(paymentPayload);
+
+                    const paidResponse = await fetch(url, {
+                        method: "GET",
                         headers: {
-                            'X-PAYMENT': JSON.stringify(payment),
+                            "Content-Type": "application/json",
+                            ...paymentHeaders,
                         },
                     });
-                    
-                    const data = await retryResponse.json();
-                    console.log('Premium data:', data);
+
+                    const data = await paidResponse.json();
+                    console.log("Premium data:", data);
                 } else {
                     const data = await response.json();
-                    console.log('Data:', data);
+                    console.log("Data:", data);
                 }
             } catch (error) {
-                console.error('Error accessing resource:', error);
+                console.error("Error:", error);
             }
         }
 
         main();
         ```
 
-        ### Handling Multiple Payment Options
+        ### Run the Client
 
-        When the server offers multiple payment methods:
-
-        ```typescript
-        async function accessWithPaymentChoice(url: string, preferredNetwork?: string) {
-            const response = await fetch(url);
-            
-            if (response.status === 402) {
-                const paymentInfo = await response.json();
-                
-                // Select preferred payment option
-                let selectedOption = paymentInfo.accepts[0];
-                
-                if (preferredNetwork) {
-                    const preferred = paymentInfo.accepts.find(
-                        (opt: any) => opt.network === preferredNetwork
-                    );
-                    if (preferred) {
-                        selectedOption = preferred;
-                    }
-                }
-                
-                const payment = await x402Client.createPayment({
-                    ...selectedOption,
-                    resource: url,
-                });
-                
-                await x402Client.settle(payment);
-                
-                const retryResponse = await fetch(url, {
-                    headers: {
-                        'X-PAYMENT': JSON.stringify(payment),
-                    },
-                });
-                
-                return await retryResponse.json();
-            }
-            
-            return await response.json();
-        }
-
-        // Use SKALE network if available
-        const data = await accessWithPaymentChoice(
-            'https://api.example.com/premium/data',
-            'skale-base-sepolia'
-        );
-        ```
-
-        ### Error Handling
-
-        ```typescript
-        async function accessResourceSafely(url: string) {
-            try {
-                const response = await fetch(url);
-                
-                if (response.status === 402) {
-                    const paymentInfo = await response.json();
-                    const payment = await x402Client.createPayment(paymentInfo);
-                    await x402Client.settle(payment);
-                    
-                    const retryResponse = await fetch(url, {
-                        headers: {
-                            'X-PAYMENT': JSON.stringify(payment),
-                        },
-                    });
-                    
-                    // Check if payment was accepted
-                    if (retryResponse.status === 402) {
-                        throw new Error('Payment settlement failed');
-                    }
-                    
-                    if (!retryResponse.ok) {
-                        throw new Error(`Request failed: ${retryResponse.status}`);
-                    }
-                    
-                    return await retryResponse.json();
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`Request failed: ${response.status}`);
-                }
-                
-                return await response.json();
-            } catch (error) {
-                console.error('Error accessing paywalled resource:', error);
-                throw error;
-            }
-        }
+        ```bash
+        npx tsx client.ts
         ```
 
     </Tab>
@@ -231,76 +219,175 @@ When accessing a paywalled resource, the flow is:
         ### Step 1: Install Dependencies
 
         ```bash
-        npm install @faremeter/fetch ethers
+        npm install @faremeter/fetch @faremeter/wallet-evm @faremeter/payment-evm viem dotenv
         ```
 
-        ### Step 2: Configure the Wallet
+        ### Step 2: Define Your Chain
+
+        Create a chain configuration for SKALE:
 
         ```typescript
-        import { ethers } from 'ethers';
+        import { defineChain } from "viem";
 
-        const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
-        const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
+        export const skaleChain = defineChain({
+            id: 324705682,
+            name: "SKALE Base Sepolia",
+            nativeCurrency: { decimals: 18, name: "Credits", symbol: "CREDIT" },
+            rpcUrls: {
+                default: { http: ["https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"] },
+            },
+        });
         ```
 
-        ### Step 3: Create the x402 Fetch Client
+        ### Step 3: Create the Payment-Enabled Fetch
 
-        The Faremeter fetch wrapper automatically handles 402 responses:
+        The Faremeter SDK wraps the native `fetch` function to automatically handle 402 responses:
 
         ```typescript
-        import { createX402Fetch } from '@faremeter/fetch';
+        import { createLocalWallet } from "@faremeter/wallet-evm";
+        import { createPaymentHandler } from "@faremeter/payment-evm/exact";
+        import { wrap as wrapFetch } from "@faremeter/fetch";
+        import "dotenv/config";
 
-        const x402Fetch = createX402Fetch({
-            wallet: wallet,
-            facilitatorURL: 'https://facilitator.dirtroad.dev',
+        const wallet = await createLocalWallet(skaleChain, process.env.PRIVATE_KEY!);
+
+        const fetchWithPayment = wrapFetch(fetch, {
+            handlers: [
+                createPaymentHandler(wallet, {
+                    asset: {
+                        address: process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`,
+                        contractName: process.env.PAYMENT_TOKEN_NAME || "Bridged USDC (SKALE Bridge)",
+                        forwarderName: process.env.PAYMENT_TOKEN_NAME || "Bridged USDC (SKALE Bridge)",
+                        forwarderVersion: "1",
+                    },
+                }),
+            ],
         });
         ```
 
         ### Step 4: Access Paywalled Resources
 
         ```typescript
-        // Automatically handles 402 responses and payments
-        const data = await x402Fetch('https://api.example.com/premium-data');
-        console.log(data);
+        // The wrapped fetch automatically handles 402 responses
+        const response = await fetchWithPayment("http://localhost:3000/premium/data", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+        console.log("Premium data:", data);
         ```
 
         ### Complete Working Example
 
         ```typescript
-        import { createX402Fetch } from '@faremeter/fetch';
-        import { ethers } from 'ethers';
+        import { createLocalWallet } from "@faremeter/wallet-evm";
+        import { createPaymentHandler } from "@faremeter/payment-evm/exact";
+        import { wrap as wrapFetch } from "@faremeter/fetch";
+        import { createPublicClient, http, formatEther, defineChain } from "viem";
+        import "dotenv/config";
+
+        export const skaleChain = defineChain({
+            id: 324705682,
+            name: "SKALE Base Sepolia",
+            nativeCurrency: { decimals: 18, name: "Credits", symbol: "CREDIT" },
+            rpcUrls: {
+                default: { http: ["https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"] },
+            },
+        });
 
         async function main() {
-            // Configure wallet
-            const provider = new ethers.JsonRpcProvider('YOUR_SKALE_RPC_URL');
-            const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+            const privateKey = process.env.PRIVATE_KEY;
+            if (!privateKey) {
+                throw new Error("PRIVATE_KEY environment variable is required");
+            }
 
-            // Create x402-enabled fetch client
-            const x402Fetch = createX402Fetch({
-                wallet: wallet,
-                facilitatorURL: 'https://facilitator.dirtroad.dev',
+            // Setup wallet
+            const wallet = await createLocalWallet(skaleChain, privateKey);
+            console.log(`Wallet address: ${wallet.account.address}`);
+
+            // Setup payment-enabled fetch
+            const assetAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+            const assetName = process.env.PAYMENT_TOKEN_NAME || "Bridged USDC (SKALE Bridge)";
+
+            const fetchWithPayment = wrapFetch(fetch, {
+                handlers: [
+                    createPaymentHandler(wallet, {
+                        asset: {
+                            address: assetAddress,
+                            contractName: assetName,
+                            forwarderName: assetName,
+                            forwarderVersion: "1",
+                        },
+                    }),
+                ],
             });
 
-            try {
-                // Access premium content - payment handled automatically
-                const premiumData = await x402Fetch('https://api.example.com/premium/data');
-                console.log('Premium data:', premiumData);
+            // Access paywalled resource - payment handled automatically!
+            const url = "http://localhost:3000/premium/data";
 
-                // Access another paywalled resource
-                const weatherData = await x402Fetch('https://api.example.com/premium/weather');
-                console.log('Weather data:', weatherData);
+            try {
+                console.log(`Accessing ${url}...`);
+
+                const response = await fetchWithPayment(url, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Premium data:", data);
             } catch (error) {
-                console.error('Error accessing resource:', error);
+                console.error("Error:", error);
             }
         }
 
         main();
         ```
 
+        ### Run the Client
+
+        ```bash
+        npx tsx client.ts
+        ```
+
+        ### POST Requests with Body
+
+        The wrapped fetch works the same way for POST requests:
+
+        ```typescript
+        const response = await fetchWithPayment("http://localhost:3000/premium/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: "analyze this data" }),
+        });
+
+        const result = await response.json();
+        console.log("Analysis result:", result);
+        ```
+
     </Tab>
 </Tabs>
 
 ---
+
+## Testing Your Client
+
+Make sure you have a server running (see [Accept Payments](/cookbook/x402/accepting-payments)), then run your client:
+
+```bash
+npx tsx client.ts
+```
+
+The client will:
+1. Make a request to the protected endpoint
+2. Receive the 402 response with payment requirements
+3. Sign a payment authorization using your wallet
+4. Retry the request with the payment header
+5. Receive the premium content
 
 ## Best Practices
 
@@ -325,5 +412,5 @@ When accessing a paywalled resource, the flow is:
 ## Resources
 
 - [Coinbase x402 SDK](https://github.com/coinbase/x402)
-- [Faremeter Fetch](https://docs.corbits.dev/api/reference/fetch/overview)
+- [Faremeter SDK Documentation](https://docs.corbits.dev/api/reference/fetch/overview)
 - [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)
