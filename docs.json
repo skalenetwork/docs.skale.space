@@ -78,29 +78,14 @@
             ]
           },
           {
-            "group": "SKALE Network",
-            "pages": [
-              "concepts/skale-network/skale-network-101",
-              "concepts/skale-network/skale-manager",
-              "concepts/skale-network/pooled-security-model",
-              "concepts/skale-network/delegated-proof-of-stake",
-              "concepts/skale-network/containerized-nodes",
-              "concepts/skale-network/virtualized-blockchains",
-              "concepts/skale-network/horizontal-scalability"
-            ]
-          },
-          {
             "group": "SKALE Chain",
             "pages": [
-              "concepts/skale-chain/skale-chain-101",
+              "concepts/skale-chain/introduction",
               "concepts/skale-chain/block-rotation",
               "concepts/skale-chain/consensus",
               "concepts/skale-chain/ddos-protection",
               "concepts/skale-chain/precompiled-contracts",
-              "concepts/skale-chain/snapshots",
-              "concepts/skale-chain/instant-finality",
-              "concepts/skale-chain/privacy",
-              "concepts/skale-chain/tees"
+              "concepts/skale-chain/snapshots"
             ]
           },
           {
@@ -183,8 +168,7 @@
               "developers/build-a-dapp",
               "developers/solidity-quickstart",
               "developers/troubleshooting",
-              "developers/skale-vs-ethereum",
-              "developers/deploy-on-skale"
+              "developers/skale-vs-ethereum"
             ]
           },
           {
