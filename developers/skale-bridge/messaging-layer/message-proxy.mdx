@@ -83,13 +83,13 @@ The default message size limit is 1,000,000 gas units. This limit can be changed
 1. Assign `CONSTANT_SETTER_ROLE`, an OpenZeppelin-based smart contract role, to one of your multisignature wallets or trusted delegated accounts. This call
 can be made by the [SKALE Chain Owner](/developers/run-a-skale-chain/using-safe) or directly if another account is able to assign this role to your contract.
 
-<Tabs syncKey="method">
-	## MultisigWallet CLI
+<Tabs>
+	<Tab title="MultisigWallet CLI">
 		```shell
 		npx msig encodeData SKALE Chain-name-here MessageProxyForSchain grantRole 0x96e3fc3be15159903e053027cff8a23f39a990e0194abcd8ac1cf1b355b8b93c [0x-wallet-address-of-executor]
 		```
-	
-	## Ethers v6
+	</Tab>
+	<Tab title="Ethers v6">
 		```ts
 		/**
 		* Run:
@@ -112,8 +112,18 @@ can be made by the [SKALE Chain Owner](/developers/run-a-skale-chain/using-safe)
 
 		const res = await contract.grantRole("0x96e3fc3be15159903e053027cff8a23f39a990e0194abcd8ac1cf1b355b8b93c", "0x[ACCOUNT_TO_GRANT_ROLE]");
 		```
+	</Tab>
+</Tabs>
 
-	## Ethers v6
+2. Once assigned, use your account to set the new gas limit. 
+
+<Tabs>
+	<Tab title="MultisigWallet CLI">
+		```shell
+		npx msig encodeData schain-name-here MessageProxyForSchain setNewGasLimit 3000000		
+		```
+	</Tab>
+	<Tab title="Ethers v6">
 		```ts
 		/**
 		* Run:
@@ -136,6 +146,6 @@ can be made by the [SKALE Chain Owner](/developers/run-a-skale-chain/using-safe)
 
 		const res = await contract.setNewGasLimit(3000000); // Set to 3,0000,000
 		```
-
+	</Tab>
 </Tabs>
 

@@ -22,14 +22,15 @@ The connection process requires **BOTH** SKALE Chain Owners to execute the conne
 The following will create a connection from your chain to the target chain. If the other chain is already connected to your SKALE Chain, you can proceed
 with token setup and bridging. If the other chain has not yet connected then bridging will not work until completed.
 
-	## via Multisigwallet CLI
+<Tabs>
+	<Tab title="via Multisigwallet CLI">
 		```shell
     		npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerLinker connectSchain [TARGET_CHAIN_NAME]
     	```
 
     	After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
-	
-	## connect.js
+	</Tab>
+	<Tab title="connect.js">
 		```js
 		import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
 
@@ -53,7 +54,8 @@ with token setup and bridging. If the other chain has not yet connected then bri
 		// Success! Now watch for delivery on Destination Chain
 		console.log("Success!");
 		```
-	
+	</Tab>
+</Tabs>
 
 <Note>
 The above call requires **REGISTRAR_ROLE** which is an OpenZeppelin AccessControl role defined within the TokenManagerLinker smart contract.

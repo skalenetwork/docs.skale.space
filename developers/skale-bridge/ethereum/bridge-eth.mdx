@@ -10,10 +10,10 @@ SKALE's Interchain Messaging Agent includes a native bridging layer for industry
 - Unlike ERC-20, ERC-721, and ERC-1155; ETH is nativley support between Ethereum and SKALE Chains. This means you do **NOT** need to map ETH to a token
 - ETH has its own special DepositBox on Ethereum called DepositBoxETH which holds ETH separately from the other assets bridged to the SKALE Network
 
-<Aside type="caution" title="Really Important!">
+<Note>
 When ETH is deposited on Ethereum, it is received as an ERC-20 token on all SKALE Chains.
 This token is **NOT** WETH. This token is predeployed on all SKALE Chains to the same token address and information as [ETHC](#eth-on-skale).
-</Aside>
+</Note>
 
 ### ETH on SKALE
 
@@ -33,10 +33,10 @@ To bridge ETH from Ethereum to SKALE, you should deposit ETH on Ethereum Mainnet
 
 ### Bridge to SKALE (from Ethereum)
 
-<Aside type="note">
+<Note type="note">
 The following does not require any gas (i.e sFUEL) on the SKALE Chain. Please note to **exit** to Ethereum once you are on SKALE,
 you will need ETH on Ethereum to fill up your community wallet.
-</Aside>
+</Note>
 
 <Tabs keySync="method">
 	<Tab title="normalDeposit.js">
@@ -91,9 +91,9 @@ SKALE's decentralized bridge offers a simple two-step process to bridge ETH from
 
 2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
 
-<Aside type="note">
+<Note type="note">
 Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge is successful.
-</Aside>
+</Note>
 
 #### Pre-pay for your Exit
 
@@ -170,7 +170,7 @@ await exitTx.wait(1);
 console.log("Success!");
 ```
 
-<Aside type="note">
+<Note type="note">
 If your bridge is not working, it is most likely for one of three reasons:
 
 1. You forgot to prepay for gas
@@ -178,4 +178,4 @@ If your bridge is not working, it is most likely for one of three reasons:
 3. You don't have sufficient funds to bridge
 
 Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>

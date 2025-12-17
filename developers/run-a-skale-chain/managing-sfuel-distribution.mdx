@@ -14,7 +14,8 @@ All SKALE Chains come predeployed with a smart contract called **Etherbase** whi
 
 2. sFUEL when consuemd in a transaction is automatically recycled into Etherbase ensuring that a SKALE Chain doesn't run out of gas
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 	```ts
 	 // Using Ethers v6
 	import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers";
@@ -42,7 +43,8 @@ All SKALE Chains come predeployed with a smart contract called **Etherbase** whi
 			process.exitCode = 1;
 		});
 	```
-	
+	</Tab>
+</Tabs>
 
 <Note>
 If you encouter any errors when trying to retrieve gas from Etherbase; this likely means that the address is missing `ETHER_MANAGER_ROLE`.

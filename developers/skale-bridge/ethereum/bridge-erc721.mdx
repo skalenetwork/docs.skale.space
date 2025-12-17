@@ -14,10 +14,10 @@ to actually programatically bridge the tokens.
 via the standard mapping process
 - All ERC-721 tokens bridged into SKALE have a set of basic requirements to make them compatible with SKALE's bridging layer
 
-<Aside type="note">
+<Note type="note">
 SKALE utilizes a popular architectural design within bridging which is a liquidity based bridge.
 This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on the target SKALE Chain.
-</Aside>
+</Note>
 
 ## Bridge Setup
 
@@ -29,15 +29,15 @@ bridging layer:
 1. Have a **mint** function that is locked down to the IMA Bridge
 2. Have a **burn** function that is locked down to the IMA Bridge
 
-<Aside type="danger" title="Caution on Minting">
+<Danger>
 If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that
 the existing tokens on the SKALE Chain may not match what is secured in the bridge.
-</Aside>
+</Danger>
 
-<Aside type="danger" title="Caution on Burning">
+<Danger>
 If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that
 the supply on the SKALE Chain side could be "burned", while the tokens still exist on Ethereum which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
-</Aside>
+</Danger>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
 
@@ -106,9 +106,9 @@ contract InterchainNFT is InterchainERC721("NFT Name", "NFT Symbol", "ipfs://<ci
 
 ### 3. Map the SKALE and Ethereum tokens together
 
-<Aside type="note">
+<Note type="note">
 If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>
 
 #### Add the token on Ethereum via SAFE
 
@@ -122,16 +122,19 @@ Once on your SAFE, start by preparing a transaction via the **Transaction Builde
 4. Input your *SKALE Chain Name* and your ERC-721 contract address on Ethereum in the fields
 5. Send by itslef or via batch
 
-<Aside type="warning">
+<Warning type="warning">
 Make sure to replace the values with your SKALE Chain name and the correct token addresses.
-</Aside>
+</Warning>
 
 #### Add the token on SKALE Chain TokenManagerERC721
 
-  ## Multisigwallet CLI
+<Tabs>
+    <Tab title="Multisigwallet CLI">
     ```shell
     npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerERC721 addERC721TokenByOwner Mainnet 0x[TOKEN_ON_ETHEREUM] 0x[TOKEN_ON_SKALE_CHAIN]
     ```
+    </Tab>
+</Tabs>
 
     After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
   
@@ -158,7 +161,8 @@ The flow for bridging an ERC-721 from Ethereum to SKALE follows a very similar f
 
 The following will help you bridge an NFT from Ethereum to SKALE.
 
-  ## bridge.js
+<Tabs>
+    <Tab title="bridge.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
 
@@ -192,8 +196,8 @@ The following will help you bridge an NFT from Ethereum to SKALE.
     // Success! Now watch for delivery on SKALE Chain
     console.log("Success!");
     ```
-  
-  ## bridgeDirect.js
+  </Tab>
+  <Tab title= "bridgeDirect.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
 
@@ -228,7 +232,8 @@ The following will help you bridge an NFT from Ethereum to SKALE.
     // Success! Now watch for delivery on SKALE Chain
     console.log("Success!");
     ```
-  
+  </Tab>
+</Tabs>
 
 ### Bridge to Ethereum (from SKALE)
 
@@ -238,9 +243,9 @@ SKALE's decentralized bridge offers a simple two-step process to bridge from any
 
 2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
 
-<Aside type="note">
+<Note type="note">
 Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
-</Aside>
+</Note>
 
 #### Pre-pay for your Exit
 
@@ -317,7 +322,7 @@ await exitTx.wait(1);
 console.log("Success!");
 ```
 
-<Aside type="note">
+<Note type="note">
 If your bridge is not working, it is most likely for one of three reasons:
 
 1. You forgot to prepay for gas
@@ -325,4 +330,4 @@ If your bridge is not working, it is most likely for one of three reasons:
 3. You don't actually own the ERC-721 Token
 
 Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>
