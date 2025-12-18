@@ -4,18 +4,48 @@ description: "Bringing the power of SKALE to the Base ecosystem"
 tag: "NEW"
 ---
 
+<Note>
+The first SKALE Chain is publicly available on [testnet](#skale-base-testnet) and in private beta on [mainnet]()
+</Note>
+
 ## Key Features
 
 The SKALE on Base testnet deployment retains 100% of the features you know and love from SKALE including:
 
-- Instant Finality (Single Slot Finality)
-- Zero Gas Fees
-- Native Bridge from Base to SKALE
-- A massive *268,435,455* block gas limit
-- The 2.5x *64kb* contract deployment size limit
-- Solidity-native Random Number Generator (VRF alternative)
-- High Performance C++ EVM
-- Native SKALE Oracle
+- **Privacy**: Encrypted transactions brings the privacy you need to the Base ecosystem
+- **Instant Finality**: No forks, no reorgs, and no multi-confirmation waits
+- **Zero Gas Fees**: Stop paying variable gas fees and get predicable costs with pre-paid compute credits
+- **Native Bridge**: Seamlessly transfer ERC-20, ERC-721, and ERC-1155 tokens between Base and SKALE without 3rd party bridges
+- **Solidity-native RNG**: No 3rd-party services or oracles needed generate random numbers onchain instantly (no callbacks needed)
+
+<Note>
+If you are looking to host your agent card with SKALE File Storage or have your own dedicated blockchain, join the team in [Discord](https://discord.gg/skale) to inquire.
+<Note>
+
+## SKALE Base Mainnet
+
+| Name | Value | 
+| --- | --- |
+| Name | SKALE Base |
+| RPC Url | https://skale-base.skalenodes.com/v1/base |
+| WSS Url | wss://skale-base.skalenodes.com/v1/ws/base |
+| Explorer | https://skale-base-explorer.skalenodes.com/ |
+| Native Token | CREDIT |
+| Native Token Decimals | 18 |
+| Chain Id | 1187947933 |
+| Chain Id Hex | 0x46cea59d |
+| Portal | https://base.skalenodes.com/chains/base |
+
+### SKALE Base Mainnet Tokens
+
+| Name | Symbol | Decimals | Base Sepolia Address | SKALE Base Sepolia Address |
+| --- | --- | --- | --- | --- |
+| USDC | USDC.e | 6 | [0x833...913](https://basescan.org/token/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913) | [0x858...b20](https://skale-base-explorer.skalenodes.com/token/0x858F42C848954324840980690C3124060428D478) |
+| Tether USD | USDT | 6 | [0xfde...bb2](https://basescan.org/token/0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2) | [0x858...b20](https://skale-base-explorer.skalenodes.com/token/0x858F42C848954324840980690C3124060428D478) |
+| Wrapped BTC | WBTC | 8 | [0x055...B9c](https://basescan.org/token/0x0555E30da8f98308EdB960aa94C0Db47230d2B9c) | [0x858...b20](https://skale-base-explorer.skalenodes.com/token/0x858F42C848954324840980690C3124060428D478) |
+| Wrapped Ether | WETH | 6 | [0x420...006](https://basescan.org/token/0x4200000000000000000000000000000000000006) | [0x858...b20](https://skale-base-explorer.skalenodes.com/token/0x858F42C848954324840980690C3124060428D478) |
+| ETH (ERC-20) | ETHC | 6 | Native ETH (Gas) on Base | [0xD2Aaa007...000](https://skale-base-explorer.skalenodes.com/token0xD2Aaa00700000000000000000000000000000000) |
+
 
 ## SKALE Base Testnet
 
@@ -24,11 +54,11 @@ The SKALE on Base testnet deployment retains 100% of the features you know and l
 | Name | SKALE Base Sepolia |
 | RPC Url | https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha |
 | Explorer | https://base-sepolia-testnet-explorer.skalenodes.com/ |
-| Native Token | Credits |
+| Native Token | CREDIT |
 | Native Token Decimals | 18 |
 | Chain Id | 324705682 |
 | Chain Id Hex | 0x135A9D92 |
-| Portal | Coming Soon |
+| Portal | https://base-sepolia.skalenodes.com |
 | Faucet | https://base-sepolia-faucet.skale.space |
 
 ### SKALE Base Testnet Tokens
@@ -41,6 +71,7 @@ The SKALE on Base testnet deployment retains 100% of the features you know and l
 | Wrapped BTC | WBTC | 8 | [0xC38...8Bc](https://basescan.org/token/0xC3893AEC98b41c198A11AcD9db17688D858588Bc) | [0x451...e87](https://base-sepolia-testnet-explorer.skalenodes.com/token/0x4512eacd4186b025186e1cf6cc0d89497c530e87) |
 | Wrapped Ether | WETH | 6 | [0x420...006](https://basescan.org/token/0x4200000000000000000000000000000000000006) | [0xf94...fc0](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xf94056bd7f6965db3757e1b145f200b7346b4fc0) |
 | ETH (ERC-20) | ETHC | 6 | Native ETH (Gas) on Base | [0xD2Aaa007...000](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xD2Aaa00700000000000000000000000000000000) |
+
 
 ### Chain Notes
 - When bridging ETH from Base Sepolia to the SKALE Chain, the ETH is locked as native ETH (msg.value) and is minted as an ERC-20 called ETHC on the SKALE Chain.
