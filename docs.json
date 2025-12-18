@@ -47,14 +47,7 @@
             "group": "SKL Token",
             "pages": [
               "get-started/skl-token/skl-token",
-              "get-started/skl-token/tokenomics"
-            ]
-          },
-          {
-            "group": "Staking SKL",
-            "pages": [
-              "get-started/staking/staking-skl",
-              "get-started/staking/how-to-stake-skl"
+              "get-started/skl-token/staking-skl"
             ]
           },
           {
