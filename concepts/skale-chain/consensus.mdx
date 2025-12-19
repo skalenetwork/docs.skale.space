@@ -670,11 +670,3 @@ We are still researching the formula for **k**. Ideally **k** should go down if 
 ### Compatibility
 
 The goal is to provide compatible JSON client API for client software such as Web3js, Web3py, Metamask and Truffle.
-
-### FUTURE: Multi-node requests
-
-Existing clients such Web3js connect to a single node, which creates security problem for Solidity read requests that read variables.
-
-Transactions involve a consensus of the entire blockchain, but Solidity read requests interact with a single node. Therefore, a malicious node, such as Infura, can provide a user incorrect information on, e.g., the amount of funds the user has in possession.
-
-Therefore, in the future we will need to add multi-node requests where the first node that receives the request passes it to all others and collects a threshold signature.
