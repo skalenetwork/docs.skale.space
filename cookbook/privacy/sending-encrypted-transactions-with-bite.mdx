@@ -1,0 +1,955 @@
+---
+title: "Send Encrypted Transactions with BITE"
+description: "Complete step-by-step guide to implementing private blockchain transactions using BITE threshold encryption"
+---
+
+## Sending Encrypted Transactions with BITE
+
+This comprehensive tutorial walks you through building a complete encrypted transaction system using BITE (Blockchain Integrated Threshold Encryption). You'll learn how to create private transfers that remain encrypted until consensus finality, preventing MEV attacks while maintaining blockchain transparency.
+
+<Note title="Before You Start">
+This tutorial requires access to a BITE-enabled SKALE chain. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+</Note>
+
+## What You'll Build
+
+A full-featured encrypted transfer application that:
+- Encrypts transaction data (recipient, amount) before blockchain submission
+- Shows real-time pending encrypted transactions
+- Displays decrypted results after consensus finality
+- Handles committee rotations seamlessly
+- Provides complete privacy for sensitive transfers
+
+### Prerequisites
+
+- Node.js 16+ and npm/yarn
+- MetaMask browser extension
+- Access to a BITE-enabled SKALE chain
+- Basic knowledge of JavaScript and smart contracts
+
+<Note title= "Setup BITE SDK">
+## Step 0: Setup BITE SDK
+
+If you haven't already, install the BITE TypeScript SDK:
+
+```bash
+npm i @skalenetwork/bite ethers dotenv
+```
+</Note>
+
+## Step 1: Smart Contract Setup
+
+First, let's create a simple smart contract for our encrypted transfers.
+
+### Create the Transfer Contract
+
+Create a new file `contracts/SimpleTransferDemo.sol`:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SimpleTransferDemo {
+    mapping(address => uint256) public balances;
+    event Transferred(address indexed from, address indexed to, uint256 amount);
+
+    constructor() {
+        balances[msg.sender] = 1_000_000;
+    }
+
+    function allocate(address user, uint256 amount) external {
+        balances[user] += amount;
+    }
+
+    function transfer(address to, uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Not enough balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+        emit Transferred(msg.sender, to, amount);
+    }
+
+    function balanceOf(address user) external view returns (uint256) {
+        return balances[user];
+    }
+}
+```
+
+**Contract Features:**
+- **Simple ERC20-like interface** for easy testing
+- **Initial funding** of 1,000,000 tokens to deployer
+- **Allocate function** for funding test accounts
+- **Transfer event** for tracking encrypted operations
+
+### Deploy the Contract
+
+<Note title="Deployment Options">
+Use Foundry or Hardhat to deploy the contract to your BITE-enabled SKALE chain. See [ERC20 Deployment Guide](/cookbook/smart-contracts/deploy-erc20-token) for detailed deployment instructions.
+</Note>
+
+## Step 2: Project Setup
+
+Let's set up our frontend application structure.
+
+### Initialize the Project
+
+```bash
+# Create project directory
+mkdir bite-encrypted-transfers
+cd bite-encrypted-transfers
+
+# Initialize npm project
+npm init -y
+
+# Install dependencies
+npm install @skalenetwork/bite ethers dotenv vite
+npm install --save-dev vite @vitejs/plugin-react
+
+# Create basic structure
+mkdir src
+touch src/main.js src/style.css index.html .env package.json
+```
+
+### Configure Environment
+
+Create `.env` file with your configuration:
+
+```bash
+VITE_EXPLORER_URL=https://explorer.skale.network/
+VITE_SCHAIN_ENDPOINT=https://your-bite-chain.skale.network/
+VITE_TRANSFER_CONTRACT=0xYourDeployedContractAddress
+```
+
+**Environment Variables:**
+- `VITE_EXPLORER_URL`: Block explorer for transaction links
+- `VITE_SCHAIN_ENDPOINT`: BITE-enabled SKALE chain RPC
+- `VITE_TRANSFER_CONTRACT`: Address of deployed transfer contract
+
+### Update package.json
+
+```json
+{
+  "name": "bite-encrypted-transfers",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@skalenetwork/bite": "^0.7.0",
+    "ethers": "^6.13.5"
+  },
+  "devDependencies": {
+    "vite": "^6.3.1"
+  }
+}
+```
+
+## Step 3: Core Implementation
+
+Let's build the main application logic.
+
+### Initialize BITE
+
+Create `src/main.js`:
+
+```javascript
+import { ethers } from 'ethers';
+import { BITE } from '@skalenetwork/bite';
+
+// Configuration
+const SCHAIN_ENDPOINT = import.meta.env.VITE_SCHAIN_ENDPOINT;
+const TRANSFER_CONTRACT_ADDRESS = import.meta.env.VITE_TRANSFER_CONTRACT;
+const EXPLORER_URL = import.meta.env.VITE_EXPLORER_URL;
+
+// Initialize BITE
+const bite = new BITE(SCHAIN_ENDPOINT);
+
+// Contract ABI for our transfer function
+const TRANSFER_ABI = [
+    'function transfer(address to, uint256 amount)',
+    'function balanceOf(address user) view returns (uint256)',
+    'event Transferred(address indexed from, address indexed to, uint256 amount)'
+];
+
+let currentAccount = null;
+let provider = null;
+```
+
+### Transaction Data Encoding
+
+```javascript
+function encodeTransferData(recipient, amount) {
+    const iface = new ethers.Interface(TRANSFER_ABI);
+    return iface.encodeFunctionData('transfer', [recipient, amount]);
+}
+
+function parseTransferData(data) {
+    const iface = new ethers.Interface(TRANSFER_ABI);
+    try {
+        const parsed = iface.parseTransaction({ data });
+        return {
+            to: parsed.args[0],
+            amount: parsed.args[1].toString()
+        };
+    } catch (error) {
+        return null;
+    }
+}
+```
+
+### Wallet Connection
+
+```javascript
+async function connectWallet() {
+    if (typeof window.ethereum === 'undefined') {
+        throw new Error('MetaMask not detected');
+    }
+
+    try {
+        // Request account access
+        const accounts = await window.ethereum.request({
+            method: 'eth_requestAccounts'
+        });
+        
+        currentAccount = accounts[0];
+        provider = new ethers.BrowserProvider(window.ethereum);
+        
+        // Update UI
+        document.getElementById('walletAddress').textContent = currentAccount;
+        document.getElementById('connectBtn').style.display = 'none';
+        document.getElementById('transferForm').style.display = 'block';
+        
+        // Load initial balance
+        await loadBalance();
+        
+    } catch (error) {
+        console.error('Wallet connection failed:', error);
+        alert('Failed to connect wallet');
+    }
+}
+```
+
+### Encrypted Transaction Submission
+
+```javascript
+async function sendEncryptedTransfer(recipient, amount) {
+    if (!currentAccount) {
+        throw new Error('Wallet not connected');
+    }
+
+    try {
+        // Encode the transfer function call
+        const encodedData = encodeTransferData(recipient, ethers.parseEther(amount));
+        
+        // Create transaction parameters
+        const txParams = {
+            from: currentAccount,
+            to: TRANSFER_CONTRACT_ADDRESS,
+            value: '0x0',
+            data: encodedData,
+            gasLimit: 300000, // Important: set manually for BITE transactions
+        };
+
+        // Encrypt transaction data using BITE
+        const encryptedParams = await bite.encryptTransaction(txParams);
+        console.log('Encrypted transaction:', encryptedParams);
+        
+        // Submit encrypted transaction
+        const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [encryptedParams],
+        });
+
+        console.log('Transaction submitted:', txHash);
+        
+        // Add to pending transactions
+        addPendingTransaction(txHash, recipient, amount);
+        
+        // Monitor for finality
+        waitForTransactionFinality(txHash);
+        
+        return txHash;
+        
+    } catch (error) {
+        console.error('Transfer failed:', error);
+        alert(`Transfer failed: ${error.message}`);
+    }
+}
+```
+
+### Transaction Finality Monitoring
+
+```javascript
+async function waitForTransactionFinality(txHash) {
+    const maxAttempts = 60; // 60 seconds timeout
+    let attempts = 0;
+    
+    while (attempts < maxAttempts) {
+        try {
+            // Check transaction receipt
+            const receipt = await provider.getTransactionReceipt(txHash);
+            
+            if (receipt && receipt.status === 1) {
+                // Transaction confirmed, wait a bit more for decryption
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // Try to get decrypted data
+                try {
+                    const decryptedData = await bite.getDecryptedTransactionData(txHash);
+                    
+                    if (decryptedData) {
+                        // Successfully decrypted!
+                        const transferInfo = parseTransferData(decryptedData.data);
+                        addDecryptedResult(txHash, transferInfo);
+                        removePendingTransaction(txHash);
+                        await loadBalance(); // Update balance
+                        return;
+                    }
+                } catch (decryptError) {
+                    console.log('Decryption not ready yet:', decryptError.message);
+                }
+            }
+            
+        } catch (error) {
+            console.log('Transaction not ready yet...');
+        }
+        
+        attempts++;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    // Timeout occurred
+    removePendingTransaction(txHash);
+    alert('Transaction confirmation timeout. Please check the block explorer.');
+}
+```
+
+## Step 4: User Interface
+
+Let's create a user-friendly interface for our encrypted transfers.
+
+### HTML Structure
+
+Create `index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BITE Encrypted Transfers</title>
+    <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BITE Encrypted Transfers</h1>
+            <p>Private blockchain transactions with threshold encryption</p>
+        </header>
+
+        <main>
+            <!-- Wallet Connection -->
+            <section class="wallet-section">
+                <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+                <div id="walletInfo" style="display: none;">
+                    <p>Connected: <strong id="walletAddress"></strong></p>
+                    <p>Balance: <strong id="walletBalance">0</strong> tokens</p>
+                </div>
+            </section>
+
+            <!-- Transfer Form -->
+            <section id="transferForm" class="transfer-section" style="display: none;">
+                <h2>Send Encrypted Transfer</h2>
+                <form id="transferFormElement" onsubmit="handleTransferSubmit(event)">
+                    <div class="form-group">
+                        <label for="recipient">Recipient Address:</label>
+                        <input type="text" id="recipient" required 
+                               placeholder="0x..." pattern="^0x[a-fA-F0-9]{40}$">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount:</label>
+                        <input type="number" id="amount" required min="0" step="0.001">
+                    </div>
+                    <button type="submit">Encrypt & Send Transfer</button>
+                </form>
+            </section>
+
+            <!-- Pending Transactions -->
+            <section class="pending-section">
+                <h2>Pending Encrypted Transactions</h2>
+                <div id="pendingTransactions" class="transaction-list">
+                    <p class="empty-state">No pending transactions</p>
+                </div>
+            </section>
+
+            <!-- Decrypted Results -->
+            <section class="results-section">
+                <h2>Completed Transfers</h2>
+                <div id="completedTransactions" class="transaction-list">
+                    <p class="empty-state">No completed transfers</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
+```
+
+### CSS Styling
+
+Create `src/style.css`:
+
+```css
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f8fafc;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+section {
+    background: white;
+    padding: 30px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background: #5a67d8;
+    transform: translateY(-2px);
+}
+
+.transaction-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.transaction-item {
+    background: #f7fafc;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.transaction-item.pending {
+    border-left-color: #f6ad55;
+    background: #fffbf0;
+}
+
+.transaction-item.completed {
+    border-left-color: #48bb78;
+    background: #f0fff4;
+}
+
+.transaction-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.transaction-link:hover {
+    text-decoration: underline;
+}
+
+.empty-state {
+    text-align: center;
+    color: #718096;
+    padding: 40px;
+    font-style: italic;
+}
+
+.tx-hash {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    section {
+        padding: 20px;
+    }
+}
+```
+
+### UI Management Functions
+
+Add these functions to `src/main.js`:
+
+```javascript
+// Transaction tracking
+let pendingTransactions = new Map();
+let completedTransactions = [];
+
+function addPendingTransaction(txHash, recipient, amount) {
+    const txData = {
+        hash: txHash,
+        recipient,
+        amount,
+        timestamp: new Date(),
+        status: 'pending'
+    };
+    
+    pendingTransactions.set(txHash, txData);
+    updatePendingTransactionsUI();
+}
+
+function removePendingTransaction(txHash) {
+    pendingTransactions.delete(txHash);
+    updatePendingTransactionsUI();
+}
+
+function addDecryptedResult(txHash, transferInfo) {
+    const result = {
+        hash: txHash,
+        recipient: transferInfo.to,
+        amount: ethers.formatEther(transferInfo.amount),
+        timestamp: new Date(),
+        status: 'completed'
+    };
+    
+    completedTransactions.unshift(result);
+    updateCompletedTransactionsUI();
+}
+
+function updatePendingTransactionsUI() {
+    const container = document.getElementById('pendingTransactions');
+    
+    if (pendingTransactions.size === 0) {
+        container.innerHTML = '<p class="empty-state">No pending transactions</p>';
+        return;
+    }
+    
+    container.innerHTML = Array.from(pendingTransactions.values())
+        .map(tx => `
+            <div class="transaction-item pending">
+                <div><strong>To:</strong> ${tx.recipient}</div>
+                <div><strong>Amount:</strong> ${tx.amount} tokens</div>
+                <div class="tx-hash"><strong>Hash:</strong> ${tx.hash}</div>
+                <div><strong>Time:</strong> ${tx.timestamp.toLocaleString()}</div>
+                <a href="${EXPLORER_URL}/tx/${tx.hash}" target="_blank" class="transaction-link">
+                    View on Explorer
+                </a>
+            </div>
+        `).join('');
+}
+
+function updateCompletedTransactionsUI() {
+    const container = document.getElementById('completedTransactions');
+    
+    if (completedTransactions.length === 0) {
+        container.innerHTML = '<p class="empty-state">No completed transfers</p>';
+        return;
+    }
+    
+    container.innerHTML = completedTransactions
+        .map(tx => `
+            <div class="transaction-item completed">
+                <div><strong>To:</strong> ${tx.recipient}</div>
+                <div><strong>Amount:</strong> ${tx.amount} tokens</div>
+                <div class="tx-hash"><strong>Hash:</strong> ${tx.hash}</div>
+                <div><strong>Time:</strong> ${tx.timestamp.toLocaleString()}</div>
+                <a href="${EXPLORER_URL}/tx/${tx.hash}" target="_blank" class="transaction-link">
+                    View on Explorer
+                </a>
+            </div>
+        `).join('');
+}
+
+async function loadBalance() {
+    try {
+        if (!currentAccount) return;
+        
+        const contract = new ethers.Contract(
+            TRANSFER_CONTRACT_ADDRESS,
+            TRANSFER_ABI,
+            provider
+        );
+        
+        const balance = await contract.balanceOf(currentAccount);
+        const formattedBalance = ethers.formatEther(balance);
+        
+        document.getElementById('walletBalance').textContent = 
+            parseFloat(formattedBalance).toFixed(4);
+            
+    } catch (error) {
+        console.error('Failed to load balance:', error);
+    }
+}
+
+function handleTransferSubmit(event) {
+    event.preventDefault();
+    
+    const recipient = document.getElementById('recipient').value;
+    const amount = document.getElementById('amount').value;
+    
+    // Validate inputs
+    if (!recipient || !amount) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    if (!recipient.match(/^0x[a-fA-F0-9]{40}$/)) {
+        alert('Invalid recipient address');
+        return;
+    }
+    
+    sendEncryptedTransfer(recipient, amount);
+    
+    // Reset form
+    document.getElementById('transferFormElement').reset();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if wallet is already connected
+    if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.request({ method: 'eth_accounts' })
+            .then(accounts => {
+                if (accounts.length > 0) {
+                    connectWallet();
+                }
+            });
+    }
+});
+```
+
+## Step 5: Testing and Running
+
+### Run the Application
+
+```bash
+# Start development server
+npm run dev
+
+# Open browser to http://localhost:5173
+```
+
+### Test the Flow
+
+1. **Connect Wallet**: Click "Connect Wallet" and approve in MetaMask
+2. **Enter Transfer Details**: Input recipient address and amount
+3. **Send Transfer**: Click "Encrypt & Send Transfer"
+4. **Monitor**: Watch the transaction go through stages:
+   - **Pending**: Transaction submitted and encrypted
+   - **Finality**: Transaction confirmed by consensus
+   - **Decryption**: Original data revealed and executed
+5. **View Results**: Check completed transfers section
+
+<Tip>
+Make sure your MetaMask is connected to the correct BITE-enabled SKALE network with sufficient sFUEL for transaction fees.
+</Tip>
+
+## Step 6: Advanced Features
+
+### Committee Rotation Monitoring
+
+Add this to monitor committee changes:
+
+```javascript
+async function monitorCommitteeRotation() {
+    try {
+        const committees = await bite.getCommitteesInfo();
+        
+        if (committees.length === 2) {
+            console.warn('⚠️ Committee rotation in progress');
+            showRotationWarning();
+        }
+        
+        // Schedule next check
+        setTimeout(monitorCommitteeRotation, 30000);
+        
+    } catch (error) {
+        console.error('Committee monitoring failed:', error);
+    }
+}
+
+function showRotationWarning() {
+    const warning = document.createElement('div');
+    warning.className = 'rotation-warning';
+    warning.innerHTML = '⚠️ Committee rotation in progress - dual encryption active';
+    warning.style.cssText = `
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+    `;
+    
+    document.querySelector('.container').prepend(warning);
+    
+    // Remove warning after 5 minutes
+    setTimeout(() => warning.remove(), 300000);
+}
+```
+
+### Real-Time Pending Transaction Updates
+
+```javascript
+async function fetchPendingTransactions() {
+    try {
+        const response = await fetch(SCHAIN_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'eth_pendingTransactions',
+                params: [],
+                id: 1,
+            }),
+        });
+        
+        const data = await response.json();
+        const pendingTxs = data.result || [];
+        
+        // Update UI with new pending transactions
+        pendingTxs.forEach(tx => {
+            if (tx.to === '0x0000000000000000000000000000000000000001') { // BITE magic address
+                addPendingTransaction(tx.hash, 'Encrypted', 'Unknown until finality');
+            }
+        });
+        
+    } catch (error) {
+        console.error('Failed to fetch pending transactions:', error);
+    }
+}
+
+// Start polling for pending transactions
+setInterval(fetchPendingTransactions, 5000);
+monitorCommitteeRotation();
+```
+
+## Security Best Practices
+
+### Input Validation
+
+```javascript
+function validateTransferData(recipient, amount) {
+    // Address validation
+    if (!ethers.isAddress(recipient)) {
+        throw new Error('Invalid recipient address');
+    }
+    
+    // Amount validation
+    const parsedAmount = ethers.parseEther(amount);
+    if (parsedAmount <= 0) {
+        throw new Error('Amount must be greater than 0');
+    }
+    
+    // Balance check
+    const currentBalance = ethers.parseEther(
+        document.getElementById('walletBalance').textContent
+    );
+    if (parsedAmount > currentBalance) {
+        throw new Error('Insufficient balance');
+    }
+    
+    return true;
+}
+```
+
+### Error Handling
+
+```javascript
+class BiteTransferError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.name = 'BiteTransferError';
+        this.code = code;
+    }
+}
+
+async function sendEncryptedTransferWithRetry(recipient, amount, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            return await sendEncryptedTransfer(recipient, amount);
+        } catch (error) {
+            if (attempt === maxRetries) {
+                throw new BiteTransferError(
+                    `Failed after ${maxRetries} attempts: ${error.message}`,
+                    'MAX_RETRIES_EXCEEDED'
+                );
+            }
+            
+            // Exponential backoff
+            await new Promise(resolve => 
+                setTimeout(resolve, Math.pow(2, attempt) * 1000)
+            );
+        }
+    }
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### "Transaction not decrypting"
+**Solutions:**
+1. Wait longer for consensus finality
+2. Check if committee rotation is in progress
+3. Verify transaction was sent via BITE protocol
+
+#### "Gas limit too low"
+**Solutions:**
+1. Increase gas limit to 300,000 or higher
+2. Always set gasLimit manually for BITE transactions
+
+#### "Connection failed"
+**Solutions:**
+1. Verify SKALE chain endpoint URL is correct
+2. Check network connectivity
+3. Ensure chain supports BITE protocol
+
+#### "Balance not updating"
+**Solutions:**
+1. Wait for transaction decryption (3-5 seconds after finality)
+2. Refresh wallet connection
+3. Check if transfer actually succeeded
+
+### Debug Mode
+
+Add this to `main.js` for debugging:
+
+```javascript
+const DEBUG = true; // Set to false in production
+
+function debug(message, data = null) {
+    if (DEBUG) {
+        console.log(`[BITE DEBUG] ${message}`, data);
+    }
+}
+
+// Usage examples
+debug('Initializing BITE with endpoint:', SCHAIN_ENDPOINT);
+debug('Transaction parameters:', txParams);
+debug('Encrypted transaction:', encryptedParams);
+debug('Decrypted data:', decryptedData);
+```
+
+## Next Steps
+
+Congratulations! You've built a complete encrypted transaction system with BITE. Here are ways to enhance it:
+
+### Additional Features
+- **Batch transfers**: Encrypt multiple transfers in one transaction
+- **Recurring payments**: Scheduled encrypted transfers
+- **Multi-signature support**: Require multiple approvals
+- **Transaction history**: Persistent storage with encryption keys
+- **Advanced privacy**: Zero-knowledge proof integration
+
+### Production Considerations
+- **Error logging**: Comprehensive error tracking
+- **Performance optimization**: Debouncing and caching
+- **Security audits**: Professional security review
+- **User testing**: Comprehensive UX testing
+- **Documentation**: API documentation for integration
+
+### Integration Opportunities
+- **DeFi protocols**: Private swaps and lending
+- **NFT marketplaces**: Confidential bidding
+- **Gaming platforms**: Private in-game transactions
+- **Enterprise applications**: Secure supply chain tracking
+
+## Resources
+
+- **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
+- **API Documentation**: [BITE API & FAQs](/developers/bite-protocol/bite-api-and-faqs)
+- **TypeScript SDK Guide**: [TypeScript SDK](/developers/bite-protocol/typescript-sdk)
+- **BITE Protocol**: [Introduction](/concepts/bite-protocol/intro-bite-protocol)
+- **MEV Protection**: [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive)
+
+## Related Topics
+
+- [BITE Protocol Introduction](/concepts/bite-protocol/intro-bite-protocol)
+- [TypeScript SDK](/developers/bite-protocol/typescript-sdk)
+- [BITE API & FAQs](/developers/bite-protocol/bite-api-and-faqs)
+- [Threshold Schemes](/concepts/threshold-schemes)
+- [DKG with BLS](/concepts/dkg-with-bls)

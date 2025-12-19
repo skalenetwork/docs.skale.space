@@ -186,6 +186,13 @@
             ]
           },
           {
+            "group": "BITE Protocol",
+            "pages": [
+              "developers/bite-protocol/typescript-sdk",
+              "developers/bite-protocol/bite-api-and-faqs"
+            ]
+          },
+          {
             "group": "Run a SKALE Chain",
             "pages": [
               "developers/run-a-skale-chain/intro-to-schains",
@@ -218,6 +225,12 @@
               "cookbook/smart-contracts/deploy-erc721-token",
               "cookbook/smart-contracts/deploy-erc1155-token",
               "cookbook/smart-contracts/verify-smart-contracts"
+            ]
+          },
+          {
+            "group": "Privacy",
+            "pages": [
+              "cookbook/privacy/sending-encrypted-transactions-with-bite"
             ]
           },
           {
