@@ -7,8 +7,6 @@ description: "How SKALE’s modular architecture delivers elastic, zero-gas L1 c
 
 SKALE is a modular Layer 1 network where thousands of elastic SKALE Chains run in parallel on a shared validator pool. Ethereum-native smart contracts (SKALE Manager) coordinate validator selection, staking, pricing, and chain lifecycle, while each SKALE Chain executes applications with instant finality and zero gas fees. This separation keeps control logic on Ethereum and high-throughput execution on SKALE, delivering speed without sacrificing security.
 
-*[Graphic placeholder: Network overview showing Ethereum mainnet → SKALE Manager → rotating validator sets powering many SKALE Chains]*
-
 ## Design Principles
 
 - **Elastic capacity** – Add more SKALE Chains instead of overloading a single chain. Each chain is an independent EVM L1 with its own resources, state, and roadmap.
@@ -19,8 +17,6 @@ SKALE is a modular Layer 1 network where thousands of elastic SKALE Chains run i
 ## What Runs Where
 
 On Ethereum mainnet, SKALE Manager contracts orchestrate staking, delegation, validator rotation, chain pricing, and lifecycle. On SKALE Chains, the `skaled` node software runs consensus, executes the EVM, enforces zero-gas/sFUEL rules, and exposes precompiles for randomness, storage, and configuration. Bridges connect SKALE Chains to Ethereum and other ecosystems (via SKALE Expand).
-
-*[Graphic placeholder: Split-view diagram of on-chain SKALE Manager modules vs. on-chain SKALE Chain runtime modules]*
 
 ## Why It Matters
 

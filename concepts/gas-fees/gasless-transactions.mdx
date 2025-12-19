@@ -7,8 +7,6 @@ description: "How SKALE’s Proof-of-Work magic numbers let users transact with 
 
 Gasless transactions let users submit transactions with zero sFUEL in their wallet by performing a small Proof-of-Work (PoW) upfront. The PoW yields a “magic number” that the chain accepts in place of a gas payment, keeping UX frictionless even when wallets are empty.
 
-*[Graphic placeholder: Client computing magic number → submitting tx with zero balance → SKALE accepts]* 
-
 ## Exploring Proof of Work
 
 SKALE’s PoW is light enough for clients but costly enough to discourage spam. Wallets compute a magic number tied to sender, nonce, and gas limit, proving work before the chain executes the transaction—even with zero sFUEL on hand.
@@ -39,8 +37,6 @@ because the magic number generated is generally very, very large and the wallets
 - **Invisible onboarding** – Let users transact without ever seeing gas prompts.
 - **Self-serve sFUEL** – Avoid server-side faucets; the client can prove work and proceed.
 - **Extra spam resistance** – Pair with zero-gas chains to add another layer of protection.
-
-*[Graphic placeholder: User flow showing gasless tx vs. sFUEL-funded tx]* 
 
 ## Community Tools
 

@@ -7,8 +7,6 @@ description: "How SKALE reaches instant finality with BLS threshold signatures"
 
 SKALE Chains run a leaderless, asynchronous Byzantine Fault Tolerant (BFT) consensus. Validators propose blocks, broadcast data-availability proofs, and then vote in parallel. Once a supermajority (≥2/3) signs a proposal with BLS threshold signatures, the block is final—no reorgs or extra confirmations needed.
 
-*[Graphic placeholder: Proposal → DA proof → BFT vote → BLS signature → finality timeline]*
-
 ## Block Production Flow
 
 1. Validators collect transactions, create proposals, and share transaction hashes.
@@ -19,5 +17,3 @@ SKALE Chains run a leaderless, asynchronous Byzantine Fault Tolerant (BFT) conse
 ## Performance and Reliability
 
 Because consensus is asynchronous, chains keep progressing even when the network is slow or partially partitioned. Instant finality and zero gas fees make SKALE ideal for real-time apps, games, and agent-driven workflows where users cannot wait for multiple confirmations.
-
-*[Graphic placeholder: Latency chart comparing instant finality vs. multi-confirmation chains]*
