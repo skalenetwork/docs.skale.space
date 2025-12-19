@@ -7,8 +7,6 @@ description: "BITE Protocol: encrypted transactions, MEV resistance, and confide
 
 Proof-of-Encryption (PoE) keeps SKALE transactions sealed from submission through finality. Data stays encrypted in flight, preventing front-running, snooping, or manipulation. Only after consensus does the validator committee decrypt for execution using threshold keys—no single party can peek or tamper early.
 
-*[Graphic placeholder: Encrypted tx → consensus → threshold decryption → execution]* 
-
 ## How BITE Enables Proof‑of‑Encryption
 
 BITE extends the EVM with threshold encryption so builders keep their existing Solidity, wallets, and tooling. Its goals:
@@ -27,8 +25,6 @@ How it works:
 2. Consensus finalizes the encrypted transaction.
 3. Validators jointly decrypt after finality, then execute in the EVM.
 
-*[Graphic placeholder: Hidden calldata preventing sandwich attack]* 
-
 ## Two‑Phase Execution Model
 
 1. Inclusion Phase – Encrypted transactions are verified and finalized onchain.
@@ -43,8 +39,6 @@ With BITE Protocol:
 * The transaction to field is encrypted.
 * Similar transactions (same gas/data patterns) cannot be easily correlated or censored.
 * Routine activity becomes opaque to outside observers.
-
-*[Graphic placeholder: Obfuscated mempool vs. transparent mempool comparison]* 
 
 ## Consensus And Key Management
 

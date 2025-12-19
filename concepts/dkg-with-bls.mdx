@@ -7,8 +7,6 @@ description: How Distributed Key Generation (DKG) works on SKALE
 
 Distributed Key Generation (DKG) lets a group of validators create a shared public key without any single member knowing the full private key. Each validator only holds a key share, but together they can produce threshold BLS signatures that SKALE uses for instant finality. DKG is the backbone of SKALE’s pooled security model.
 
-*[Graphic placeholder: Validators exchanging commitments → forming a shared public key]* 
-
 ## How SKALE’s DKG works
 
 1. **Setup** – `n` validators participate with a tolerance of up to `t` malicious actors.
@@ -18,8 +16,6 @@ Distributed Key Generation (DKG) lets a group of validators create a shared publ
 5. **Assemble keys** – Summing all public commitments yields the group public key; summing the received shares gives each validator its private key share.
 
 No single validator ever sees the full private key, but any supermajority can sign on behalf of the group.
-
-*[Graphic placeholder: Public commitments combining into one group key]* 
 
 ## Verification and Complaints
 
@@ -45,8 +41,6 @@ BLS signatures are compact and aggregatable. They use pairing-based cryptography
 4. Anyone verifies that single signature against the group public key.
 
 The result: one lightweight proof of supermajority agreement instead of dozens of individual signatures.
-
-*[Graphic placeholder: Many signature shares merging into one BLS signature]*
 
 ### Significance with DKG
 

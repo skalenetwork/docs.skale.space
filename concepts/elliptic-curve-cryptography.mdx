@@ -11,8 +11,6 @@ Elliptic curve cryptography (ECC) is the backbone of SKALE’s staking, consensu
 - **Foundation for staking** – Validator and delegator keys rely on elliptic-curve one-way functions.
 - **Threshold crypto** – BLS signatures and Distributed Key Generation (DKG) use elliptic curves to combine many shares into one verifiable signature.
 
-*[Graphic placeholder: Curve diagram highlighting public vs. private key points]* 
-
 ## The math in approachable terms
 
 Elliptic curves define a special “addition” between points on the curve. Repeatedly “adding” a point to itself (scalar multiplication) is easy; reversing that process (finding how many times it was added) is hard. That hardness—the elliptic curve discrete logarithm problem (ECDLP)—is what keeps private keys private while letting everyone verify public keys.
@@ -28,8 +26,6 @@ Why BLS matters here:
 - Multiple validator signatures compress into one, saving bandwidth and verification time.
 - Threshold signatures enable instant finality once ≥2/3 of validators sign.
 - Works hand-in-hand with DKG so no single validator knows the full private key.
-
-*[Graphic placeholder: Many validator signatures merging into one BLS signature]* 
 
 ## Takeaways for builders
 

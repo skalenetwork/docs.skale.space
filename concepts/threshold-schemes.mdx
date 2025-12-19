@@ -4,8 +4,6 @@ description: Introduction to Threshold Schemes
 ---
 Threshold schemes let a group share control of a secret (like a private key) so no single participant can use it alone. On SKALE, threshold cryptography powers BLS signatures, DKG, and pooled security. Here’s the high-level story.
 
-*[Graphic placeholder: k-of-n key shares combining into one signature]* 
-
 ## The basic idea
 
 A `(k, n)` threshold scheme splits a secret into `n` shares. Any `k` shares can reconstruct the secret; fewer than `k` reveal nothing. This is typically done with polynomials: pick a polynomial where the secret is the constant term, hand each participant a point on that curve, and require `k` points to rebuild it.
