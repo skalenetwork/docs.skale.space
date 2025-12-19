@@ -145,6 +145,15 @@
         "tab": "Developers",
         "pages": [
           {
+            "group": "Integrate SKALE",
+            "pages": [
+              "developers/integrate-skale/connect-to-skale",
+              "developers/integrate-skale/json-rpc-api",
+              "developers/integrate-skale/evm-differences",
+              "developers/integrate-skale/gas-fees"
+            ]
+          },
+          {
             "group": "Chain Types",
             "pages": [
               "developers/chain-types/appchain",

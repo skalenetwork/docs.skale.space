@@ -1,0 +1,49 @@
+---
+title: Gas Fees
+description: Zero gas fees on SKALE Network
+---
+
+SKALE has zero gas fees. Users don't pay for transactions and developers don't need gas tokens to deploy contracts.
+
+## sFUEL
+
+SKALE uses **sFUEL** (SKALE Fuel) as the gas token, but it has no monetary value. It exists for:
+
+1. EVM compatibility with existing tools
+2. Preventing spam and DDoS attacks
+
+sFUEL is distributed to users by:
+- Chain operators
+- dApps
+- Public faucets
+
+## Gasless Transactions
+
+SKALE supports gasless transactions that don't require users to have sFUEL:
+
+1. Generate magic number using Proof of Work
+2. Set transaction gasPrice to the magic number
+3. Execute transaction without sFUEL
+
+The algorithm:
+```
+X = sha3(address) ⊕ sha3(nonce) ⊕ sha3(gasPrice)
+freeGas = (2^256−1) / X / difficulty
+```
+
+## Benefits
+
+- **Developers**: Build instantly without buying gas, deploy larger contracts
+- **Users**: No gas purchase required, invisible onboarding
+
+<Note>
+Use gasless transactions to eliminate operational overhead and increase security.
+</Note>
+
+## Libraries
+
+| Library | Language |
+| --- | --- |
+| @eidolon-labs/gasless | JS/TS/Rust |
+| skale.dart | Dart |
+| skale-gas-miner | C++/C# |

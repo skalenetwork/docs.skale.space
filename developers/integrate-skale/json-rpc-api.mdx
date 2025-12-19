@@ -1,0 +1,42 @@
+---
+title: JSON-RPC API
+description: SKALE JSON-RPC Compatibility
+---
+
+SKALE supports Ethereum JSON-RPC API with compatibility across different node types:
+
+| Method | Core | Full | Archive |
+| --- | --- | --- | --- |
+| `eth_blockNumber` | Supported | Supported | Supported |
+| `eth_call` | Partial | Partial | Partial |
+| `eth_estimateGas` | Supported | Supported | Supported |
+| `eth_getBalance` | Partial | Partial | Supported |
+| `eth_getBlockByNumber` | Supported | Supported | Supported |
+| `eth_getTransactionByHash` | Supported | Supported | Supported |
+| `eth_getTransactionReceipt` | Supported | Supported | Supported |
+| `eth_sendRawTransaction` | Supported | Supported | Supported |
+| `eth_getCode` | Partial | Partial | Supported |
+| `eth_getStorageAt` | Partial | Partial | Supported |
+| `eth_getTransactionCount` | Partial | Partial | Supported |
+| `eth_gasPrice` | Supported | Supported | Supported |
+| `eth_getLogs` | Partial | Partial | Supported |
+| `eth_newFilter` | Partial | Partial | Supported |
+| `eth_subscribe` | Supported | Supported | Supported |
+| `net_version` | Supported | Supported | Supported |
+| `web3_clientVersion` | Supported | Supported | Supported |
+
+**BITE Protocol Methods:**
+- `bite_getDecryptedTransactionData` - Get decrypted transaction data
+- `bite_getCommitteesInfo` - Get committee information
+
+**Legend:**
+- Supported: Full support
+- Partial: Partial support (limitations apply)
+
+<Note>
+Most Core and Full nodes only support "latest" state queries. Use Archive nodes for historical data.
+</Note>
+
+<Note>
+SKALE has no uncle blocks, mining, or peer discovery. Related methods return default values.
+</Note>
