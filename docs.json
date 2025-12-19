@@ -145,34 +145,11 @@
         "tab": "Developers",
         "pages": [
           {
-            "group": "Getting Started",
+            "group": "Chain Types",
             "pages": [
-              "developers/build-a-dapp",
-              "developers/solidity-quickstart",
-              "developers/troubleshooting",
-              "developers/skale-vs-ethereum"
-            ]
-          },
-          {
-            "group": "Gas and Compute",
-            "pages": [
-              "developers/gas-and-compute/appchain",
-              "developers/gas-and-compute/credit-chain",
-              "developers/gas-and-compute/zero-gas-fee-gasless-chain"
-            ]
-          },
-          {
-            "group": "Native Features",
-            "pages": [
-              "developers/native-features/ima-bridge",
-              "developers/native-features/using-filestorage",
-              "developers/native-features/random-number-generation"
-            ]
-          },
-          {
-            "group": "SDKs",
-            "pages": [
-              "developers/sdks/overview"
+              "developers/chain-types/appchain",
+              "developers/chain-types/credit-chain",
+              "developers/chain-types/zero-gas-fee-gasless-chain"
             ]
           },
           {
