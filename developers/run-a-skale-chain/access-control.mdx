@@ -58,7 +58,8 @@ The unique part about this design is:
 
 SKALE Chains by default come with the permission layer enabled. However, the permission layer can be enabled/disabled at any time by the SKALE Chain owner or operator. You can enable and disable the permission layer through the Config Controller smart contract.
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 	```ts
 	 // Using Ethers v6
 	import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -87,7 +88,8 @@ SKALE Chains by default come with the permission layer enabled. However, the per
 			process.exitCode = 1;
 		});
 	```
-	
+	</Tab>
+</Tabs>
 
 ## Managing Access
 
@@ -95,11 +97,12 @@ SKALE Chains by default come with the permission layer enabled. However, the per
 
 The following is how to add an address to the SKALE Chain whitelist:
 
-<Aside type="note">
+<Note>
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Aside>
+</Note>
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 	```ts
 	 // Using Ethers v6
 	import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -125,17 +128,19 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 			process.exitCode = 1;
 		});
 	```
-	
+	</Tab>
+</Tabs>
 
 ### Remove from Whitelist
 
 The following is how to remove an address from the SKALE Chain whitelist:
 
-<Aside type="note">
+<Note>
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Aside>
+</Note>
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 		```ts
 		 // Using Ethers v6
 		import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -161,17 +166,19 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 				process.exitCode = 1;
 			});
 		```
-	
+	</Tab>
+</Tabs>
 
 ### Add Admin for Contract
 
 The following is how to add an admin which can manage a smart contract whitelist:
 
-<Aside type="note">
+<Note>
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Aside>
+</Note>
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 	```ts
 	 // Using Ethers v6
 	import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -198,17 +205,19 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 			process.exitCode = 1;
 		});
 	```
-	
+	</Tab>
+</Tabs>
 
 ### Remove Admin from Contract Whitelist
 
 The following is how to remove an admin from managing a smart contract whitelist:
 
-<Aside type="note">
+<Note>
 The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
-</Aside>
+</Note>
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 	```ts
 	 // Using Ethers v6
 	import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -235,17 +244,19 @@ The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
 			process.exitCode = 1;
 		});
 	```
-	
+	</Tab>
+</Tabs>	
 
 ### Add to Contract Whitelist
 
 The following is how to add an address to the SKALE Chain whitelist:
 
-<Aside type="note">
+<Note>
 The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this successfully.
-</Aside>
+</Note>
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 	```ts
 	 // Using Ethers v6
 	import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -272,17 +283,20 @@ The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this succe
 			process.exitCode = 1;
 		});
 	```
-	
+	</Tab>
+</Tabs>	
+
 
 ### Remove from Contract Whitelist
 
 The following is how to remove an address from the SKALE Chain whitelist:
 
-<Aside type="note">
+<Note>
 The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this successfully.
-</Aside>
+</Note>
 
-	## Ethers v6
+<Tabs>
+	<Tab title="Ethers v6">
 		```ts
 		 // Using Ethers v6
 		import { Contract, JsonRpcProvider, Wallet } from "ethers";
@@ -309,4 +323,6 @@ The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this succe
 				process.exitCode = 1;
 			});
 		```
+	</Tab>
+</Tabs>	
 	

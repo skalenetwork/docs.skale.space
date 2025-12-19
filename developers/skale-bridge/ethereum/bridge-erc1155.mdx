@@ -11,10 +11,10 @@ SKALE's Interchain Messaging Agent includes a native bridging layer for ERC-1155
 - In order to bridge an ERC-1155 token to a SKALE Chain from Ethereum, it must be **added** by the SKALE Chain owner or operator via the standard mapping process
 - All ERC-1155 tokens bridged into SKALE have a set of basic requirements to make them compatible with SKALE's bridging layer
 
-<Aside type="note">
+<Note>
 SKALE utilizes a popular architectural design within bridging which is a liquidity based bridge.
-This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on the target SKALE Chain.
-</Aside>
+This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on target SKALE Chain.
+</Note>
 
 ## Bridge Setup
 
@@ -25,15 +25,15 @@ ERC-1155 tokens that are being bridged to SKALE should follow two basic requirem
 1. Have a **mint** function that is locked down to the IMA Bridge
 2. Have a **burn** function that is locked down to the IMA Bridge
 
-<Aside type="danger" title="Caution on Minting">
+<Danger title="Caution on Minting">
 If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that
 the existing tokens on the SKALE Chain may not match what is secured in the bridge.
-</Aside>
+</Danger>
 
-<Aside type="danger" title="Caution on Burning">
+<Danger title="Caution on Burning">
 If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that
 the supply on the SKALE Chain side could be "burned", while the tokens still exist on Ethereum which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
-</Aside>
+</Danger>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InGameTokens for an example of InterchainERC1155 in use!
 
@@ -102,9 +102,9 @@ contract InGameTokens is InterchainERC1155("ipfs://<cid>") {}
 
 ### 3. Map the SKALE and Ethereum tokens together
 
-<Aside type="note">
+<Note>
 If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>
 
 #### Add the token on Ethereum via SAFE
 
@@ -118,17 +118,20 @@ Once on your SAFE, start by preparing a transaction via the **Transaction Builde
 4. Input your *SKALE Chain Name* and your ERC-1155 contract address on Ethereum in the fields
 5. Send by itself or via batch
 
-<Aside type="warning">
+<Warning>
 Make sure to replace the values with your SKALE Chain name and the correct token addresses.
-</Aside>
+</Warning>
 
 #### Add the token on SKALE Chain TokenManagerERC1155
 
+<Tabs>
+    <Tab title="Multisigwallet CLI">
   ## Multisigwallet CLI
     ```shell
     npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerERC1155 addERC1155TokenByOwner Mainnet 0x[TOKEN_ON_ETHEREUM] 0x[TOKEN_ON_SKALE_CHAIN]
     ```
-
+    </Tab>
+</Tabs>
     After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
   
 
@@ -154,7 +157,8 @@ The flow for bridging an ERC-1155 from Ethereum to SKALE follows a very similar 
 
 The following will help you bridge an NFT from Ethereum to SKALE.
 
-  ## bridge.js
+<Tabs>
+    <Tab title="bridge.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -189,8 +193,8 @@ The following will help you bridge an NFT from Ethereum to SKALE.
     // Success! Now watch for delivery on SKALE Chain
     console.log("Success!");
     ```
-  
-  ## bridgeDirect.js
+  </Tab>
+  <Tab title= "bridgeDirect.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -226,8 +230,8 @@ The following will help you bridge an NFT from Ethereum to SKALE.
     // Success! Now watch for delivery on SKALE Chain
     console.log("Success!");
     ```
-  
-  ## bridgeBatch.js
+  </Tab>
+  <Tab title= "bridgeBatch.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -262,8 +266,8 @@ The following will help you bridge an NFT from Ethereum to SKALE.
     // Success! Now watch for delivery on SKALE Chain
     console.log("Success!");
     ```
-  
-  ## bridgeBatchDirect.js
+    </Tab>
+  <Tab title= "bridgeBatchDirect.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -299,7 +303,8 @@ The following will help you bridge an NFT from Ethereum to SKALE.
     // Success! Now watch for delivery on SKALE Chain
     console.log("Success!");
     ```
-  
+    </Tab>
+</Tabs>
 
 ### Bridge to Ethereum (from SKALE)
 
@@ -309,9 +314,9 @@ SKALE's decentralized bridge offers a simple two-step process to bridge from any
 
 2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
 
-<Aside type="note">
-Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
-</Aside>
+<Note>
+Gas Wallet, officially referred to as community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
+</Note>
 
 #### Pre-pay for your Exit
 
@@ -355,7 +360,8 @@ console.log("Success!");
 Once the above prepayment steps are completed, you can proceed with the bridging.
 Bridging from SKALE simply requires the `exitToMainERC1155` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
 
-  ## exit.js
+<Tabs>
+    <Tab title="exit.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -389,8 +395,8 @@ Bridging from SKALE simply requires the `exitToMainERC1155` function to be calle
     // Success! Now watch for delivery on Ethereum
     console.log("Success!");
     ```
-  
-  ## exitBatch.js
+    </Tab>
+  <Tab title= "exitBatch.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -424,14 +430,15 @@ Bridging from SKALE simply requires the `exitToMainERC1155` function to be calle
     // Success! Now watch for delivery on Ethereum
     console.log("Success!");
     ```
-  
+    </Tab>
+</Tabs>
 
-<Aside type="note">
+<Note>
 If your bridge is not working, it is most likely for one of three reasons:
 
 1. You forgot to prepay for gas
-2. You forgot to approve the bridge on the ERC-1155 token id you want to bridge
+2. You forgot to approve bridge on the ERC-1155 token id you want to bridge
 3. You don't actually own the ERC-1155 Token
 
 Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>

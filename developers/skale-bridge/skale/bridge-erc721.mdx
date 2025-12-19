@@ -15,21 +15,21 @@ The following walks you through setting up an ERC-721 token between two SKALE Ch
 
 ## Bridge Setup
 
-<Aside type="note">
+<Note>
 If the SKALE Chains you are mapping the ERC-721 token from/to are not connected, please [connect the SKALE Chains](/developers/skale-bridge/skale/connect-schains).
-</Aside>
+</Note>
 
 ### 1. Prepare the ERC-721
 
 ERC-721 tokens that are being bridged between SKALE Chains should have the **mint** function that is locked down to TokenManagerERC721. 
 
-<Aside type="danger" title="Caution on Minting">
+<Danger>
 If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that the existing tokens on the SKALE Chain may not match what is secured in the bridge.
-</Aside>
+</Danger>
 
-<Aside type="caution" title="Caution on Burning">
+<Warning>
 If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that the supply on the SKALE Chain side could be "burned", while the tokens still exist on the original SKALE Chain which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
-</Aside>
+</Warning>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See **YourInterchainNFT.sol** for an example.
 
@@ -98,9 +98,9 @@ contract InterchainNFT is InterchainERC721("NFT Name", "NFT Symbol", "ipfs://<ci
 
 ### 3. Map the SKALE Token
 
-<Aside type="note">
+<Note>
 If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>
 
 #### Add the token on SKALE Chain TokenManagerERC721
 - **DST_SCHAIN_NAME** is the name of the SKALE Chain that the transaction should execute on
@@ -108,10 +108,13 @@ If you are trying to setup a token on SKALE in a production environment please j
 - **0x_ORIGIN_TOKEN** is the original token address on the ORIGIN_SCHAIN_NAME
 - **0x_DST_TOKEN** is the destination token address on the DST_SCHAIN_NAME
 
-  ## Multisigwallet CLI
+<Tabs>
+	<Tab title="Multisigwallet CLI">
     ```shell
     npx msig encodeData [DST_SCHAIN_NAME] TokenManagerERC721 addERC20TokenByOwner [ORIGIN_SCHAIN_NAME] [0x_ORIGIN_TOKEN] [0x_DST_TOKEN]
     ```
+    </Tab>
+</Tabs>
     After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
   
 

@@ -15,9 +15,9 @@ The following walks you through setting up an ERC-20 token between two SKALE Cha
 
 ## Bridge Setup
 
-<Aside type="note">
+<Note>
 If the SKALE Chains you are mapping the ERC-20 token from/to are not connected, please [connect the SKALE Chains](/developers/skale-bridge/skale/connect-schains).
-</Aside>
+</Note>
 
 ### 1. Prepare the ERC-20
 
@@ -27,16 +27,16 @@ bridging layer:
 1. Have a **mint** function that is locked down to TokenManagerERC20
 2. Have a **burn** function that is locked down to TokenManagerERC20
 
-<Aside type="danger" title="Caution on Minting">
+<Warning>
 If the mint function is not locked down to just TokenManagerERC20 there is a chance that
 the supply on the desintation chain could be larger than what is actually locked in the bridge on the origin SKALE Chain.
-</Aside>
+</Warning>
 
-<Aside type="danger" title="Caution on Burning">
+<Danger>
 If the burn function is not locked down to just TokenManagerERC20 there is a chance that
 the supply on the SKALE Chain side could be "burned", while the tokens still exist on the origin SKALE Chain which could later be withdrawn under
 certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for the bridged tokens.
-</Aside>
+</Danger>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
 
@@ -88,6 +88,8 @@ contract InterchainERC20 is ERC20, AccessControl {
 
 Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-20 token to the SKALE Chain you want to be able to bridge assets too.
 
+<Tabs>
+	<Tab title="InterchainSKL.sol">
   ## InterchainSKL.sol
     *This is an example of an 18 decimal ERC-20 token that would be deployed on SKALE*
     ```solidity
@@ -98,8 +100,8 @@ Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](h
 
     contract InterchainSKL is InterchainERC20("Skale Token", "SKL") {}
     ```
-  
-  ## InterchainUSDT.sol
+  </Tab>
+  <Tab title="InterchainUSDT.sol">
     *This is an example of an 6 decimal ERC-20 token that would be deployed on SKALE*
     ```solidity
     // SPDX-License-Identifier: MIT
@@ -113,7 +115,8 @@ Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](h
     	}
     }
     ```
-  
+  </Tab>
+</Tabs>
 
 > *InterchainERC20.sol is inherited from the code above*
 
@@ -130,11 +133,14 @@ If you are trying to setup a token on SKALE in a production environment please j
 - **0x_ORIGIN_TOKEN** is the original token address on the ORIGIN_SCHAIN_NAME
 - **0x_DST_TOKEN** is the destination token address on the DST_SCHAIN_NAME
 
-  ## Multisigwallet CLI
+<Tabs>
+	<Tab title="Multisigwallet CLI">
     ```shell
     npx msig encodeData [DST_SCHAIN_NAME] TokenManagerERC20 addERC20TokenByOwner [ORIGIN_SCHAIN_NAME] [0x_ORIGIN_TOKEN] [0x_DST_TOKEN]
     ```
-
+  </Tab>
+</Tabs>
+    
     After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
   
 
@@ -156,12 +162,13 @@ The flow for bridging an ERC-20 from SKALE Chain to SKALE Chain follows a very s
 
 If bridging a token nativley deployed on a SKALE Chain to another SKALE Chain, the process for bridging in either direction is identical. The action taken by the chain is slightly different (i.e lock and mint vs burn and unlock), however, for the end user the flow is identical i.e receive N new tokens in their wallet.
 
-<Aside type="note">
+<Note>
 A normal ERC-20 bridge will result in tokens being delivered to the same wallet on the new SKALE Chain.
 A direct ERC-20 bridge will result in tokens being delivered to the specified wallet on the new SKALE Chain.
-</Aside>
+</Note>
 
-  ## bridge.js
+<Tabs>
+	<Tab title="bridge.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -195,8 +202,8 @@ A direct ERC-20 bridge will result in tokens being delivered to the specified wa
     // Success! Now watch for delivery on Destination Chain
     console.log("Success!");
     ```
-  
-  ## bridgeDirect.js
+  </Tab>
+  <Tab title="bridgeDirect.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
 
@@ -231,4 +238,5 @@ A direct ERC-20 bridge will result in tokens being delivered to the specified wa
     // Success! Now watch for delivery on Destination Chain
     console.log("Success!");
     ```
-  
+  </Tab>
+</Tabs>

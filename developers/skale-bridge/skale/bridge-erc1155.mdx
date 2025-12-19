@@ -15,21 +15,21 @@ The following walks you through setting up an ERC-1155 token between two SKALE C
 
 ## Bridge Setup
 
-<Aside type="note">
+<Note>
 If the SKALE Chains you are mapping the ERC-1155 token from/to are not connected, please [connect the SKALE Chains](/developers/skale-bridge/skale/connect-schains).
-</Aside>
+</Note>
 
 ### 1. Prepare the ERC-1155
 
 ERC-1155 tokens that are being bridged between SKALE Chains should have the **mint** function that is locked down to TokenManagerERC1155. 
 
-<Aside type="danger" title="Caution on Minting">
+<Danger>
 If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that the existing tokens on the SKALE Chain may not match what is secured in the bridge.
-</Aside>
+</Danger>
 
-<Aside type="caution" title="Caution on Burning">
+<Warning>
 If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that the supply on the SKALE Chain side could be "burned", while the tokens still exist on the original SKALE Chain which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
-</Aside>
+</Warning>
 
 The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See **YourInterchainNFT.sol** for an example.
 
@@ -98,13 +98,13 @@ contract InGameTokens is InterchainERC1155("ipfs://<cid>") {}
 
 ### 3. Map the SKALE Token
 
-<Aside type="note">
+<Note>
 If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
-</Aside>
+</Note>
 
-<Aside type="warning">
+<Warning>
 Make sure to replace the values with your SKALE Chain name and the correct token addresses.
-</Aside>
+</Warning>
 
 #### Add the token on SKALE Chain TokenManagerERC1155
 - **DST_SCHAIN_NAME** is the name of the SKALE Chain that the transaction should execute on
@@ -112,10 +112,14 @@ Make sure to replace the values with your SKALE Chain name and the correct token
 - **0x_ORIGIN_TOKEN** is the original token address on the ORIGIN_SCHAIN_NAME
 - **0x_DST_TOKEN** is the destination token address on the DST_SCHAIN_NAME
 
+<Tabs>
+    <Tab title = "Multisigwallet CLI">
   ## Multisigwallet CLI
     ```shell
     npx msig encodeData [DST_SCHAIN_NAME] TokenManagerERC1155 addERC20TokenByOwner [ORIGIN_SCHAIN_NAME] [0x_ORIGIN_TOKEN] [0x_DST_TOKEN]
     ```
+    </Tab>
+</Tabs>
     After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
   
 
@@ -137,7 +141,8 @@ The flow for bridging an ERC-1155 from SKALE Chain to SKALE Chain follows a very
 
 The following will help you bridge an ERC-1155 NFT from one SKALE Chain to another.
 
-  ## bridge.js
+<Tabs>
+    <Tab title = "bridge.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
 
@@ -172,8 +177,8 @@ The following will help you bridge an ERC-1155 NFT from one SKALE Chain to anoth
     // Success! Now watch for delivery on Destination Chain
     console.log("Success!");
     ```
-  
-  ## bridgeBatch.js
+  </Tab>
+  <Tab title = "bridgeBatch.js">
     ```js
     import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
 
@@ -208,4 +213,6 @@ The following will help you bridge an ERC-1155 NFT from one SKALE Chain to anoth
     // Success! Now watch for delivery on Destination Chain
     console.log("Success!");
     ```
+    </Tab>
+</Tabs>
   
