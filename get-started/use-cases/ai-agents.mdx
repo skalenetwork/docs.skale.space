@@ -1,36 +1,27 @@
 ---
 title: "AI Agents"
-description: "Deploy AI agents that interact with onchain data and smart contracts"
+description: "Deploy AI agents that think, transact, and scale without the friction of traditional blockchains."
 ---
 
-SKALE supports autonomous agents at scale. Privacy, zero gas fees, instant finality, and high throughput let agents operate without the constraints of traditional blockchains.
+**The big picture:** AI agents have graduated from hackathon novelties to production-ready tools. However, for an agent to be truly autonomous, it needs open-protocols and infrastructure that doesn't penalize it for for use and doesn't expose unnecessary information.
 
-Autonomous agents have moved from hackathon demos to production workloads. a16z’s State of Crypto 2025 highlights AI x crypto as a breakout category—agents need low-friction execution, composability, and predictable cost[1], and Coinbase points to onchain AI agents as the next wave of apps and commerce[2]. SKALE gives teams an isolated, gasless execution layer with instant finality so agents can loop, learn, and transact without hitting cost ceilings.
+Current blockchains enforce a variable cost on every transaction while SKALE removes the dynamicness and provides a flat compute cost similiar to traditional cloud computing. 
 
-## Why SKALE for Agents
+In their *State of Crypto 2025* report, a16z identified AI and Crypto as the definitive breakout category. For agentic commerce to become a reality, the ability to negotiate, buy, and sell independently are critical. These features : **Predictable costs, instant finality, and data sovereignty.**
 
-- **No gas anxiety** — Run millions of onchain actions without pricing users out; predictable flat chain economics remove hidden tax on agent loops.
-- **Instant decisions** — Finality in seconds keeps models and policies synced to onchain truth.
-- **Private coordination** — Isolated chains with access control let you ship sensitive agents (commerce, healthcare, compliance) without leaking strategy.
-- **Deterministic randomness** — Native VRF keeps simulations, loot tables, and strategy sampling unbiased.
-- **Message fabric** — Fast inter-agent messaging plus bridging to Ethereum for settlement when you need it.
+## Key Use Cases
 
-## High-Impact Patterns
+### 1. Agentic Commerce & x402
+The future of the world is agents paying agents and machines paying machines funded by humans. Using the **x402 protocol** on SKALE, developers can easily implement "pay-per-use" or automated machine-to-machine micro-subscriptions. It transforms agents from simple bots into economic actors.
 
-### Trading copilots
-Agents execute arbitrage, liquidation, and rebalancing in tight loops without gas shocks. Settlement can bridge to Ethereum when liquidity depth is needed.
+### 2. Agentic Discovery & Agent-2-Agent (A2A)
+Agents are only as good as the information and resources they have access to. ERC-8004 defines a protocol for trustless agent discovery, reputation, and feedback while x402 also includes a native discovery system. There are also other open and closed sourced protocols and solutions that work directly on SKALE to help you build agents that can truly be autonomous.
 
-### Onchain copilots for products
-Embed agents inside apps to recommend bundles, manage loyalty points, or negotiate B2B terms. Access control keeps enterprise data siloed while still interoperating with public rails.
+<Note>
+Agent cards can live directly in SKALE File Storage offering a unique mutuable and cost effective option for companies offering agentic card hosting.
+</Note>
 
-### IoT and edge swarms
-Devices post signed telemetry, trigger payments, and coordinate maintenance windows. High throughput keeps fleets in sync; privacy keeps vendor data compartmentalized.
-
-### Game NPCs and live ops
-NPCs evolve based on player actions; live ops teams push balance changes continuously. Verifiable randomness and instant finality keep gameplay fair and responsive.
-
-## References
-
-[1] [a16z, “State of Crypto 2025: The year crypto went mainstream,” 2025.](https://stateofcrypto.a16zcrypto.com)
-[2] [Coinbase, “The rise of onchain AI agents, apps, and commerce,” 2025.](https://www.coinbase.com/blog/the-rise-of-onchain-ai-agents-apps-and-commerce)
-
+### Deep Dive
+*   [**a16z State of Crypto 2025:** The year crypto went mainstream](https://stateofcrypto.a16zcrypto.com)
+*   [**Coinbase:** The rise of onchain AI agents and commerce](https://www.coinbase.com/blog/the-rise-of-onchain-ai-agents-apps-and-commerce)
+*   [**ERC-8004:** Defining the standard for Trustless Agents](https://eips.ethereum.org/EIPS/eip-8004)
