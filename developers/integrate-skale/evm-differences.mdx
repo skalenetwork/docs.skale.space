@@ -3,294 +3,45 @@ title: EVM Differences
 description: SKALE vs Ethereum EVM comparison
 ---
 
-# EVM Differences
+SKALE has been designed to maintain core compatiblity with Ethereum while differing on some core mechanics and newer features that may be unncessary due to SKALE's design or not yet integrated due their introduction through more recent Ethereum hardforks. SKALE allows developers to build, deploy, and interact with smart contracts and applications using the same tools, languages, and frameworks they use on Ethereum.
 
-SKALE Network is designed to be fully compatible with the Ethereum Virtual Machine (EVM). Developers can deploy and interact with smart contracts using the same tools, languages, and frameworks they use on Ethereum, such as Solidity, Foundry, and Hardhat. All Ethereum JSON-RPC methods work out of the box.
+While the execution environment mirrors Ethereum's, SKALE introduces key differences optimized for performance, scalability, AI, and privacy.
 
-While the execution environment mirrors Ethereum's, SKALE introduces key differences optimized for performance and scalability.
+## Key Protocol Differences
 
-## Blockchain Comparison
+### Gas Fees & Economics
 
-| Feature | SKALE Network | Ethereum |
-| --- | --- | --- |
-| **Gas Fees** | Always Free | Variable |
-| **Block Times** | ~1s | 12s |
-| **Finality** | Single Slot | >12 minutes |
-| **Block Gas Limit** | 268,435,455 | ~36,000,000 |
-| **Virtual Machine** | EVM | EVM |
-| **Scaling Type** | Horizontal | Blobs |
-| **Contract Code Size Limit** | 64 kb | 24kb |
-| **EIP-1559** | Partial | Yes |
-| **Blobs EIP-4844** | No | Yes |
-| **Native AA EIP-7702** | No | Yes |
-| **Consensus** | Asynchronous, Leaderless BFT | Gasper |
+**SKALE**: Zero gas fees with pre-paid compute credits, sFUEL is distributed for DoS protection and has no monetary value. Transactions are gasless
 
-*Table last updated December 2024*
+**SKALE**: Zero gas fees by default with compute credits or sFUEL or optional gasless transactions with *Proof-of-Work*.
 
-## Key Differences
+**Ethereum**: Variable gas fees paid in ETH, market-based pricing with EIP-1559 base fees + priority fees.
 
-### Gas Model
+<Note>
+SKALE has multiple types of chains due to the multichain network design including appchains, credit chains, and the ability to offer chains with a gas fee if chain buyers want them.
+</Note>
 
-**SKALE**: Zero gas fees forever with gasless transactions enabled by default. The gas token (sFUEL) has no monetary value and exists for compatibility and DoS protection.
+### Block Production & Finality
 
-**Ethereum**: Variable gas fees paid in ETH, requiring users to purchase and manage gas tokens.
+**SKALE**: Target 1-second block times with instant finality. Transactions are immutable after inclusion in a single block.
 
-### Block Times & Finality
+**Ethereum**: 12-second block times with probabilistic finality. Full finality requires ~12-15 minutes of validator confirmations though two checkpoints.
 
-**SKALE**: 1-1.2 second block times with single-slot finality. Transactions are fully final after one block.
+### Resource Limits
 
-**Ethereum**: 12 second block times with ~12+ minute finality through Gasper consensus.
+**SKALE**: ~268M block gas limit and 64KB contract size limit allowing for more complex smart contracts
 
-### Contract Size
+**Ethereum**: ~60M block gas limit (variable, as of 12/1/2025), 24KB contract size limit, strict constraints for network-wide throughput.
 
-**SKALE**: 64kb default contract size limit (can be set higher).
+### Payments in Solidity
 
-**Ethereum**: 24kb contract size limit.
+Unless the SKALE Chain implements a native gas fee token with value, zero gas fee chains should avoid the use of `msg.value` in smart contracts 
+and instead use ERC-20 or other tokenization options to handle payments. All SKALE Chains currently in prou
 
-### Scaling Model
+### Contract Deployment
 
-**SKALE**: Horizontal scaling through interconnected blockchains. dApps can migrate to their own Layer 1 chains.
+SKALE Hubs on Ethereum -- Calypso, Europa, Nebula, and Titan -- currently have contract deployment locked to an "allowlist". This means that by default to deploy access needs to be granted to either a) the EOA/tx.origin, b) a smart contract (which then allows anyone to deploy through it), c) A specific account on a set of contracts (strengthening security for contracts that could cause state pollution).
 
-**Ethereum**: Vertical scaling through Layer 2s posting transactions via blobs.
+The first public chain on the SKALE Base deployment has open contract deployment and simply requires the purchasing of compute credits. Credits can be purchased on the [SKALE Portal](https://base.skalenodes.com/credits).
 
-### Consensus
-
-**SKALE**: Asynchronous, leaderless BFT with leader rotation and single-slot finality.
-
-**Ethereum**: Proof of Stake with Gasper consensus requiring validator agreement.
-
-### Storage
-
-**SKALE**: Optimized storage management with lower costs and built-in pruning.
-
-**Ethereum**: High-cost persistent storage with gas optimization requirements.
-
-### Account Management
-
-**SKALE**: EVM-compatible with meta-transaction support and SFUEL distribution.
-
-**Ethereum**: Standard EOA and contract accounts with native ETH balance.
-
-## Development Impact
-
-With zero gas fees, developers can focus on:
-
-- Code readability over gas optimization
-- Larger, more complex smart contracts
-- Onchain data storage without cost concerns
-- Batch operations for efficiency
-- Invisible user experiences with gasless transactions
-
-## Compatibility Features
-
-### Smart Contract Compatibility
-
-SKALE supports all standard Ethereum features:
-
-- **Solidity, Vyper, and other EVM languages**
-- **ERC-20, ERC-721, ERC-1155 token standards**
-- **OpenZeppelin library compatibility**
-- **Standard Ethereum events and logs**
-- **Delegatecall and staticcall**
-
-### Development Tools Compatibility
-
-All standard Ethereum development tools work with SKALE:
-
-- **Hardhat, Foundry, Truffle**
-- **Remix IDE**
-- **MetaMask and other wallets**
-- **Ethers.js, Web3.js libraries**
-- **The Graph, Dune Analytics**
-
-## SKALE-Specific Features
-
-### 1. Precompiled Contracts
-
-SKALE includes additional precompiled contracts for enhanced functionality:
-
-```solidity
-// File Storage precompiled contract
-interface IFileStorage {
-    function writeFile(string memory filename, bytes memory content) external;
-    function readFile(string memory filename) external view returns (bytes memory);
-}
-
-// Random Number Generator
-interface IRandomNumberGenerator {
-    function getRandomNumber() external view returns (uint256);
-}
-```
-
-### 2. Cross-Chain Messaging
-
-Built-in support for secure cross-chain communication:
-
-```solidity
-// Messaging between SKALE chains and Ethereum
-interface IMessageProxy {
-    function postOutgoingMessage(
-        uint256 targetChainId,
-        address targetContract,
-        bytes memory message
-    ) external;
-}
-```
-
-### 3. Gas Metering for Resource Management
-
-While users don't pay gas, it's still metered:
-
-```solidity
-contract GasMeteringExample {
-    function expensiveOperation() external {
-        uint startGas = gasleft();
-
-        // Perform operations
-
-        uint gasUsed = startGas - gasleft();
-        // Log for monitoring purposes
-        emit GasUsed(gasUsed);
-    }
-}
-```
-
-## Migration Considerations
-
-### From Ethereum to SKALE
-
-**What Works Out of the Box:**
-- Smart contracts deploy without changes
-- All standard EVM opcodes supported
-- Existing web3 libraries work seamlessly
-- DApp frontends require minimal changes
-
-**What May Need Adjustment:**
-- Gas price logic in frontend code
-- Gas optimization strategies in contracts
-- Transaction timeout expectations
-- Block confirmation logic
-
-**Example Frontend Adjustment:**
-
-```javascript
-// Ethereum - Gas price and limit management
-async function sendEthereumTx() {
-  const gasPrice = await provider.getGasPrice();
-  const gasLimit = await contract.estimateGas.myMethod();
-
-  const tx = await contract.myMethod({
-    gasPrice: gasPrice,
-    gasLimit: gasLimit
-  });
-
-  await tx.wait(1); // Wait for 1 confirmation
-}
-
-// SKALE - Simplified transaction
-async function sendSkaleTx() {
-  const gasLimit = await contract.estimateGas.myMethod();
-
-  const tx = await contract.myMethod({
-    gasLimit: gasLimit // Gas price is not needed
-  });
-
-  await tx.wait(1); // 1 confirmation = 1 second
-}
-```
-
-## Performance Optimizations
-
-### Batch Processing
-
-SKALE allows for more aggressive batching:
-
-```solidity
-contract BatchProcessor {
-    // Process multiple operations in a single transaction
-    function batchTransfer(
-        address[] memory recipients,
-        uint256[] memory amounts
-    ) external {
-        require(recipients.length == amounts.length, "Array length mismatch");
-
-        for (uint i = 0; i < recipients.length; i++) {
-            // Transfer logic without gas optimization concerns
-        }
-    }
-}
-```
-
-### Complex Computations
-
-With zero gas fees, you can implement more complex on-chain logic:
-
-```solidity
-contract ComplexComputations {
-    function expensiveCalculation(uint256[] memory data)
-        external
-        pure
-        returns (uint256[] memory result)
-    {
-        // Implement algorithms that would be too expensive on Ethereum
-        result = new uint256[](data.length);
-        for (uint i = 0; i < data.length; i++) {
-            // Complex mathematical operations
-            result[i] = computeComplexValue(data[i]);
-        }
-    }
-}
-```
-
-## Testing on SKALE
-
-### Testnet Configuration
-
-Configure your testing environment for SKALE:
-
-```javascript
-// Hardhat config
-module.exports = {
-  networks: {
-    skale: {
-      url: "https://your-skale-endpoint",
-      chainId: 123456789,
-      accounts: [privateKey],
-      gasPrice: 0, // Set to 0 for SKALE
-      gas: 8000000
-    }
-  }
-};
-```
-
-### Gas Estimation
-
-While gas is free, estimation is still useful for monitoring:
-
-```javascript
-// Monitor gas usage for optimization
-async function monitorGasUsage(tx) {
-  const receipt = await tx.wait();
-  console.log(`Gas used: ${receipt.gasUsed.toString()}`);
-
-  // Alert on unusual gas consumption
-  if (receipt.gasUsed.gt(ethers.BigNumber.from('1000000'))) {
-    console.warn('High gas usage detected!');
-  }
-}
-```
-
-## Best Practices
-
-1. **Focus on User Experience**: With zero gas fees, optimize for smooth UX over gas savings
-2. **Monitor Resource Usage**: Track gas consumption for performance optimization
-3. **Leverage Fast Finality**: Design around 1-second block times
-4. **Use SKALE Features**: Take advantage of built-in file storage and random numbers
-5. **Plan for Cross-Chain**: Consider cross-chain messaging from the start
-
-## Resources
-
-- [SKALE Chain Architecture](../../concepts/skale-chain/introduction)
-- [SKALE Consensus](../../concepts/skale-chain/consensus)
-- [Precompiled Contracts](../../concepts/skale-chain/precompiled-contracts)
-- [JSON-RPC API Reference](./json-rpc-api)
+This means that SKALE on Ethereum differs considerably from Ethereum as of 12/20/2025, however, this could change with the upgrade to the credit system in the near future.
