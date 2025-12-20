@@ -1,9 +1,9 @@
 ---
 title: Connect to SKALE
-description: Connect to the SKALE Network via CLI
+description: Connect to the SKALE Network
 ---
 
-You can connect to SKALE Chains with a variety of tools and SDKs, just like you do other EVM chains.
+SKALE is a network of many chains. You can connect to SKALE Chains with a variety of tools and SDKs, just like you do other EVM chains.
 
 ## Connect to SKALE
 
@@ -16,69 +16,90 @@ cast block-number --rpc-url https://skale-base.skalenodes.com/v1/base
 
 ## SKALE Chains
 
-The following are active sChains 
+The following are active sChains. SKALE Chains are built on different base networks - either Base or Ethereum. The bridge mechanism depends on the base network:
 
-## SKALE Base Mainnet
+- **Base chains**: Built on Base L2 with native bridge to/from Base
+- **Ethereum chains**: Built on Ethereum with IMA (SKALE Interchain Messaging Agent) bridge to/from Ethereum
 
-| Network Name | SKALE Base Mainnet |
+### SKALE Base Chains
+
+*Built on Base L2 with native bridge to/from Base*
+
+#### SKALE Base Mainnet
+
+| Network Name | SKALE Base |
 | --- | --- |
-| RPC Url | https://mainnet.skale.network |
-| Chain Id | 974399131 |
-| Explorer | https://skale.base.explorer |
+| RPC Url | https://skale-base.skalenodes.com/v1/base |
+| WSS Url | wss://skale-base.skalenodes.com/v1/ws/base |
+| Chain Id | 1187947933 |
+| Chain Id Hex | 0x46cea59d |
+| Explorer | https://skale-base-explorer.skalenodes.com/ |
+| Portal | https://base.skalenodes.com/chains/base |
 
-## SKALE Base Testnet
+#### SKALE Base Testnet
 
-| Network Name | SKALE Base Testnet |
+| Network Name | SKALE Base Sepolia |
 | --- | --- |
-| RPC Url | https://testnet.skale.network |
-| Chain Id | 162044893 |
-| Explorer | https://skale.base-testnet.explorer |
-| Faucet | https://faucet.skale.space |
+| RPC Url | https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha |
+| Chain Id | 324705682 |
+| Chain Id Hex | 0x135A9D92 |
+| Explorer | https://base-sepolia-testnet-explorer.skalenodes.com/ |
+| Faucet | https://base-sepolia-faucet.skale.space |
 
-## Calypso Mainnet
+### Ethereum-based Chains
+
+*Built on Ethereum with IMA (Interchain Messaging Agent) bridge to/from Ethereum*
+
+#### Calypso Mainnet
 
 | Network Name | Calypso Hub |
 | --- | --- |
-| RPC Url | https://eth-calypso.skale.network |
-| Chain Id | 3563814253730951 |
-| Explorer | https://calypso.explorer.skale.network |
+| RPC Url | https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague |
+| Chain Id | 1564830818 |
+| Explorer | https://honorable-steel-rasalhague.explorer.mainnet.skalenodes.com/ |
+| Portal | https://portal.skale.space/chains/calypso |
 
-## Calypso Testnet
+#### Calypso Testnet
 
 | Network Name | Calypso Testnet |
 | --- | --- |
-| RPC Url | https://eth-calypso-testnet.skale.network |
-| Chain Id | 1022507728 |
-| Explorer | https://calypso.explorer.testnet.skale.network |
+| RPC Url | https://testnet.skalenodes.com/v1/giant-half-dual-testnet |
+| Chain Id | 974399131 |
+| Explorer | https://giant-half-dual.explorer.testnet.skalenodes.com/ |
+| Portal | https://testnet.portal.skale.space/chains/calypso |
 
-## Europa Mainnet
+#### Europa Mainnet
 
 | Network Name | Europa Hub |
 | --- | --- |
-| RPC Url | https://eth-europa.skale.network |
+| RPC Url | https://mainnet.skalenodes.com/v1/elated-tan-skat |
 | Chain Id | 2046399126 |
-| Explorer | https://europa.explorer.skale.network |
+| Explorer | https://elated-tan-skat.explorer.mainnet.skalenodes.com/ |
+| Portal | https://portal.skale.space/chains/europa |
 
-## Europa Testnet
+#### Europa Testnet
 
 | Network Name | Europa Testnet |
 | --- | --- |
-| RPC Url | https://testnet.skalenodes.com/v1/europa |
-| Chain Id | 4641311198092625 |
-| Explorer | https://europa.explorer.testnet.skale.network |
+| RPC Url | https://testnet.skalenodes.com/v1/juicy-low-small-testnet |
+| Chain Id | 1444673419 |
+| Explorer | https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/ |
+| Portal | https://testnet.portal.skale.space/chains/europa |
 
-## Nebula Mainnet
+#### Nebula Mainnet
 
 | Network Name | Nebula Hub |
 | --- | --- |
-| RPC Url | https://eth-nebula.skale.network |
-| Chain Id | 392601381 |
-| Explorer | https://nebula.explorer.skale.network |
+| RPC Url | https://mainnet.skalenodes.com/v1/green-giddy-denebola |
+| Chain Id | 1482601649 |
+| Explorer | https://green-giddy-denebola.explorer.mainnet.skalenodes.com/ |
+| Portal | https://portal.skale.space/chains/nebula |
 
-## Nebula Testnet
+#### Nebula Testnet
 
 | Network Name | Nebula Testnet |
 | --- | --- |
-| RPC Url | https://eth-nebula-testnet.skale.network |
-| Chain Id | 450299412 |
-| Explorer | https://nebula.explorer.testnet.skale.network |
+| RPC Url | https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet |
+| Chain Id | 37084624 |
+| Explorer | https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/ |
+| Portal | https://testnet.portal.skale.space/chains/nebula |
