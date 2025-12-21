@@ -52,6 +52,12 @@
         "tab": "Concepts",
         "pages": [
           {
+            "group": "SKALE",
+            "pages": [
+              "concepts/skale-expand"
+            ]
+          },
+          {
             "group": "BITE Protocol",
             "pages": [
               "concepts/bite-protocol/intro-bite-protocol",
@@ -76,6 +82,12 @@
               "concepts/elliptic-curve-cryptography",
               "concepts/threshold-schemes",
               "concepts/dkg-with-bls"
+            ]
+          },
+          {
+            "group": "SKALE",
+            "pages": [
+              "concepts/skale-expand"
             ]
           }
         ]
@@ -257,10 +269,10 @@
             ]
           },
           {
-            "group": "Random Numbers",
+            "group": "Native Features",
             "pages": [
-              "cookbook/random-numbers/rng-get-random-number",
-              "cookbook/random-numbers/rng-flip-coin"
+              "cookbook/native-features/rng-get-random-number",
+              "cookbook/native-features/send-gasless-transaction"
             ]
           }
         ]

@@ -1,0 +1,173 @@
+---
+title: Generating Random Numbers in Solidity
+description: Generate random numbers in Solidity with SKALE Native RNG
+---
+
+This recipe explores generating a random number on SKALE without the use of a 3rd-party provider like Chainlink and without callbacks. The actual random value is generating from the signature of the block signature which is randomized depending on which entities active in validation of the chain sign the actual block.
+
+## Using RNG
+
+<Tabs>
+    <Tab title="@dirtroad/skale-rng (recommended)">
+
+        ### Using SKALE RNG Library
+
+        The easiest way is to use the SKALE RNG library:
+
+        #### Step 1: Install Library
+
+        ```shell
+        npm install @dirtroad/skale-rng
+        ```
+
+        #### Step 2: Import and Use
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+        contract MyRandomContract is RNG {
+
+            /**
+            * Generate a random number between 0 and 2^256-1
+            */
+            function generateRandom() external view returns (uint256) {
+                return getRandomNumber();
+            }
+            
+            /*
+            * Generate a random number between min and max
+            */
+            function generateRandomInRange(uint256 min, uint256 max) external view returns (uint256) {
+                return getNextRandomRange(min, max);
+            }
+        }
+        ```
+
+    </Tab>
+    <Tab title="Direct Precompile Call (0x18)">
+
+        ### Direct Precompiled Contract Call
+
+        Use inline assembly to call the precompiled contract at address `0x18`:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        contract GetRandomNumber {
+            function getRandom() public view returns (bytes32) {
+                bytes32 randomValue;
+                assembly {
+                    let freemem := mload(0x40)
+                    let start_addr := add(freemem, 0)
+                    if iszero(staticcall(gas(), 0x18, 0, 0, start_addr, 32)) {
+                        invalid()
+                    }
+                    randomValue := mload(freemem)
+                }
+                return randomValue;
+            }
+            
+            function getRandomUint256() public view returns (uint256) {
+                return uint256(getRandom());
+            }
+        }
+        ```
+
+    </Tab>
+</Tabs>
+
+---
+
+## Coin Flip Implementation
+
+A coin flip randomly selects between two outcomes:
+- **Heads** (true or 1)
+- **Tails** (false or 0)
+
+<Tabs>
+    <Tab title="SKALE RNG Library">
+
+        ### Step 1: Install Library
+
+        ```shell
+        npm install @dirtroad/skale-rng
+        ```
+
+        ### Basic Coin Flip
+
+        Using the SKALE RNG library makes it simpler:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+        contract CoinFlipWithLibrary is RNG {
+            enum CoinSide { Heads, Tails }
+            
+            event CoinFlipped(address indexed player, CoinSide result);
+            
+            function flip() public returns (CoinSide) {
+                uint256 random = getRandomNumber();
+                CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+                
+                emit CoinFlipped(msg.sender, result);
+                return result;
+            }
+        }
+        ```
+    </Tab>
+    <Tab title="Direct Precompile Call (0x18)">
+
+        ### Basic Coin Flip
+
+        Here's a simple coin flip contract using inline assembly to call the RNG precompile:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        contract CoinFlip {
+            enum CoinSide { Heads, Tails }
+            
+            event CoinFlipped(address indexed player, CoinSide result);
+            
+            function flip() public returns (CoinSide) {
+                uint256 random = getRandomNumber();
+                CoinSide result = (random % 2 == 0) ? CoinSide.Heads : CoinSide.Tails;
+                
+                emit CoinFlipped(msg.sender, result);
+                return result;
+            }
+            
+            function getRandomNumber() private view returns (uint256) {
+                bytes32 randomBytes;
+                assembly {
+                    let freemem := mload(0x40)
+                    if iszero(staticcall(gas(), 0x18, 0, 0, freemem, 32)) {
+                        invalid()
+                    }
+                    randomBytes := mload(freemem)
+                }
+                return uint256(randomBytes);
+            }
+        }
+        ```
+    </Tab>
+</Tabs>
+
+<Note>
+RNG is native to SKALE and relies on SKALE's Consensus. In local testing or on other chains, this will always return 0.
+</Note>
+
+<Note>
+Random numbers are generated per block. Multiple calls in the same block will return the same value unless manipulated through bitwise or other mathemtical operations.
+</Note>
+
+## Resources
+- [SKALE RNG Library](https://www.npmjs.com/package/@dirtroad/skale-rng)

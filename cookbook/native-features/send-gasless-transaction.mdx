@@ -1,0 +1,137 @@
+---
+title: Send Gasless Transactions
+description: Recipe for sending gasless transactions on SKALE
+---
+
+SKALE offers native gasless transactions that allow users to send transactions without needing to hold gas tokens. This is achieved through SKALE's Proof-of-Work mechanism that replaces traditional gas payments with computational work done client-side.
+
+For more information about SKALE's gasless transaction technology, see the [SKALE Gasless Transactions documentation](https://docs.skale.space/building-applications/gas-fees/#skale-gasless-transactions).
+
+This guide demonstrates how to implement gasless transactions using the `@dirtroad/gasless` library and [viem](https://viem.sh).
+
+## Installation
+
+<CodeGroup>
+```bash TypeScript
+# NPM
+npm install viem @dirtroad/gasless
+
+# Yarn
+yarn add viem @dirtroad/gasless
+
+# PNPM
+pnpm add viem @dirtroad/gasless
+
+# Bun
+bun add viem @dirtroad/gasless
+```
+
+```bash Flutter/Dart
+dart pub add skale
+```
+
+```bash Rust
+cargo add gasless
+```
+</CodeGroup>
+
+---
+
+## Example
+
+<CodeGroup dropdown>
+```typescript typescript.ts
+import { mineGasForTransaction } from "@dirtroad/gasless";
+import { createPublicClient, createWalletClient, http } from "viem";
+import { skaleCalypsoTestnet } from "viem/chains";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+
+async function main() {
+    const privateKey = generatePrivateKey();
+    
+    const client = createPublicClient({
+        chain: skaleCalypsoTestnet,
+        transport: http()
+    });
+
+    const wallet = createWalletClient({
+        chain: skaleCalypsoTestnet,
+        transport: http(),
+        account: privateKeyToAccount(privateKey)
+    });
+
+    // Generate gasless transaction parameters
+    const { gasPrice } = await mineGasForTransaction(100_000, wallet.account.address, 0);
+
+    // Send transaction with computed gas price
+    const transactionHash = await wallet.sendTransaction({
+        to: "0x62Fe932FF26e0087Ae383f6080bd2Ed481bA5A8A",
+        data: `0x0c11dedd000000000000000000000000${wallet.account.address.substring(2)}`,
+        gas: BigInt(100_000),
+        gasPrice: BigInt(gasPrice)
+    });
+
+    const receipt = await client.waitForTransactionReceipt({
+        hash: transactionHash
+    });
+
+    console.log("Gasless transaction receipt: ", receipt);
+    return receipt;
+}
+
+main().catch(console.error);
+```
+
+```dart dart.dart
+import 'package:skale/skale.dart';
+
+Future<void> main() async {
+  final skale = Skale();
+  
+  // Generate gasless transaction
+  final tx = await skale.sendGaslessTransaction(
+    to: '0x62Fe932FF26e0087Ae383f6080bd2Ed481bA5A8A',
+    data: '0x0c11dedd...',
+    gasLimit: 100000,
+  );
+  
+  print('Transaction sent: ${tx.hash}');
+}
+```
+
+```rust rust.rs
+use gasless::mine_gas_for_transaction;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let gas_amount = 100_000;
+    let address = "0x62Fe932FF26e0087Ae383f6080bd2Ed481bA5A8A".to_string();
+    let nonce = 0;
+
+    // Mine gas for transaction
+    let result = mine_gas_for_transaction(gas_amount, address, nonce).await?;
+    
+    println!("Gas Price: {}", result.gas_price);
+    println!("Mining duration: {} ms", result.duration);
+    
+    // Use the gas price in your transaction
+    // The result.gas_price can be used with any Web3 library
+    
+    Ok(())
+}
+```
+</CodeGroup>
+
+---
+
+---
+
+## Libraries & Resources
+
+- **[@dirtroad/gasless](https://www.npmjs.com/package/@dirtroad/gasless)** - JavaScript/TypeScript library for gasless transactions
+- **[skale.dart](https://pub.dev/packages/skale)** - Dart/Flutter library for SKALE integration
+- **[SKALE Gasless SDK Documentation](https://dirtroad.dev/sdks/skale-gasless-sdk)** - Comprehensive SDK documentation
+- **[crates.io](https://crates.io/crates/gasless)** - Rust implementation
+- **[SKALE Gasless Transactions](https://docs.skale.space/building-applications/gas-fees/#skale-gasless-transactions)** - SKALE gasless transaction documentation
+
+
