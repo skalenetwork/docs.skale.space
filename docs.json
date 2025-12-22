@@ -54,7 +54,7 @@
           {
             "group": "SKALE",
             "pages": [
-              "concepts/skale-expand"
+              "concepts/skale/skale-expand"
             ]
           },
           {
@@ -82,12 +82,6 @@
               "concepts/elliptic-curve-cryptography",
               "concepts/threshold-schemes",
               "concepts/dkg-with-bls"
-            ]
-          },
-          {
-            "group": "SKALE",
-            "pages": [
-              "concepts/skale-expand"
             ]
           }
         ]
@@ -1932,10 +1926,6 @@
     {
       "source": "/run-a-skale-node/access-control",
       "destination": "/developers/run-a-skale-chain/access-control"
-    },
-    {
-      "source": "/welcome/getting-started",
-      "destination": "/get-started/introduction/start-here"
     },
     {
       "source": "/building-applications/cex-integration",
