@@ -52,6 +52,12 @@
         "tab": "Concepts",
         "pages": [
           {
+            "group": "SKALE",
+            "pages": [
+              "concepts/skale/skale-expand"
+            ]
+          },
+          {
             "group": "BITE Protocol",
             "pages": [
               "concepts/bite-protocol/intro-bite-protocol",
@@ -144,6 +150,15 @@
       {
         "tab": "Developers",
         "pages": [
+          {
+            "group": "Integrate SKALE",
+            "pages": [
+              "developers/integrate-skale/connect-to-skale",
+              "developers/integrate-skale/json-rpc-api",
+              "developers/integrate-skale/evm-differences",
+              "developers/integrate-skale/gas-fees"
+            ]
+          },
           {
             "group": "Chain Types",
             "pages": [
@@ -248,10 +263,10 @@
             ]
           },
           {
-            "group": "Random Numbers",
+            "group": "Native Features",
             "pages": [
-              "cookbook/random-numbers/rng-get-random-number",
-              "cookbook/random-numbers/rng-flip-coin"
+              "cookbook/native-features/rng-get-random-number",
+              "cookbook/native-features/send-gasless-transaction"
             ]
           }
         ]
@@ -1911,10 +1926,6 @@
     {
       "source": "/run-a-skale-node/access-control",
       "destination": "/developers/run-a-skale-chain/access-control"
-    },
-    {
-      "source": "/welcome/getting-started",
-      "destination": "/get-started/introduction/start-here"
     },
     {
       "source": "/building-applications/cex-integration",
