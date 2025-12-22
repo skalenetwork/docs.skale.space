@@ -1,0 +1,19 @@
+---
+title: "Consensus Mechanism"
+description: "How SKALE reaches instant finality with BLS threshold signatures"
+---
+
+## How Consensus Works
+
+SKALE Chains run a leaderless, asynchronous Byzantine Fault Tolerant (BFT) consensus. Validators propose blocks, broadcast data-availability proofs, and then vote in parallel. Once a supermajority (≥2/3) signs a proposal with BLS threshold signatures, the block is final—no reorgs or extra confirmations needed.
+
+## Block Production Flow
+
+1. Validators collect transactions, create proposals, and share transaction hashes.
+2. Peers sign data-availability receipts to prove the proposal is widely distributed.
+3. Asynchronous binary consensus selects the winning proposal.
+4. Validators produce a threshold signature; the block becomes final and is executed in the EVM.
+
+## Performance and Reliability
+
+Because consensus is asynchronous, chains keep progressing even when the network is slow or partially partitioned. Instant finality and zero gas fees make SKALE ideal for real-time apps, games, and agent-driven workflows where users cannot wait for multiple confirmations.

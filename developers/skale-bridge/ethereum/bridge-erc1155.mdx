@@ -1,0 +1,444 @@
+---
+title: Bridge ERC-1155 Tokens
+description: Guide on bridging ERC-1155 tokens on SKALE
+---
+
+SKALE's Interchain Messaging Agent includes a native bridging layer for ERC-1155 tokens, the most popular semi-fungible token standard that exists in blockchain today. The following introduces key information on setting up the bridgeable assets as well as how to programatically bridge the tokens.
+
+## Important Information
+
+- When a SKALE Chain is created, there are NO ERC-1155 tokens mapped by default
+- In order to bridge an ERC-1155 token to a SKALE Chain from Ethereum, it must be **added** by the SKALE Chain owner or operator via the standard mapping process
+- All ERC-1155 tokens bridged into SKALE have a set of basic requirements to make them compatible with SKALE's bridging layer
+
+<Note>
+SKALE utilizes a popular architectural design within bridging which is a liquidity based bridge.
+This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on target SKALE Chain.
+</Note>
+
+## Bridge Setup
+
+### 1. Prepare the ERC-1155 on SKALE
+
+ERC-1155 tokens that are being bridged to SKALE should follow two basic requirements in order to be compatible with the SKALE IMA bridging layer:
+
+1. Have a **mint** function that is locked down to the IMA Bridge
+2. Have a **burn** function that is locked down to the IMA Bridge
+
+<Danger title="Caution on Minting">
+If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that
+the existing tokens on the SKALE Chain may not match what is secured in the bridge.
+</Danger>
+
+<Danger title="Caution on Burning">
+If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC1155; there is a chance that
+the supply on the SKALE Chain side could be "burned", while the tokens still exist on Ethereum which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
+</Danger>
+
+The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InGameTokens for an example of InterchainERC1155 in use!
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.9;
+
+import { ERC1155 } from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+
+contract InterchainERC1155 is AccessControl, ERC1155 {
+    using Strings for uint256;
+
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string private _baseUri;
+
+    constructor(string memory baseUri) ERC1155("") {
+        _grantRole(MINTER_ROLE, 0xD2aaA00900000000000000000000000000000000);
+        _baseUri = baseUri; // e.g. "ipfs://QmSomeCID/"
+    }
+
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        return string(abi.encodePacked(_baseUri, tokenId.toString(), ".json"));
+    }
+
+    function mint(
+        address account,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) external {
+        require(hasRole(MINTER_ROLE, _msgSender()), "Sender is not a Minter");
+        _mint(account, id, amount, data);
+    }
+
+    function mintBatch(
+        address account,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) external {
+        require(hasRole(MINTER_ROLE, _msgSender()), "Sender is not a Minter");
+        _mintBatch(account, ids, amounts, data);
+    }
+
+    function setBaseUri(string memory newBaseUri) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _baseUri = newBaseUri;
+    }
+}
+```
+### 2. Deploy the ERC-1155 on SKALE
+
+Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-1155 token to the SKALE Chain you want to be able to bridge assets too.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+import { InterchainERC1155 } from "./InterchainERC1155.sol";
+
+contract InGameTokens is InterchainERC1155("ipfs://<cid>") {}
+```
+
+> *InterchainERC1155.sol is inherited from the code above*
+
+### 3. Map the SKALE and Ethereum tokens together
+
+<Note>
+If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
+</Note>
+
+#### Add the token on Ethereum via SAFE
+
+Start by visiting your SAFE via the official SAFE website or your preferred tool. If you are unsure, you can follow the steps [here](/developers/run-a-skale-chain/using-safe).
+
+Once on your SAFE, start by preparing a transaction via the **Transaction Builder**. Follow these steps:
+
+1. Input the DepositBoxERC1155 address into the address field.
+2. Select **Use Implementation ABI**
+3. Select `addERC1155TokenByOwner` for the method
+4. Input your *SKALE Chain Name* and your ERC-1155 contract address on Ethereum in the fields
+5. Send by itself or via batch
+
+<Warning>
+Make sure to replace the values with your SKALE Chain name and the correct token addresses.
+</Warning>
+
+#### Add the token on SKALE Chain TokenManagerERC1155
+
+<Tabs>
+    <Tab title="Multisigwallet CLI">
+  ## Multisigwallet CLI
+    ```shell
+    npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerERC1155 addERC1155TokenByOwner Mainnet 0x[TOKEN_ON_ETHEREUM] 0x[TOKEN_ON_SKALE_CHAIN]
+    ```
+    </Tab>
+</Tabs>
+    After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+  
+
+#### Verify the Mapping
+
+To verify the mapping, you should have an event emitted from the following:
+
+1. DepositBoxERC1155 on Ethereum - `event ERC1155TokenAdded(string schainName, address indexed contractOnMainnet);`
+
+1. TokenManagerERC1155 on SKALE Chain - `event ERC1155TokenAdded(SchainHash indexed chainHash, address indexed erc1155OnMainChain, address indexed erc1155nSchain);`
+
+## Bridging ERC-1155
+
+The following does not require you to setup your own token. This works with **ANY** ERC-1155 token that is mapped from Ethereum to any SKALE Chain as long as the actual ERC-1155 token on each side does not have additional restrictions around who can transfer.
+
+The flow for bridging an ERC-1155 from Ethereum to SKALE follows a very similar flow to a standard ERC-1155 transfer:
+
+1. Approve the bridge contract on the ERC-1155 token to allow it to move your NFTs
+2. Call the bridge directly to transfer the specific ERC-1155 from Ethereum -> SKALE Chain, if the mapping exists
+3. Wait for the message to be posted by the validator set on the SKALE Chain, which is the net-new minted NFT corresponding to the NFT (by id(s) and amount(s)) locked on Ethereum during the bridge
+
+### Bridge to SKALE (from Ethereum)
+
+The following will help you bridge an NFT from Ethereum to SKALE.
+
+<Tabs>
+    <Tab title="bridge.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+    const ERC1155_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const DEPOSIT_BOX_ERC1155_ADDRESS = "[DEPOSIT_BOX_ERC1155_ADDRESS]";
+    const DEPOSIT_BOX_ERC1155_ABI = [ "function depositERC1155(string calldata schainName, address erc1155OnMainnet, uint256 id, uint256 amount) external" ];
+    const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+    const ONE_TOKEN = parseEther("1"); // 100 tokens in wei format
+    const TOKEN_ID = BigInt(1);
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const depositBoxContract = new Contract(DEPOSIT_BOX_ERC1155_ADDRESS, DEPOSIT_BOX_ERC1155_ABI, wallet);
+    const erc1155TokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ALL ERC-1155 tokens (this is required by the standard)
+    const approvalTx = await erc1155TokenContract.setApprovalForAll(DEPOSIT_BOX_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on same address on SKALE
+    const depositTx = await depositBoxContract.depositERC1155(SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_ID, ONE_TOKEN);
+    await depositTx.wait(1);
+
+    // Success! Now watch for delivery on SKALE Chain
+    console.log("Success!");
+    ```
+  </Tab>
+  <Tab title= "bridgeDirect.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+    const ERC1155_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const DEPOSIT_BOX_ERC1155_ADDRESS = "[DEPOSIT_BOX_ERC1155_ADDRESS]";
+    const DEPOSIT_BOX_ERC1155_ABI = [ "function depositERC1155Direct(string calldata schainName, address erc1155OnMainnet, uint256 id, uint256 amount, address receiver) external" ];
+    const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+    const ONE_TOKEN = parseEther("1"); // 100 tokens in wei format
+    const TOKEN_ID = BigInt(1);
+    const CUSTOM_RECEIVER = "[CUSTOM_RECEIVER_ADDRESS]";
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const depositBoxContract = new Contract(DEPOSIT_BOX_ERC1155_ADDRESS, DEPOSIT_BOX_ERC1155_ABI, wallet);
+    const erc1155TokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ALL ERC-1155 tokens (this is required by the standard)
+    const approvalTx = await erc1155TokenContract.setApprovalForAll(DEPOSIT_BOX_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on custom receiver address on SKALE
+    const depositTx = await depositBoxContract.depositERC1155Direct(SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_ID, ONE_TOKEN, CUSTOM_RECEIVER);
+    await depositTx.wait(1);
+
+    // Success! Now watch for delivery on SKALE Chain
+    console.log("Success!");
+    ```
+  </Tab>
+  <Tab title= "bridgeBatch.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+    const ERC1155_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const DEPOSIT_BOX_ERC1155_ADDRESS = "[DEPOSIT_BOX_ERC1155_ADDRESS]";
+    const DEPOSIT_BOX_ERC1155_ABI = [ "function depositERC1155Batch(string calldata schainName, address erc1155OnMainnet, uint256[] calldata ids, uint256[] calldata amounts) external" ];
+    const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+    const TOKEN_AMOUNTS = [parseEther("1"), parseEther("2")] // 1 and 2 tokens in wei format
+    const TOKEN_IDS = [BigInt(1), BigInt(2)]
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const depositBoxContract = new Contract(DEPOSIT_BOX_ERC1155_ADDRESS, DEPOSIT_BOX_ERC1155_ABI, wallet);
+    const erc1155TokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ALL ERC-1155 tokens (this is required by the standard)
+    const approvalTx = await erc1155TokenContract.setApprovalForAll(DEPOSIT_BOX_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on same address on SKALE
+    const depositTx = await depositBoxContract.depositERC1155Batch(SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_IDS, TOKEN_AMOUNTS);
+    await depositTx.wait(1);
+
+    // Success! Now watch for delivery on SKALE Chain
+    console.log("Success!");
+    ```
+    </Tab>
+  <Tab title= "bridgeBatchDirect.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+    const ERC1155_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const DEPOSIT_BOX_ERC1155_ADDRESS = "[DEPOSIT_BOX_ERC1155_ADDRESS]";
+    const DEPOSIT_BOX_ERC1155_ABI = [ "function depositERC1155BatchDirect(string calldata schainName, address erc1155OnMainnet, uint256[] calldata ids, uint256[] calldata amounts, address receiver) external" ];
+    const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+    const TOKEN_AMOUNTS = [parseEther("1"), parseEther("2")] // 1 and 2 tokens in wei format
+    const TOKEN_IDS = [BigInt(1), BigInt(2)]
+    const CUSTOM_RECEIVER = "[CUSTOM_RECEIVER_ADDRESS]";
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const depositBoxContract = new Contract(DEPOSIT_BOX_ERC1155_ADDRESS, DEPOSIT_BOX_ERC1155_ABI, wallet);
+    const erc1155TokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ALL ERC-1155 tokens (this is required by the standard)
+    const approvalTx = await erc1155TokenContract.setApprovalForAll(DEPOSIT_BOX_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on custom receiver address on SKALE
+    const depositTx = await depositBoxContract.depositERC1155BatchDirect(SKALE_CHAIN_NAME, ERC1155_ADDRESS, TOKEN_IDS, TOKEN_AMOUNTS, CUSTOM_RECEIVER);
+    await depositTx.wait(1);
+
+    // Success! Now watch for delivery on SKALE Chain
+    console.log("Success!");
+    ```
+    </Tab>
+</Tabs>
+
+### Bridge to Ethereum (from SKALE)
+
+SKALE's decentralized bridge offers a simple two-step process to bridge from any SKALE Chain to Ethereum Mainnet.
+
+1. The first step, which only has to be done if you don't have a sufficient balance to exit, is to fill up your gas wallet on Ethereum
+
+2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
+
+<Note>
+Gas Wallet, officially referred to as community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
+</Note>
+
+#### Pre-pay for your Exit
+
+This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
+You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
+
+```js
+import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+const COMMUNITY_POOL_ADDRESS = "[COMMUNIY_POOL_ADDRESS]";
+const COMMUNITY_POOL_ABI = [ "function rechargeUserWallet(string calldata schainName, address user) external" ];
+const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+
+// Setup the RPC Provider to connect to Ethereum
+const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+// Setup the wallet with your private key and default to the Ethereum provider
+const wallet = new Wallet(PRIVATE_KEY, provider);
+
+// Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+const communityPoolContract = new Contract(COMMUNITY_POOL_ADDRESS, COMMUNITY_POOL_ABI, wallet);
+
+const rechargeTx = await communityPoolContract.rechargeUserWallet(
+	SKALE_CHAIN_NAME,
+	wallet.address,
+	{
+		value: parseEther("0.02") // Recharge by 0.02 ETH
+	}
+);
+
+await rechargeTx.wait(5); // wait 5 blocks for full finality
+
+// Success! You can now bridge from SKALE to Ethereum!
+console.log("Success!");
+```
+
+#### Bridge to Ethereum
+
+Once the above prepayment steps are completed, you can proceed with the bridging.
+Bridging from SKALE simply requires the `exitToMainERC1155` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
+
+<Tabs>
+    <Tab title="exit.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const SKALE_RPC_URL = "[YOUR_SKALE_RPC_URL]";
+    const ERC1155_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const TOKEN_MANAGER_ERC1155_ADDRESS = "0xD2aaA00900000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC1155_ABI = [ "function exitToMainERC1155(address contractOnMainnet, uint256 id, uint256 amount) external" ];
+    const TOKEN_ID = BigInt(1); // Token Id #1
+    const AMOUNT = parseEther("2"); // 2 in wei form
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(SKALE_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerERC1155Contract = new Contract(TOKEN_MANAGER_ERC1155_ADDRESS, TOKEN_MANAGER_ERC1155_ABI, wallet);
+    const erc1155TokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-1155 on your behalf
+    const approvalTx = await erc1155TokenContract.setApprovalForAll(TOKEN_MANAGER_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // 2. Transfer ERC-1155 Token into bridge, will recieve on the same address on Ethereum
+    const exitTx = await tokenManagerERC1155Contract.exitToMainERC1155(ERC1155_ADDRESS, TOKEN_ID, AMOUNT);
+    await exitTx.wait(1);
+
+    // Success! Now watch for delivery on Ethereum
+    console.log("Success!");
+    ```
+    </Tab>
+  <Tab title= "exitBatch.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const SKALE_RPC_URL = "[YOUR_SKALE_RPC_URL]";
+    const ERC1155_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC1155_ABI = [ "function setApprovalForAll(address operator, bool approved) external" ];
+    const TOKEN_MANAGER_ERC1155_ADDRESS = "0xD2aaA00900000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC1155_ABI = [ "function exitToMainERC1155Batch(address contractOnMainnet, uint256[] calldata ids, uint256[] calldata amounts) external" ];
+    const TOKEN_IDS = [BigInt(1), BigInt(2)]; // Token Id #1, #2
+    const AMOUNTS = [parseEther("5"), parseEther("1")]; // 5 and 1 in wei
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(SKALE_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerERC1155Contract = new Contract(TOKEN_MANAGER_ERC1155_ADDRESS, TOKEN_MANAGER_ERC1155_ABI, wallet);
+    const erc1155TokenContract = new Contract(ERC1155_ADDRESS, ERC1155_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-1155 on your behalf
+    const approvalTx = await erc1155TokenContract.setApprovalForAll(TOKEN_MANAGER_ERC1155_ADDRESS, true);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // 2. Transfer ERC-1155 Tokens into bridge, will recieve on the same address on Ethereum
+    const exitTx = await tokenManagerERC1155Contract.exitToMainERC1155Batch(ERC1155_ADDRESS, TOKEN_IDS, AMOUNTS);
+    await exitTx.wait(1);
+
+    // Success! Now watch for delivery on Ethereum
+    console.log("Success!");
+    ```
+    </Tab>
+</Tabs>
+
+<Note>
+If your bridge is not working, it is most likely for one of three reasons:
+
+1. You forgot to prepay for gas
+2. You forgot to approve bridge on the ERC-1155 token id you want to bridge
+3. You don't actually own the ERC-1155 Token
+
+Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
+</Note>

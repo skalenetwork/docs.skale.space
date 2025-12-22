@@ -1,0 +1,60 @@
+---
+title: "Horizontal Scalability"
+description: "Why SKALE scales by adding chains, not inflating block limits"
+---
+
+## Overview
+
+SKALE scales out by adding new SKALE Chains whenever demand rises. Each chain is its own EVM L1 with zero gas fees and instant finality. Instead of cramming more into a single chain, SKALE adds fresh capacity in parallel, so throughput grows linearly while UX stays fast.
+
+## What is Horizontal Scalability?
+
+Add chains, not hardware. Each new SKALE Chain brings dedicated compute, storage, and bandwidth, while still tapping into the same validator pool and Ethereum-anchored security.
+
+## How SKALE Scales Horizontally
+
+1. **Create a chain** via SKALE Manager on Ethereum.
+2. **Allocate resources** (virtualized CPU, RAM, storage) and assign a validator committee.
+3. **Spin up containers** on validator nodes; the chain comes online with instant finality and zero gas fees.
+4. **Repeat** as demand grows—no congestion spillover.
+
+Shared validators and containerized nodes make the economics work: operators secure multiple chains, and chain owners pay predictable monthly fees instead of per-transaction gas.
+
+## Benefits
+
+- **On-demand growth** – Add chains as traffic spikes; no theoretical cap on chain count.
+- **Predictable performance** – Each chain keeps low latency and high TPS even during surges.
+- **Cost control** – Flat monthly pricing per chain, not per transaction.
+- **Developer agility** – Launch appchains, ecosystem hubs, or private chains without competing for block space.
+
+## Scaling Mechanisms
+
+- **Virtualization & containers** – Isolate resources per chain on validator hardware.
+- **Node rotation** – Balanced committees keep security consistent as chains proliferate.
+- **Bridges** – Move assets between chains and Ethereum without central chokepoints.
+
+## Comparison to Vertical Scaling
+
+- **Vertical** – Bigger blocks and higher gas limits hit hardware ceilings and decentralization tradeoffs.
+- **SKALE horizontal** – More chains, same UX, no need to sacrifice security or decentralization.
+
+## Use Cases
+
+- **Consumer apps** – Keep UX smooth during viral spikes.
+- **Gaming and AI agents** – Dedicated chains for state-heavy workloads.
+- **Enterprises** – Launch isolated environments with predictable performance.
+
+## Implementation
+
+- **SKALE Manager** for chain creation and pricing.
+- **Containerized nodes** for multi-chain hosting.
+- **Virtualized blockchains** for resource isolation.
+- **Node rotation** to keep committees balanced as the network grows.
+
+## Related Topics
+
+- [Containerized Nodes](/concepts/skale-network/containerized-nodes) - Node architecture
+- [Virtualized Blockchains](/concepts/skale-network/virtualized-blockchains) - Blockchain virtualization
+- [Pooled Security Model](/concepts/skale-network/pooled-security-model) - Network security
+- [SKALE Manager](/concepts/skale-network/skale-manager) - Network coordination
+

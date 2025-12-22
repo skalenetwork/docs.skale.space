@@ -1,0 +1,65 @@
+---
+title: "Delegated Proof of Stake"
+description: "How SKALE staking, delegation, and rewards work"
+---
+
+## Overview
+
+SKALE runs on Delegated Proof of Stake (DPoS): validators bond SKL, delegators back them with additional stake, and both earn rewards for keeping chains secure and online. Staking happens on Ethereum through SKALE Manager contracts, while validation happens on SKALE Chains.
+
+## How DPoS Works
+
+1. Validators register and stake SKL on Ethereum.
+2. Delegators choose validators and delegate SKL to them.
+3. Validators are assigned to chains, rotate across committees, and sign blocks.
+4. Rewards are paid monthly based on performance; misbehavior is slashed on Ethereum.
+
+## Key Components
+
+- **Validators** – Run `skaled`, maintain uptime, and sign blocks with BLS keys generated via DKG.
+- **Delegators** – Back reliable validators, share in rewards, and can rebalance each epoch.
+- **Staking periods** – Multiple lockup options with different reward rates; undelegation follows an unbonding schedule.
+- **Slashing** – Downtime or protocol violations are penalized by SKALE Manager on Ethereum.
+
+## Consensus Process
+
+Validators in a chain’s committee propose blocks, sign data-availability receipts, and participate in asynchronous BFT consensus. Once the committee reaches supermajority, a BLS threshold signature finalizes the block. Rewards accrue to validators and delegators proportional to stake and performance.
+
+## Staking Lifecycle
+
+1. **Delegate** – Choose a validator and stake SKL via SKALE Manager.
+2. **Active** – Stake is locked for the selected period; validator participates in committees.
+3. **Earn** – Rewards are distributed monthly based on performance and stake weight.
+4. **Undelegate** – Request withdrawal; funds unlock after the unbonding period.
+5. **Withdraw** – Claim SKL back to your wallet.
+
+## Benefits of DPoS
+
+- **Efficient** – Low-latency consensus and instant finality for every chain.
+- **Aligned incentives** – Staking, rotation, and slashing keep validators honest.
+- **Accessible** – Anyone can delegate SKL without running hardware.
+- **Flexible** – Multiple lock periods and validator choices fit different strategies.
+
+## Staking Rewards
+
+Rewards reflect stake size, chosen lockup period, validator uptime, and committee performance. Poor performance or downtime reduces rewards and can trigger penalties.
+
+## Validator Requirements
+
+- Minimum SKL stake and hardware that meets SKALE specs.
+- High uptime, timely upgrades, and adherence to protocol rules.
+- Participation in DKG, consensus, and rotation events.
+
+## Delegator Considerations
+
+- Validator track record (uptime, performance, responsiveness).
+- Lockup length vs. reward rate.
+- Slashing risk during the lockup and unbonding window.
+- Ability to redelegate in future epochs.
+
+## Related Topics
+
+- [Staking SKL](/get-started/staking/staking-skl)
+- [How to Stake SKL](/get-started/staking/how-to-stake-skl)
+- [Pooled Security Model](/concepts/skale-network/pooled-security-model)
+

@@ -1,0 +1,29 @@
+---
+title: Introduction to Threshold Schemes
+description: Introduction to Threshold Schemes
+---
+Threshold schemes let a group share control of a secret (like a private key) so no single participant can use it alone. On SKALE, threshold cryptography powers BLS signatures, DKG, and pooled security. Here’s the high-level story.
+
+## The basic idea
+
+A `(k, n)` threshold scheme splits a secret into `n` shares. Any `k` shares can reconstruct the secret; fewer than `k` reveal nothing. This is typically done with polynomials: pick a polynomial where the secret is the constant term, hand each participant a point on that curve, and require `k` points to rebuild it.
+
+## Shamir’s Secret Sharing (SSS)
+
+SSS is the classic approach: a dealer creates the polynomial, hands out shares, and `k` participants can later interpolate to recover the secret. The downside: the dealer knows everything, so you must trust them.
+
+## From SSS to Distributed Key Generation (DKG)
+
+DKG removes the trusted dealer. Every participant creates their own polynomial and shares a piece of it with everyone else. When all the partial polynomials are summed, the group gets:
+- A public key (from the summed public polynomials)
+- Private key shares (each participant holds their own summed share)
+
+No single party ever sees the full secret key, yet the group can still produce threshold signatures.
+
+## Why SKALE uses threshold crypto
+
+- **Security against collusion** – You need a supermajority of validators to act together to sign or decrypt.
+- **Instant finality with BLS** – Validators combine shares into a single BLS signature that proves supermajority agreement.
+- **Rotation-friendly** – New committees can rerun DKG to refresh keys every epoch.
+
+For a deeper dive into how SKALE runs DKG and BLS in production, see the DKG with BLS page.

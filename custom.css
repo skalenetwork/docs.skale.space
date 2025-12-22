@@ -1,0 +1,161 @@
+/* Override Mintlify/Starlight CSS variables for hover colors */
+:root {
+  --sl-color-white: #000000 !important; /* Override white to dark gray for light mode */
+}
+
+/* Alternative: Target the exact selector Mintlify uses */
+a:hover, a[aria-current="true"] {
+  color: #000000 !important; /* Your desired hover color */
+}
+
+/* For light mode specifically */
+[data-theme="light"] a:hover,
+[data-theme="light"] a[aria-current="true"] {
+  color: #000000 !important;
+}
+
+/* Fix navigation hover background width consistency */
+/* Make all navigation hover backgrounds 100% width for consistency */
+/* Override Tailwind's w-full class */
+
+/* Target Mintlify sidebar navigation links - ensure full width */
+/* Scope to sidebar only to avoid affecting top navigation tabs */
+#sidebar-group a,
+ul#sidebar-group a,
+#sidebar-group li[id] a,
+#sidebar-group a.group.flex.items-center.pr-3,
+#sidebar-group a.group.flex.items-center {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Hover states - ensure width is maintained */
+#sidebar-group a:hover,
+ul#sidebar-group a:hover,
+#sidebar-group li[id] a:hover,
+#sidebar-group a.group.flex.items-center.pr-3:hover,
+#sidebar-group a.group.flex.items-center:hover {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Target list items to ensure full width */
+/* Scope to sidebar only to avoid affecting top navigation tabs */
+#sidebar-group li,
+ul#sidebar-group li,
+#sidebar-group li[id].relative.scroll-m-4 {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix navigation hover text color - ensure dark text on light background */
+/* Scope to sidebar only to avoid affecting top navigation tabs */
+#sidebar-group a:hover,
+ul#sidebar-group a:hover,
+#sidebar-group li[id] a:hover,
+#sidebar-group a.group.flex.items-center.pr-3:hover,
+#sidebar-group a.group.flex.items-center:hover {
+  color: inherit !important;
+}
+
+/* Ensure navigation links maintain readable text color on hover in light mode */
+[data-theme="light"] #sidebar-group a:hover,
+[data-theme="light"] ul#sidebar-group a:hover,
+[data-theme="light"] #sidebar-group li[id] a:hover,
+[data-theme="light"] #sidebar-group a.group.flex.items-center.pr-3:hover,
+[data-theme="light"] #sidebar-group a.group.flex.items-center:hover {
+  color: #1f2937 !important; /* Dark gray text for light backgrounds */
+}
+
+/* Fix top navigation tabs hover text color */
+/* Target Mintlify navigation tabs using the actual class - override Tailwind hover classes */
+a.nav-tabs-item:hover,
+a.link.nav-tabs-item:hover,
+.nav-tabs-item.group:hover {
+  color: inherit !important;
+}
+
+/* Light mode navigation tabs hover - override Tailwind's hover:text-primary */
+[data-theme="light"] a.nav-tabs-item:hover,
+[data-theme="light"] a.link.nav-tabs-item:hover,
+[data-theme="light"] .nav-tabs-item.group:hover,
+html[data-theme="light"] a.nav-tabs-item:hover,
+html[data-theme="light"] a.link.nav-tabs-item:hover,
+body[data-theme="light"] a.nav-tabs-item:hover,
+body[data-theme="light"] a.link.nav-tabs-item:hover,
+[data-mode="light"] a.nav-tabs-item:hover,
+[data-mode="light"] a.link.nav-tabs-item:hover,
+.light a.nav-tabs-item:hover,
+.light a.link.nav-tabs-item:hover,
+html:not([data-theme="dark"]) a.nav-tabs-item:hover,
+html:not([data-theme="dark"]) a.link.nav-tabs-item:hover {
+  color: #1f2937 !important; /* Dark gray text for light backgrounds */
+}
+
+/* Prevent text wrapping in navigation tabs */
+/* Also ensure tabs don't get forced to 100% width from sidebar rules */
+.nav-tabs-item,
+a.nav-tabs-item {
+  white-space: nowrap !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+/* Fix global hover text color in light theme - override any white text on hover */
+/* Target all links and text elements that might have hover states */
+/* Use very high specificity to override Tailwind and Mintlify defaults */
+[data-theme="light"] a:hover,
+[data-theme="light"] a:focus,
+html[data-theme="light"] a:hover,
+html[data-theme="light"] a:focus,
+body[data-theme="light"] a:hover,
+body[data-theme="light"] a:focus,
+html[data-theme="light"] body a:hover,
+html[data-theme="light"] body a:focus,
+[data-theme="light"] a[class*="hover"]:hover,
+[data-theme="light"] a[class*="text-white"]:hover,
+[data-theme="light"] a[class*="text-gray"]:hover,
+[data-theme="light"] a.link:hover,
+[data-theme="light"] a[href]:hover,
+[data-theme="light"] p a:hover,
+[data-theme="light"] div a:hover,
+[data-theme="light"] span a:hover,
+[data-theme="light"] li a:hover,
+[data-theme="light"] td a:hover,
+[data-theme="light"] th a:hover {
+  color: #6b7280 !important; /* Medium gray text for light backgrounds - more visible than dark gray */
+}
+
+/* Override any Tailwind hover:text-white classes */
+[data-theme="light"] a.hover\:text-white:hover,
+[data-theme="light"] a[class*="hover:text-white"]:hover {
+  color: #6b7280 !important;
+}
+
+/* Ensure primary/accent colored links maintain their color on hover in light mode */
+[data-theme="light"] a.text-primary:hover,
+[data-theme="light"] a.text-accent:hover,
+[data-theme="light"] a[class*="text-primary"]:hover,
+[data-theme="light"] a[class*="text-accent"]:hover,
+[data-theme="light"] a[class*="primary"]:hover {
+  color: #bd0249 !important; /* Use accent color for primary links */
+}
+
+/* Target content area links specifically - Mintlify content links */
+[data-theme="light"] main a:hover,
+[data-theme="light"] article a:hover,
+[data-theme="light"] .content a:hover,
+[data-theme="light"] [class*="content"] a:hover,
+[data-theme="light"] [class*="markdown"] a:hover,
+[data-theme="light"] [class*="prose"] a:hover {
+  color: #6b7280 !important;
+}
+
+/* Override any computed white color on hover - use attribute selector for inline styles */
+html[data-theme="light"] a:hover {
+  color: #6b7280 !important;
+}
+
+img.nav-logo {
+  height: 128px;
+}

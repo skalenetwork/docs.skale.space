@@ -1,0 +1,1935 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "SKALE Documentation",
+  "tagline": "Blockchain for the agentic era",
+  "colors": {
+    "primary": "#0000FF",
+    "light": "#0000FF",
+    "dark": "#0000FF"
+  },
+  "appearance": {
+    "default": "light",
+    "strict": true
+  },
+  "favicon": "/favicon.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Get Started",
+        "pages": [
+          {
+            "group": "Introduction",
+            "pages": [
+              "get-started/skale"
+            ]
+          },
+          {
+            "group": "Quick Start",
+            "pages": [
+              "get-started/quick-start/skale-on-base",
+              "get-started/quick-start/skale-on-ethereum",
+              "get-started/quick-start/go-live"
+            ]
+          },
+          {
+            "group": "SKL Token",
+            "pages": [
+              "get-started/skl-token/skl-token",
+              "get-started/skl-token/staking-skl"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "get-started/resources/official-links",
+              "get-started/resources/governance"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Concepts",
+        "pages": [
+          {
+            "group": "SKALE",
+            "pages": [
+              "concepts/skale/skale-expand"
+            ]
+          },
+          {
+            "group": "BITE Protocol",
+            "pages": [
+              "concepts/bite-protocol/intro-bite-protocol",
+              "concepts/bite-protocol/phases",
+              "concepts/bite-protocol/mev-deep-dive"
+            ]
+          },
+          {
+            "group": "SKALE Chain",
+            "pages": [
+              "concepts/skale-chain/introduction",
+              "concepts/skale-chain/block-rotation",
+              "concepts/skale-chain/consensus",
+              "concepts/skale-chain/ddos-protection",
+              "concepts/skale-chain/precompiled-contracts",
+              "concepts/skale-chain/snapshots"
+            ]
+          },
+          {
+            "group": "Cryptography",
+            "pages": [
+              "concepts/elliptic-curve-cryptography",
+              "concepts/threshold-schemes",
+              "concepts/dkg-with-bls"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Validators",
+        "pages": [
+          {
+            "group": "Validators",
+            "pages": [
+              "validators/run-supernode",
+              "validators/supernode-overview",
+              "validators/compliance-requirements",
+              "validators/faq",
+              "validators/troubleshooting",
+              "validators/migrate-node-with-sgxwallet",
+              "validators/hardware",
+              "validators/swap-limit-fix"
+            ]
+          },
+          {
+            "group": "Network Releases",
+            "pages": [
+              "validators/releases/4-0-1-upgrade",
+              "validators/releases/4-0-0-upgrade",
+              "validators/releases/3-1-2-upgrade",
+              "validators/releases/3-1-1-upgrade",
+              "validators/releases/3-1-1-upgrade-local-sgx",
+              "validators/releases/3-1-0-upgrade",
+              "validators/releases/3-0-3-upgrade"
+            ]
+          },
+          {
+            "group": "Passive Nodes",
+            "pages": [
+              "validators/run-archive-node",
+              "validators/run-sync-node"
+            ]
+          },
+          {
+            "group": "Node CLI",
+            "pages": [
+              "validators/node-cli/overview",
+              "validators/node-cli/changing-node-ip",
+              "validators/node-cli/node-ssl-setup",
+              "validators/node-cli/releases/v2-0"
+            ]
+          },
+          {
+            "group": "Validator CLI",
+            "pages": [
+              "validators/validator-cli/overview",
+              "validators/validator-cli/self-recharging-wallets",
+              "validators/validator-cli/releases/v1-2-0"
+            ]
+          },
+          {
+            "group": "Watchdog",
+            "pages": [
+              "validators/watchdog/overview",
+              "validators/watchdog/apis"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Developers",
+        "pages": [
+          {
+            "group": "Integrate SKALE",
+            "pages": [
+              "developers/integrate-skale/connect-to-skale",
+              "developers/integrate-skale/json-rpc-api",
+              "developers/integrate-skale/evm-differences",
+              "developers/integrate-skale/gas-fees"
+            ]
+          },
+          {
+            "group": "Chain Types",
+            "pages": [
+              "developers/chain-types/appchain",
+              "developers/chain-types/credit-chain",
+              "developers/chain-types/zero-gas-fee-gasless-chain"
+            ]
+          },
+          {
+            "group": "SKALE Bridge",
+            "pages": [
+              "developers/skale-bridge/overview",
+              {
+                "group": "Ethereum Bridge",
+                "pages": [
+                  "developers/skale-bridge/ethereum/bridge-eth",
+                  "developers/skale-bridge/ethereum/bridge-erc20",
+                  "developers/skale-bridge/ethereum/bridge-erc721",
+                  "developers/skale-bridge/ethereum/bridge-erc1155"
+                ]
+              },
+              {
+                "group": "SKALE to SKALE Bridge",
+                "pages": [
+                  "developers/skale-bridge/skale/connect-schains",
+                  "developers/skale-bridge/skale/bridge-erc20",
+                  "developers/skale-bridge/skale/bridge-erc721",
+                  "developers/skale-bridge/skale/bridge-erc1155"
+                ]
+              },
+              {
+                "group": "Messaging Layer",
+                "pages": [
+                  "developers/skale-bridge/messaging-layer/message-proxy",
+                  "developers/skale-bridge/messaging-layer/create-custom-contracts",
+                  "developers/skale-bridge/messaging-layer/connect-custom-contracts",
+                  "developers/skale-bridge/messaging-layer/using-custom-contracts"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "BITE Protocol",
+            "pages": [
+              "developers/bite-protocol/typescript-sdk",
+              "developers/bite-protocol/bite-api-and-faqs"
+            ]
+          },
+          {
+            "group": "Run a SKALE Chain",
+            "pages": [
+              "developers/run-a-skale-chain/intro-to-schains",
+              "developers/run-a-skale-chain/schain-ownership",
+              "developers/run-a-skale-chain/customize-schain",
+              "developers/run-a-skale-chain/setup-requirements",
+              "developers/run-a-skale-chain/pricing-and-payments",
+              "developers/run-a-skale-chain/access-control",
+              "developers/run-a-skale-chain/managing-sfuel-distribution",
+              "developers/run-a-skale-chain/using-safe",
+              "developers/run-a-skale-chain/using-multisig-wallet-cli"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Cookbook",
+        "pages": [
+          {
+            "group": "Deployment",
+            "pages": [
+              "cookbook/deployment/setup-foundry",
+              "cookbook/deployment/setup-hardhat"
+            ]
+          },
+          {
+            "group": "Smart Contracts",
+            "pages": [
+              "cookbook/smart-contracts/deploy-erc20-token",
+              "cookbook/smart-contracts/deploy-erc721-token",
+              "cookbook/smart-contracts/deploy-erc1155-token",
+              "cookbook/smart-contracts/verify-smart-contracts"
+            ]
+          },
+          {
+            "group": "Privacy",
+            "pages": [
+              "cookbook/privacy/sending-encrypted-transactions-with-bite"
+            ]
+          },
+          {
+            "group": "x402 Payments",
+            "pages": [
+              "cookbook/x402/facilitator",
+              "cookbook/x402/accepting-payments",
+              "cookbook/x402/buying"
+            ]
+          },
+          {
+            "group": "AI Agents",
+            "pages": [
+              "cookbook/agents/build-an-agent"
+            ]
+          },
+          {
+            "group": "Native Features",
+            "pages": [
+              "cookbook/native-features/rng-get-random-number",
+              "cookbook/native-features/send-gasless-transaction"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": "/logo/logo-docs.webp",
+  "topbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/skalenetwork",
+        "icon": "github"
+      },
+      {
+        "label": "Discord",
+        "href": "https://discord.gg/skale",
+        "icon": "discord"
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:hi@skale.network"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/skalenetwork"
+      },
+      {
+        "label": "Website",
+        "href": "https://skale.space"
+      },
+      {
+        "label": "Forum",
+        "href": "https://forum.skale.network"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "SKALE Portal",
+      "href": "https://portal.skale.space"
+    }
+  },
+  "anchors": {
+    "components": [
+      "h1",
+      "h2",
+      "h3",
+      "h4"
+    ],
+    "icon": "#"
+  },
+  "modeToggle": {
+    "default": "light",
+    "isHidden": false
+  },
+  "css": "/custom.css",
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/skalenetwork",
+      "github": "https://github.com/skalenetwork",
+      "discord": "https://discord.gg/skale"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/welcome/intro-to-skale",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/welcome/get-started",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/welcome/chain-info",
+      "destination": "/developers/chain-info"
+    },
+    {
+      "source": "/welcome/go-live",
+      "destination": "/get-started/quick-start/go-live"
+    },
+    {
+      "source": "/welcome/skale-on-base",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/get-started/mainnet-beta",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/how-skale-works/mainnet-beta",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/how-skale-works/consensus",
+      "destination": "/concepts/skale-chain/consensus"
+    },
+    {
+      "source": "/how-skale-works/block-rotation",
+      "destination": "/concepts/skale-chain/block-rotation"
+    },
+    {
+      "source": "/how-skale-works/ddos-protection",
+      "destination": "/concepts/skale-chain/ddos-protection"
+    },
+    {
+      "source": "/how-skale-works/dkg-with-bls",
+      "destination": "/concepts/dkg-with-bls"
+    },
+    {
+      "source": "/how-skale-works/elliptic-curve-cryptography",
+      "destination": "/concepts/elliptic-curve-cryptography"
+    },
+    {
+      "source": "/how-skale-works/precompiled-contracts",
+      "destination": "/concepts/skale-chain/precompiled-contracts"
+    },
+    {
+      "source": "/how-skale-works/skl-token",
+      "destination": "/get-started/skl-token"
+    },
+    {
+      "source": "/how-skale-works/snapshots",
+      "destination": "/concepts/skale-chain/snapshots"
+    },
+    {
+      "source": "/how-skale-works/threshold-schemes",
+      "destination": "/concepts/threshold-schemes"
+    },
+    {
+      "source": "/run-a-skale-node/overview",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/run-a-skale-node/run-supernode",
+      "destination": "/validators/run-supernode"
+    },
+    {
+      "source": "/run-a-skale-node/run-archive-node",
+      "destination": "/validators/run-archive-node"
+    },
+    {
+      "source": "/run-a-skale-node/run-sync-node",
+      "destination": "/validators/run-sync-node"
+    },
+    {
+      "source": "/run-a-skale-node/migrate-node-with-sgxwallet",
+      "destination": "/validators/migrate-node-with-sgxwallet"
+    },
+    {
+      "source": "/run-a-skale-node/compliance-requirements",
+      "destination": "/validators/compliance-requirements"
+    },
+    {
+      "source": "/run-a-skale-node/hardware",
+      "destination": "/validators/hardware"
+    },
+    {
+      "source": "/run-a-skale-node/faq",
+      "destination": "/validators/faq"
+    },
+    {
+      "source": "/run-a-skale-node/troubleshooting",
+      "destination": "/validators/troubleshooting"
+    },
+    {
+      "source": "/run-a-skale-node/swap-limit-fix",
+      "destination": "/validators/swap-limit-fix"
+    },
+    {
+      "source": "/run-a-skale-node/node-cli/overview",
+      "destination": "/validators/node-cli/overview"
+    },
+    {
+      "source": "/run-a-skale-node/node-cli/changing-node-ip",
+      "destination": "/validators/node-cli/changing-node-ip"
+    },
+    {
+      "source": "/run-a-skale-node/node-cli/node-ssl-setup",
+      "destination": "/validators/node-cli/node-ssl-setup"
+    },
+    {
+      "source": "/run-a-skale-node/node-cli/releases/v2-0",
+      "destination": "/validators/node-cli/releases/v2-0"
+    },
+    {
+      "source": "/run-a-skale-node/validator-cli/overview",
+      "destination": "/validators/validator-cli/overview"
+    },
+    {
+      "source": "/run-a-skale-node/validator-cli/self-recharging-wallets",
+      "destination": "/validators/validator-cli/self-recharging-wallets"
+    },
+    {
+      "source": "/run-a-skale-node/validator-cli/releases/v1-2-0",
+      "destination": "/validators/validator-cli/releases/v1-2-0"
+    },
+    {
+      "source": "/run-a-skale-node/watchdog/overview",
+      "destination": "/validators/watchdog/overview"
+    },
+    {
+      "source": "/run-a-skale-node/watchdog/apis",
+      "destination": "/validators/watchdog/apis"
+    },
+    {
+      "source": "/run-a-skale-node/releases/3-0-3-upgrade",
+      "destination": "/validators/releases/3-0-3-upgrade"
+    },
+    {
+      "source": "/run-a-skale-node/releases/3-1-0-upgrade",
+      "destination": "/validators/releases/3-1-0-upgrade"
+    },
+    {
+      "source": "/run-a-skale-node/releases/3-1-1-upgrade-local-sgx",
+      "destination": "/validators/releases/3-1-1-upgrade-local-sgx"
+    },
+    {
+      "source": "/run-a-skale-node/releases/3-1-1-upgrade",
+      "destination": "/validators/releases/3-1-1-upgrade"
+    },
+    {
+      "source": "/run-a-skale-node/releases/3-1-2-upgrade",
+      "destination": "/validators/releases/3-1-2-upgrade"
+    },
+    {
+      "source": "/run-a-skale-node/releases/4-0-0-upgrade",
+      "destination": "/validators/releases/4-0-0-upgrade"
+    },
+    {
+      "source": "/run-a-skale-node/releases/4-0-1-upgrade",
+      "destination": "/validators/releases/4-0-1-upgrade"
+    },
+    {
+      "source": "/building-applications/solidity-quickstart",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/building-applications/gas-fees",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/building-applications/pick-a-chain",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/developers/pick-a-chain",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/building-applications/skale-vs-ethereum",
+      "destination": "/developers/skale-vs-ethereum"
+    },
+    {
+      "source": "/building-applications/json-rpc-interface",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/building-applications/payments-on-skale",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/building-applications/random-number-generation",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/building-applications/using-contract-factories",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/building-applications/using-filestorage",
+      "destination": "/developers/native-features/using-filestorage"
+    },
+    {
+      "source": "/building-applications/troubleshooting",
+      "destination": "/developers/troubleshooting"
+    },
+    {
+      "source": "/building-applications/build-a-dapp",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/building-applications/libraries/filestorage-js",
+      "destination": "/developers/native-features/using-filestorage"
+    },
+    {
+      "source": "/developers/sdks/filestorage-js",
+      "destination": "/developers/native-features/using-filestorage"
+    },
+    {
+      "source": "/skale-bridge/overview",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/skale-bridge/ethereum/bridge-eth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/skale-bridge/ethereum/bridge-erc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/skale-bridge/ethereum/bridge-erc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/skale-bridge/ethereum/bridge-erc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/skale-bridge/skale/connect-schains",
+      "destination": "/developers/skale-bridge/skale/connect-schains"
+    },
+    {
+      "source": "/skale-bridge/skale/bridge-erc20",
+      "destination": "/developers/skale-bridge/skale/bridge-erc20"
+    },
+    {
+      "source": "/skale-bridge/skale/bridge-erc721",
+      "destination": "/developers/skale-bridge/skale/bridge-erc721"
+    },
+    {
+      "source": "/skale-bridge/skale/bridge-erc1155",
+      "destination": "/developers/skale-bridge/skale/bridge-erc1155"
+    },
+    {
+      "source": "/skale-bridge/messaging-layer/message-proxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/skale-bridge/messaging-layer/create-custom-contracts",
+      "destination": "/developers/skale-bridge/messaging-layer/create-custom-contracts"
+    },
+    {
+      "source": "/skale-bridge/messaging-layer/connect-custom-contracts",
+      "destination": "/developers/skale-bridge/messaging-layer/connect-custom-contracts"
+    },
+    {
+      "source": "/skale-bridge/messaging-layer/using-custom-contracts",
+      "destination": "/developers/skale-bridge/messaging-layer/using-custom-contracts"
+    },
+    {
+      "source": "/run-a-skale-chain/intro-to-schains",
+      "destination": "/developers/run-a-skale-chain/intro-to-schains"
+    },
+    {
+      "source": "/run-a-skale-chain/schain-ownership",
+      "destination": "/developers/run-a-skale-chain/schain-ownership"
+    },
+    {
+      "source": "/run-a-skale-chain/customize-schain",
+      "destination": "/developers/run-a-skale-chain/customize-schain"
+    },
+    {
+      "source": "/run-a-skale-chain/setup-requirements",
+      "destination": "/developers/run-a-skale-chain/setup-requirements"
+    },
+    {
+      "source": "/run-a-skale-chain/pricing-and-payments",
+      "destination": "/developers/run-a-skale-chain/pricing-and-payments"
+    },
+    {
+      "source": "/run-a-skale-chain/access-control",
+      "destination": "/developers/run-a-skale-chain/access-control"
+    },
+    {
+      "source": "/run-a-skale-chain/managing-sfuel-distribution",
+      "destination": "/developers/run-a-skale-chain/managing-sfuel-distribution"
+    },
+    {
+      "source": "/run-a-skale-chain/using-safe",
+      "destination": "/developers/run-a-skale-chain/using-safe"
+    },
+    {
+      "source": "/run-a-skale-chain/using-multisig-wallet-cli",
+      "destination": "/developers/run-a-skale-chain/using-multisig-wallet-cli"
+    },
+    {
+      "source": "/",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/introduction",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/introduction/mainnet-beta",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/introduction/overview",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/introduction/skale-and-ethereum-security",
+      "destination": "/concepts/skale-chain/consensus"
+    },
+    {
+      "source": "/introduction/skale-chain-fuel",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/introduction/skale-chain-types",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/introduction/skale-hybrid-layer",
+      "destination": "/concepts/skale-chain/consensus"
+    },
+    {
+      "source": "/introduction/zero-gas-fees",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/introduction/faq",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/develop",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/develop/deployment",
+      "destination": "/developers/deploy-on-skale"
+    },
+    {
+      "source": "/develop/faq",
+      "destination": "/developers/troubleshooting"
+    },
+    {
+      "source": "/develop/high-performance-dapps",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/develop/sfuel",
+      "destination": "/faucet"
+    },
+    {
+      "source": "/develop/sfuel/distribution/api-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/distribution/proof-of-work-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/etherbase",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/gas-vs-sfuel",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/pow-vs-sfuel",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/proof-of-work",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/sfuel-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/develop/sfuel/sfuel-station",
+      "destination": "/faucet"
+    },
+    {
+      "source": "/develop/hubs",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/delegators",
+      "destination": "/get-started/skl-token"
+    },
+    {
+      "source": "/delegators/delegation-faq",
+      "destination": "/get-started/skl-token"
+    },
+    {
+      "source": "/validators",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/validators/validator-faq",
+      "destination": "/validators/faq"
+    },
+    {
+      "source": "/validators/validator-cli",
+      "destination": "/validators/validator-cli/overview"
+    },
+    {
+      "source": "/governance",
+      "destination": "/get-started/governance/skale-dao"
+    },
+    {
+      "source": "/governance/how-to-vote",
+      "destination": "/get-started/governance/voting"
+    },
+    {
+      "source": "/governance/intro-skale-dao",
+      "destination": "/get-started/governance/skale-dao"
+    },
+    {
+      "source": "/governance/skale-dao",
+      "destination": "/get-started/governance/skale-dao"
+    },
+    {
+      "source": "/governance/skl-token",
+      "destination": "/get-started/skl-token"
+    },
+    {
+      "source": "/learn/about-skale-network",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/learn/faq",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/learn/skale-chain-overview",
+      "destination": "/concepts/skale-chain/skale-chain-101"
+    },
+    {
+      "source": "/learn/hub-chain",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/learn/app-chain",
+      "destination": "/developers/run-a-skale-chain/intro-to-schains"
+    },
+    {
+      "source": "/learn/calypso",
+      "destination": "/developers/chain-info"
+    },
+    {
+      "source": "/learn/europa",
+      "destination": "/developers/chain-info"
+    },
+    {
+      "source": "/learn/nebula",
+      "destination": "/developers/chain-info"
+    },
+    {
+      "source": "/learn/titan",
+      "destination": "/developers/chain-info"
+    },
+    {
+      "source": "/learn/mainnet-beta",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/learn/advanced/block-rotation",
+      "destination": "/concepts/skale-chain/block-rotation"
+    },
+    {
+      "source": "/learn/advanced/consensus",
+      "destination": "/concepts/skale-chain/consensus"
+    },
+    {
+      "source": "/learn/advanced/consensus-deep-dive",
+      "destination": "/concepts/skale-chain/consensus"
+    },
+    {
+      "source": "/learn/advanced/ddos-protection",
+      "destination": "/concepts/skale-chain/ddos-protection"
+    },
+    {
+      "source": "/learn/advanced/dkg-bls",
+      "destination": "/concepts/dkg-with-bls"
+    },
+    {
+      "source": "/learn/advanced/precompiled-contracts",
+      "destination": "/concepts/skale-chain/precompiled-contracts"
+    },
+    {
+      "source": "/learn/advanced/snapshots",
+      "destination": "/concepts/skale-chain/snapshots"
+    },
+    {
+      "source": "/learn/advanced/topics/elliptic-curve-cryptography",
+      "destination": "/concepts/elliptic-curve-cryptography"
+    },
+    {
+      "source": "/learn/advanced/topics/threshold-schemes",
+      "destination": "/concepts/threshold-schemes"
+    },
+    {
+      "source": "/quick-start/",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/quick-start/building-for-skale",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/quick-start/deploy-to-testnet",
+      "destination": "/get-started/quick-start/go-live"
+    },
+    {
+      "source": "/quick-start/go-live",
+      "destination": "/get-started/quick-start/go-live"
+    },
+    {
+      "source": "/builders",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/app-developers/overview",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/app-developers/evm-compatibility",
+      "destination": "/developers/skale-vs-ethereum"
+    },
+    {
+      "source": "/builders/app-developers/sfuel-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/builders/app-developers/sfuel-distribution/api-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/builders/app-developers/sfuel-distribution/contract-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/builders/app-developers/sfuel-distribution/pow-distribution",
+      "destination": "/concepts/gas-fees/zero-gas-fees"
+    },
+    {
+      "source": "/builders/app-developers/sfuel-station",
+      "destination": "/faucet"
+    },
+    {
+      "source": "/builders/developer-faq",
+      "destination": "/developers/troubleshooting"
+    },
+    {
+      "source": "/builders/cex-integration-guide",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/chain-operators/overview",
+      "destination": "/developers/run-a-skale-chain/intro-to-schains"
+    },
+    {
+      "source": "/builders/chain-operators/access-control",
+      "destination": "/developers/run-a-skale-chain/access-control"
+    },
+    {
+      "source": "/builders/chain-operators/administrative-contracts",
+      "destination": "/developers/run-a-skale-chain/customize-schain"
+    },
+    {
+      "source": "/builders/chain-operators/architecture",
+      "destination": "/developers/run-a-skale-chain/intro-to-schains"
+    },
+    {
+      "source": "/builders/chain-operators/skale-chain-wallet",
+      "destination": "/developers/run-a-skale-chain/using-safe"
+    },
+    {
+      "source": "/builders/chain-operators/submit-metadata",
+      "destination": "/developers/run-a-skale-chain/customize-schain"
+    },
+    {
+      "source": "/builders/node-operators/overview",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/builders/node-operators/skale-nodes",
+      "destination": "/validators/run-supernode"
+    },
+    {
+      "source": "/builders/node-operators/archive-node",
+      "destination": "/validators/run-archive-node"
+    },
+    {
+      "source": "/builders/node-operators/full-sync-node",
+      "destination": "/validators/run-sync-node"
+    },
+    {
+      "source": "/builders/node-operators/skale-proxy",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/ecosystem",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/ecosystem/validators/overview",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/ecosystem/validators/compliance-requirements",
+      "destination": "/validators/compliance-requirements"
+    },
+    {
+      "source": "/ecosystem/validators/faq",
+      "destination": "/validators/faq"
+    },
+    {
+      "source": "/ecosystem/validators/troubleshooting",
+      "destination": "/validators/troubleshooting"
+    },
+    {
+      "source": "/ecosystem/validators/swap-limit-fix",
+      "destination": "/validators/swap-limit-fix"
+    },
+    {
+      "source": "/ecosystem/validators/validator-setup",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/node-operations/validator-setup",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/validators/validator-setup",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/run-a-skale-node/validator-setup",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/ecosystem/validators/node-cli/overview",
+      "destination": "/validators/node-cli/overview"
+    },
+    {
+      "source": "/ecosystem/validators/node-cli/changing-node-ip",
+      "destination": "/validators/node-cli/changing-node-ip"
+    },
+    {
+      "source": "/ecosystem/validators/node-cli/node-ssl-setup",
+      "destination": "/validators/node-cli/node-ssl-setup"
+    },
+    {
+      "source": "/ecosystem/validators/node-cli/releases/v2-0",
+      "destination": "/validators/node-cli/releases/v2-0"
+    },
+    {
+      "source": "/ecosystem/validators/releases/3-0-2-upgrade",
+      "destination": "/validators/releases/3-0-3-upgrade"
+    },
+    {
+      "source": "/ecosystem/validators/releases/3-0-3-upgrade",
+      "destination": "/validators/releases/3-0-3-upgrade"
+    },
+    {
+      "source": "/ecosystem/validators/releases/3-1-0-upgrade",
+      "destination": "/validators/releases/3-1-0-upgrade"
+    },
+    {
+      "source": "/ecosystem/validators/releases/3-1-1-upgrade",
+      "destination": "/validators/releases/3-1-1-upgrade"
+    },
+    {
+      "source": "/ecosystem/validators/releases/3-1-1-upgrade-local-sgx",
+      "destination": "/validators/releases/3-1-1-upgrade-local-sgx"
+    },
+    {
+      "source": "/ecosystem/validators/validator-cli",
+      "destination": "/validators/validator-cli/overview"
+    },
+    {
+      "source": "/ecosystem/validators/validator-cli/overview",
+      "destination": "/validators/validator-cli/overview"
+    },
+    {
+      "source": "/ecosystem/validators/validator-cli/releases/v1-2-0",
+      "destination": "/validators/validator-cli/releases/v1-2-0"
+    },
+    {
+      "source": "/ecosystem/validators/validator-cli/self-recharding-wallets",
+      "destination": "/validators/validator-cli/self-recharging-wallets"
+    },
+    {
+      "source": "/ecosystem/validators/validator-cli/self-recharging-wallets",
+      "destination": "/validators/validator-cli/self-recharging-wallets"
+    },
+    {
+      "source": "/ecosystem/validators/watchdog/overview",
+      "destination": "/validators/watchdog/overview"
+    },
+    {
+      "source": "/ecosystem/validators/watchdog/apis",
+      "destination": "/validators/watchdog/apis"
+    },
+    {
+      "source": "/ecosystem/delegators/overview",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/ecosystem/governance/overview",
+      "destination": "/get-started/governance/skale-dao"
+    },
+    {
+      "source": "/tools",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/tools/skale-specific/ml",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/tools/skale-specific/oracle",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/tools/skale-specific/rng",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/infrastructure/archive-node",
+      "destination": "/validators/run-archive-node"
+    },
+    {
+      "source": "/infrastructure/skale-chain-sizes",
+      "destination": "/developers/run-a-skale-chain/customize-schain"
+    },
+    {
+      "source": "/skale-watchdog/2.0.x/",
+      "destination": "/validators/watchdog/overview"
+    },
+    {
+      "source": "/node-operations/overview",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/node-operations/run-supernode",
+      "destination": "/validators/run-supernode"
+    },
+    {
+      "source": "/node-operations/run-archive-node",
+      "destination": "/validators/run-archive-node"
+    },
+    {
+      "source": "/node-operations/run-sync-node",
+      "destination": "/validators/run-sync-node"
+    },
+    {
+      "source": "/node-operations/migrate-node-with-sgxwallet",
+      "destination": "/validators/migrate-node-with-sgxwallet"
+    },
+    {
+      "source": "/node-operations/compliance-requirements",
+      "destination": "/validators/compliance-requirements"
+    },
+    {
+      "source": "/node-operations/hardware",
+      "destination": "/validators/hardware"
+    },
+    {
+      "source": "/node-operations/faq",
+      "destination": "/validators/faq"
+    },
+    {
+      "source": "/node-operations/troubleshooting",
+      "destination": "/validators/troubleshooting"
+    },
+    {
+      "source": "/node-operations/swap-limit-fix",
+      "destination": "/validators/swap-limit-fix"
+    },
+    {
+      "source": "/node-operations/node-cli/overview",
+      "destination": "/validators/node-cli/overview"
+    },
+    {
+      "source": "/node-operations/node-cli/changing-node-ip",
+      "destination": "/validators/node-cli/changing-node-ip"
+    },
+    {
+      "source": "/node-operations/node-cli/node-ssl-setup",
+      "destination": "/validators/node-cli/node-ssl-setup"
+    },
+    {
+      "source": "/node-operations/node-cli/releases/v2-0",
+      "destination": "/validators/node-cli/releases/v2-0"
+    },
+    {
+      "source": "/node-operations/validator-cli/overview",
+      "destination": "/validators/validator-cli/overview"
+    },
+    {
+      "source": "/node-operations/validator-cli/self-recharging-wallets",
+      "destination": "/validators/validator-cli/self-recharging-wallets"
+    },
+    {
+      "source": "/node-operations/validator-cli/releases/v1-2-0",
+      "destination": "/validators/validator-cli/releases/v1-2-0"
+    },
+    {
+      "source": "/node-operations/watchdog/overview",
+      "destination": "/validators/watchdog/overview"
+    },
+    {
+      "source": "/node-operations/watchdog/apis",
+      "destination": "/validators/watchdog/apis"
+    },
+    {
+      "source": "/node-operations/releases/3-0-3-upgrade",
+      "destination": "/validators/releases/3-0-3-upgrade"
+    },
+    {
+      "source": "/node-operations/releases/3-1-0-upgrade",
+      "destination": "/validators/releases/3-1-0-upgrade"
+    },
+    {
+      "source": "/node-operations/releases/3-1-1-upgrade-local-sgx",
+      "destination": "/validators/releases/3-1-1-upgrade-local-sgx"
+    },
+    {
+      "source": "/node-operations/releases/3-1-1-upgrade",
+      "destination": "/validators/releases/3-1-1-upgrade"
+    },
+    {
+      "source": "/node-operations/releases/3-1-2-upgrade",
+      "destination": "/validators/releases/3-1-2-upgrade"
+    },
+    {
+      "source": "/node-operations/releases/4-0-0-upgrade",
+      "destination": "/validators/releases/4-0-0-upgrade"
+    },
+    {
+      "source": "/node-operations/releases/4-0-1-upgrade",
+      "destination": "/validators/releases/4-0-1-upgrade"
+    },
+    {
+      "source": "/skale-chain-administration/skale-chain-access-control",
+      "destination": "/developers/run-a-skale-chain/access-control"
+    },
+    {
+      "source": "/recipes",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/recipes/libraries/providers",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/technology",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/partnership/integration",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/skaled/3.16.x-beta",
+      "destination": "/concepts/skale-chain/consensus"
+    },
+    {
+      "source": "/building-applications/deploy-on-skale",
+      "destination": "/get-started/quick-start/go-live"
+    },
+    {
+      "source": "/builders/tools/all-in-one",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/all-in-one/crossmint",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/all-in-one/sequence",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/all-in-one/thirdweb",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/bridges",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/builders/tools/bridges/layer-zero",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/builders/tools/bridges/meson-fi",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/builders/tools/bridges/skale-native-bridge",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/builders/tools/contracts",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/builders/tools/contracts/hardhat",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/builders/tools/contracts/multicall",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/builders/tools/contracts/openzeppelin",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/builders/tools/contracts/remix",
+      "destination": "/developers/solidity-quickstart"
+    },
+    {
+      "source": "/builders/tools/data",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/data/dune",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/data/goldsky",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/data/subsquid",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/data/the-graph",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/gaming",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/builders/tools/gaming/eidolon",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/builders/tools/gaming/emergence",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/builders/tools/gaming/mirage",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/builders/tools/gaming/web3unreal",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/builders/tools/libraries",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/ethersv5",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/ethersv6",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/kethereum",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/nethereum",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/viem",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/web3dart",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/libraries/web3j",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/nfts",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/nfts/dripverse",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/nfts/keepsake",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/nfts/pixelrealm",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/nfts/reservoir",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/nfts/snag",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/oracles",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/builders/tools/oracles/razor",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/builders/tools/oracles/skale-connect",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/builders/tools/payments",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/payments/transak",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/rng",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/builders/tools/rng/skale-rng",
+      "destination": "/developers/native-features/random-number-generation"
+    },
+    {
+      "source": "/builders/tools/wallets",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/coinbase",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/connectkit",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/dynamic-xyz",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/enkrypt",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/invisible-signer",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/ledger",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/magic",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/metakeep",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/metamask",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/moon",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/portis",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/privy",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/rainbowkit",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/trezor",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/wallet-connect",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/builders/tools/wallets/web3auth",
+      "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/ima/1.0.x",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/access-control",
+      "destination": "/developers/skale-bridge/messaging-layer/connect-custom-contracts"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/communitypool",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/depositbox",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/depositboxes/depositboxerc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/depositboxes/depositboxerc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/depositboxes/depositboxerc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/depositboxes/depositboxeth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/linker",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/skalemanagerclient",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/api/mainnet/twin",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/api/messageproxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/communitylocker",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/keystorage",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/messageproxyforschain",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/tokenmanager",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/tokenmanagerlinker",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/tokenmanagers/tokenmanagererc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/tokenmanagers/tokenmanagererc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/tokenmanagers/tokenmanagererc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.0.x/api/schain/tokenmanagers/tokenmanagereth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.0.x/flows",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/funding-exits",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.0.x/getting-started",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.0.x/managing-erc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.0.x/managing-erc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.0.x/managing-erc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.0.x/message-proxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.0.x/transferring-eth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.1.x",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.1.x/access-control",
+      "destination": "/developers/skale-bridge/messaging-layer/connect-custom-contracts"
+    },
+    {
+      "source": "/ima/1.1.x/flows",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.1.x/getting-started",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.1.x/managing-erc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.1.x/whats-new",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.2.x",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.2.x/api/mainnet/depositbox",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.2.x/api/mainnet/depositboxes/depositboxerc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.2.x/api/mainnet/linker",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.2.x/api/mainnet/messageproxyformainnet",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.2.x/api/mainnet/skalemanagerclient",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.2.x/api/schain/tokenmanagers/tokenmanagererc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.2.x/funding-exits",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.2.x/managing-erc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.2.x/managing-erc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.2.x/message-proxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.2.x/s2s-transferring-erc1155",
+      "destination": "/developers/skale-bridge/skale/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.2.x/s2s-transferring-erc20",
+      "destination": "/developers/skale-bridge/skale/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.2.x/transferring-eth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.2.x/troubleshooting",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.2.x/whats-new",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x/access-control",
+      "destination": "/developers/skale-bridge/messaging-layer/connect-custom-contracts"
+    },
+    {
+      "source": "/ima/1.3.x/flows",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x/funding-exits",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.3.x/getting-started",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x/managing-erc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.3.x/managing-erc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.3.x/managing-erc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.3.x/message-proxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.3.x/s2s-transferring-erc1155",
+      "destination": "/developers/skale-bridge/skale/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.3.x/s2s-transferring-erc20",
+      "destination": "/developers/skale-bridge/skale/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.3.x/s2s-transferring-erc721",
+      "destination": "/developers/skale-bridge/skale/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.3.x/transferring-eth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.3.x/troubleshooting",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x/whats-new",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x-beta",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x-beta/access-control",
+      "destination": "/developers/skale-bridge/messaging-layer/connect-custom-contracts"
+    },
+    {
+      "source": "/ima/1.3.x-beta/api/schain/tokenmanagers/tokenmanagererc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.3.x-beta/flows",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x-beta/funding-exits",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.3.x-beta/getting-started",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x-beta/managing-erc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.3.x-beta/managing-erc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.3.x-beta/managing-erc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.3.x-beta/message-proxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.3.x-beta/s2s-transferring-erc20",
+      "destination": "/developers/skale-bridge/skale/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.3.x-beta/s2s-transferring-erc721",
+      "destination": "/developers/skale-bridge/skale/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.3.x-beta/security-methods",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x-beta/transferring-eth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.3.x-beta/troubleshooting",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.3.x-beta/whats-new",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.4.x",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.4.x/access-control",
+      "destination": "/developers/skale-bridge/messaging-layer/connect-custom-contracts"
+    },
+    {
+      "source": "/ima/1.4.x/flows",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.4.x/funding-exits",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.4.x/getting-started",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.4.x/managing-erc1155",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.4.x/managing-erc20",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.4.x/managing-erc721",
+      "destination": "/developers/skale-bridge/ethereum/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.4.x/message-proxy",
+      "destination": "/developers/skale-bridge/messaging-layer/message-proxy"
+    },
+    {
+      "source": "/ima/1.4.x/s2s-transferring-erc1155",
+      "destination": "/developers/skale-bridge/skale/bridge-erc1155"
+    },
+    {
+      "source": "/ima/1.4.x/s2s-transferring-erc20",
+      "destination": "/developers/skale-bridge/skale/bridge-erc20"
+    },
+    {
+      "source": "/ima/1.4.x/s2s-transferring-erc721",
+      "destination": "/developers/skale-bridge/skale/bridge-erc721"
+    },
+    {
+      "source": "/ima/1.4.x/security-methods",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.4.x/transferring-eth",
+      "destination": "/developers/skale-bridge/ethereum/bridge-eth"
+    },
+    {
+      "source": "/ima/1.4.x/troubleshooting",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/ima/1.4.x/whats-new",
+      "destination": "/developers/skale-bridge/overview"
+    },
+    {
+      "source": "/get-started/use-cases/payments",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/enterprise-government",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/agents",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/artificial-intelligence",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/consumer-applications",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/finance",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/healthcare",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/get-started/use-cases/supply-chain",
+      "destination": "/get-started/use-cases"
+    },
+    {
+      "source": "/how-skale-works/chain-types",
+      "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/how-skale-works/technology",
+      "destination": "/get-started/introduction/start-here"
+    },
+    {
+      "source": "/run-a-skale-node/customize-schain",
+      "destination": "/developers/run-a-skale-chain/customize-schain"
+    },
+    {
+      "source": "/run-a-skale-node/access-control",
+      "destination": "/developers/run-a-skale-chain/access-control"
+    },
+    {
+      "source": "/building-applications/cex-integration",
+      "destination": "/developers/build-a-dapp"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+---
+title: Precompiled Contracts
+description: Precompiled Contracts on SKALE
+---
+
+SKALE Chains ship extra precompiled contracts beyond Ethereum’s defaults (e.g., `ecrecover`, `sha256`, `modexp`). These precompiles unlock native file storage, logging, randomness, and configuration helpers without deploying custom contracts—ideal for builders who want performance and simplicity.
+
+
+| Address 	| Function					| Sender Who May Call | Description |
+| --------- | ------------------------- | ------------------- | ----------- |
+| 0x0A		| readChunk					| Any                 | Reads chunk from file from specific position with specific length
+| 0x0B		| createFile				| Filestorage Only    | Creates an address for an empty file
+| 0x0C		| uploadChunk				| Filestorage Only    | Uploads 1MB chunk of data from specific position in specific file by file owner
+| 0x0D		| getFileSize				| Any                 | Returns size of file
+| 0x0E		| deleteFile				| Filestorage Only    | Deletes file from filestorage system
+| 0x0F		| createDirectory			| Filestorage Only    | Creates directory in filestorage system
+| 0x10		| deleteDirectory			| Filestorage Only    | Deletes directory in filestorage system
+| 0x11		| calculateFileHash			| Any                 | Calculates and writes SHA256 hash of file in same directory *\<NAME_OF_FILE\>._hash*
+| 0x12		| logTextMessage			| Any                 | <div>Logs a message: <br /><ul><li>0 - Normal</li><li>1 - Debug</li><li>2 - Trace</li><li>3 - Warning</li><li>4 - Error</li><li>5 - Fatal</li></ul><br /><p>Used for IMA SKALE Chain Testing</p></div>
+| 0x13		| getConfigVariableUint256	| Any                 | Returns SKALE Chain config uint256 for IMA SKALE Chain contracts. Used for reading BLS common public key
+| 0x14		| getConfigVariableAddress	| Any                 | Returns SKALE Chain config address for IMA SKALE Chain testing
+| 0x15		| getConfigVariableString	| Any                 | Returns SKALE Chain config string for IMA SKALE Chain testing
+| 0x16		| fnReserved0x16			| Any                 | Reserved
+| 0x16		| getConfigPermissionsFlag	| Any                 | Returns SKALE Chain config boolean for IMA SKALE Chain testing
+| 0x18		| getBlockRandom			| Any                 | Return a random number based on BLS threshold signature common coin of the current block
+| 0x19		| getIMABLSPublicKey		| Any                 | Returns relevant BLSPublicKey according to block timestamp
+
+Use these precompiles to build richer experiences (randomness for gaming, native storage for media, config reads for bridges) without extra gas costs or custom infra.

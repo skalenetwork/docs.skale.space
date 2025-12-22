@@ -1,0 +1,242 @@
+---
+title: Bridge ERC-20 Tokens
+description: Guide on bridging ERC-20 tokens on SKALE
+---
+
+SKALE's Interchain Messaging Agent (IMA) Bridge allows for direct communication and bridging between SKALE Chains (without ever going to Mainnet).
+
+The following walks you through setting up an ERC-20 token between two SKALE Chains and how to programatically bridge.
+
+## Important Information
+- When a SKALE Chain is created, there are no ERC-20 tokens mapped by default
+- A token being bridged between two chains should have its supply **issued** (i.e minted) on one chain. The second SKALE Chain mints by design via IMA, however, the token should not be mintable any other way
+- Tokens being bridged from SKALE Chain to SKALE Chain are locked in TokenManagerERC20 on the origin chain
+- Tokens being bridged from SKALE Chain to SKALE Chain are minted by IMA on the destination chain
+
+## Bridge Setup
+
+<Note>
+If the SKALE Chains you are mapping the ERC-20 token from/to are not connected, please [connect the SKALE Chains](/developers/skale-bridge/skale/connect-schains).
+</Note>
+
+### 1. Prepare the ERC-20
+
+ERC-20 tokens that are being bridged between SKALE Chains should follow two basic requirements in order to be compatible with the SKALE IMA
+bridging layer:
+
+1. Have a **mint** function that is locked down to TokenManagerERC20
+2. Have a **burn** function that is locked down to TokenManagerERC20
+
+<Warning>
+If the mint function is not locked down to just TokenManagerERC20 there is a chance that
+the supply on the desintation chain could be larger than what is actually locked in the bridge on the origin SKALE Chain.
+</Warning>
+
+<Danger>
+If the burn function is not locked down to just TokenManagerERC20 there is a chance that
+the supply on the SKALE Chain side could be "burned", while the tokens still exist on the origin SKALE Chain which could later be withdrawn under
+certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for the bridged tokens.
+</Danger>
+
+The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+// Importing the ERC20 standard contract and AccessControl for role-based access management.
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+
+/**
+ * @title InterchainERC20
+ * @dev This contract is an ERC20 token implementation with role-based access control for minting and burning.
+ * It utilizes OpenZeppelin's ERC20 and AccessControl for functionality.
+ */
+contract InterchainERC20 is ERC20, AccessControl {
+    // Define roles using hashed constants for efficient comparison.
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+        // Assign the minter role to a predefined address.
+        _grantRole(MINTER_ROLE, 0xD2aAA00500000000000000000000000000000000);
+
+        // Assign the burner role to a predefined address.
+        _grantRole(BURNER_ROLE, 0xD2aAA00500000000000000000000000000000000);
+    }
+
+    function mint(address to, uint256 amount) public virtual {
+        // Ensure that the caller has the MINTER_ROLE.
+        require(hasRole(MINTER_ROLE, msg.sender), "Caller is not a minter");
+
+        // Mint the specified amount of tokens to the target address.
+        _mint(to, amount);
+    }
+
+    function burn(uint256 amount) public virtual {
+        // Ensure that the caller has the BURNER_ROLE.
+        require(hasRole(BURNER_ROLE, msg.sender), "Caller is not a burner");
+
+        // Burn the specified amount of tokens from the caller's account.
+        _burn(msg.sender, amount);
+    }
+}
+```
+
+### 2. Deploy the ERC-20 on SKALE Chain
+
+Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-20 token to the SKALE Chain you want to be able to bridge assets too.
+
+<Tabs>
+	<Tab title="InterchainSKL.sol">
+  ## InterchainSKL.sol
+    *This is an example of an 18 decimal ERC-20 token that would be deployed on SKALE*
+    ```solidity
+    // SPDX-License-Identifier: MIT
+    pragma solidity 0.8.19;
+
+    import { InterchainERC20 } from "./InterchainERC20.sol";
+
+    contract InterchainSKL is InterchainERC20("Skale Token", "SKL") {}
+    ```
+  </Tab>
+  <Tab title="InterchainUSDT.sol">
+    *This is an example of an 6 decimal ERC-20 token that would be deployed on SKALE*
+    ```solidity
+    // SPDX-License-Identifier: MIT
+    pragma solidity 0.8.19;
+
+    import { InterchainERC20 } from "./InterchainERC20.sol";
+
+    contract InterchainUSDT is InterchainERC20("Tether USD", "USDT") {
+    	function decimals() public view override returns (uint8) {
+    		return 6;
+    	}
+    }
+    ```
+  </Tab>
+</Tabs>
+
+> *InterchainERC20.sol is inherited from the code above*
+
+### 3. Map the SKALE Token
+
+<Aside type="note">
+If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
+</Aside>
+
+#### Add the token on SKALE Chain TokenManagerERC20
+
+- **DST_SCHAIN_NAME** is the name of the SKALE Chain that the transaction should execute on
+- **ORIGIN_SCHAIN_NAME** is the name of the SKALE Chain that the token is being mapped from
+- **0x_ORIGIN_TOKEN** is the original token address on the ORIGIN_SCHAIN_NAME
+- **0x_DST_TOKEN** is the destination token address on the DST_SCHAIN_NAME
+
+<Tabs>
+	<Tab title="Multisigwallet CLI">
+    ```shell
+    npx msig encodeData [DST_SCHAIN_NAME] TokenManagerERC20 addERC20TokenByOwner [ORIGIN_SCHAIN_NAME] [0x_ORIGIN_TOKEN] [0x_DST_TOKEN]
+    ```
+  </Tab>
+</Tabs>
+    
+    After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+  
+
+#### Verify the mapping
+
+To verify the mapping, TokenManagerERC20 on the SKALE Chain (DST_CHAIN_NAME from above) should emit an event - `event ERC20TokenAdded(SchainHash indexed chainHash, address indexed erc20OnMainChain, address indexed erc20OnSchain);`
+
+## Bridging ERC-20
+
+The following does not require you to setup your own token. This works with **ANY** ERC-20 token that is mapped from a SKALE Chain to any other SKALE Chain as long as the actual ERC-20 token on each side does not have additional restrictions around who can transfer.
+
+The flow for bridging an ERC-20 from SKALE Chain to SKALE Chain follows a very similar flow to a standard ERC-20 transfer:
+
+1. Approve the origin chain bridge contract on the ERC-20 token to allow it to control some amount of funds
+2. Call the origin bridge directly to transfer the asset from SKALE Chain -> SKALE Chain
+3. Wait for the message to be posted by the validator set on the destination SKALE Chain, which is where the net-new minted tokens corresponding to the value locked on the origin SKALE Chain during the bridge are created
+
+### Bridge Tokens
+
+If bridging a token nativley deployed on a SKALE Chain to another SKALE Chain, the process for bridging in either direction is identical. The action taken by the chain is slightly different (i.e lock and mint vs burn and unlock), however, for the end user the flow is identical i.e receive N new tokens in their wallet.
+
+<Note>
+A normal ERC-20 bridge will result in tokens being delivered to the same wallet on the new SKALE Chain.
+A direct ERC-20 bridge will result in tokens being delivered to the specified wallet on the new SKALE Chain.
+</Note>
+
+<Tabs>
+	<Tab title="bridge.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+    const ERC20_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+    const ERC20_ABI = [ "function approve(address spender, uint256 amount) external" ];
+    const TOKEN_MANAGER_ERC20_ADDRESS = "0xD2aAA00500000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC20_ABI = [ "function transferToSchainERC20(string calldata targetSchainName, address contractOnMainnet, uint256 amount) external" ];
+    const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+    const NUMBER_TOKENS_TO_TRANSFER = parseEther("100"); // 100 tokens in wei format
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC20_ADDRESS, TOKEN_MANAGER_ERC20_ABI, wallet);
+    const tokenContract = new Contract(ERC20_ADDRESS, ERC20_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-20
+    const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1s seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on same address on SKALE
+    const bridgeTx = await tokenManagerContract.transferToSchainERC20(DST_SKALE_CHAIN_NAME, ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
+    await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // Success! Now watch for delivery on Destination Chain
+    console.log("Success!");
+    ```
+  </Tab>
+  <Tab title="bridgeDirect.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ORIGIN_SCHAIN_RPC_URL = "[YOUR_RPC_URL]";
+    const ERC20_ADDRESS = "[ORIGIN_TOKEN_ADDRESS]";
+    const ERC20_ABI = [ "function approve(address spender, uint256 amount) external" ];
+    const TOKEN_MANAGER_ERC20_ADDRESS = "0xD2aAA00500000000000000000000000000000000"; // DO NOT CHANGE THIS
+    const TOKEN_MANAGER_ERC20_ABI = [ "function transferToSchainERC20Direct(string calldata targetSchainName, address contractOnMainnet, uint256 amount, address receiver) external" ];
+    const DST_SKALE_CHAIN_NAME = "[DST_SKALE_CHAIN_NAME]"; // e.g green-giddy-denebola (nebula mainnnet);
+    const NUMBER_TOKENS_TO_TRANSFER = parseEther("100"); // 100 tokens in wei format
+    const CUSTOM_RECEIVER_ADDRESS = "[CUSTOM_RECEIVER_ADDRESS]";
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ORIGIN_SCHAIN_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const tokenManagerContract = new Contract(TOKEN_MANAGER_ERC20_ADDRESS, TOKEN_MANAGER_ERC20_ABI, wallet);
+    const tokenContract = new Contract(ERC20_ADDRESS, ERC20_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-20
+    const approvalTx = await tokenContract.approve(TOKEN_MANAGER_ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // 2. Deposit ERC-20 into bridge, will receive on the custom receiver address on SKALE
+    const bridgeTx = await tokenManagerContract.transferToSchainERC20Direct(DST_SKALE_CHAIN_NAME, ERC20_ADDRESS, NUMBER_TOKENS_TO_TRANSFER, CUSTOM_RECEIVER_ADDRESS);
+    await bridgeTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+    // Success! Now watch for delivery on Destination Chain
+    console.log("Success!");
+    ```
+  </Tab>
+</Tabs>

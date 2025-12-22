@@ -1,0 +1,49 @@
+---
+title: "SKALE Network 101"
+description: "A marketer’s tour of SKALE: elastic L1 chains with Ethereum-grade security"
+---
+
+## Overview
+
+SKALE is a modular Layer 1 network built to make onchain experiences feel like web apps. It lets you spin up elastic SKALE Chains—EVM-compatible blockchains with zero gas fees and instant finality—while anchoring security and staking on Ethereum. The result is Ethereum-grade trust with consumer-grade UX.
+
+## Network Architecture
+
+Each SKALE Chain is an independent L1 with its own state, parameters, and roadmap. Chains are secured by a shared validator pool that stakes SKL on Ethereum and rotates across chains to prevent collusion. SKALE Manager smart contracts on Ethereum coordinate staking, pricing, and validator assignment, while native bridges move assets between SKALE Chains, Ethereum, and other ecosystems via SKALE Expand.
+
+## Key Characteristics
+
+- **Elastic capacity** – Add chains, not congestion. New SKALE Chains add linear capacity.
+- **Zero gas fees for users** – sFUEL is free and non-tradable, so UX feels like Web2.
+- **Instant finality** – BLS threshold signatures lock blocks the moment they’re committed.
+- **Full EVM** – Works with the wallets, SDKs, and tooling you already use.
+
+## SKALE Expand
+
+SKALE Expand brings SKALE’s model to additional base layers. Deploy SKALE Chains on other ecosystems while keeping the same validator rotation, BLS security, and zero-gas UX. The first deployment is on Base Sepolia, with more networks to come.
+
+<Note>
+For more information on SKALE Expand, see [SKALE on Base](/get-started/skale-on-base).
+</Note>
+
+## Network Components
+
+- **Validators** – Run SKALE nodes, stake SKL, and rotate across chains.
+- **Delegators** – Delegate SKL to validators and share in rewards.
+- **Chain owners** – Launch and configure SKALE Chains for apps or ecosystems.
+- **Developers** – Build gas-free experiences with native storage, RNG, and bridges.
+
+## Network Architecture Topics
+
+- [SKALE Manager](/concepts/skale-network/skale-manager) – Ethereum contracts that coordinate everything
+- [Pooled Security Model](/concepts/skale-network/pooled-security-model) – Validators secure multiple chains
+- [Delegated Proof of Stake](/concepts/skale-network/delegated-proof-of-stake) – Staking and rewards design
+- [Containerized Nodes](/concepts/skale-network/containerized-nodes) – How nodes run many chains per server
+- [Virtualized Blockchains](/concepts/skale-network/virtualized-blockchains) – Resource isolation per chain
+- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability) – Add capacity by adding chains
+
+## Related Topics
+
+- [Consensus](/concepts/skale-chain/consensus)
+- [Staking SKL](/get-started/staking/staking-skl)
+- [Governance](https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447)

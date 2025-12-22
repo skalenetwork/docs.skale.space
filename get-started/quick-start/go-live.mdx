@@ -1,0 +1,40 @@
+---
+title: "Go Live"
+description: "Launch your application and go live on SKALE"
+---
+
+The go-live process on SKALE can differ slightly from other chains and varies slightly depending on what product within the SKALE Ecosystem you are choosing to use. This guide focuses on deployment to the shared SKALE ecosystem chains like **SKALE Base** and one of the world's top gaming blockchains, **Nebula Gaming Hub** on SKALE Ethereum deployment. 
+
+## Deploying to SKALE Base
+
+## Deploying to SKALE Ethereum
+
+<Note>
+The following is for Calypso, Europa, and Nebula Hubs. If deploying your own sChain on top of Ethereum the SKALE Developer Success team will provide you with an alternative list of checks for your dApps.
+</Note>
+
+<Steps>
+    <Step title="Check for SKALE Hub Specifics">
+
+    - Current SKALE Ethereum Hub Chains do **NOT** have any of the standard factory contracts. If you need them, deploy to [SKALE Base](/get-started/quick-start/skale-on-base) instead.
+
+    - If you have a smart contract that deploys other smart contracts (i.e a factory), please flag this contract during your review with the SKALE Team so they can help ensure it's properly allowlisted to deploy contracts in the future.
+
+    - SKALE Ethereum Chains use sFUEL -- a valueless gas token -- which is distributed by dApps to users OR consumed through a Proof of Work mechanism that allows transaction gas to be "mined" on the fly using client compute. This means that `msg.value` can **NOT** be used in Solidity smart contracts for payments as it carries no value
+
+    - Check Solidity smart contract versions and EVM compiler. SKALE currently supports Solidity versions up to 0.8.24 and EVM Compiler versions up to Shanghai.
+    </Step>
+    <Step title="Deploy to Testnet">
+    
+    - Once your application is ready, please deploy your smart contracts to the testnet chain of your choice. See [SKALE on Ethereum](/get-started/quick-start/skale-on-ethereum) for chain options.
+
+    - Deploy the remainder of your application -- frontend, APIs, agents -- and prepare to share this information with the SKALE Team for review (see below)
+
+    </Step>
+
+    <Step title="Talk to the SKALE Team">
+
+    - If you are in a dedicated channel with the SKALE Team, request a review with a member of the Developer Sucess team
+
+    </Step>
+</Steps>

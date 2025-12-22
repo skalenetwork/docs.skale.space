@@ -1,0 +1,47 @@
+---
+title: "SKALE Manager"
+description: "The Ethereum-based control plane that orchestrates SKALE"
+---
+
+## Overview
+
+SKALE Manager is a suite of smart contracts on Ethereum that runs the SKALE control plane—staking, delegation, pricing, chain creation, validator rotation, and slashing. Keeping governance and economics on Ethereum gives SKALE transparent, tamper-resistant coordination while SKALE Chains focus on high-speed execution with zero gas fees.
+
+## Core Components
+
+- **ContractManager** – Registry of all SKALE Manager modules.
+- **SChains/SChainsInternal** – Chain creation, metadata, and lifecycle tracking.
+- **Nodes & ValidatorService** – Validator registration, configuration, and performance data.
+- **DelegationController & DelegationPeriodManager** – SKL delegation, lock periods, and rewards logic.
+- **Distributor & BountyV2** – Monthly reward distribution for validators and delegators.
+- **Punisher & SlashingTable** – Enforcement of downtime and misbehavior penalties.
+- **NodeRotation** – Randomized committee assignments across chains.
+- **ConstantsHolder & Pricing** – Network parameters, chain pricing, and payment handling.
+
+## Network Operations
+
+SKALE Manager coordinates:
+
+- **Chain creation** – Register new SKALE Chains, allocate resources, set pricing.
+- **Validator lifecycle** – Register nodes, verify capacity, and rotate committees.
+- **Staking & delegation** – Lock SKL, manage periods, and aggregate validator stake.
+- **Rewards** – Monthly payouts based on performance and stake weight.
+- **Compliance & slashing** – Detect downtime or protocol violations and penalize accordingly.
+- **Pricing & billing** – Handle monthly fees for chain operators.
+
+## Integration Points
+
+SKALE Manager integrates with:
+
+- **Ethereum mainnet** – The source of truth for staking, rotation, and slashing.
+- **SKALE Chains** – Pull committee assignments and report performance.
+- **Validators & delegators** – Stake SKL, claim rewards, and manage participation.
+- **Chain owners** – Create, configure, and renew chains with predictable pricing.
+
+## Related Topics
+
+- [SKALE Network](/concepts/skale-network)
+- [Staking SKL](/get-started/staking/staking-skl)
+- [Governance](https://forum.skale.network/t/a-proposal-for-skale-networks-on-chain-governance-system/447)
+- [Run a SKALE Chain](/developers/run-a-skale-chain/intro-to-schains)
+

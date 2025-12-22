@@ -1,0 +1,245 @@
+---
+title: "Deploy an ERC-20 Token"
+description: "Step-by-step guide to deploying an ERC-20 token on SKALE using OpenZeppelin Contracts"
+---
+
+## Deploy an ERC-20 Token
+
+OpenZeppelin provides secure, community-vetted smart contract templates that follow best practices.
+
+<Tabs>
+    <Tab title="Deployment with Foundry">
+        
+        
+        <Note title= "Setup Foundry">
+        ## Step 0: Setup Foundry
+
+        If your foundry project isn't setup yet please go to [foundry setup section](../deployment/setup-foundry) before proceeding.
+        </Note>
+
+        ## Step 1: Create the ERC-20 Contract
+
+        Create a contract script in `src/MyERC20.sol`. Run:
+        ```shell
+        touch src/MyERC20.sol
+        ```
+
+        Add the code:
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+        contract MyERC20 is ERC20 {
+            constructor() ERC20("MyToken", "MTK") {
+                // Mint 1 million tokens to the deployer (18 decimals)
+                _mint(msg.sender, 1000000 * 10 ** decimals());
+            }
+        }
+        ```
+
+        This contract:
+        - Inherits from OpenZeppelin's `ERC20` contract
+        - Sets the token name to "MyToken" and symbol to "MTK"
+        - Mints 1,000,000 tokens to the deployer address upon deployment
+
+        ## Step 2: Compile the Contract
+
+        Compile your contract:
+
+        ```shell
+        forge build
+        ```
+
+        ## Step 3: Prepare Signer for Deployment
+
+        This tutorial uses the Foundry Keystore for increased security. Create a new keystore:
+
+        ```shell
+        cast wallet import skale-deployer --private-key $(cast wallet new | grep 'Private key:' | awk '{print $3}')
+        ```
+
+        <Note>
+        Provide a password to encrypt the keystore file when running the above command. If you forget this password, you will not be able to recover it.
+        </Note>
+
+        Get your wallet address:
+
+        ```shell
+        cast wallet address --account skale-deployer
+        ```
+
+        Copy the address and head over to the [sFUEL Station](https://www.sfuelstation.com/). Input the address, toggle testnet, and fill up on your SKALE Chain.
+
+        <Tip>
+        Make sure you toggle testnet on first if you're using a testnet chain!
+        </Tip>
+
+        ## Step 4: Deploy the Contract
+
+        Deploy your ERC-20 token to SKALE:
+
+        ```shell
+        forge create src/MyERC20.sol:MyERC20 \
+            --account skale-deployer \
+            --rpc-url skale_testnet \
+            --broadcast \
+            --legacy
+        ```
+
+        <Note>
+        The `--legacy` flag is required for SKALE Chains. For more information, see [Troubleshooting](/developers/troubleshooting).
+        </Note>
+
+        A successful deployment should look something like this:
+
+        ```shell
+        Enter keystore password:
+        Deployer: 0x63a38D694de837dDF765f9b2704814275586D812
+        Deployed to: 0x4A435f6E471f773173774E860EBDcd17B132a2b4
+        Transaction hash: 0x3f6cc66e860cb82a6a62e3f5181c401e5558d60d622a9157437002e16c1ce488
+        ```
+
+        ## Step 5: Verify Your Smart Contract
+
+        Verify your smart contract on the block explorer:
+
+        ```shell
+        forge verify-contract \
+            --rpc-url skale_testnet \
+            <DEPLOYED_ADDRESS> \
+            src/MyERC20.sol:MyERC20 \
+            --verifier blockscout \
+            --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+        ```
+
+        Replace `<DEPLOYED_ADDRESS>` with your deployed contract address.
+    </Tab >
+    <Tab title="Deployment with Hardhat">
+
+        <Note title= "Setup Hardhat">
+        ## Step 0: Setup Hardhat
+
+        If your hardhat project isn't setup yet please go to [hardhat setup section](../deployment/setup-hardhat) before proceeding.
+        </Note>
+
+        ## Step 1: Create the ERC-20 Contract
+        
+        Create a contract script in `contracts/MyERC20.sol`. Run:
+        ```shell
+        touch contracts/MyERC20.sol
+        ```
+
+        Add the code:
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+        contract MyERC20 is ERC20 {
+            constructor() ERC20("MyToken", "MTK") {
+                // Mint 1 million tokens to the deployer (18 decimals)
+                _mint(msg.sender, 1000000 * 10 ** decimals());
+            }
+        }
+        ```
+
+        This contract:
+        - Inherits from OpenZeppelin's `ERC20` contract
+        - Sets the token name to "MyToken" and symbol to "MTK"
+        - Mints 1,000,000 tokens to the deployer address upon deployment
+
+        ## Step 2: Compile Contracts
+
+       Compile your contracts:
+
+        ```shell
+        npx hardhat compile
+        ```
+        
+        ## Step 3: Create a Deployment Script
+
+        Create a deployment script in `scripts/deploy_erc20.js`. Run:
+        ```shell
+        touch scripts/deploy_erc20.js
+        ```
+
+        Add the deployment code:
+
+        ```javascript
+        const hre = require("hardhat");
+
+        async function main() {
+        const MyContract = await hre.ethers.getContractFactory("MyERC20");
+        const myContract = await MyContract.deploy();
+
+        await myContract.waitForDeployment();
+
+        console.log("Contract deployed to:", await myContract.getAddress());
+        }
+
+        main()
+        .then(() => process.exit(0))
+        .catch((error) => {
+            console.error(error);
+            process.exit(1);
+        });
+        ```
+
+        ## Step 4: Run Tests
+
+        Run your tests:
+
+        ```shell
+        npx hardhat test
+        ```
+
+        ## Step 5: Deploy to SKALE
+
+        Deploy your contract to SKALE:
+
+        ```shell
+        npx hardhat run scripts/deploy_erc20.js --network skale_testnet
+        ```
+
+        ## SKALE-Specific Considerations
+
+        When deploying to SKALE with Hardhat:
+
+        1. **Transaction Type**: Hardhat automatically handles transaction types, but ensure your Hardhat version supports legacy transactions if needed
+
+        2. **Gas Configuration**: SKALE has zero gas fees, but you still need sFUEL for transactions:
+        ```javascript
+        networks: {
+            skale_testnet: {
+            url: "...",
+            accounts: [...],
+            gasPrice: 0, // SKALE has zero gas fees
+            },
+        },
+        ```
+
+        3. **Contract Verification**: Verify contracts using Hardhat's verify plugin:
+        ```shell
+        npx hardhat verify --network skale_testnet <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
+        ```
+    </Tab>
+</Tabs>
+
+
+## Next Steps
+
+Congratulations! You've successfully deployed an ERC-20 token on SKALE. You can now:
+
+- Transfer tokens to other addresses
+- Approve spending allowances
+- Integrate the token into your dApp
+
+## Related Topics
+
+- [Solidity Quickstart](/developers/solidity-quickstart)
+- [Deploy on SKALE](/developers/deploy-on-skale)
+- [Payments on SKALE](/developers/payments-on-skale)
+- [Troubleshooting](/developers/troubleshooting)

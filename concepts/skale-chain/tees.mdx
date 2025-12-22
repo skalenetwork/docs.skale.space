@@ -1,0 +1,56 @@
+---
+title: "Trusted Execution Environments (TEEs)"
+description: "How hardware-backed enclaves protect keys and computation on SKALE"
+---
+
+## Overview
+
+Trusted Execution Environments (TEEs) give SKALE hardware-backed isolation for sensitive operations. They safeguard validator keys, DKG steps, and confidential computations inside secure enclaves.
+
+## What are TEEs?
+
+TEEs are secure areas of a processor that provide:
+
+- **Isolated execution** - Code runs in a protected environment
+- **Data confidentiality** - Data is encrypted and protected
+- **Integrity verification** - Code and data integrity can be verified
+- **Remote attestation** - Proof that code is running in a genuine TEE
+
+## TEEs in SKALE
+
+SKALE utilizes TEEs for:
+
+- **Key Management** - Secure storage and management of cryptographic keys
+- **DKG Operations** - Secure distributed key generation for BLS signatures
+- **Private Operations** - Secure execution of sensitive computations
+
+These protections reduce trust in node operators and harden the network against key theft or tampering.
+
+## Benefits
+
+- **Enhanced Security** - Hardware-level protection for critical operations
+- **Key Protection** - Cryptographic keys are protected even from node operators
+- **Trust Minimization** - Reduces trust requirements in validator operations
+- **Compliance** - Enables compliance with security requirements
+
+## Implementation
+
+SKALE's TEE implementation uses:
+
+- **SGX (Software Guard Extensions)** - Intel's TEE technology
+- **Remote Attestation** - Verification of TEE authenticity
+- **Secure Key Storage** - Keys stored and used within TEE boundaries
+
+## Use Cases
+
+- **Validator Operations** - Secure key management for validators
+- **Enterprise Deployments** - Additional security for enterprise chains
+- **Compliance** - Meeting regulatory requirements for data protection
+- **Confidential Computing** - Secure computation of sensitive data
+
+## Related Topics
+
+- [DKG with BLS](/concepts/dkg-with-bls)
+- [Validators](/validators/run-supernode)
+
+

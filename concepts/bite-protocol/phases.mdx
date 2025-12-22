@@ -1,0 +1,56 @@
+---
+title: "Phases of BITE"
+description: "Roadmap to encrypted-by-default SKALE Chains"
+---
+
+## Overview
+
+BITE rolls out in four phases, moving from encrypted transaction inclusion to fully homomorphic encrypted computation. Each step keeps SKALE EVM-compatible while dialing up privacy and MEV resistance.
+
+## BITE Protocol Phases
+
+### Phase 1: Threshold Decryption During Consensus
+
+The first phase establishes threshold decryption capabilities during the consensus process:
+
+- **Encrypted Transaction Inclusion** - Transactions are encrypted before entering the mempool
+- **Threshold Decryption** - Validator committee collaborates to decrypt transactions after block finality
+- **MEV Resistance** - Transaction details remain hidden until after consensus commitment
+- **Commit-Then-Reveal** - Ensures transactions cannot be front-run or manipulated
+
+### Phase 2: Threshold Decryption on Smart Contract Data
+
+Building on Phase 1, Phase 2 extends threshold decryption to smart contract data:
+
+- **Encrypted State** - Smart contract data can be stored in encrypted form
+- **On-Demand Decryption** - Data is decrypted only when needed for execution
+- **Enhanced Privacy** - Contract state remains confidential throughout its lifecycle
+- **Confidential Applications (cApps)** - Enables applications that process sensitive data securely
+
+### Phase 3: Threshold Re-encryption
+
+Phase 3 introduces threshold re-encryption capabilities:
+
+- **Key Rotation** - Ability to re-encrypt data with new keys without decryption
+- **Access Control** - Fine-grained control over who can decrypt specific data
+- **Dynamic Privacy** - Privacy settings can be adjusted without exposing data
+- **Advanced Use Cases** - Supports more complex privacy-preserving applications
+
+### Phase 4: Threshold Fully Homomorphic Encryption (THFE) Within Smart Contracts
+
+The final phase enables computation on encrypted data:
+
+- **Homomorphic Operations** - Perform computations directly on encrypted data
+- **Zero-Knowledge Execution** - Execute smart contracts without revealing inputs or outputs
+- **Maximum Privacy** - Data never needs to be decrypted for computation
+- **Next-Generation Applications** - Enables previously impossible privacy-preserving use cases
+
+## Current Status
+
+BITE Protocol is actively being developed across these phases, with Phase 1 providing the foundation for MEV resistance and transaction privacy on SKALE.
+
+## Related Topics
+
+- [BITE Protocol Introduction](/concepts/bite-protocol/intro-bite-protocol) - Overview of BITE Protocol
+- [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive) - Understanding MEV in the context of BITE
+

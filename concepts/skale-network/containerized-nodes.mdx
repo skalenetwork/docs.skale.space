@@ -1,0 +1,51 @@
+---
+title: "Containerized Nodes"
+description: "How SKALE packs many chains onto the same hardware safely"
+---
+
+## Overview
+
+SKALE nodes run in lightweight containers so a single server can secure multiple SKALE Chains at once. This keeps costs low for validators and chain owners while isolating resources and failures between chains.
+
+
+## What are Containerized Nodes?
+
+Containerization packages the SKALE node runtime (consensus, execution, storage, networking) into isolated units. Each container is mapped to a chain assignment, with dedicated CPU/memory limits and network isolation. Validators can run several containers on one host, maximizing utilization while keeping faults contained.
+
+## Architecture
+
+- **Container runtime** – Docker-style containers with cgroups limits to guarantee CPU/memory boundaries per chain.
+- **Network isolation** – Virtual networking separates chain traffic and prevents cross-talk.
+- **Chain mapping** – Each container is bound to a chain assignment from SKALE Manager and participates in its consensus committee.
+
+## Benefits
+
+- **Efficiency** – Run multiple chains per server, reducing hardware costs.
+- **Isolation** – Performance or faults on one chain don’t spill into others.
+- **Rapid deployment** – Start, stop, or rotate chain assignments in minutes.
+- **Elastic scale** – Add containers for new chains without rebuilding infrastructure.
+
+
+## How It Works
+
+When SKALE Manager assigns a node to a chain, the validator spins up a container with the right configuration, keys, and resource limits. Containers receive proposals, sign blocks, store state, and rotate out cleanly when the node’s assignment changes.
+
+## Implementation Details
+
+- **Runtime** – Docker-compatible runtime; orchestration via Kubernetes or similar is common for fleets.
+- **Resource controls** – cgroups/quotas for CPU, RAM, and storage per chain.
+- **Observability** – Per-container metrics/logging simplify troubleshooting and SLA reporting.
+
+## Use Cases
+
+- **Validator economics** – Higher rewards per server by hosting multiple chains.
+- **Enterprise deployments** – Run isolated environments for business units or partners.
+- **Testing** – Spin up short-lived chains or environments without new hardware.
+
+## Related Topics
+
+- [Virtualized Blockchains](/concepts/skale-network/virtualized-blockchains)
+- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability)
+- [SKALE Manager](/concepts/skale-network/skale-manager)
+- [Pooled Security Model](/concepts/skale-network/pooled-security-model)
+

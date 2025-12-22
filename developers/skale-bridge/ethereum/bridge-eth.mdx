@@ -1,0 +1,181 @@
+---
+title: Bridge ETH
+description: Guide on bridging ETH from Ethereum to a SKALE Chain
+---
+
+SKALE's Interchain Messaging Agent includes a native bridging layer for industry standard assets including the native gas token of it's base layer, ETH on Ethereum. You can use IMA to easily send ETH to any SKALE Chain. Here are a few important notes to simplify the flow for your application:
+
+## Important Information
+
+- Unlike ERC-20, ERC-721, and ERC-1155; ETH is nativley support between Ethereum and SKALE Chains. This means you do **NOT** need to map ETH to a token
+- ETH has its own special DepositBox on Ethereum called DepositBoxETH which holds ETH separately from the other assets bridged to the SKALE Network
+
+<Note>
+When ETH is deposited on Ethereum, it is received as an ERC-20 token on all SKALE Chains.
+This token is **NOT** WETH. This token is predeployed on all SKALE Chains to the same token address and information as [ETHC](#eth-on-skale).
+</Note>
+
+### ETH on SKALE
+
+ETH when bridged to a SKALE Chain always "mints" to the same place. This is flagged as important to avoid confusion with you and your users.
+
+| Key | Value | Note |
+| - | - | - |
+| Name | ERC20 Ether Clone | Use ETH, Ether, or Ethereum on your frontend |
+| Symbol | ETHC | Use ETH on your frontend |
+| Contract Address | 0xD2Aaa00700000000000000000000000000000000 | This is the same on all SKALE Chains and will not change |
+
+An example of ETH on SKALE can be seen [here on Europa Mainnet block explorer](https://elated-tan-skat.explorer.mainnet.skalenodes.com/token/0xD2Aaa00700000000000000000000000000000000).
+
+## Bridging ETH
+
+To bridge ETH from Ethereum to SKALE, you should deposit ETH on Ethereum Mainnet to DepositBoxEth, a smart contract that 
+
+### Bridge to SKALE (from Ethereum)
+
+<Note>
+The following does not require any gas (i.e sFUEL) on the SKALE Chain. Please note to **exit** to Ethereum once you are on SKALE,
+you will need ETH on Ethereum to fill up your community wallet.
+</Note>
+
+<Tabs keySync="method">
+	<Tab title="normalDeposit.js">
+		```js
+		import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+		const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+		const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+		const DEPOSIT_BOX_ETH_ADDRESS = "[DEPOSIT_BOX_ETH_ADDRESS]";
+		const DEPOSIT_BOX_ETH_ABI = [ "function deposit(string memory schainName) external" ];
+		const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+
+		const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+		const wallet = new Wallet(PRIVATE_KEY, provider);
+		const contract = new Contract(DEPOSIT_BOX_ETH_ADDRESS, DEPOSIT_BOX_ETH_ABI, wallet);
+
+		const depositTransaction = await contract.deposit(SKALE_CHAIN_NAME, {
+			value: parseEther("1") // set in wei -> 1000000000000000000
+		});
+
+		await depositTransaction.wait(2); // Wait 2 blocks for confirmation, you may choose anything >= 1
+		```
+	</Tab>
+	<Tab title="directDeposit.js">
+		```js
+		import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+		const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+		const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+		const DEPOSIT_BOX_ETH_ADDRESS = "[DEPOSIT_BOX_ETH_ADDRESS]";
+		const DEPOSIT_BOX_ETH_ABI = [ "function depositDirect(string memory schainName, address receiver) external" ];
+		const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+
+		const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+		const wallet = new Wallet(PRIVATE_KEY, provider);
+		const contract = new Contract(DEPOSIT_BOX_ETH_ADDRESS, DEPOSIT_BOX_ETH_ABI, wallet);
+
+		const depositTransactionToDiffWallet = await contract.depositDirect(SKALE_CHAIN_NAME, "0x...", {
+			value: parseEther("1") // set in wei -> 1000000000000000000
+		});
+
+		await depositTransactionToDiffWallet.wait(2); // Wait 2 blocks for confirmation, you may choose anything >= 1
+		```
+	</Tab>
+</Tabs>
+
+### Bridge to Etheruem (from SKALE)
+
+SKALE's decentralized bridge offers a simple two-step process to bridge ETH from any SKALE Chain to Ethereum Mainnet.
+
+1. The first step, which only has to be done if you don't have a sufficient balance to exit, is to fill up your gas wallet on Ethereum
+
+2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
+
+<Note>
+Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge is successful.
+</Note>
+
+#### Pre-pay for your Exit
+
+This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
+You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
+
+```js
+import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+const COMMUNITY_POOL_ADDRESS = "[COMMUNIY_POOL_ADDRESS]";
+const COMMUNITY_POOL_ABI = [ "function rechargeUserWallet(string calldata schainName, address user) external" ];
+const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+
+// Setup the RPC Provider to connect to Ethereum
+const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+// Setup the wallet with your private key and default to the Ethereum provider
+const wallet = new Wallet(PRIVATE_KEY, provider);
+
+// Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+const communityPoolContract = new Contract(COMMUNITY_POOL_ADDRESS, COMMUNITY_POOL_ABI, wallet);
+
+const rechargeTx = await communityPoolContract.rechargeUserWallet(
+	SKALE_CHAIN_NAME,
+	wallet.address,
+	{
+		value: parseEther("0.02") // Recharge by 0.02 ETH
+	}
+);
+
+await rechargeTx.wait(5); // wait 5 blocks for full finality
+
+// Success! You can now bridge from SKALE to Ethereum!
+console.log("Success!");
+```
+
+#### Bridge to Ethereum
+
+Once the above prepayment steps are completed, you can proceed with the bridging.
+Bridging from SKALE simply requires the `exitToMain` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
+
+```js
+import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+const SKALE_RPC_URL = "[YOUR_SKALE_RPC_URL]";
+const ETH_ERC20_ADDRESS = "0xD2Aaa00700000000000000000000000000000000"; // DO NOT CHANGE THIS
+const ERC20_ABI = [ "function approve(address spender, uint256 amount) external" ];
+const TOKEN_MANAGER_ETH_ADDRESS = "0xd2AaA00400000000000000000000000000000000"; // DO NOT CHANGE THIS
+const TOKEN_MANAGER_ETH_ABI = [ "function exitToMain(uint256 amount) external" ];
+const ONE_HUNDRED_TOKENS = parseEther("100"); // 100 tokens in wei format
+
+// Setup the RPC Provider to connect to Ethereum
+const provider = new JsonRpcProvider(SKALE_RPC_URL);
+
+// Setup the wallet with your private key and default to the Ethereum provider
+const wallet = new Wallet(PRIVATE_KEY, provider);
+
+// Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+const tokenManagerETH = new Contract(TOKEN_MANAGER_ETH_ADDRESS, TOKEN_MANAGER_ETH_ABI, wallet);
+const ethERC20Contract = new Contract(ETH_ERC20_ADDRESS, ERC20_ABI, wallet);
+
+// 1. Approve the bridge to move ERC-20 on your behalf
+const approvalTx = await ethERC20Contract.approve(TOKEN_MANAGER_ETH_ADDRESS, ONE_HUNDRED_TOKENS);
+await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+// 2. Transfer ERC-20 into bridge, will recieve on the same address on Ethereum
+const exitTx = await tokenManagerETH.exitToMain(ONE_HUNDRED_TOKENS);
+await exitTx.wait(1);
+
+// Success! Now watch for delivery on Ethereum
+console.log("Success!");
+```
+
+<Note>
+If your bridge is not working, it is most likely for one of three reasons:
+
+1. You forgot to prepay for gas
+2. You forgot to approve the SKALE Bridge on the ETH ERC-20 token
+3. You don't have sufficient funds to bridge
+
+Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
+</Note>

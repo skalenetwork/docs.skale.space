@@ -1,0 +1,65 @@
+---
+title: Distributed Key Generation with BLS
+description: How Distributed Key Generation (DKG) works on SKALE
+---
+
+## Overview
+
+Distributed Key Generation (DKG) lets a group of validators create a shared public key without any single member knowing the full private key. Each validator only holds a key share, but together they can produce threshold BLS signatures that SKALE uses for instant finality. DKG is the backbone of SKALE’s pooled security model.
+
+## How SKALE’s DKG works
+
+1. **Setup** – `n` validators participate with a tolerance of up to `t` malicious actors.
+2. **Create polynomials** – Each validator creates a secret polynomial and publishes a public commitment to its coefficients on the elliptic curve.
+3. **Share contributions** – Validators send each peer their private share (a point on the polynomial). Public commitments let everyone verify shares without revealing secrets.
+4. **Verify and complain** – If a share is missing or invalid, the recipient files a complaint. SKALE Manager (on Ethereum) arbitrates, slashes bad actors, and restarts if needed—giving economic weight to honest behavior.
+5. **Assemble keys** – Summing all public commitments yields the group public key; summing the received shares gives each validator its private key share.
+
+No single validator ever sees the full private key, but any supermajority can sign on behalf of the group.
+
+## Verification and Complaints
+
+Validators check each received share against the sender’s public commitment on the curve. If the math doesn’t line up or a share never arrives, the receiver files a complaint.
+
+Instead of broadcasting questionable data to everyone, SKALE routes complaints through SKALE Manager on Ethereum. The contract verifies the evidence, slashes malicious validators, and can restart the ceremony with a clean committee. That onchain enforcement layer gives complaints real economic weight.
+
+## Computing the public/private keys
+
+When all public commitments are summed, you get the group public key. When each validator sums the private shares they received, they get their private key share. Any `t + 1` shares can reconstruct the group private key, but SKALE keeps shares distributed so the full key is never materialized—only threshold signatures are produced.
+
+## BLS Signatures
+
+### Why BLS?
+
+BLS signatures are compact and aggregatable. They use pairing-based cryptography so individual signature shares combine cleanly into one signature that anyone can verify against the group public key. That makes them perfect for SKALE’s threshold finality.
+
+### Signatures and Properties
+
+1. Hash the message to a curve point.
+2. Multiply by your private key share to create a signature share.
+3. Combine signature shares from ≥2/3 of validators; thanks to pairings, they merge into one short signature.
+4. Anyone verifies that single signature against the group public key.
+
+The result: one lightweight proof of supermajority agreement instead of dozens of individual signatures.
+
+### Significance with DKG
+
+DKG supplies the group public key and each validator’s share; BLS lets those shares combine into a single signature when a supermajority participates. Because shares never reveal the full private key, SKALE gets instant finality and pooled security without concentrating trust.
+
+### Polynomial Interpolation
+
+SKALE uses an `O(t^2)` Lagrange interpolation (a good fit for SKALE’s committee sizes) to combine signature shares in the exponent. It’s fast, doesn’t leak private information, and keeps validator hardware requirements modest.
+
+## Known Attacks
+
+### Joint-Feldman manipulation
+
+SKALE uses the Joint-Feldman variant for efficiency. Classic attacks try to bias randomness by provoking complaints and learning extra information. SKALE routes complaints through SKALE Manager, so disputed data is checked onchain and never leaked to peers—removing the information channel needed for biasing.
+
+### Subgroup edge cases
+
+Adding points from the wrong subgroup could, in theory, produce an unusable public key if many malicious players collude. SKALE’s curve parameters and validator counts make this infeasible in practice; committees are far smaller than the smallest unwanted subgroup size.
+
+### Front-running complaints
+
+Past vulnerability: a malicious node could submit data right after an honest complaint to get the complainer slashed. Fix: strict time slots for broadcasting and complaining plus onchain verification of evidence. Future threshold encryption further reduces this surface.

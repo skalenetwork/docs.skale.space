@@ -1,0 +1,200 @@
+---
+title: "Accepting x402 Payments"
+description: "Guide to accepting x402 payments in your smart contracts on SKALE"
+---
+
+## Accepting x402 Payments
+
+This guide will show you how to accept x402 payments in your smart contracts on SKALE. Accepting payments allows your contract to receive tokens from users in exchange for goods, services, or access to functionality.
+
+## Prerequisites
+
+- Basic understanding of smart contracts and Solidity
+- A SKALE Chain endpoint
+- Understanding of ERC-20 tokens
+- Familiarity with OpenZeppelin Contracts
+
+## Overview
+
+To accept x402 payments, your contract needs to:
+
+1. Define the payment token (typically USDC or another ERC-20 token)
+2. Handle token transfers from users
+3. Verify successful payments
+4. Emit events for tracking
+
+## Basic Implementation
+
+Here's a simple contract that accepts x402 payments:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract PaymentReceiver is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    
+    IERC20 public paymentToken;
+    address public owner;
+    
+    event PaymentReceived(address indexed payer, uint256 amount);
+    
+    constructor(address _paymentToken) {
+        paymentToken = IERC20(_paymentToken);
+        owner = msg.sender;
+    }
+    
+    function acceptPayment(uint256 amount) external nonReentrant {
+        // Transfer tokens from user to contract
+        paymentToken.safeTransferFrom(msg.sender, address(this), amount);
+        
+        // Emit event
+        emit PaymentReceived(msg.sender, amount);
+        
+        // Add your business logic here
+        // e.g., grant access, mint NFT, etc.
+    }
+}
+```
+
+## Key Components
+
+### 1. SafeERC20 Usage
+
+Using `SafeERC20` ensures safe token transfers and handles tokens that don't return a boolean:
+
+```solidity
+using SafeERC20 for IERC20;
+paymentToken.safeTransferFrom(msg.sender, address(this), amount);
+```
+
+### 2. Reentrancy Protection
+
+Protect against reentrancy attacks:
+
+```solidity
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract PaymentReceiver is ReentrancyGuard {
+    function acceptPayment(uint256 amount) external nonReentrant {
+        // ...
+    }
+}
+```
+
+### 3. Payment Verification
+
+Always verify that transfers succeed:
+
+```solidity
+function acceptPayment(uint256 amount) external {
+    require(amount > 0, "Amount must be greater than 0");
+    
+    uint256 balanceBefore = paymentToken.balanceOf(address(this));
+    paymentToken.safeTransferFrom(msg.sender, address(this), amount);
+    uint256 balanceAfter = paymentToken.balanceOf(address(this));
+    
+    require(balanceAfter == balanceBefore + amount, "Transfer failed");
+}
+```
+
+## Advanced: Payment with Access Control
+
+Add access control to restrict who can receive payments:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract PremiumService is ReentrancyGuard, Ownable {
+    using SafeERC20 for IERC20;
+    
+    IERC20 public paymentToken;
+    uint256 public subscriptionPrice;
+    mapping(address => bool) public subscribers;
+    
+    event SubscriptionPurchased(address indexed user, uint256 amount);
+    
+    constructor(address _paymentToken, uint256 _subscriptionPrice) Ownable(msg.sender) {
+        paymentToken = IERC20(_paymentToken);
+        subscriptionPrice = _subscriptionPrice;
+    }
+    
+    function purchaseSubscription() external nonReentrant {
+        require(!subscribers[msg.sender], "Already subscribed");
+        
+        // Transfer payment
+        paymentToken.safeTransferFrom(msg.sender, address(this), subscriptionPrice);
+        
+        // Grant access
+        subscribers[msg.sender] = true;
+        
+        emit SubscriptionPurchased(msg.sender, subscriptionPrice);
+    }
+    
+    function setPrice(uint256 newPrice) external onlyOwner {
+        subscriptionPrice = newPrice;
+    }
+}
+```
+
+## Handling Multiple Payment Tokens
+
+Support multiple payment tokens:
+
+```solidity
+contract MultiTokenPaymentReceiver {
+    mapping(address => bool) public acceptedTokens;
+    
+    constructor(address[] memory tokens) {
+        for (uint256 i = 0; i < tokens.length; i++) {
+            acceptedTokens[tokens[i]] = true;
+        }
+    }
+    
+    function acceptPayment(address token, uint256 amount) external {
+        require(acceptedTokens[token], "Token not accepted");
+        
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
+        // Process payment...
+    }
+}
+```
+
+## Best Practices
+
+1. **Always use SafeERC20**: Prevents issues with non-standard ERC-20 tokens
+2. **Implement ReentrancyGuard**: Protect against reentrancy attacks
+3. **Emit Events**: Track all payments for off-chain monitoring
+4. **Validate Amounts**: Check that amounts are greater than zero
+5. **Handle Failures**: Provide clear error messages
+
+## Security Considerations
+
+- Never trust external contracts without verification
+- Use `safeTransferFrom` instead of `transferFrom`
+- Implement proper access control
+- Consider using pull payment patterns for withdrawals
+- Test thoroughly before deployment
+
+## Related Topics
+
+- [Buying with x402](/cookbook/x402/buying)
+- [Running a Facilitator on SKALE](/cookbook/x402/facilitator)
+- [Using Non-USDC Tokens](/cookbook/x402/non-usdc-tokens)
+- [Payments on SKALE](/developers/payments-on-skale)
+
+## Resources
+
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples/tree/main/skale-weather-server)
+- [OpenZeppelin Contracts](https://docs.openzeppelin.com/contracts)
+

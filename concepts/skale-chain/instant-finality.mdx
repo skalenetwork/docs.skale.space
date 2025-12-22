@@ -1,0 +1,34 @@
+---
+title: "Instant Finality"
+description: "Why SKALE blocks are irreversible the moment they land"
+---
+
+## Overview
+
+On SKALE, transactions are final as soon as their block is committed—no 6-block wait, no reorg anxiety. BLS threshold signatures from a supermajority of the chain’s validators make each block irreversible the moment it lands. That’s the foundation for real-time apps, games, and AI agents.
+
+## Instant Finality
+
+Once a transaction is included and the block is signed by ≥2/3 of validators, it cannot be rolled back. There’s no incentive or ability to reorder finalized transactions, which keeps user flows snappy and predictable.
+
+## Benefits
+
+- **Immediate confirmation** – Ideal for payments, gaming, and AI agents.
+- **Predictable UX** – Users never wait for multiple confirmations or watch mempools.
+- **DeFi-ready** – Settlements and liquidations execute without reorg risk.
+
+## How It Works
+
+SKALE’s asynchronous BFT consensus reaches agreement first, then validators produce a BLS threshold signature. That signature is cryptographic proof that a supermajority agreed, making the block immutable.
+
+## Use Cases
+
+- **Payments** – Instant receipts and settlements.
+- **Agents** – Autonomous agents can act on-chain state immediately.
+- **Gaming** – Real-time state sync without rollbacks.
+- **DeFi** – Immediate settlement for swaps, lending, and auctions.
+
+## Related Topics
+
+- [Consensus](/concepts/skale-chain/consensus)
+- [Threshold Schemes](/concepts/threshold-schemes)

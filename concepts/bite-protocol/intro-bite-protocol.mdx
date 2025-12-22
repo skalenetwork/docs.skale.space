@@ -1,0 +1,55 @@
+---
+title: "Introduction"
+description: "BITE Protocol: encrypted transactions, MEV resistance, and confidential apps on SKALE"
+---
+
+## What Is Proof‑of‑Encryption?
+
+Proof-of-Encryption (PoE) keeps SKALE transactions sealed from submission through finality. Data stays encrypted in flight, preventing front-running, snooping, or manipulation. Only after consensus does the validator committee decrypt for execution using threshold keys—no single party can peek or tamper early.
+
+## How BITE Enables Proof‑of‑Encryption
+
+BITE extends the EVM with threshold encryption so builders keep their existing Solidity, wallets, and tooling. Its goals:
+- **Kill MEV at the root** by hiding calldata and destination until after finality.
+- **Make privacy default** so Web2-grade apps can ship without revealing sensitive data.
+- **Stay EVM-native** so Metamask, Foundry, Ethers, and Viem work as-is.
+
+BITE rolls out in four phases—from encrypted transaction inclusion to fully homomorphic encryption inside contracts. See [Phases of BITE](/concepts/bite-protocol/phases) for the roadmap.
+
+## Native MEV Resistance
+
+By encrypting the `to` and `data` fields, BITE removes the information MEV bots need. Transactions are opaque until after finality, making front-running and sandwich attacks impossible.
+
+How it works:
+1. Wallet encrypts payload with SKALE’s threshold encryption (same tx format, no custom wallet needed).
+2. Consensus finalizes the encrypted transaction.
+3. Validators jointly decrypt after finality, then execute in the EVM.
+
+## Two‑Phase Execution Model
+
+1. Inclusion Phase – Encrypted transactions are verified and finalized onchain.
+2. Execution Phase – After block finality, the validator committee runs threshold decryption and reveals the transaction for EVM execution.
+
+Because inclusion happens before decryption, SKALE achieves commit‑then‑reveal semantics, preventing frontrunning and censorship at the protocol layer.
+
+## Censorship Resistance
+
+With BITE Protocol:
+
+* The transaction to field is encrypted.
+* Similar transactions (same gas/data patterns) cannot be easily correlated or censored.
+* Routine activity becomes opaque to outside observers.
+
+## Consensus And Key Management
+
+* Threshold encryption is built directly into SKALE consensus.
+* Fresh public/private keys are generated each epoch using an onchain Distributed Key Generation (DKG) protocol.
+* A new random committee is selected each epoch for encryption and decryption duties.
+* SKALE combines DKG, threshold BLS signatures, and encrypted mempool‑less execution.
+
+This rotating, onchain-managed key system keeps trust decentralized while enabling privacy-by-default.
+
+## Learn More
+
+- [Phases of BITE](/concepts/bite-protocol/phases) - Evolution and phases of BITE Protocol
+- [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive) - Understanding MEV in the context of BITE

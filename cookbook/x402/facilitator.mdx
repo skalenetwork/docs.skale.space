@@ -1,0 +1,483 @@
+---
+title: "Run a Facilitator"
+description: "Set up an x402 facilitator service for payment processing on SKALE"
+---
+
+## Run a Facilitator
+
+A facilitator in the x402 protocol is a service that processes payments and provides settlement. It exposes `/verify` and `/settle` endpoints that work with x402 middleware to handle payment flows using ERC-3009 `TransferWithAuthorization`.
+
+## Prerequisites
+
+- Node.js 18+
+- pnpm (install via [pnpm.io/installation](https://pnpm.io/installation))
+- A SKALE Chain endpoint
+- A wallet private key for signing settlement transactions
+- Basic knowledge of TypeScript
+
+## Overview
+
+A facilitator service:
+
+1. Exposes `/verify` endpoint - Validates payment authorizations without on-chain settlement
+2. Exposes `/settle` endpoint - Executes on-chain payment settlements
+3. Exposes `/supported` endpoint - Returns supported payment schemes and networks
+4. Handles EIP-712 signature verification
+5. Prevents replay attacks via nonce tracking
+
+---
+
+<Tabs>
+  <Tab title = "Coinbase SDK">
+
+    ## Implementation
+
+    ### Step 1: Project Setup
+
+    Create a new project and install dependencies:
+
+    ```bash
+    mkdir skale-facilitator
+    cd skale-facilitator
+    pnpm init
+    ```
+
+    Install the required packages:
+
+    ```bash
+    pnpm add @x402/core @x402/evm dotenv express viem
+    pnpm add -D @types/express @types/node tsx typescript
+    ```
+
+    Update your `package.json`:
+
+    ```json
+    {
+      "name": "skale-facilitator",
+      "version": "1.0.0",
+      "type": "module",
+      "scripts": {
+        "start": "tsx index.ts",
+        "dev": "tsx watch index.ts",
+        "build": "tsc",
+        "typecheck": "tsc --noEmit"
+      }
+    }
+    ```
+
+    ### Step 2: TypeScript Configuration
+
+    Create `tsconfig.json`:
+
+    ```json
+    {
+      "compilerOptions": {
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "lib": ["ES2022"],
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "outDir": "./dist"
+      },
+      "include": ["*.ts"],
+      "exclude": ["node_modules", "dist"]
+    }
+    ```
+
+    ### Step 3: Environment Configuration
+
+    Create `.env` file in the project root:
+
+    ```bash
+    touch .env
+    ```
+
+    Add the variables:
+
+    ```bash
+    FACILITATOR_SIGNER_PK=your_private_key_here
+    PORT=4022
+    ```
+
+    <Warning>
+    Never commit your private key to version control. Add `.env` to your `.gitignore` file.
+    </Warning>
+
+
+    ### Step 4: Main Application
+
+    Create `facilitator.ts` with the facilitator server:
+
+    ```typescript
+    import { x402Facilitator } from "@x402/core/facilitator";
+    import {
+      PaymentPayload,
+      PaymentRequirements,
+      SettleResponse,
+      VerifyResponse,
+    } from "@x402/core/types";
+    import { toFacilitatorEvmSigner } from "@x402/evm";
+    import { registerExactEvmScheme } from "@x402/evm/exact/facilitator";
+    import dotenv from "dotenv";
+    import express from "express";
+    import { createWalletClient, http, publicActions } from "viem";
+    import { privateKeyToAccount } from "viem/accounts";
+    import { skaleBaseSepoliaTestnet } from "viem/chains";
+
+    dotenv.config();
+
+    const PORT = process.env.PORT || "4022";
+
+    if (!process.env.FACILITATOR_SIGNER_PK) {
+      console.error("FACILITATOR_SIGNER_PK environment variable is required");
+      process.exit(1);
+    }
+
+    const evmAccount = privateKeyToAccount(
+      process.env.FACILITATOR_SIGNER_PK as `0x${string}`
+    );
+    console.info(`EVM Facilitator account: ${evmAccount.address}`);
+
+    const viemClient = createWalletClient({
+      account: evmAccount,
+      chain: skaleBaseSepoliaTestnet,
+      transport: http(),
+    }).extend(publicActions);
+
+    const evmSigner = toFacilitatorEvmSigner({
+      getCode: (args: { address: `0x${string}` }) => viemClient.getCode(args),
+      address: evmAccount.address,
+      readContract: (args: {
+        address: `0x${string}`;
+        abi: readonly unknown[];
+        functionName: string;
+        args?: readonly unknown[];
+      }) =>
+        viemClient.readContract({
+          ...args,
+          args: args.args || [],
+        }),
+      verifyTypedData: (args: {
+        address: `0x${string}`;
+        domain: Record<string, unknown>;
+        types: Record<string, unknown>;
+        primaryType: string;
+        message: Record<string, unknown>;
+        signature: `0x${string}`;
+      }) => viemClient.verifyTypedData(args as Parameters<typeof viemClient.verifyTypedData>[0]),
+      writeContract: (args: {
+        address: `0x${string}`;
+        abi: readonly unknown[];
+        functionName: string;
+        args: readonly unknown[];
+      }) =>
+        viemClient.writeContract({
+          ...args,
+          args: args.args || [],
+        }),
+      sendTransaction: (args: { to: `0x${string}`; data: `0x${string}` }) =>
+        viemClient.sendTransaction(args),
+      waitForTransactionReceipt: (args: { hash: `0x${string}` }) =>
+        viemClient.waitForTransactionReceipt(args),
+    });
+
+    const facilitator = new x402Facilitator()
+      .onBeforeVerify(async (context) => {
+        console.log("Before verify", context);
+      })
+      .onAfterVerify(async (context) => {
+        console.log("After verify", context);
+      })
+      .onVerifyFailure(async (context) => {
+        console.log("Verify failure", context);
+      })
+      .onBeforeSettle(async (context) => {
+        console.log("Before settle", context);
+      })
+      .onAfterSettle(async (context) => {
+        console.log("After settle", context);
+      })
+      .onSettleFailure(async (context) => {
+        console.log("Settle failure", context);
+      });
+
+    registerExactEvmScheme(facilitator, {
+      signer: evmSigner,
+      networks: "eip155:324705682",
+      deployERC4337WithEIP6492: true,
+    });
+
+    const app = express();
+    app.use(express.json());
+
+    app.post("/verify", async (req, res) => {
+      try {
+        const { paymentPayload, paymentRequirements } = req.body as {
+          paymentPayload: PaymentPayload;
+          paymentRequirements: PaymentRequirements;
+        };
+
+        if (!paymentPayload || !paymentRequirements) {
+          return res.status(400).json({
+            error: "Missing paymentPayload or paymentRequirements",
+          });
+        }
+
+        const response: VerifyResponse = await facilitator.verify(
+          paymentPayload,
+          paymentRequirements
+        );
+
+        res.json(response);
+      } catch (error) {
+        console.error("Verify error:", error);
+        res.status(500).json({
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    });
+
+    app.post("/settle", async (req, res) => {
+      try {
+        const { paymentPayload, paymentRequirements } = req.body;
+
+        if (!paymentPayload || !paymentRequirements) {
+          return res.status(400).json({
+            error: "Missing paymentPayload or paymentRequirements",
+          });
+        }
+
+        const response: SettleResponse = await facilitator.settle(
+          paymentPayload as PaymentPayload,
+          paymentRequirements as PaymentRequirements
+        );
+
+        res.json(response);
+      } catch (error) {
+        console.error("Settle error:", error);
+
+        if (
+          error instanceof Error &&
+          error.message.includes("Settlement aborted:")
+        ) {
+          return res.json({
+            success: false,
+            errorReason: error.message.replace("Settlement aborted: ", ""),
+            network: req.body?.paymentPayload?.network || "unknown",
+          } as SettleResponse);
+        }
+
+        res.status(500).json({
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    });
+
+    app.get("/supported", async (req, res) => {
+      try {
+        const response = facilitator.getSupported();
+        res.json(response);
+      } catch (error) {
+        console.error("Supported error:", error);
+        res.status(500).json({
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    });
+
+    app.listen(parseInt(PORT), () => {
+      console.log(`Facilitator listening on port ${PORT}`);
+    });
+    ```
+
+    ---
+
+    ## Running the Facilitator
+
+    Start the development server:
+
+    ```bash
+    pnpm dev
+    ```
+
+    Your facilitator will be available at `http://localhost:4022`.
+
+    ---
+
+    ## API Endpoints
+
+    ### GET /supported
+
+    Returns supported payment schemes and networks.
+
+    **Response:**
+
+    ```json
+    {
+      "kinds": [
+        {
+          "x402Version": 2,
+          "scheme": "exact",
+          "network": "eip155:324705682"
+        }
+      ],
+      "extensions": [],
+      "signers": {
+        "eip155": ["0x..."]
+      }
+    }
+    ```
+
+    ### POST /verify
+
+    Validates payment authorization without on-chain settlement.
+
+    **Request:**
+
+    ```json
+    {
+      "paymentPayload": {
+        "x402Version": 2,
+        "resource": {
+          "url": "http://localhost:4021/weather",
+          "description": "Weather data",
+          "mimeType": "application/json"
+        },
+        "accepted": {
+          "scheme": "exact",
+          "network": "eip155:324705682",
+          "asset": "0x61a26022927096f444994dA1e53F0FD9487EAfcf",
+          "amount": "1000",
+          "payTo": "0x...",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "Axios USD",
+            "version": "1"
+          }
+        },
+        "payload": {
+          "signature": "0x...",
+          "authorization": {}
+        }
+      },
+      "paymentRequirements": {
+        "scheme": "exact",
+        "network": "eip155:324705682",
+        "asset": "0x61a26022927096f444994dA1e53F0FD9487EAfcf",
+        "amount": "1000",
+        "payTo": "0x...",
+        "maxTimeoutSeconds": 300,
+        "extra": {
+          "name": "Axios USD",
+          "version": "1"
+        }
+      }
+    }
+    ```
+
+    **Response (success):**
+
+    ```json
+    {
+      "isValid": true,
+      "payer": "0x..."
+    }
+    ```
+
+    **Response (failure):**
+
+    ```json
+    {
+      "isValid": false,
+      "invalidReason": "invalid_signature"
+    }
+    ```
+
+    ### POST /settle
+
+    Settles a verified payment by broadcasting the transaction on-chain.
+
+    Request body is identical to `/verify`.
+
+    **Response (success):**
+
+    ```json
+    {
+      "success": true,
+      "transaction": "0x...",
+      "network": "eip155:324705682",
+      "payer": "0x..."
+    }
+    ```
+
+    **Response (failure):**
+
+    ```json
+    {
+      "success": false,
+      "errorReason": "insufficient_balance",
+      "transaction": "",
+      "network": "eip155:324705682"
+    }
+    ```
+
+    ---
+
+    ## Lifecycle Hooks
+
+    The facilitator supports lifecycle hooks for custom logic:
+
+    ```typescript
+    const facilitator = new x402Facilitator()
+      .onBeforeVerify(async (context) => {
+        // Log or validate before verification
+      })
+      .onAfterVerify(async (context) => {
+        // Track verified payments
+      })
+      .onVerifyFailure(async (context) => {
+        // Handle verification failures
+      })
+      .onBeforeSettle(async (context) => {
+        // Validate before settlement
+        // Return { abort: true, reason: "..." } to cancel
+      })
+      .onAfterSettle(async (context) => {
+        // Track successful settlements
+      })
+      .onSettleFailure(async (context) => {
+        // Handle settlement failures
+      });
+    ```
+    </Tab>
+</Tabs>
+
+---
+
+## Security Considerations
+
+- Store private keys securely in environment variables
+- Never commit `.env` files to version control
+- Implement rate limiting for production deployments
+- Monitor for suspicious activity
+- Use HTTPS in production
+- Consider using a multi-sig wallet for high-value operations
+
+## Next Steps
+
+- [Accept Payments](/cookbook/x402/accepting-payments)
+- [Make Payments](/cookbook/x402/buying)
+- [Multi-Token Payments](/cookbook/x402/non-usdc-tokens)
+
+## Resources
+
+- [x402 Protocol](https://x402.org)
+- [ERC-3009 Specification](https://eips.ethereum.org/EIPS/eip-3009)
+- [Coinbase x402 SDK](https://github.com/coinbase/x402)

@@ -1,0 +1,22 @@
+---
+title: "Security Model"
+description: "How SKALE combines Ethereum anchoring, pooled staking, and threshold crypto for security"
+---
+
+## Why SKALE Is Secure
+
+SKALE inherits security from two layers: economic security on Ethereum (where validators stake and get slashed) and protocol security on SKALE Chains (where BLS threshold signatures, DKG, and rotation enforce Byzantine fault tolerance). Chains use zero-gas execution without sacrificing cryptographic guarantees—finality is instant once a supermajority signs a block.
+
+## Threat Model
+
+The system assumes fewer than one-third of validator nodes in a chain’s committee are malicious. Random rotation of validators across chains and epochs makes targeted collusion difficult. Slashing on Ethereum for downtime or misbehavior adds economic deterrence, while data availability and catch-up protocols protect against withholding or censorship.
+
+## Guarantees
+
+- **Finality** – BLS threshold signatures from a supermajority make blocks irreversible once committed.
+- **Consistency** – Nodes share the same state for any given block height; archived history can be fetched from archive/indexer nodes when needed.
+- **Liveliness** – Asynchronous consensus and catch-up keep chains progressing even under partial failures.
+
+## Built-in Defenses
+
+DKG generates fresh keys each epoch, snapshots accelerate safe restarts, and DDoS controls throttle abusive RPC behavior. Optional gas settings and Proof-of-Work-based gasless transactions add spam resistance even with zero-fee UX.

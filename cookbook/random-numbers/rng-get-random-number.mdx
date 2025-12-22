@@ -1,0 +1,249 @@
+---
+title: "Get a Random Number from SKALE RNG"
+description: "Guide to getting random numbers using SKALE's built-in random number generation"
+---
+
+## Get a Random Number from SKALE RNG
+
+SKALE provides native random number generation (RNG) through a precompiled contract. This guide will show you how to get random numbers in your smart contracts on SKALE.
+
+## Prerequisites
+
+- Basic understanding of Solidity
+- A SKALE Chain endpoint
+- Understanding of smart contract development
+
+## Overview
+
+SKALE's RNG is:
+- **Native**: Built into every SKALE Chain
+- **Free**: No gas costs (zero gas fees on SKALE)
+- **Instant**: Available immediately, no waiting
+- **Secure**: Based on BLS threshold signatures from 11+ nodes
+
+---
+
+## RNG Methods
+
+<Tabs>
+    <Tab title="Direct Precompile Call (0x18)">
+
+        ### Direct Precompiled Contract Call
+
+        Use inline assembly to call the precompiled contract at address `0x18`:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        contract GetRandomNumber {
+            function getRandom() public view returns (bytes32) {
+                bytes32 randomValue;
+                assembly {
+                    let freemem := mload(0x40)
+                    let start_addr := add(freemem, 0)
+                    if iszero(staticcall(gas(), 0x18, 0, 0, start_addr, 32)) {
+                        invalid()
+                    }
+                    randomValue := mload(freemem)
+                }
+                return randomValue;
+            }
+            
+            function getRandomUint256() public view returns (uint256) {
+                return uint256(getRandom());
+            }
+        }
+        ```
+
+    </Tab>
+    <Tab title="SKALE RNG Library">
+
+        ### Using SKALE RNG Library
+
+        The easiest way is to use the SKALE RNG library:
+
+        #### Step 1: Install the Library
+
+        ```shell
+        npm install @dirtroad/skale-rng
+        ```
+
+        #### Step 2: Import and Use
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@dirtroad/skale-rng/contracts/RNG.sol";
+
+        contract MyRandomContract is RNG {
+            function generateRandom() external view returns (uint256) {
+                return getRandomNumber();
+            }
+            
+            function generateRandomInRange(uint256 min, uint256 max) external view returns (uint256) {
+                return getNextRandomRange(min, max);
+            }
+        }
+        ```
+
+    </Tab>
+    <Tab title="Helper Contract">
+
+        ### Helper Contract
+
+        Create a reusable helper contract:
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        contract RandomHelper {
+            function getRandomBytes32() public view returns (bytes32) {
+                bytes32 randomValue;
+                assembly {
+                    let freemem := mload(0x40)
+                    let start_addr := add(freemem, 0)
+                    if iszero(staticcall(gas(), 0x18, 0, 0, start_addr, 32)) {
+                        invalid()
+                    }
+                    randomValue := mload(freemem)
+                }
+                return randomValue;
+            }
+            
+            function getRandomUint256() public view returns (uint256) {
+                return uint256(getRandomBytes32());
+            }
+            
+            function getRandomInRange(uint256 min, uint256 max) public view returns (uint256) {
+                require(max > min, "Invalid range");
+                uint256 random = getRandomUint256();
+                return min + (random % (max - min + 1));
+            }
+        }
+        ```
+
+        ### Usage Examples
+
+        #### Example 1: Simple Random Number
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "./RandomHelper.sol";
+
+        contract SimpleRandom {
+            RandomHelper public randomHelper;
+            
+            constructor(address _randomHelper) {
+                randomHelper = RandomHelper(_randomHelper);
+            }
+            
+            function getRandomValue() external view returns (uint256) {
+                return randomHelper.getRandomUint256();
+            }
+        }
+        ```
+
+        #### Example 2: Random Selection
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "./RandomHelper.sol";
+
+        contract RandomSelector {
+            RandomHelper public randomHelper;
+
+            constructor(address _randomHelper) {
+                randomHelper = RandomHelper(_randomHelper);
+            }
+
+            function selectRandom(uint256[] memory options) public view returns (uint256) {
+                uint256 random = randomHelper.getRandomUint256();
+                uint256 index = random % options.length;
+                return options[index];
+            }
+        }
+        ```
+
+        #### Example 3: Weighted Random Selection
+
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "./RandomHelper.sol";
+
+        contract WeightedRandom {
+            RandomHelper public randomHelper;
+
+            constructor(address _randomHelper) {
+                randomHelper = RandomHelper(_randomHelper);
+            }
+
+            function weightedSelect(uint256[] memory weights) public view returns (uint256) {
+                uint256 totalWeight = 0;
+                for (uint256 i = 0; i < weights.length; i++) {
+                    totalWeight += weights[i];
+                }
+                
+                uint256 random = randomHelper.getRandomInRange(1, totalWeight);
+                uint256 cumulative = 0;
+                
+                for (uint256 i = 0; i < weights.length; i++) {
+                    cumulative += weights[i];
+                    if (random <= cumulative) {
+                        return i;
+                    }
+                }
+                
+                return weights.length - 1;
+            }
+        }
+        ```
+
+    </Tab>
+</Tabs>
+
+---
+
+## Important Notes
+
+<Note>
+RNG is native to SKALE and relies on SKALE's Consensus. In local testing or on other chains, this will always return 0.
+</Note>
+
+<Note>
+Random numbers are generated per block. Multiple calls in the same block will return the same value.
+</Note>
+
+## Best Practices
+
+1. **Use Library**: Prefer the SKALE RNG library for easier integration
+2. **Range Functions**: Use range functions for bounded randomness
+3. **Block Awareness**: Remember randomness is per-block
+4. **Testing**: Test on SKALE testnet, not locally
+5. **Documentation**: Document your randomness requirements
+
+## Security Considerations
+
+- Randomness is cryptographically secure
+- No single node can influence the result
+- Based on threshold signatures from 11+ nodes
+- Suitable for gaming, lotteries, and other applications
+
+## Related Topics
+
+- [Flip a Coin with RNG](/cookbook/random-numbers/rng-flip-coin)
+- [Random Number Generation](/developers/random-number-generation)
+- [Deploy on SKALE](/developers/deploy-on-skale)
+
+## Resources
+
+- [SKALE RNG Library](https://www.npmjs.com/package/@dirtroad/skale-rng)
+- [SKALE Developer Discord](https://discord.gg/skale)

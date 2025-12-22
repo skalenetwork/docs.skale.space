@@ -1,0 +1,53 @@
+---
+title: "Pooled Security Model"
+description: "How SKALE’s rotating validator pool secures every chain"
+---
+
+## Overview
+
+SKALE uses pooled security: a single validator set stakes SKL on Ethereum and is randomly assigned to secure many SKALE Chains. Rotation spreads risk, improves uptime, and ensures every chain benefits from the full economic weight of the network—not just the validators it happens to have today.
+
+## How Pooled Security Works
+
+1. **Stake on Ethereum** – Validators bond SKL in SKALE Manager contracts and register node capacity.
+2. **Randomized assignment** – Nodes are grouped into virtual subnodes and assigned to chains; assignments refresh each epoch.
+3. **Rotation** – Committees change over time, reducing collusion risk and balancing performance.
+4. **Aggregation** – Security is pooled: every chain inherits the same economic deterrents and cryptographic guarantees.
+
+## Key Components
+
+- **Validator pool** – Staked operators with proven performance, registered on Ethereum.
+- **NodeRotation** – SKALE Manager contract that shuffles committees and ensures diversity.
+- **Unified validation** – Each validator can run multiple chain containers on a single server, securing several chains concurrently.
+
+## Security Guarantees
+
+- **High security** – Every chain inherits the same staked collateral and BFT guarantees.
+- **Fault tolerance** – Chains remain operational despite individual node failures.
+- **Anti-collusion** – Random rotation reduces the odds of a compromised committee.
+- **Economic alignment** – Misbehavior is slashed on Ethereum, visible to all.
+
+## Benefits
+
+- **Chain owners** – Launch fast with enterprise-grade security and predictable costs.
+- **Validators** – Earn across multiple chains, maximizing hardware utilization.
+- **Users** – Enjoy consistent security, reliability, and zero-gas UX across the network.
+
+## Comparison to Other Models
+
+- **Versus dedicated validators** – No need to recruit or fund your own validator set; security scales with the network, not your budget.
+- **Versus generic shared security** – SKALE keeps chains fully independent (their own state and parameters) while dynamically allocating validators and resources as usage grows.
+
+## Implementation
+
+- **SKALE Manager** (Ethereum) – Tracks stakes, assigns nodes, enforces slashing.
+- **NodeRotation** – Randomizes committees per chain and epoch.
+- **ValidatorService & DelegationController** – Manage validator registration and SKL delegation.
+
+## Related Topics
+
+- [SKALE Manager](/concepts/skale-network/skale-manager)
+- [Delegated Proof of Stake](/concepts/skale-network/delegated-proof-of-stake)
+- [Containerized Nodes](/concepts/skale-network/containerized-nodes)
+- [Horizontal Scalability](/concepts/skale-network/horizontal-scalability)
+

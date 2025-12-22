@@ -1,0 +1,34 @@
+---
+title: Intro to Elliptic Curve Cryptography
+description: Introduction to Elliptic Curve Cryptography
+---
+
+Elliptic curve cryptography (ECC) is the backbone of SKALE’s staking, consensus, and threshold signatures. Here’s the plain-English version of why ECC matters and how SKALE uses it.
+
+## Why ECC matters for SKALE
+
+- **Strong security, small keys** – ECC delivers high security with compact keys and signatures, perfect for high-throughput chains.
+- **Foundation for staking** – Validator and delegator keys rely on elliptic-curve one-way functions.
+- **Threshold crypto** – BLS signatures and Distributed Key Generation (DKG) use elliptic curves to combine many shares into one verifiable signature.
+
+## The math in approachable terms
+
+Elliptic curves define a special “addition” between points on the curve. Repeatedly “adding” a point to itself (scalar multiplication) is easy; reversing that process (finding how many times it was added) is hard. That hardness—the elliptic curve discrete logarithm problem (ECDLP)—is what keeps private keys private while letting everyone verify public keys.
+
+This one-way property lets SKALE nodes publish public keys while keeping private keys secret, so they can prove authorship of signatures without exposing the keys themselves.
+
+## Signatures on SKALE: ECDSA vs. BLS
+
+- **ECDSA** – The familiar Ethereum-style signature. Great for wallets and user transactions; already supported by existing tooling.
+- **BLS (Boneh–Lynn–Shacham)** – Compact, aggregatable signatures that can be combined. SKALE uses BLS for threshold signatures so a committee of validators can produce one signature that proves supermajority agreement.
+
+Why BLS matters here:
+- Multiple validator signatures compress into one, saving bandwidth and verification time.
+- Threshold signatures enable instant finality once ≥2/3 of validators sign.
+- Works hand-in-hand with DKG so no single validator knows the full private key.
+
+## Takeaways for builders
+
+- Keep using standard Ethereum wallets and tooling—ECC is already baked in.
+- BLS powers SKALE’s pooled security and instant finality; you get stronger guarantees without extra integration work.
+- If you need more detail on the crypto, see the DKG with BLS page for a deeper dive into how keys are generated and combined on SKALE.

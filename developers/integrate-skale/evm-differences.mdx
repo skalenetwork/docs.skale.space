@@ -1,0 +1,45 @@
+---
+title: EVM Differences
+description: SKALE vs Ethereum EVM comparison
+---
+
+SKALE has been designed to maintain core compatiblity with Ethereum while differing on some core mechanics and newer features that may be unncessary due to SKALE's design or not yet integrated due their introduction through more recent Ethereum hardforks. SKALE allows developers to build, deploy, and interact with smart contracts and applications using the same tools, languages, and frameworks they use on Ethereum.
+
+While the execution environment mirrors Ethereum's, SKALE introduces key differences optimized for performance, scalability, AI, and privacy.
+
+## Key Protocol Differences
+
+### Gas Fees & Economics
+
+**SKALE**: Zero gas fees by default with compute credits or sFUEL. Gasless transactions with *Proof-of-Work* and sFUEL-based chains.
+
+**Ethereum**: Variable gas fees paid in ETH, market-based pricing with EIP-1559 base fees + priority fees.
+
+<Note>
+SKALE has multiple types of chains due to the multichain network design including appchains, credit chains, and the ability to offer chains with a gas fee if chain buyers want them.
+</Note>
+
+### Block Production & Finality
+
+**SKALE**: Target 1-second block times with instant finality. Transactions are immutable after inclusion in a single block.
+
+**Ethereum**: 12-second block times with probabilistic finality. Full finality requires ~12-15 minutes of validator confirmations though two checkpoints.
+
+### Resource Limits
+
+**SKALE**: ~268M block gas limit and 64KB contract size limit allowing for more complex smart contracts
+
+**Ethereum**: ~60M block gas limit (variable, as of 12/1/2025), 24KB contract size limit, strict constraints for network-wide throughput.
+
+### Payments in Solidity
+
+Unless the SKALE Chain implements a native gas fee token with value, zero gas fee chains should avoid the use of `msg.value` in smart contracts 
+and instead use ERC-20 or other tokenization options to handle payments. All SKALE Chains currently in prou
+
+### Contract Deployment
+
+SKALE Hubs on Ethereum -- Calypso, Europa, Nebula, and Titan -- currently have contract deployment locked to an "allowlist". This means that by default to deploy access needs to be granted to either a) the EOA/tx.origin, b) a smart contract (which then allows anyone to deploy through it), c) A specific account on a set of contracts (strengthening security for contracts that could cause state pollution).
+
+The first public chain on the SKALE Base deployment has open contract deployment and simply requires the purchasing of compute credits. Credits can be purchased on the [SKALE Portal](https://base.skalenodes.com/credits).
+
+This means that SKALE on Ethereum differs considerably from Ethereum as of 12/20/2025, however, this could change with the upgrade to the credit system in the near future.

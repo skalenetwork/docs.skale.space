@@ -1,0 +1,273 @@
+---
+title: "Running a Facilitator on SKALE"
+description: "Guide to running an x402 facilitator on SKALE for payment processing"
+---
+
+## Running a Facilitator on SKALE
+
+A facilitator in the x402 protocol helps process payments and can provide additional services like payment routing, aggregation, and settlement. This guide will show you how to set up and run a facilitator on SKALE.
+
+## Prerequisites
+
+- Understanding of x402 protocol
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Understanding of payment processing systems
+- Basic knowledge of smart contracts
+
+## Overview
+
+A facilitator typically:
+
+1. Monitors payment requests
+2. Processes transactions
+3. Handles settlement between parties
+4. Provides payment routing services
+5. May charge fees for services
+
+## Basic Facilitator Contract
+
+Here's a simple facilitator contract:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract Facilitator is ReentrancyGuard, Ownable {
+    using SafeERC20 for IERC20;
+    
+    IERC20 public paymentToken;
+    uint256 public feeBasisPoints; // e.g., 100 = 1%
+    
+    struct PaymentRequest {
+        address payer;
+        address recipient;
+        uint256 amount;
+        bool processed;
+    }
+    
+    mapping(bytes32 => PaymentRequest) public paymentRequests;
+    
+    event PaymentProcessed(
+        bytes32 indexed requestId,
+        address indexed payer,
+        address indexed recipient,
+        uint256 amount,
+        uint256 fee
+    );
+    
+    constructor(address _paymentToken, uint256 _feeBasisPoints) Ownable(msg.sender) {
+        paymentToken = IERC20(_paymentToken);
+        feeBasisPoints = _feeBasisPoints;
+    }
+    
+    function processPayment(
+        bytes32 requestId,
+        address payer,
+        address recipient,
+        uint256 amount
+    ) external nonReentrant {
+        require(!paymentRequests[requestId].processed, "Already processed");
+        
+        // Calculate fee
+        uint256 fee = (amount * feeBasisPoints) / 10000;
+        uint256 amountAfterFee = amount - fee;
+        
+        // Transfer payment from payer to recipient (minus fee)
+        paymentToken.safeTransferFrom(payer, recipient, amountAfterFee);
+        
+        // Transfer fee to facilitator
+        if (fee > 0) {
+            paymentToken.safeTransferFrom(payer, address(this), fee);
+        }
+        
+        // Record payment
+        paymentRequests[requestId] = PaymentRequest({
+            payer: payer,
+            recipient: recipient,
+            amount: amount,
+            processed: true
+        });
+        
+        emit PaymentProcessed(requestId, payer, recipient, amount, fee);
+    }
+    
+    function setFee(uint256 newFeeBasisPoints) external onlyOwner {
+        require(newFeeBasisPoints <= 10000, "Fee too high");
+        feeBasisPoints = newFeeBasisPoints;
+    }
+    
+    function withdrawFees() external onlyOwner {
+        uint256 balance = paymentToken.balanceOf(address(this));
+        paymentToken.safeTransfer(owner(), balance);
+    }
+}
+```
+
+## Off-Chain Facilitator Service
+
+Create a Node.js service to monitor and process payments:
+
+```javascript
+const { ethers } = require("ethers");
+require("dotenv").config();
+
+class FacilitatorService {
+    constructor(rpcUrl, privateKey, contractAddress, contractABI) {
+        this.provider = new ethers.JsonRpcProvider(rpcUrl);
+        this.wallet = new ethers.Wallet(privateKey, this.provider);
+        this.contract = new ethers.Contract(
+            contractAddress,
+            contractABI,
+            this.wallet
+        );
+    }
+    
+    async processPayment(requestId, payer, recipient, amount) {
+        try {
+            const tx = await this.contract.processPayment(
+                requestId,
+                payer,
+                recipient,
+                amount
+            );
+            await tx.wait();
+            console.log(`Payment processed: ${requestId}`);
+            return tx.hash;
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            throw error;
+        }
+    }
+    
+    async monitorPayments() {
+        // Listen for payment requests
+        this.contract.on("PaymentRequested", async (requestId, payer, recipient, amount) => {
+            console.log(`New payment request: ${requestId}`);
+            // Process payment
+            await this.processPayment(requestId, payer, recipient, amount);
+        });
+    }
+}
+
+// Initialize facilitator
+const facilitator = new FacilitatorService(
+    process.env.RPC_URL,
+    process.env.PRIVATE_KEY,
+    process.env.FACILITATOR_CONTRACT,
+    facilitatorABI
+);
+
+facilitator.monitorPayments();
+```
+
+## Advanced: Multi-Token Facilitator
+
+Support multiple payment tokens:
+
+```solidity
+contract MultiTokenFacilitator is ReentrancyGuard, Ownable {
+    using SafeERC20 for IERC20;
+    
+    mapping(address => bool) public supportedTokens;
+    mapping(address => uint256) public tokenFees; // Fee per token
+    
+    function addToken(address token, uint256 feeBasisPoints) external onlyOwner {
+        supportedTokens[token] = true;
+        tokenFees[token] = feeBasisPoints;
+    }
+    
+    function processPayment(
+        address token,
+        bytes32 requestId,
+        address payer,
+        address recipient,
+        uint256 amount
+    ) external nonReentrant {
+        require(supportedTokens[token], "Token not supported");
+        require(!paymentRequests[requestId].processed, "Already processed");
+        
+        IERC20 paymentToken = IERC20(token);
+        uint256 fee = (amount * tokenFees[token]) / 10000;
+        uint256 amountAfterFee = amount - fee;
+        
+        paymentToken.safeTransferFrom(payer, recipient, amountAfterFee);
+        
+        if (fee > 0) {
+            paymentToken.safeTransferFrom(payer, address(this), fee);
+        }
+        
+        paymentRequests[requestId].processed = true;
+        emit PaymentProcessed(requestId, payer, recipient, amount, fee);
+    }
+}
+```
+
+## Fee Management
+
+Implement flexible fee structures:
+
+```solidity
+contract FlexibleFeeFacilitator {
+    uint256 public baseFee;
+    mapping(address => uint256) public userDiscounts; // Discount in basis points
+    
+    function calculateFee(address user, uint256 amount) public view returns (uint256) {
+        uint256 fee = (amount * baseFee) / 10000;
+        uint256 discount = userDiscounts[user];
+        if (discount > 0) {
+            fee = fee - (fee * discount) / 10000;
+        }
+        return fee;
+    }
+    
+    function setUserDiscount(address user, uint256 discountBasisPoints) external onlyOwner {
+        require(discountBasisPoints <= 10000, "Discount too high");
+        userDiscounts[user] = discountBasisPoints;
+    }
+}
+```
+
+## Best Practices
+
+1. **Monitor Events**: Listen for payment requests off-chain
+2. **Error Handling**: Implement robust error handling
+3. **Fee Transparency**: Clearly communicate fees to users
+4. **Security**: Use multi-sig for fee withdrawals
+5. **Monitoring**: Set up monitoring and alerting
+
+## Security Considerations
+
+- Use multi-sig wallets for facilitator operations
+- Implement rate limiting to prevent abuse
+- Monitor for suspicious activity
+- Regular security audits
+- Keep facilitator keys secure
+
+## Deployment Checklist
+
+- [ ] Deploy facilitator contract
+- [ ] Set appropriate fees
+- [ ] Configure supported tokens
+- [ ] Set up off-chain monitoring service
+- [ ] Test payment processing
+- [ ] Set up monitoring and alerts
+- [ ] Document API endpoints (if applicable)
+
+## Related Topics
+
+- [Accepting x402 Payments](/cookbook/x402/accepting-payments)
+- [Buying with x402](/cookbook/x402/buying)
+- [Using Non-USDC Tokens](/cookbook/x402/non-usdc-tokens)
+- [Payments on SKALE](/developers/payments-on-skale)
+
+## Resources
+
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples/tree/main/skale-weather-server)
+- [SKALE Developer Discord](https://discord.gg/skale)
+

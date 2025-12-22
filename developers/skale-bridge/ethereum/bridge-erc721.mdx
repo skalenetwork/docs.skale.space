@@ -1,0 +1,333 @@
+---
+title: Bridge ERC-721 Tokens
+description: Guide on bridging ERC-721 tokens on SKALE
+---
+
+SKALE's Interchain Messaging Agent includes a native bridging layer for ERC-721 tokens, the most popular non-fungible token standard
+that exists in blockchain today. The following introduces key information on setting up the bridgeable collectibles as well as how
+to actually programatically bridge the tokens.
+
+## Important Information
+
+- When a SKALE Chain is created, there are NO ERC-721 tokens mapped by default
+- In order to bridge an ERC-721 token to a SKALE Chain from Ethereum, it must be **added** by the SKALE Chain owner or operator
+via the standard mapping process
+- All ERC-721 tokens bridged into SKALE have a set of basic requirements to make them compatible with SKALE's bridging layer
+
+<Note>
+SKALE utilizes a popular architectural design within bridging which is a liquidity based bridge.
+This means that tokens *bridged* into SKALE are locked on Ethereum and a copy is minted on the target SKALE Chain.
+</Note>
+
+## Bridge Setup
+
+### 1. Prepare the ERC-721 on SKALE
+
+ERC-721 tokens that are being bridged to SKALE should follow two basic requirements in order to be compatible with the SKALE IMA
+bridging layer:
+
+1. Have a **mint** function that is locked down to the IMA Bridge
+2. Have a **burn** function that is locked down to the IMA Bridge
+
+<Danger>
+If the mint function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that
+the existing tokens on the SKALE Chain may not match what is secured in the bridge.
+</Danger>
+
+<Danger>
+If the burn function is not locked down to just the IMA Bridge, specifically TokenManagerERC721; there is a chance that
+the supply on the SKALE Chain side could be "burned", while the tokens still exist on Ethereum which could later be withdrawn under certain circumstances. It is recommended that explicit burns on a SKALE Chain should be avoided for bridged tokens.
+</Danger>
+
+The following is the base interchain token code that meets the above bridging requirements for IMA. It is not recommended to use this directly, but to use a wrapper. See InterchainSKL for an 18 decimal example and InterchainUSDT for a 6 decimal example.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+/**
+ * @title InterchainERC721
+ * @dev ERC-721 with role-based minting and dynamic token URI.
+ */
+contract InterchainERC721 is AccessControl, ERC721 {
+
+    using Strings for uint256;
+
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string private _baseTokenURI;
+
+    constructor(
+        string memory contractName,
+        string memory contractSymbol,
+        string memory baseTokenURI
+    )
+        ERC721(contractName, contractSymbol)
+    {
+        _setRoleAdmin(MINTER_ROLE, 0xD2aaa00600000000000000000000000000000000); // example admin role
+        _grantRole(MINTER_ROLE, _msgSender());
+        _baseTokenURI = baseTokenURI;
+    }
+
+    function mint(address to, uint256 tokenId) external returns (bool) {
+        require(hasRole(MINTER_ROLE, _msgSender()), "Sender is not a Minter");
+        _safeMint(to, tokenId);
+        return true;
+    }
+
+    /// @notice Override to return dynamic token URI
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721: URI query for nonexistent token");
+        return string(abi.encodePacked(_baseTokenURI, tokenId.toString(), ".json"));
+    }
+
+    /// @notice Allows admin to update base URI
+    function setBaseURI(string calldata newBaseURI) external onlyRole(MINTER_ROLE) {
+        _baseTokenURI = newBaseURI;
+    }
+}
+```
+### 2. Deploy the ERC-721 on SKALE
+
+Utilize your preferred tooling i.e [Foundry](https://getfoundry.sh), [Hardhat](https://hardhat.org), [Remix](https://remix.ethereum.org/#lang=en&optimize=false&runs=200&evmVersion=paris&version=soljson-v0.8.19+commit.7dd6d404.js), etc. to deploy your IMA compatible ERC-721 token to the SKALE Chain you want to be able to bridge assets too.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
+
+import { InterchainERC721 } from "./InterchainERC721.sol";
+
+contract InterchainNFT is InterchainERC721("NFT Name", "NFT Symbol", "ipfs://<cid>/") {}
+```
+
+> *InterchainERC721.sol is inherited from the code above*
+
+### 3. Map the SKALE and Ethereum tokens together
+
+<Note>
+If you are trying to setup a token on SKALE in a production environment please join us in [Discord](https://discord.gg/skale) for support!
+</Note>
+
+#### Add the token on Ethereum via SAFE
+
+Start by visiting your SAFE via the official SAFE website or your preferred tool. If you are unsure, you can follow the steps [here](/developers/run-a-skale-chain/using-safe).
+
+Once on your SAFE, start by preparing a transaction via the **Transaction Builder**. Follow these steps:
+
+1. Input the DepositBoxERC721 address into the address field.
+2. Select **Use Implementation ABI**
+3. Select `addERC721TokenByOwner` for the method
+4. Input your *SKALE Chain Name* and your ERC-721 contract address on Ethereum in the fields
+5. Send by itslef or via batch
+
+<Warning>
+Make sure to replace the values with your SKALE Chain name and the correct token addresses.
+</Warning>
+
+#### Add the token on SKALE Chain TokenManagerERC721
+
+<Tabs>
+    <Tab title="Multisigwallet CLI">
+    ```shell
+    npx msig encodeData [SKALE_CHAIN_NAME] TokenManagerERC721 addERC721TokenByOwner Mainnet 0x[TOKEN_ON_ETHEREUM] 0x[TOKEN_ON_SKALE_CHAIN]
+    ```
+    </Tab>
+</Tabs>
+
+    After this, execute by following the steps on [Using SAFE](/developers/run-a-skale-chain/using-safe#submit-transaction-to-safe)
+  
+
+#### Verify the Mapping
+
+To verify the mapping, you should have an event emitted from the following:
+
+1. DepositBoxERC721 on Ethereum - `event ERC721TokenAdded(string schainName, address indexed contractOnMainnet);`
+
+1. TokenManagerERC721 on SKALE Chain - `event ERC721TokenAdded(SchainHash indexed chainHash, address indexed erc721OnMainChain, address indexed erc721OnSchain);`
+
+## Bridging ERC-721
+
+The following does not require you to setup your own token. This works with **ANY** ERC-721 token that is mapped from Ethereum to any SKALE Chain as long as the actual ERC-721 token on each side does not have additional restrictions around who can transfer.
+
+The flow for bridging an ERC-721 from Ethereum to SKALE follows a very similar flow to a standard ERC-721 transfer:
+
+1. Approve the bridge contract on the ERC-721 token to allow it to move your NFTs
+2. Call the bridge directly to transfer the specific ERC-721 from Ethereum -> SKALE Chain, if the mapping exists
+3. Wait for the message to be posted by the validator set on the SKALE Chain, which is the net-new minted NFT corresponding to the NFT (by id) locked on Ethereum during the bridge
+
+### Bridge to SKALE (from Ethereum)
+
+The following will help you bridge an NFT from Ethereum to SKALE.
+
+<Tabs>
+    <Tab title="bridge.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+    const ERC721_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC721_ABI = [ "function approve(address to, uint256 tokenId) external" ];
+    const DEPOSIT_BOX_ERC721_ADDRESS = "[DEPOSIT_BOX_ERC20_ADDRESS]";
+    const DEPOSIT_BOX_ERC721_ABI = [ "function depositERC721(string calldata schainName, address erc721OnMainnet, uint256 tokenId) external" ];
+    const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+    const TOKEN_ID = BigInt(1); // TokenId to bridge
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const depositBoxContract = new Contract(DEPOSIT_BOX_ERC721_ADDRESS, DEPOSIT_BOX_ERC721_ABI, wallet);
+    const erc721TokenContract = new Contract(ERC721_ADDRESS, ERC721_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-721 Token Id #1
+    const approvalTx = await erc721TokenContract.approve(DEPOSIT_BOX_ERC721_ADDRESS, TOKEN_ID);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+
+    // 2. Deposit ERC-721 Token Id #1 into bridge, will receive on same address on SKALE
+    const depositTx = await depositBoxContract.depositERC721(SKALE_CHAIN_NAME, ERC721_ADDRESS, TOKEN_ID);
+    await depositTx.wait(1);
+
+    // Success! Now watch for delivery on SKALE Chain
+    console.log("Success!");
+    ```
+  </Tab>
+  <Tab title= "bridgeDirect.js">
+    ```js
+    import { Contract, JsonRpcProvider, Wallet } from "ethers"; // npm add ethers
+
+    const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+    const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+    const ERC721_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+    const ERC721_ABI = [ "function approve(address to, uint256 tokenId) external" ];
+    const DEPOSIT_BOX_ERC721_ADDRESS = "[DEPOSIT_BOX_ERC20_ADDRESS]";
+    const DEPOSIT_BOX_ERC721_ABI = [ "function depositERC721Direct(string calldata schainName, address erc721OnMainnet, uint256 tokenId, address receiver) external" ];
+    const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+    const TOKEN_ID = BigInt(1); // TokenId to bridge
+    const CUSTOM_RECEIVER = "[CUSTOM_RECEIVER_WALLET_ADDRESS]";
+
+    // Setup the RPC Provider to connect to Ethereum
+    const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+    // Setup the wallet with your private key and default to the Ethereum provider
+    const wallet = new Wallet(PRIVATE_KEY, provider);
+
+    // Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+    const depositBoxContract = new Contract(DEPOSIT_BOX_ERC721_ADDRESS, DEPOSIT_BOX_ERC721_ABI, wallet);
+    const erc721TokenContract = new Contract(ERC721_ADDRESS, ERC721_ABI, wallet);
+
+    // 1. Approve the bridge to move ERC-721 Token Id #1
+    const approvalTx = await erc721TokenContract.approve(DEPOSIT_BOX_ERC721_ADDRESS, TOKEN_ID);
+    await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~15 seconds
+
+    // 2. Deposit ERC-721 Token Id #1 into bridge, will receive on custom address on SKALE
+    const depositTx = await depositBoxContract.depositERC721Direct(SKALE_CHAIN_NAME, ERC721_ADDRESS, TOKEN_ID, CUSTOM_RECEIVER);
+    await depositTx.wait(1);
+
+    // Success! Now watch for delivery on SKALE Chain
+    console.log("Success!");
+    ```
+  </Tab>
+</Tabs>
+
+### Bridge to Ethereum (from SKALE)
+
+SKALE's decentralized bridge offers a simple two-step process to bridge from any SKALE Chain to Ethereum Mainnet.
+
+1. The first step, which only has to be done if you don't have a sufficient balance to exit, is to fill up your gas wallet on Ethereum
+
+2. The second step is to initiate the bridge (technically known as an exit) on the SKALE Chain
+
+<Note>
+Gas Wallet, officially referred to as the community pool, is a smart contract on Ethereum that is used to handle exits from SKALE. Users pre-pay ETH into this contract which is then used to reimburse validators for the gas costs of the bridge cost back to Ethereum. Make sure users top up their gas wallet to ensure the bridge can succeed.
+</Note>
+
+#### Pre-pay for your Exit
+
+This step is optional IF the user has already filled up their gas wallet and has sufficient balance left.
+You can check if the wallet is an `activeUser` on the CommunityLocker 0xD2aaa00300000000000000000000000000000000 smart contract on the SKALE Chain. If active, no need to fill the pool again.
+
+```js
+import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+const ETHEREUM_RPC_URL = "[YOUR_ETHEREUM_RPC_URL]";
+const COMMUNITY_POOL_ADDRESS = "[COMMUNIY_POOL_ADDRESS]";
+const COMMUNITY_POOL_ABI = [ "function rechargeUserWallet(string calldata schainName, address user) external" ];
+const SKALE_CHAIN_NAME = "[SKALE_CHAIN_NAME]"; // e.g elated-tan-skat (europa mainnnet);
+
+// Setup the RPC Provider to connect to Ethereum
+const provider = new JsonRpcProvider(ETHEREUM_RPC_URL);
+
+// Setup the wallet with your private key and default to the Ethereum provider
+const wallet = new Wallet(PRIVATE_KEY, provider);
+
+// Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+const communityPoolContract = new Contract(COMMUNITY_POOL_ADDRESS, COMMUNITY_POOL_ABI, wallet);
+
+const rechargeTx = await communityPoolContract.rechargeUserWallet(
+	SKALE_CHAIN_NAME,
+	wallet.address,
+	{
+		value: parseEther("0.02") // Recharge by 0.02 ETH
+	}
+);
+
+await rechargeTx.wait(5); // wait 5 blocks for full finality
+
+// Success! You can now bridge from SKALE to Ethereum!
+console.log("Success!");
+```
+
+#### Bridge to Ethereum
+
+Once the above prepayment steps are completed, you can proceed with the bridging.
+Bridging from SKALE simply requires the `exitToMainERC721` function to be called with the corresponding token and amount to initiate the transfer back to Ethereum.
+
+```js
+import { Contract, JsonRpcProvider, Wallet, parseEther } from "ethers"; // npm add ethers
+
+const PRIVATE_KEY = "[YOUR_PRIVATE_KEY]";
+const SKALE_RPC_URL = "[YOUR_SKALE_RPC_URL]";
+const ERC721_ADDRESS = "[YOUR_TOKEN_ADDRESS]";
+const ERC721_ABI = [ "function approve(address spender, uint256 amount) external" ];
+const TOKEN_MANAGER_ERC721_ADDRESS = "0xD2aaa00600000000000000000000000000000000"; // DO NOT CHANGE THIS
+const TOKEN_MANAGER_ERC721_ABI = [ "function exitToMainERC721(address contractOnMainnet, uint256 tokenId) external" ];
+const TOKEN_ID = BigInt(1); // Token Id #1
+
+// Setup the RPC Provider to connect to Ethereum
+const provider = new JsonRpcProvider(SKALE_RPC_URL);
+
+// Setup the wallet with your private key and default to the Ethereum provider
+const wallet = new Wallet(PRIVATE_KEY, provider);
+
+// Setup the smart contracts which default to being signed by your wallet and connected on Ethereum
+const tokenManagerERC721Contract = new Contract(TOKEN_MANAGER_ERC721_ADDRESS, TOKEN_MANAGER_ERC721_ABI, wallet);
+const erc721TokenContract = new Contract(ERC721_ADDRESS, ERC721_ABI, wallet);
+
+// 1. Approve the bridge to move ERC-721 on your behalf
+const approvalTx = await erc721TokenContract.approve(TOKEN_MANAGER_ERC721_ADDRESS, TOKEN_ID);
+await approvalTx.wait(1); // Wait 1 blocks for confirmation, ~1 seconds
+
+// 2. Transfer ERC-721 Token into bridge, will recieve on the same address on Ethereum
+const exitTx = await tokenManagerERC721Contract.exitToMainERC721(ERC721_ADDRESS, TOKEN_ID);
+await exitTx.wait(1);
+
+// Success! Now watch for delivery on Ethereum
+console.log("Success!");
+```
+
+<Note>
+If your bridge is not working, it is most likely for one of three reasons:
+
+1. You forgot to prepay for gas
+2. You forgot to approve the bridge on the ERC-721 token id you want to bridge
+3. You don't actually own the ERC-721 Token
+
+Still having issues? Join us in [Discord](https://discord.gg/skale) for support!
+</Note>

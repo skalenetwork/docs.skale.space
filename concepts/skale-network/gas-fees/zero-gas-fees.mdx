@@ -1,0 +1,33 @@
+---
+title: "Zero Gas Fees"
+description: "Why SKALE transactions feel free while staying secure"
+---
+
+## Overview
+
+SKALE chains feel free to users because transactions use sFUEL—a gas token with no market value. sFUEL preserves EVM compatibility and spam protection without forcing users to buy tokens. Chain owners pay predictable monthly costs instead of passing gas fees to end users.
+
+<Note>
+Zero gas fees is different from gasless transactions. Gasless relies on proof-of-work magic numbers; zero gas fees uses free sFUEL with built-in rate limiting.
+</Note>
+
+## SKALE Fuel (sFUEL)
+
+sFUEL is minted per chain, cannot be traded, and is distributed by chain operators, dApps, or a [public faucet](https://sfuelstation.com). It behaves like ETH for gas accounting, but with no economic value—so onboarding is instant:
+
+- **For developers:** Deploy immediately; larger contracts and more onchain logic no longer carry gas sticker shock.
+- **For users:** Apps can invisibly fund wallets with sFUEL during onboarding, so people transact without thinking about gas.
+
+## Benefits
+
+- **No paywall** – Remove the “buy gas first” step from onboarding.
+- **Predictable costs** – Chain owners pay monthly, not per transaction.
+- **EVM tooling ready** – Works with wallets, SDKs, and libraries as-is.
+- **Built-in safety** – Rate limits and optional gas settings prevent abuse even with free gas.
+
+## Related Topics
+
+- [Optional Gas Fees](/concepts/gas-fees/optional-gas-fees)
+- [Gasless Transactions](/concepts/gas-fees/gasless-transactions)
+- [sFUEL Distribution](/developers/run-a-skale-chain/managing-sfuel-distribution)
+

@@ -1,0 +1,250 @@
+---
+title: "Deploy an ERC-721 Token"
+description: "Step-by-step guide to deploying an ERC-721 NFT contract on SKALE using Foundry or Hardhat with OpenZeppelin Contracts"
+---
+
+## Deploy an ERC-721 Token
+
+OpenZeppelin provides secure, community-vetted smart contract templates that follow best practices for ERC-721 (NFT) development.
+
+<Tabs>
+    <Tab title="Deployment with Foundry">
+        
+        <Note title="Setup Foundry">
+        ## Step 0: Setup Foundry
+        
+        If your Foundry project isn't set up yet, please go to the [Foundry setup section](../deployment/setup-foundry) before proceeding.
+        </Note>
+
+        ## Step 1: Create the ERC-721 Contract
+
+        Create a contract script in `src/MyERC721.sol`. Run:
+        ```shell
+        touch src/MyERC721.sol
+        ```
+
+        Add the code:
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+        contract MyERC721 is ERC721 {
+            uint256 private _nextTokenId;
+
+            constructor() ERC721("MyNFT", "MNFT") {}
+
+            function mint(address to) public {
+                uint256 tokenId = _nextTokenId;
+                _safeMint(to, tokenId);
+                _nextTokenId++;
+            }
+
+            function getNextTokenId() public view returns (uint256) {
+                return _nextTokenId;
+            }
+        }
+        ```
+
+        This contract:
+        - Inherits from OpenZeppelin’s `ERC721` contract  
+        - Sets the name to `"MyNFT"` and symbol `"MNFT"`  
+        - Includes a `mint` function allowing the creation of NFTs  
+        - Tracks the next available token ID  
+
+        ## Step 2: Compile the Contract
+
+        Compile your contract:
+
+        ```shell
+        forge build
+        ```
+
+        ## Step 3: Prepare Signer for Deployment
+
+        This tutorial uses the Foundry Keystore for increased security. Create a new keystore:
+
+        ```shell
+        cast wallet import skale-deployer --private-key $(cast wallet new | grep 'Private key:' | awk '{print $3}')
+        ```
+
+        <Note>
+        Provide a password to encrypt the keystore file when running the command. If you forget the password, it cannot be recovered.
+        </Note>
+
+        Get your wallet address:
+
+        ```shell
+        cast wallet address --account skale-deployer
+        ```
+
+        Visit the [sFUEL Station](https://www.sfuelstation.com/), toggle testnet, and fill up on sFUEL.
+
+        <Tip>
+        Make sure testnet mode is enabled on the sFUEL Station if you're using a testnet SKALE Chain!
+        </Tip>
+
+        ## Step 4: Deploy the Contract
+
+        Deploy your ERC-721 contract:
+
+        ```shell
+        forge create src/MyERC721.sol:MyERC721 \
+            --account skale-deployer \
+            --rpc-url skale_testnet \
+            --broadcast \
+            --legacy
+        ```
+
+        <Note>
+        The `--legacy` flag is required for SKALE Chains. For more information, see [Troubleshooting](/developers/troubleshooting).
+        </Note>
+
+        Example deployment output:
+
+        ```shell
+        Enter keystore password:
+        Deployer: 0x63a38D694de837dDF765f9b2704814275586D812
+        Deployed to: 0x4A435f6E471f773173774E860EBDcd17B132a2b4
+        Transaction hash: 0x3f6cc66e860cb82a6a62e3f5181c401e5558d60d622a9157437002e16c1ce488
+        ``` 
+
+        ## Step 5: Verify Your Smart Contract
+
+        Verify the contract on the block explorer:
+
+        ```shell
+        forge verify-contract \
+            --rpc-url skale_testnet \
+            <DEPLOYED_ADDRESS> \
+            src/MyERC721.sol:MyERC721 \
+            --verifier blockscout \
+            --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+        ```
+
+        Replace `<DEPLOYED_ADDRESS>` with your smart contract address.
+    </Tab>
+
+    <Tab title="Deployment with Hardhat">
+        
+        <Note title="Setup Hardhat">
+        ## Step 0: Setup Hardhat
+
+        If your Hardhat project isn't set up yet, please go to the [Hardhat setup section](../deployment/setup-hardhat) before proceeding.
+        </Note>
+
+        ## Step 1: Create the ERC-721 Contract
+
+        Create a contract script in `contracts/MyERC721.sol`. Run:
+        ```shell
+        touch contracts/MyERC721.sol
+        ```
+
+        Add the code:
+        ```solidity
+        // SPDX-License-Identifier: MIT
+        pragma solidity ^0.8.19;
+
+        import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+        contract MyERC721 is ERC721 {
+            uint256 private _nextTokenId;
+
+            constructor() ERC721("MyNFT", "MNFT") {}
+
+            function mint(address to) public {
+                uint256 tokenId = _nextTokenId;
+                _safeMint(to, tokenId);
+                _nextTokenId++;
+            }
+        }
+        ```
+
+        ## Step 2: Compile Contracts
+
+        ```shell
+        npx hardhat compile
+        ```
+
+        ## Step 3: Create a Deployment Script
+
+        Create the deployemnt script in `scripts/deploy_erc721.js`. Run:
+        ```shell
+        touch scripts/deploy_erc721.js
+        ```
+
+        Add the deployment code:
+        ```javascript
+        const hre = require("hardhat");
+
+        async function main() {
+            const NFT = await hre.ethers.getContractFactory("MyERC721");
+            const nft = await NFT.deploy();
+
+            await nft.waitForDeployment();
+
+            console.log("Contract deployed to:", await nft.getAddress());
+        }
+
+        main().catch((error) => {
+            console.error(error);
+            process.exit(1);
+        });
+        ```
+
+        ## Step 4: Run Tests
+
+        ```shell
+        npx hardhat test
+        ```
+
+        ## Step 5: Deploy to SKALE
+
+        ```shell
+        npx hardhat run scripts/deploy_erc721.js --network skale_testnet
+        ```
+
+        ## SKALE-Specific Considerations
+
+        1. **Transaction Type**: Hardhat generally handles transaction types automatically, but confirm your version supports legacy transactions if needed.
+
+        2. **Gas Configuration**:  
+        SKALE has zero gas fees, but still requires sFUEL for transactions.
+
+        ```javascript
+        networks: {
+            skale_testnet: {
+                url: "...",
+                accounts: [...],
+                gasPrice: 0, // SKALE has zero gas fees
+            },
+        },
+        ```
+
+        3. **Contract Verification**:
+
+        ```shell
+        npx hardhat verify --network skale_testnet <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
+        ```
+    </Tab>
+</Tabs>
+
+---
+
+## Next Steps
+
+Congratulations! You've successfully deployed an ERC-721 token on SKALE. You can now:
+
+- Mint unique NFTs  
+- Transfer NFTs between addresses  
+- Approve operators  
+- Build NFT marketplaces or dApps on SKALE  
+
+## Related Topics
+
+- [Solidity Quickstart](/developers/solidity-quickstart)
+- [Deploy on SKALE](/developers/deploy-on-skale)
+- [Payments on SKALE](/developers/payments-on-skale)
+- [Deploy an ERC-20 Token](/cookbook/smart-contracts/deploy-erc20-token)
+- [Troubleshooting](/developers/troubleshooting)

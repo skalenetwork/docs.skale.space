@@ -1,0 +1,328 @@
+---
+title: Access Control
+description: Managing Control and Access to a SKALE Chain
+---
+
+While SKALE Chains themselves are Layer 1 blockchains, the architectural design intentionally allows for a semi-permissioned access control layer that is manageable by the chain owners or operators. This allows for maximum flexibility where an individual chain can be locked down to only allow a single application or group of applications to deploy, be 100% public for anyone, or allow various factories to be used by different wallets.
+
+Access Control to a SKALE Chain is managed by the Config Controller smart contract which is predeployed on a SKALE Chain. Config Controller makes use of [OpenZeppellin's Access Control](https://openzeppelin.com) to handle roles, events, and management automatically.
+
+<Aside type="note">
+If you encouter the error **Out of Gas** when trying to deploy a smart contract to a SKALE Chain; this likely means that the address is not allowed to deploy smart contracts and is missing deployer access.
+</Aside>
+
+## Access via Accounts
+
+The most straightforward and common way to access a SKALE Chain for deployment is by having an externally owned account (EOA) added to the chain allow list. An account that is added to this list is given `DEPLOYER_ROLE` which allows it to directly bypass all restrictions and deploy ANY smart contract to a SKALE Chain as long as it fits within the block gas limit.
+
+See [how to add address to whitelist](#add-to-whitelist) and [how to remove from whitelist](#remove-from-whitelist) to understand how to manage your access control layer.
+
+<Aside type="note">
+DEPLOYER_ROLE is the most elevated deployer permission available for a chain with the permission layer enabled. Deployer Role allows deployment directly and through factories.
+</Aside>
+
+## Access via Factories
+
+Another common method for deployment is via factories.
+
+SKALE Chain owners and operators can deploy popular generic factories such as CREATE2Factory, SingletonFactory, and CreateX to their chain and allow developers to use them when deploying to their chain.
+
+Additionally, developers themselves can create contracts to deploy other contracts making specific factories for their uses.
+
+### Open Factory Usage
+
+Open factory usage is where the SKALE Chain owner or operator grants `DEPLOYER_ROLE` to a smart contract that is acting as the factory. This then allows ANY account or smart to use the whitelisted factory to deploy a smart contract through.
+
+**Example: SushiSwap**
+On the [SKALE Europa Hub](https://portal.skale.space/chains/europa), SushiSwap which is based off of Uniswap; has a factory contract that creates liquidity pairs. This contract is dedicated to SushiSwap and allows for liquidity pairs (which are smart contracts) to be created by anyone via the UniswapV2/V3 factories that are deployed as part of SushiSwap's core architecture.
+
+<Aside type="danger">
+Open factory usage is generally not recommended on a SKALE Chain with zero gas, however, is necessary and even useful in some cases. Generic factories should not be opened up for public usage on a SKALE Chain with the permission layer enabled and zero gas fees to avoid spam.
+</Aside>
+
+This then allows anyone to deploy a smart contract via the factory regardless of their direct status on the allow list.
+
+### Closed Factory Usage
+
+Closed factory usage is where the SKALE Chain owner or operator allows a specific account or set of accounts to deploy through a factory.
+
+The unique part about this design is:
+
+1. The accounts whitelisted on the specific factory **DO NOT** have the ability to deploy directly to the blockchain or through other factories
+
+2. Accounts provided with `DEPLOYER_ROLE` generally on the blockchain can deploy via the contract IF the contract allows generic deployment rights
+
+3. Accounts without `DEPLOYER_ROLE` cannot deploy through the factory IF the factory does not have `DEPLOYER_ROLE` directly; sufficiently securing the contract and chain from spam
+
+## Public Access
+
+SKALE Chains by default come with the permission layer enabled. However, the permission layer can be enabled/disabled at any time by the SKALE Chain owner or operator. You can enable and disable the permission layer through the Config Controller smart contract.
+
+<Tabs>
+	<Tab title="Ethers v6">
+	```ts
+	 // Using Ethers v6
+	import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+	const CONFIG_CONTROLLER_ABI = [
+		"function enableFreeContractDeployment() external",
+		"function disableFreeContractDeployment() external"
+	];
+	const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+	
+	async function main() {	
+		const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+			
+		// Allow anyone to deploy
+		const res = await contract.enableFreeContractDeployment();
+
+		// Disable deployments, role based allowances are enabled
+		const res = await contract.disableFreeContractDeployment();
+	}
+
+	main()
+		.catch((err) => {
+			console.error(err);
+			process.exitCode = 1;
+		});
+	```
+	</Tab>
+</Tabs>
+
+## Managing Access
+
+### Add to Whitelist
+
+The following is how to add an address to the SKALE Chain whitelist:
+
+<Note>
+The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
+</Note>
+
+<Tabs>
+	<Tab title="Ethers v6">
+	```ts
+	 // Using Ethers v6
+	import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+	const WALLET_TO_WHITELIST = "0x...";
+	const CONFIG_CONTROLLER_ABI = [
+		"function addToWhitelist(address addr) external"
+	];
+	const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+	async function main() {
+		
+		const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+		const res = await contract.addToWhitelist(WALLET_TO_WHITELIST);
+
+		console.log(`Wallet ${WALLET_TO_WHITELIST} whitelisted on SKALE Chain at ${res}`);
+	}
+
+	main()
+		.catch((err) => {
+			console.error(err);
+			process.exitCode = 1;
+		});
+	```
+	</Tab>
+</Tabs>
+
+### Remove from Whitelist
+
+The following is how to remove an address from the SKALE Chain whitelist:
+
+<Note>
+The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
+</Note>
+
+<Tabs>
+	<Tab title="Ethers v6">
+		```ts
+		 // Using Ethers v6
+		import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+		const WALLET_TO_REMOVE = "0x...";
+		const CONFIG_CONTROLLER_ABI = [
+			"function removeFromWhitelist(address addr) external"
+		];
+		const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+		async function main() {
+			
+			const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+			const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+			const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+			const res = await contract.removeFromWhitelist(WALLET_TO_REMOVE);
+
+			console.log(`Wallet ${WALLET_TO_REMOVE} removed on SKALE Chain at ${res}`);
+		}
+
+		main()
+			.catch((err) => {
+				console.error(err);
+				process.exitCode = 1;
+			});
+		```
+	</Tab>
+</Tabs>
+
+### Add Admin for Contract
+
+The following is how to add an admin which can manage a smart contract whitelist:
+
+<Note>
+The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
+</Note>
+
+<Tabs>
+	<Tab title="Ethers v6">
+	```ts
+	 // Using Ethers v6
+	import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+	const ADMIN_WALLET_ADDRESS = "0x..."; // your eth address
+	const FACTORY_ADDRESS = "0x...";      // the contract deploying other contracts
+	const CONFIG_CONTROLLER_ABI = [
+		"function addAllowedOriginRoleAdmin(address admin, address deployer) external"
+	];
+	const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+	async function main() {
+		
+		const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+		const res = await contract.addAllowedOriginRoleAdmin(ADMIN_WALLET_ADDRESS, FACTORY_ADDRESS);
+
+		console.log(`Wallet ${ADMIN_WALLET_ADDRESS} can now manage ${FACTORY_ADDRESS} on SKALE Chain at ${res}`);
+	}
+
+	main()
+		.catch((err) => {
+			console.error(err);
+			process.exitCode = 1;
+		});
+	```
+	</Tab>
+</Tabs>
+
+### Remove Admin from Contract Whitelist
+
+The following is how to remove an admin from managing a smart contract whitelist:
+
+<Note>
+The `msg.sender` must have `DEPLOYER_ADMIN_ROLE` to call this successfully.
+</Note>
+
+<Tabs>
+	<Tab title="Ethers v6">
+	```ts
+	 // Using Ethers v6
+	import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+	const ADMIN_WALLET_ADDRESS = "0x..."; // your eth address
+	const FACTORY_ADDRESS = "0x...";      // the contract deploying other contracts
+	const CONFIG_CONTROLLER_ABI = [
+		"function removeAllowedOriginRoleAdmin(address admin, address deployer) external"
+	];
+	const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+	async function main() {
+		
+		const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+		const res = await contract.removeAllowedOriginRoleAdmin(ADMIN_WALLET_ADDRESS, FACTORY_ADDRESS);
+
+		console.log(`Wallet ${ADMIN_WALLET_ADDRESS} can no longermanage ${FACTORY_ADDRESS} on SKALE Chain at ${res}`);
+	}
+
+	main()
+		.catch((err) => {
+			console.error(err);
+			process.exitCode = 1;
+		});
+	```
+	</Tab>
+</Tabs>	
+
+### Add to Contract Whitelist
+
+The following is how to add an address to the SKALE Chain whitelist:
+
+<Note>
+The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this successfully.
+</Note>
+
+<Tabs>
+	<Tab title="Ethers v6">
+	```ts
+	 // Using Ethers v6
+	import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+	const WALLET_TO_WHITELIST = "0x...";
+	const FACTORY_ADDRESS = "0x...";
+	const CONFIG_CONTROLLER_ABI = [
+		"function allowOrigin(address transactionOrigin, address deployer) external"
+	];
+	const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+	async function main() {
+		
+		const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+		const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+		const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+		const res = await contract.allowOrigin(WALLET_TO_WHITELIST, FACTORY_ADDRESS);
+
+		console.log(`Wallet ${WALLET_TO_WHITELIST} whitelisted on SKALE Chain at ${res}`);
+	}
+
+	main()
+		.catch((err) => {
+			console.error(err);
+			process.exitCode = 1;
+		});
+	```
+	</Tab>
+</Tabs>	
+
+
+### Remove from Contract Whitelist
+
+The following is how to remove an address from the SKALE Chain whitelist:
+
+<Note>
+The `msg.sender` must have `allowedOriginRoleAdmin(deployer)` to call this successfully.
+</Note>
+
+<Tabs>
+	<Tab title="Ethers v6">
+		```ts
+		 // Using Ethers v6
+		import { Contract, JsonRpcProvider, Wallet } from "ethers";
+
+		const WALLET_TO_WHITELIST = "0x...";
+		const FACTORY_ADDRESS = "0x...";
+		const CONFIG_CONTROLLER_ABI = [
+			"function forbidOrigin(address transactionOrigin, address deployer) external"
+		];
+		const CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS = "0xD2002000000000000000000000000000000000d2";
+		async function main() {
+			
+			const provider = new JsonRpcProvider("https://mainnet.skalenodes.com/v1/<SKALE Chain-name>");
+			const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
+			const contract = new Contract(CONFIG_CONTROLLER_PREDEPLOYED_ADDRESS, CONFIG_CONTROLLER_ABI, wallet);
+			const res = await contract.forbidOrigin(WALLET_TO_WHITELIST, FACTORY_ADDRESS);
+
+			console.log(`Wallet ${WALLET_TO_WHITELIST} can no longer deploy via ${FACTORY_ADDRESS} on SKALE Chain at ${res}`);
+		}
+
+		main()
+			.catch((err) => {
+				console.error(err);
+				process.exitCode = 1;
+			});
+		```
+	</Tab>
+</Tabs>	
+	

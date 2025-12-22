@@ -1,0 +1,78 @@
+---
+title: DDoS Protection
+description: Explore the configurable chain DDoS Protection System
+---
+
+Besides limiting the gas consumption rate on SKALE Chains, each chain also comes
+with a configurable DDOS protection system that allows the Chain to detect peak
+(per second) and long load (per minute) JSON-RPC calls and WS/WSS connections.
+The protection enables the chain to survive in high load situations by banning
+caller origins for a preset number of seconds.
+
+An example configuration is:
+
+```json
+"unddos": {
+    "origins": [
+        {
+            "origin": [ "192.168.1.1", "127.0.0.*", "::1" ],
+            "ban_lengthy": 0,
+            "ban_peak": 0,
+            "max_calls_per_minute": 1000000000,
+            "max_calls_per_second": 1000000000,
+            "max_ws_conn": 65535
+        },
+        {
+            "origin": [ "*" ],
+            "ban_lengthy": 120,
+            "ban_peak": 15,
+            "max_calls_per_minute": 5000,
+            "max_calls_per_second": 1500,
+            "max_ws_conn": 20
+        }
+    ]
+}
+```
+
+The first "origins" block configures allowed unlimited load from specified IP origins.
+The second origins block configures all call origins allowed, but allow 1500 JSON-RPC
+calls per second and 5000 calls per minute. If the calls exceed the per second limit,
+"ban_peak" bans the caller for 15 seconds. If the calls exceed the per minute limit,
+"ban_lengthy" bans the caller for 120 seconds. And finally, "max_ws_conn" allows for
+20 concurrent connections from a single IP.
+
+The configuration settings can be expanded to limit specific JSON-RPC calls, like
+eth_blockNumber. For example:
+
+```json
+{
+	"origins": [
+		{
+			"ban_lengthy": 120,
+			"ban_peak": 15,
+			"custom_method_settings": {
+				"eth_blockNumber": {
+					"max_calls_per_minute": 150000,
+					"max_calls_per_second": 5000
+				}
+			},
+			"max_calls_per_minute": 15000,
+			"max_calls_per_second": 500,
+			"max_ws_conn": 50,
+			"origin": ["*"]
+		}
+	]
+}
+```
+
+And DDoS protection can be completely disabled with the following config:
+
+```json
+"unddos": {
+    "enabled": false,
+}
+```
+
+## Why It Matters
+
+Chain operators can tune these limits to keep RPC endpoints responsive during traffic spikes—protecting node health while preserving the zero-gas, instant-finality experience for legitimate users.

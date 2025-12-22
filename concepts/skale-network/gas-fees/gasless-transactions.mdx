@@ -1,0 +1,53 @@
+---
+title: "Gasless Transactions"
+description: "How SKALE’s Proof-of-Work magic numbers let users transact with zero balance"
+---
+
+## Overview
+
+Gasless transactions let users submit transactions with zero sFUEL in their wallet by performing a small Proof-of-Work (PoW) upfront. The PoW yields a “magic number” that the chain accepts in place of a gas payment, keeping UX frictionless even when wallets are empty.
+
+## Exploring Proof of Work
+
+SKALE’s PoW is light enough for clients but costly enough to discourage spam. Wallets compute a magic number tied to sender, nonce, and gas limit, proving work before the chain executes the transaction—even with zero sFUEL on hand.
+
+## Understanding Magic Numbers
+
+The magic number represents the gasPrice value in the transaction. The client calculates it with PoW so the chain can verify work without needing a token balance. This keeps gasless fully EVM-compatible—no protocol forks or custom wallets required.
+
+## Proof of Work Algorithm
+
+1. Generate a 256-bit `X` (the magic number) using sender, nonce, and gas limit.
+2. Compute available “free gas” using the chain’s PoW difficulty.
+3. If free gas covers the estimated gas, submit the transaction with `gasPrice = X` and `gasLimit = freeGas(X)`.
+4. Otherwise, repeat until a valid magic number is found.
+
+<Note>
+- ⊕ is the bitwise XOR operator
+- KECCAK256(SHA3) is the hashing algorithm that should be used
+</Note>
+
+<Warning>
+MetaMask and other popular browser wallets with which SKALE Chains are compatible do not always support gasless transactions. This is
+because the magic number generated is generally very, very large and the wallets either have a limitation on the number size or on the lack of gas in the user wallet.
+</Warning>
+
+## Popular Use Cases
+
+- **Invisible onboarding** – Let users transact without ever seeing gas prompts.
+- **Self-serve sFUEL** – Avoid server-side faucets; the client can prove work and proceed.
+- **Extra spam resistance** – Pair with zero-gas chains to add another layer of protection.
+
+## Community Tools
+
+| Name | Description | Language |
+| ---- | ----------- | -------- |
+| [@eidolon-labs/gasless](https://www.npmjs.com/package/@eidolon-labs/gasless) | Generate magic numbers using SKALE Proof of Work with Rust | JS/TS/Rust |
+| [skale.dart](https://pub.dev/packages/skale) | Generate magic numbers with Dart | Dart |
+| [skale-gas-miner](https://github.com/cryptopia-com/skale-gas-miner) | Generate magic numbers in Unity | C++/C# |
+
+## Related Topics
+
+- [Zero Gas Fees](/concepts/gas-fees/zero-gas-fees)
+- [Optional Gas Fees](/concepts/gas-fees/optional-gas-fees)
+

@@ -1,0 +1,352 @@
+---
+title: "Accept Payments"
+description: "Protect HTTP endpoints with x402 payments using middleware"
+---
+
+## Accept Payments
+
+Protect your HTTP endpoints with x402 payments using middleware. The middleware enforces the x402 handshake, forwards payment requirements to a facilitator, inspects payment headers from clients, and handles settlement before allowing requests to proceed.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Understanding of x402 protocol
+- A facilitator service (see [Run a Facilitator](/cookbook/x402/facilitator))
+
+## Overview
+
+When a client reaches a paywalled endpoint, the middleware:
+
+1. Returns a `402 Payment Required` response with payment requirements if the incoming request lacks a valid payment header
+2. When a payment header is present, forwards it to the facilitator's `/verify` and `/settle` endpoints
+3. If settlement succeeds, the request continues; otherwise another 402 is returned
+
+---
+
+## Environment Setup
+
+Create a `.env` file with the following variables:
+
+```bash
+# Facilitator URL
+FACILITATOR_URL=https://facilitator.dirtroad.dev
+
+# Your wallet address to receive payments
+FACILITATOR_RECEIVING_ADDRESS=0xfacilitator_receiving_address
+
+# USDC token contract on SKALE
+PAYMENT_TOKEN_ADDRESS=0x2e08028E3C4c2356572E096d8EF835cD5C6030bD
+PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
+
+# SKALE Chain ID
+NETWORK_CHAIN_ID=324705682
+
+# Server port
+PORT=3000
+```
+
+---
+
+## Implementation
+
+<Tabs>
+    <Tab title="Coinbase SDK">
+
+        ### Step 1: Install Dependencies
+
+        ```bash
+        npm install hono @hono/node-server @x402/hono @x402/evm @x402/core dotenv
+        ```
+
+        ### Step 2: Create the Server
+
+        ```typescript
+        import { Hono } from "hono";
+        import { serve } from "@hono/node-server";
+        import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+        import { ExactEvmScheme } from "@x402/evm/exact/server";
+        import { HTTPFacilitatorClient } from "@x402/core/server";
+        import type { Network } from "@x402/core/types";
+        import "dotenv/config";
+
+        const app = new Hono();
+
+        async function main() {
+            const facilitatorUrl = process.env.FACILITATOR_URL!;
+            const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
+            const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+            const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Bridged USDC (SKALE Bridge)";
+            const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+            const network: Network = `eip155:${networkChainId}`;
+
+            // Setup facilitator client and resource server
+            const facilitatorClient = new HTTPFacilitatorClient({ url: facilitatorUrl });
+            const resourceServer = new x402ResourceServer(facilitatorClient);
+            
+            // Register the exact scheme for EVM networks
+            resourceServer.register("eip155:*", new ExactEvmScheme());
+
+            // Public endpoint
+            app.get("/", (c) => {
+                return c.json({ message: "Welcome! Access /premium/* endpoints for paid content" });
+            });
+
+            // Apply payment middleware to protected routes
+            app.use(
+                paymentMiddleware(
+                    {
+                        "GET /premium/data": {
+                            accepts: [
+                                {
+                                    scheme: "exact",
+                                    network: network,
+                                    payTo: receivingAddress,
+                                    price: {
+                                        amount: "10000",
+                                        asset: paymentTokenAddress,
+                                        extra: {
+                                            name: paymentTokenName,
+                                            version: "1",
+                                        },
+                                    },
+                                },
+                            ],
+                            description: "Premium data access",
+                            mimeType: "application/json",
+                        },
+                    },
+                    resourceServer,
+                ),
+            );
+
+            // Protected endpoint
+            app.get("/premium/data", (c) => {
+                return c.json({
+                    secret: "Premium data unlocked!",
+                    timestamp: new Date().toISOString(),
+                });
+            });
+
+            const port = Number(process.env.PORT) || 3000;
+            serve({ fetch: app.fetch, port }, () => {
+                console.log(`Server running on http://localhost:${port}`);
+            });
+        }
+
+        main().catch(console.error);
+        ```
+
+        ### Step 3: Run the Server
+
+        ```bash
+        npx tsx server.ts
+        ```
+
+        ### Multiple Protected Routes
+
+        Add multiple routes with different pricing:
+
+        ```typescript
+        app.use(
+            paymentMiddleware(
+                {
+                    "GET /premium/data": {
+                        accepts: [
+                            {
+                                scheme: "exact",
+                                network: network,
+                                payTo: receivingAddress,
+                                price: {
+                                    amount: "10000",
+                                    asset: paymentTokenAddress,
+                                    extra: { name: paymentTokenName, version: "1" },
+                                },
+                            },
+                        ],
+                        description: "Basic premium data",
+                        mimeType: "application/json",
+                    },
+                    "GET /premium/advanced": {
+                        accepts: [
+                            {
+                                scheme: "exact",
+                                network: network,
+                                payTo: receivingAddress,
+                                price: {
+                                    amount: "50000",
+                                    asset: paymentTokenAddress,
+                                    extra: { name: paymentTokenName, version: "1" },
+                                },
+                            },
+                        ],
+                        description: "Advanced premium data",
+                        mimeType: "application/json",
+                    },
+                },
+                resourceServer,
+            ),
+        );
+        ```
+
+    </Tab>
+    <Tab title="Faremeter SDK">
+
+        ### Step 1: Install Dependencies
+
+        ```bash
+        npm install hono @hono/node-server @faremeter/middleware dotenv
+        ```
+
+        ### Step 2: Create the Server
+
+        ```typescript
+        import { Hono } from "hono";
+        import { serve } from "@hono/node-server";
+        import { createMiddleware } from "@faremeter/middleware/hono";
+        import "dotenv/config";
+
+        const app = new Hono();
+
+        async function main() {
+            const facilitatorUrl = process.env.FACILITATOR_URL!;
+            const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
+            const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+            const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Bridged USDC (SKALE Bridge)";
+            const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+
+            // Create payment middleware
+            const paywalled = await createMiddleware({
+                facilitatorURL: facilitatorUrl,
+                accepts: [
+                    {
+                        scheme: "exact",
+                        network: `eip155:${networkChainId}`,
+                        amount: "10000",
+                        maxTimeoutSeconds: 300,
+                        payTo: receivingAddress,
+                        asset: paymentTokenAddress,
+                        description: "Premium data access",
+                        mimeType: "application/json",
+                        extra: {
+                            name: paymentTokenName,
+                            version: "1",
+                        },
+                    },
+                ],
+            });
+
+            // Public endpoint
+            app.get("/", (c) => {
+                return c.json({ message: "Welcome! Access /premium/* endpoints for paid content" });
+            });
+
+            // Protected endpoint
+            app.get("/premium/data", paywalled, (c) => {
+                return c.json({
+                    secret: "Premium data unlocked!",
+                    timestamp: new Date().toISOString(),
+                });
+            });
+
+            const port = Number(process.env.PORT) || 3000;
+            serve({ fetch: app.fetch, port }, () => {
+                console.log(`Server running on http://localhost:${port}`);
+            });
+        }
+
+        main().catch(console.error);
+        ```
+
+        ### Step 3: Run the Server
+
+        ```bash
+        npx tsx server.ts
+        ```
+
+        ### Applying Middleware to Multiple Routes
+
+        Use route patterns to protect multiple endpoints:
+
+        ```typescript
+        // Apply to all /premium/* routes
+        app.use("/premium/*", paywalled);
+
+        app.get("/premium/data", (c) => {
+            return c.json({ type: "data", content: "Premium data" });
+        });
+
+        app.get("/premium/weather", (c) => {
+            return c.json({ type: "weather", forecast: "Sunny" });
+        });
+        ```
+
+        Or create different middleware instances with different pricing:
+
+        ```typescript
+        const basicPaywall = await createMiddleware({
+            facilitatorURL: facilitatorUrl,
+            accepts: [{
+                scheme: "exact",
+                network: `eip155:${networkChainId}`,
+                amount: "10000",
+                maxTimeoutSeconds: 300,
+                payTo: receivingAddress,
+                asset: paymentTokenAddress,
+                extra: { name: paymentTokenName, version: "1" },
+            }],
+        });
+
+        const premiumPaywall = await createMiddleware({
+            facilitatorURL: facilitatorUrl,
+            accepts: [{
+                scheme: "exact",
+                network: `eip155:${networkChainId}`,
+                amount: "50000",
+                maxTimeoutSeconds: 300,
+                payTo: receivingAddress,
+                asset: paymentTokenAddress,
+                extra: { name: paymentTokenName, version: "1" },
+            }],
+        });
+
+        app.get("/basic/data", basicPaywall, (c) => c.json({ tier: "basic" }));
+        app.get("/premium/data", premiumPaywall, (c) => c.json({ tier: "premium" }));
+        ```
+
+    </Tab>
+</Tabs>
+
+---
+
+## Testing Your Server
+
+Once your server is running, you can test it:
+
+```bash
+# Public endpoint (no payment required)
+curl http://localhost:3000/
+
+# Protected endpoint (returns 402 Payment Required)
+curl http://localhost:3000/premium/data
+```
+
+The protected endpoint will return a `402 Payment Required` response with payment requirements that a client can use to make a payment.
+
+## Error Handling
+
+- Invalid facilitator responses throw an exception (HTTP 500)
+- When settlement fails, the middleware returns a 402 status with error details
+- Missing configuration returns a 503 Service Unavailable
+
+## Next Steps
+
+- [Make Payments (Buyer)](/cookbook/x402/buying)
+- [Run a Facilitator](/cookbook/x402/facilitator)
+- [Multi-Token Payments](/cookbook/x402/non-usdc-tokens)
+
+## Resources
+
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)
+- [Faremeter Middleware Documentation](https://docs.corbits.dev/api/reference/middleware/overview)
+- [Coinbase x402 SDK](https://github.com/coinbase/x402)

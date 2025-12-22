@@ -1,0 +1,151 @@
+---
+title: Message Proxy
+description: Using SKALE MessageProxy to connect blockchains
+---
+
+A message proxy within the SKALE Ecosystem is a key "connection" point that works to send and receive messages between Ethereum and SKALE Chains.
+**MessageProxy** is an abstract smart contract that is extended into two key smart contracts used as cornerstones of the SKALE IMA Messaging Layer:
+
+1. **MessageProxyForMainnet** -- the MessageProxy deployed on the Ethereum Mainnet with an architecture designed for posting messages to SKALE Chains
+2. **MessageProxyForSchain** -- the MessageProxy that is pre-deployed on every SKALE Chain that enables communication with Ethereum Mainnet AND communication SKALE Chain to SKALE Chain
+
+> MessageProxy is used to send messages to any contracts. It is used within the bridging layer to actually prepare and execute messages for transportation between between chains.
+
+## Architecture
+
+- MessageProxy contracts are deployed on Mainnet, MessageProxyForMainnet, and each SKALE Chain, MessageProxyForSchain.
+- Contracts must be registered to a MessageProxy which allows them to interact with IMA Agent
+- Messages sent via MessageProxy are processed by the [IMA Agent](#ima-agent).
+- Messages received via MessageProxy are forwarded to the contract contract and executed
+
+<Note>
+MessageProxyForSchain is deployed to **0xd2AAa00100000000000000000000000000000000** on EVERY SKALE Chain.
+</Note>
+
+## Basic Implementation
+
+Utilize the following base flow to send a message:
+
+```solidity
+interface IMessageProxy {
+	function postOutgoingMessage(
+		bytes32 targetChainHash,
+		address targetContract,
+		bytes calldata data
+	) external;
+}
+
+contract ExampleSendContract {
+	
+	IMessageProxy private messageProxy = IMessageProxy(0xd2AAa00100000000000000000000000000000000); // Use this address for SKALE Chain, otherwise use the proper Mainnet Address
+
+	function sendMessageToMainnet(address targetContracts, bytes calldata data) external {
+		messageProxy.postOutgoingMessage(keccak256(abi.encodePacked("Mainnet")), targetContract, data);
+	}
+}
+```
+
+Utilize the following base flow to receive a message:
+
+```solidity
+contract ExampleReceiveContract {
+
+	function postMessage(
+    	bytes32 schainHash,
+    	address sender,
+    	bytes calldata data
+    )
+    	external
+    	returns (address)
+	{
+    	[add in your processing logic]
+	}
+}
+```
+<Note>
+Reminder to register the contracts and ensure if going SKALE Chain to SKALE Chain that the chains are connected first.
+</Note>
+
+## IMA Agent
+
+The IMA Agent is a service that runs within each SKALE Supernode that handles watching for transactions that are executed via MessageProxy* and processes them as messages accordingly.
+The agent automatically utilizes the nodes trusted execution environment (TEE) through Intel SGX&copy; to handle the processing of messages.
+
+## Managing IMA
+
+IMA, similar to other predeployed contracts running on SKALE, is a highly customizable and managed by the SKALE Chain Owner/Operator or accounts delegated to them.
+The following are managed by the SKALE Chain Owner:
+
+### Message Size Limit
+
+The default message size limit is 1,000,000 gas units. This limit can be changed on each individual SKALE Chain with the following process:
+
+1. Assign `CONSTANT_SETTER_ROLE`, an OpenZeppelin-based smart contract role, to one of your multisignature wallets or trusted delegated accounts. This call
+can be made by the [SKALE Chain Owner](/developers/run-a-skale-chain/using-safe) or directly if another account is able to assign this role to your contract.
+
+<Tabs>
+	<Tab title="MultisigWallet CLI">
+		```shell
+		npx msig encodeData SKALE Chain-name-here MessageProxyForSchain grantRole 0x96e3fc3be15159903e053027cff8a23f39a990e0194abcd8ac1cf1b355b8b93c [0x-wallet-address-of-executor]
+		```
+	</Tab>
+	<Tab title="Ethers v6">
+		```ts
+		/**
+		* Run:
+		* npm install ethers dotenv
+		*/
+
+		import { Contract, JsonRpcProvider, Wallet } from "ethers";
+		import dotenv from "dotenv";
+		dotenv.config();
+
+		const MSG_PROXY_SCHAIN_ADDR = "0xd2AAa00100000000000000000000000000000000";
+		const MSG_PROXY_SCHAIN_ABI = [
+			"function grantRole(bytes32 role, address account) external",
+			"function setNewGasLimit(uint256 newGasLimit) external"
+		];
+
+		const provider = new JsonRpcProvider(process.env.RPC_URL);
+		const wallet = new Wallet(process.env.PRIVATE_KEY);
+		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
+
+		const res = await contract.grantRole("0x96e3fc3be15159903e053027cff8a23f39a990e0194abcd8ac1cf1b355b8b93c", "0x[ACCOUNT_TO_GRANT_ROLE]");
+		```
+	</Tab>
+</Tabs>
+
+2. Once assigned, use your account to set the new gas limit. 
+
+<Tabs>
+	<Tab title="MultisigWallet CLI">
+		```shell
+		npx msig encodeData schain-name-here MessageProxyForSchain setNewGasLimit 3000000		
+		```
+	</Tab>
+	<Tab title="Ethers v6">
+		```ts
+		/**
+		* Run:
+		* npm install ethers dotenv
+		*/
+
+		import { Contract, JsonRpcProvider, Wallet } from "ethers";
+		import dotenv from "dotenv";
+		dotenv.config();
+
+		const MSG_PROXY_SCHAIN_ADDR = "0xd2AAa00100000000000000000000000000000000";
+		const MSG_PROXY_SCHAIN_ABI = [
+			"function grantRole(bytes32 role, address account) external",
+			"function setNewGasLimit(uint256 newGasLimit) external"
+		];
+
+		const provider = new JsonRpcProvider(process.env.RPC_URL);
+		const wallet = new Wallet(process.env.PRIVATE_KEY);
+		const contract = new Contract(MSG_PROXY_SCHAIN_ADDR, MSG_PROXY_SCHAIN_ABI, wallet);
+
+		const res = await contract.setNewGasLimit(3000000); // Set to 3,0000,000
+		```
+	</Tab>
+</Tabs>
+

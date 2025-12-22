@@ -1,0 +1,164 @@
+---
+title: "BITE API"
+description: "Technical documentation for BITE's JSON-RPC API methods and transaction structure"
+---
+
+## BITE API
+
+This section provides detailed technical documentation for BITE's JSON-RPC API methods, transaction structure, and common use cases.
+
+## JSON-RPC API Methods
+
+BITE extends standard Ethereum JSON-RPC with several custom methods for threshold encryption operations.
+
+### `bite_getDecryptedTransactionData`
+
+Retrieves decrypted transaction data for a BITE transaction after consensus finality.
+
+**Parameters:**
+- `transactionHash: string` – The hash of the BITE transaction
+
+**Returns:**
+- `object` – Contains `to` and `data` fields with original decrypted values
+
+**Example Request:**
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "bite_getDecryptedTransactionData",
+  "params": ["0x1234567890abcdef1234567890abcdef12345678"],
+  "id": 1
+}
+```
+
+**Example Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "to": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+    "data": "0xa9059cbb0000000000000000000000008ba1f109551b4d4a11d4a9b3d5c5b0c8e4b5b9d50000000000000000000000000000000000000000000000000000000000000000a"
+  }
+}
+```
+
+### `bite_getCommitteesInfo`
+
+Fetches current committee information including BLS public keys and epoch details.
+
+**Parameters:**
+- None
+
+**Returns:**
+- `array` – Array of committee objects (1-2 elements)
+
+**Example Request:**
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "bite_getCommitteesInfo",
+  "params": [],
+  "id": 1
+}
+```
+
+**Example Response (Single Committee):**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": [
+    {
+      "commonBLSPublicKey": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      "epochId": 12345
+    }
+  ]
+}
+```
+
+**Example Response (During Rotation):**
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": [
+    {
+      "commonBLSPublicKey": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      "epochId": 12345
+    },
+    {
+      "commonBLSPublicKey": "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+      "epochId": 12346
+    }
+  ]
+}
+```
+
+## Transaction Structure
+
+### BITE Encrypted Transaction Format
+
+BITE transactions modify standard Ethereum transaction structure:
+
+```typescript
+interface BiteTransaction {
+  to: string;      // Always set to BITE magic address
+  data: string;    // Encrypted payload containing [EPOCH_ID, ENCRYPTED_DATA]
+  from: string;    // Sender address (unchanged)
+  value: string;    // ETH value (unchanged)
+  gas: string;     // Gas limit (must be set manually)
+  gasPrice: string; // Gas price (unchanged)
+  nonce: number;    // Nonce (unchanged)
+}
+```
+
+### Encryption Payload Structure
+
+The encrypted `data` field contains RLP-encoded array:
+```
+[EPOCH_ID, ENCRYPTED_AES_KEY, AES_ENCRYPTED_DATA]
+```
+
+- `EPOCH_ID`: Current committee epoch
+- `ENCRYPTED_AES_KEY`: AES key encrypted with committee BLS public key(s)
+- `AES_ENCRYPTED_DATA`: Original transaction data encrypted with AES
+
+## Common Use Cases
+
+### 1. Private Token Transfers
+
+```typescript
+// Encrypt ERC20 transfer
+const transferData = iface.encodeFunctionData('transfer', [recipient, amount]);
+const tx = {
+  to: tokenAddress,
+  data: transferData,
+  gasLimit: 200000
+};
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### 2. Confidential Contract Interactions
+
+```typescript
+// Encrypt any contract call
+const callData = iface.encodeFunctionData('confidentialFunction', [secretParam]);
+const tx = {
+  to: contractAddress,
+  data: callData,
+  gasLimit: 300000
+};
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### 3. Committee Rotation Monitoring
+
+```typescript
+// Monitor for upcoming rotations
+const committees = await bite.getCommitteesInfo();
+if (committees.length === 2) {
+  console.log('Rotation in progress');
+  // Implement rotation-aware logic
+}
+```

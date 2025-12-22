@@ -1,0 +1,169 @@
+---
+title: "Become an x402 Seller"
+description: "Protect HTTP endpoints with x402 payments using middleware"
+---
+
+Protect your HTTP endpoints with x402 payments using middleware. The middleware enforces Coinbase's x402 handshake, forwards payment requirements to a facilitator, inspects `X-PAYMENT` headers from clients, and retries settlement before allowing requests to proceed.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Understanding of x402 protocol
+- Express or Hono framework
+- A facilitator service (see [Running a Facilitator](/cookbook/x402/facilitator))
+
+## Overview
+
+To become an x402 merchant, you need to:
+
+1. Set up a facilitator service
+2. Install x402 middleware
+3. Protect your HTTP endpoints
+4. Define payment requirements
+
+## Quick Start (Express)
+
+```javascript
+import express from "express";
+import { createMiddleware } from "@faremeter/middleware/express";
+
+const paywalled = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    {
+      scheme: "exact",
+      network: "skale-base-sepolia",
+      maxAmountRequired: "1.5",
+      description: "SKALE USDC payment",
+    },
+  ],
+});
+
+const app = express();
+app.use("/premium", paywalled, premiumRouter);
+```
+
+When a client reaches `/premium`, the middleware:
+
+1. Calls the facilitator's `/accepts` endpoint to produce canonical requirements
+2. Returns a `402 Payment Required` response (with the facilitator payload) if the incoming request lacks a valid `X-PAYMENT` header
+3. When a header is present, forwards it to `/settle`. If settlement succeeds, the request pipeline continues; otherwise another 402 is returned
+
+## Quick Start (Hono)
+
+```javascript
+import { Hono } from "hono";
+import { createMiddleware } from "@faremeter/middleware/hono";
+
+const paywalled = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    {
+      scheme: "exact",
+      network: "skale-base-sepolia",
+      maxAmountRequired: "1.5",
+      description: "SKALE USDC payment",
+    },
+  ],
+});
+
+const app = new Hono();
+app.use("/premium/*", paywalled);
+```
+
+## API Surface
+
+### Express Adapter
+
+```javascript
+const middleware = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    {
+      scheme: "exact",
+      network: "skale-base-sepolia",
+      maxAmountRequired: "1.5",
+      description: "SKALE USDC payment",
+    },
+  ],
+  cacheConfig: {
+    capacity: 256,
+    maxAge: 30000, // 30 seconds
+  },
+});
+```
+
+### Hono Adapter
+
+```javascript
+const middleware = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    {
+      scheme: "exact",
+      network: "skale-base-sepolia",
+      maxAmountRequired: "1.5",
+      description: "SKALE USDC payment",
+    },
+  ],
+});
+```
+
+## Multiple Payment Options
+
+Provide an array of arrays in `accepts` to describe alternative requirement sets:
+
+```javascript
+const middleware = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    [
+      {
+        scheme: "exact",
+        network: "skale-base-sepolia",
+        maxAmountRequired: "1.5",
+        description: "SKALE USDC payment",
+      },
+      {
+        scheme: "exact",
+        network: "ethereum-mainnet",
+        maxAmountRequired: "1.5",
+        description: "Ethereum USDC payment",
+      },
+    ],
+  ],
+});
+```
+
+## Resource-Specific Requirements
+
+Leave `resource` undefined in the accepts entries to let the middleware fill it with the current request URL:
+
+```javascript
+const middleware = await createMiddleware({
+  facilitatorURL: "https://facilitator.dirtroad.dev",
+  accepts: [
+    {
+      scheme: "exact",
+      network: "skale-base-sepolia",
+      maxAmountRequired: "1.5",
+    },
+  ],
+});
+```
+
+## Error Handling
+
+Invalid facilitator responses throw an exception (HTTP 500). When settlement fails, the middleware replays the facilitator payload to the client.
+
+## Next Steps
+
+- [Running a Facilitator](/cookbook/x402/facilitator)
+- [Accepting x402 Payments](/cookbook/x402/accepting-payments)
+- [Buying with x402](/cookbook/x402/buying)
+
+## Resources
+
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)
+- [Corbits/Faremeter Middleware](https://docs.corbits.dev/api/reference/middleware/overview)

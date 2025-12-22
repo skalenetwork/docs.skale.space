@@ -1,0 +1,66 @@
+---
+title: "Staking SKL"
+description: "Mechanics of delegating and staking SKL tokens on the SKALE Network"
+---
+
+## Stake SKL Token
+
+To stake your SKL tokens, visit the [SKALE Portal Staking Page](https://portal.skale.space/staking).
+Connect the wallet of your choice, select a validator, and stake!
+
+<Note>
+All staking is currently conducted on the Ethereum Mainnet for SKALE on Ethereum. SKALE Expand chains do not have staking as this time.
+</Note>
+
+### The Staking Lifecycle
+
+| Step | Action | Delegation Status |
+| - | - | - |
+| 1 | Delegate SKL Tokens to a Validator | Pending Acceptance |
+| 2 | Wait for validator to accept delegation | Pending |
+| 3 | Validator accepts delegation | Delegation Accepted |
+| 4 | Delegation goes into affect as stake on the 1st of the next month | Active |
+| 5 | Stake is locked for a 2 month period and auto re-stakes every 2 months unless undelegated. Rewards are distributed monthly based on performance and stake weight. | Active |
+| 6 | Undelegation request occurs -> moves to pending undelegation | Pending Undelegation |
+| 7 | Tokens are unlocked and able to be transferred after a 2 month period completes | Undelegation Completed |
+
+## FAQ
+
+## Why should I stake SKL tokens?
+
+Staking SKL tokens provides a token holder the following:
+
+- SKL Bounties -- rewards in return for providing security in the form of economic collateral to the SKALE Network
+- Governance Rights -- SKL delegators are elligible to open governance votes and vote on active proposals
+
+### Is SKALE Proof-of-Stake (PoS)?
+
+Yes, the SKALE Network as a whole runs on a Delegated Proof of Stake (DPoS) system which is very common in Proof-of-Stake blockchains and allows token holders to delegate their tokens to valdiators who stake on their behalf.
+
+### What is delegation?
+
+Delegation is the active of delegating i.e giving the underlying power to a validator who can then stake on youre behalf. Many networks including SKALE allow delegation so that token holders are not required to run a validator node themselves or participate in DeFi in order to secure the network.
+
+### What is staking?
+
+Staking is the act of locking up SKL tokens for a given period of time as economic collateral. Creating a SKALE Network supernode requires SKL tokens to be staked into the network in order to operate. Validators in the network stake the SKL tokens they receive from delegators.
+
+### What is the default staking period?
+
+The default staking period is 2 months. There are no other staking periods available at this time.
+
+### How long is the undelegation/unboding period?
+
+The amount of time it takes for an undelegation request to be fully processed and the tokens be unlocked and available for transfer is the staking period -- 2 months by default -- minus the amount of time remaining in the active period.
+
+### Where do tokens go when delegated?
+
+SKALE uses the ERC-777 token standard which allows for tokens to remain within the delegators wallet throughout the staking lifecycle. This means that the tokens are NEVER transferred from the delegators wallet. During the delegation process, if you see tokens moving from your wallet to another, stop immediatley and contact the SKALE team.
+
+### When can I undelegate my tokens?
+
+You can undelegate your tokens at any time except for within the last 3 days of the month. This is a security measure to prevent significant volatility in stake weight for a validator before the next epoch starts.
+
+### What is the minimum delegation amount?
+
+This is set by the validator organization and can be found on the validator's page on the [SKALE Portal](https://portal.skale.space/validators).
