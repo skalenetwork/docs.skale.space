@@ -7,6 +7,55 @@ The go-live process on SKALE can differ slightly from other chains and varies sl
 
 ## Deploying to SKALE Base
 
+<Note>
+The following is for SKALE Base chains (testnet and mainnet).
+</Note>
+
+<Steps>
+    <Step title="Go to Testnet faucet">
+
+    - Head to the [SKALE Base Sepolia faucet](https://base-sepolia-faucet.skale.space) to get the Gas tokens aka CREDITs.
+
+    - If required a bigger CREDIT allocation (ex: it's required to run some dApp specific tests) please open a ticket on [SKALE Discord](https://discord.gg/skale) and request it to the SKALE Team.
+
+    </Step>
+    <Step title="Deploy to Testnet">
+
+    - Deploy you contracts on the SKALE Base Sepolia Testnet. The chain details (ex: RPC, ChainId) can be found [here](./skale-on-base).
+
+    - The cookbook section includes examples showing how to deploy contracts using [Foundry](../../cookbook/deployment/setup-foundry) and [Hardhat](../../cookbook/deployment/setup-hardhat).
+
+    - Check Solidity smart contract versions and EVM compiler. SKALE currently supports Solidity versions up to 0.8.24 and EVM Compiler versions up to Shanghai.
+    </Step>
+    <Step title="Get Mainnet CREDIT">
+
+    - To deploy contracts and perform transactions on the SKALE Base Mainnet please get the gas token aka CREDITs [here](https://base.skalenodes.com/credits). 
+
+    - If any issues are faced please contact the [SKALE Team](https://discord.gg/skale)
+    </Step>
+    <Step title="Deploy to Mainnet">
+
+    - Deploy you contracts on the SKALE Base. The chain details (ex: RPC, ChainId) can be found [here](./skale-on-base).
+
+    - Make sure to have enough CREDITs to deploy contracts as well as perform the necessary dApp specific transactions.
+
+    <Note>
+    In order to imporve the user UX we highly recommend to have a flow inisde the dApp that helps the user to get CREDITs. This can be done in different ways:
+     1. Point the user to the [Buy Credits Portal Menu](https://base.skalenodes.com/credits).
+     
+     **OR**
+     
+     2. Subsidize CREDITS on behalf of users, with different tiers—such as full transaction subsidies or partial subsidies up to a specific level of dApp usage, after which users need to purchase additional features
+    </Note>
+
+    </Step>
+    <Step title="Share your Work">
+
+    - Once the technical integration is finalized feel free to jump on the [SKALE Discord](https://discord.gg/skale) and/or [SKALE Community Telegram](https://t.me/c/2804828764/6) and share your work.
+
+    </Step>
+</Steps>
+
 ## Deploying to SKALE Ethereum
 
 <Note>
