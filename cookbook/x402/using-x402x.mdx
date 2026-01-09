@@ -1,0 +1,463 @@
+---
+title: "Using x402x"
+description: "Integrate x402x facilitator for advanced payment processing features"
+---
+
+## Using x402x
+
+x402x is an advanced facilitator service that extends the base x402 protocol with additional features for enterprise use cases. It provides enhanced payment processing, analytics, and customization options.
+
+## What is x402x?
+
+x402x provides all standard facilitator functionality plus:
+
+- **Advanced Analytics**: Detailed payment tracking and reporting
+- **Custom Payment Rules**: Define complex payment validation logic
+- **Rate Limiting**: Built-in protection against abuse
+- **Multi-Signature Support**: Require multiple approvals for settlements
+- **Webhook Notifications**: Real-time payment event notifications
+- **API Rate Limiting**: Control access and prevent abuse
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Understanding of x402 protocol
+- x402x API credentials (contact x402x team)
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file with x402x configuration:
+
+```bash
+# x402x Facilitator URL
+FACILITATOR_URL=https://facilitator.x402x.example.com
+
+# x402x API credentials
+X402X_API_KEY=your_api_key_here
+X402X_SECRET=your_secret_here
+
+# Your receiving address for payments
+RECEIVING_ADDRESS=0xYourReceivingAddress
+
+# Payment token configuration
+PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
+PAYMENT_TOKEN_NAME="Axios USD"
+
+# SKALE network configuration
+NETWORK_CHAIN_ID=324705682
+
+# Webhook endpoint (optional)
+WEBHOOK_URL=https://your-server.com/webhooks/x402x
+
+# Server port
+PORT=3000
+```
+
+## Basic Integration
+
+### Server Setup with Authentication
+
+```typescript
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import type { Network } from "@x402/core/types";
+import "dotenv/config";
+
+const app = new Hono();
+
+async function main() {
+  const facilitatorUrl = process.env.FACILITATOR_URL!;
+  const apiKey = process.env.X402X_API_KEY!;
+  const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
+  const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+  const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Axios USD";
+  const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+  const network: Network = `eip155:${networkChainId}`;
+
+  // Initialize x402x facilitator client with authentication
+  const facilitatorClient = new HTTPFacilitatorClient({
+    url: facilitatorUrl,
+    headers: {
+      "X-API-Key": apiKey,
+      "Authorization": `Bearer ${apiKey}`,
+    },
+  });
+
+  const resourceServer = new x402ResourceServer(facilitatorClient);
+  resourceServer.register("eip155:*", new ExactEvmScheme());
+
+  // Apply payment middleware
+  app.use(
+    paymentMiddleware(
+      {
+        "GET /api/premium": {
+          accepts: [
+            {
+              scheme: "exact",
+              network: network,
+              payTo: receivingAddress,
+              price: {
+                amount: "50000", // 0.05 tokens
+                asset: paymentTokenAddress,
+                extra: {
+                  name: paymentTokenName,
+                  version: "1",
+                },
+              },
+            },
+          ],
+          description: "Premium content with x402x",
+          mimeType: "application/json",
+        },
+      },
+      resourceServer
+    )
+  );
+
+  // Protected endpoint
+  app.get("/api/premium", (c) => {
+    return c.json({
+      message: "Premium content unlocked via x402x!",
+      features: ["analytics", "webhooks", "rate-limiting"],
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  const port = Number(process.env.PORT) || 3000;
+  serve({ fetch: app.fetch, port }, () => {
+    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Using x402x facilitator: ${facilitatorUrl}`);
+  });
+}
+
+main().catch(console.error);
+```
+
+## Advanced Features
+
+### 1. Custom Payment Rules
+
+Define complex validation logic for payments:
+
+```typescript
+// Configure custom payment rules via x402x API
+const paymentRules = {
+  minAmount: "1000",
+  maxAmount: "1000000",
+  allowedTokens: [
+    "0x61a26022927096f444994dA1e53F0FD9487EAfcf",
+    "0x2e08028E3C4c2356572E096d8EF835cD5C6030bD",
+  ],
+  requireWhitelist: true,
+  maxDailyTransactions: 100,
+};
+
+// Apply rules via x402x dashboard or API
+```
+
+### 2. Webhook Integration
+
+Receive real-time payment notifications:
+
+```typescript
+import crypto from "crypto";
+
+app.post("/webhooks/x402x", async (c) => {
+  const signature = c.req.header("X-x402x-Signature");
+  const payload = await c.req.text();
+  
+  // Verify webhook signature
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.X402X_SECRET!)
+    .update(payload)
+    .digest("hex");
+  
+  if (signature !== expectedSignature) {
+    return c.json({ error: "Invalid signature" }, 401);
+  }
+  
+  const event = JSON.parse(payload);
+  
+  switch (event.type) {
+    case "payment.verified":
+      console.log("Payment verified:", event.data);
+      break;
+    case "payment.settled":
+      console.log("Payment settled:", event.data);
+      // Update database, send notifications, etc.
+      break;
+    case "payment.failed":
+      console.log("Payment failed:", event.data);
+      break;
+  }
+  
+  return c.json({ received: true });
+});
+```
+
+### 3. Analytics API
+
+Query payment data and analytics:
+
+```typescript
+import axios from "axios";
+
+async function getPaymentAnalytics() {
+  const response = await axios.get(
+    `${process.env.FACILITATOR_URL}/api/analytics`,
+    {
+      headers: {
+        "X-API-Key": process.env.X402X_API_KEY!,
+      },
+      params: {
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
+        groupBy: "day",
+      },
+    }
+  );
+  
+  return response.data;
+}
+
+// Example response
+{
+  "totalPayments": 1250,
+  "totalVolume": "125000000", // In token base units
+  "successRate": 0.98,
+  "averagePayment": "100000",
+  "breakdown": [
+    {
+      "date": "2024-01-01",
+      "payments": 45,
+      "volume": "4500000",
+      "failures": 1
+    }
+    // ... more data points
+  ]
+}
+```
+
+### 4. Rate Limiting Configuration
+
+Protect your endpoints from abuse:
+
+```typescript
+// Configure via x402x dashboard or API
+const rateLimits = {
+  perMinute: 60,
+  perHour: 1000,
+  perDay: 10000,
+  perUser: {
+    perMinute: 10,
+    perHour: 100,
+  },
+};
+```
+
+### 5. Multi-Signature Settlement
+
+Require multiple approvals for high-value settlements:
+
+```typescript
+const multiSigConfig = {
+  enabled: true,
+  threshold: 2, // Require 2 of 3 signers
+  signers: [
+    "0xSigner1Address",
+    "0xSigner2Address",
+    "0xSigner3Address",
+  ],
+  amountThreshold: "1000000000", // Only for amounts > 1000 tokens
+};
+```
+
+## Client Integration
+
+### With x402x Features
+
+```typescript
+import { x402Client, x402HTTPClient } from "@x402/core/client";
+import { ExactEvmScheme } from "@x402/evm";
+import { privateKeyToAccount } from "viem/accounts";
+import "dotenv/config";
+
+async function main() {
+  const account = privateKeyToAccount(
+    process.env.PRIVATE_KEY as `0x${string}`
+  );
+
+  const evmScheme = new ExactEvmScheme(account);
+  const coreClient = new x402Client().register("eip155:*", evmScheme);
+  const httpClient = new x402HTTPClient(coreClient);
+
+  // Access x402x-protected resource
+  const url = "http://localhost:3000/api/premium";
+  const response = await fetch(url, {
+    headers: {
+      // Optional: Include API key for enhanced features
+      "X-API-Key": process.env.X402X_API_KEY || "",
+    },
+  });
+
+  if (response.status === 402) {
+    console.log("Payment required, processing via x402x...");
+
+    const responseBody = await response.json();
+    const paymentRequired = httpClient.getPaymentRequiredResponse(
+      (name: string) => response.headers.get(name),
+      responseBody
+    );
+
+    const paymentPayload = await httpClient.createPaymentPayload(
+      paymentRequired
+    );
+
+    const paymentHeaders = httpClient.encodePaymentSignatureHeader(
+      paymentPayload
+    );
+
+    const paidResponse = await fetch(url, {
+      headers: {
+        ...paymentHeaders,
+        "X-API-Key": process.env.X402X_API_KEY || "",
+      },
+    });
+
+    const data = await paidResponse.json();
+    console.log("Premium content:", data);
+  }
+}
+
+main();
+```
+
+## Monitoring & Alerts
+
+### Configure Alerts
+
+Set up notifications via x402x dashboard:
+
+```typescript
+const alertConfig = {
+  email: "admin@yourcompany.com",
+  slack: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+  conditions: [
+    {
+      type: "payment_failure_rate",
+      threshold: 0.05, // Alert if >5% failures
+      window: "1h",
+    },
+    {
+      type: "low_balance",
+      threshold: "100000000", // Alert if receiving wallet < 100 tokens
+    },
+    {
+      type: "rate_limit_exceeded",
+      notify: true,
+    },
+  ],
+};
+```
+
+## Benefits of x402x
+
+### 1. Enterprise-Grade Analytics
+
+- Payment success rates and trends
+- Revenue forecasting
+- User behavior analysis
+- Custom reporting
+
+### 2. Enhanced Security
+
+- Rate limiting and abuse prevention
+- Multi-signature support
+- IP whitelisting
+- Custom validation rules
+
+### 3. Scalability
+
+- High-throughput payment processing
+- Global CDN for low latency
+- Auto-scaling infrastructure
+- 99.99% uptime SLA
+
+### 4. Developer Experience
+
+- Comprehensive API documentation
+- SDK support for multiple languages
+- Testing sandbox environment
+- Dedicated support team
+
+## Pricing Tiers
+
+x402x offers flexible pricing based on usage:
+
+| Tier | Monthly Volume | Rate | Features |
+|------|---------------|------|----------|
+| Starter | < 10K payments | 0.5% | Basic analytics |
+| Professional | 10K - 100K | 0.3% | + Webhooks, API access |
+| Enterprise | > 100K | Custom | + Multi-sig, dedicated support |
+
+## Troubleshooting
+
+### Authentication Errors
+
+```bash
+Error: 401 Unauthorized
+```
+
+**Solution**: Verify your API key and secret are correct in `.env`
+
+### Rate Limit Exceeded
+
+```bash
+Error: 429 Too Many Requests
+```
+
+**Solution**: Check your rate limits in the x402x dashboard or upgrade your tier
+
+### Webhook Verification Failed
+
+```bash
+Error: Invalid signature
+```
+
+**Solution**: Ensure you're using the correct webhook secret for HMAC verification
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Using PayAI" icon="dollar-sign" href="/cookbook/x402/using-payai">
+    Alternative hosted facilitator service
+  </Card>
+  <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
+    Deploy your own facilitator
+  </Card>
+  <Card title="Accept Payments" icon="credit-card" href="/cookbook/x402/accepting-payments">
+    Protect endpoints with payments
+  </Card>
+  <Card title="Build an Agent" icon="robot" href="/cookbook/agents/build-an-agent">
+    Create payment-enabled agents
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [x402x Documentation](https://docs.x402x.example.com) (Coming Soon)
+- [x402x API Reference](https://api.x402x.example.com/docs) (Coming Soon)
+- [Contact x402x Sales](mailto:sales@x402x.example.com)
+- [x402 Protocol Specification](https://x402.org)
+
+---
+
+<Note>
+x402x is a third-party enterprise service. Contact the x402x team for access, custom pricing, and enterprise support.
+</Note>
