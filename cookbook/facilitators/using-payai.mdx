@@ -1,27 +1,16 @@
 ---
-title: "Using PayAI"
+title: "PayAI"
 description: "Integrate PayAI facilitator for x402 payment processing"
 ---
 
-## Using PayAI
-
 PayAI is a hosted facilitator service that simplifies x402 payment processing. Instead of running your own facilitator infrastructure, you can use PayAI's endpoints to handle payment verification and settlement.
 
-## What is PayAI?
-
-PayAI provides:
-
-- **Hosted Facilitator**: No need to deploy and maintain your own facilitator
-- **Multi-Chain Support**: Works across multiple EVM networks including SKALE
-- **High Availability**: Production-ready infrastructure with uptime guarantees
-- **Easy Integration**: Simple API for verification and settlement
 
 ## Prerequisites
 
 - Node.js and npm installed
 - A SKALE Chain endpoint
 - Basic understanding of x402 protocol
-- PayAI API credentials (contact PayAI team)
 
 ## Configuration
 
@@ -33,8 +22,8 @@ Create a `.env` file with PayAI configuration:
 # PayAI Facilitator URL
 FACILITATOR_URL=https://facilitator.payai.example.com
 
-# Your receiving address for payments
-RECEIVING_ADDRESS=0xYourReceivingAddress
+# Facilitator Router Address
+RECEIVING_ADDRESS=0xFacilitatorRouterAddress
 
 # Payment token configuration
 PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
@@ -48,8 +37,6 @@ PORT=3000
 ```
 
 ## Integration with PayAI
-
-### Using Coinbase SDK
 
 <Tabs>
   <Tab title="Server Setup">
@@ -184,130 +171,6 @@ PORT=3000
   </Tab>
 </Tabs>
 
-### Using Faremeter SDK
-
-```typescript
-import { createMiddleware } from "@faremeter/middleware/hono";
-import { Hono } from "hono";
-import { serve } from "@hono/node-server";
-import "dotenv/config";
-
-const app = new Hono();
-
-async function main() {
-  // Create payment middleware pointing to PayAI
-  const paywalled = await createMiddleware({
-    facilitatorURL: process.env.FACILITATOR_URL!,
-    accepts: [
-      {
-        scheme: "exact",
-        network: `eip155:${process.env.NETWORK_CHAIN_ID}`,
-        amount: "10000",
-        maxTimeoutSeconds: 300,
-        payTo: process.env.RECEIVING_ADDRESS as `0x${string}`,
-        asset: process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`,
-        extra: {
-          name: process.env.PAYMENT_TOKEN_NAME || "Axios USD",
-          version: "1",
-        },
-      },
-    ],
-  });
-
-  // Protected endpoint
-  app.get("/api/data", paywalled, (c) => {
-    return c.json({
-      message: "Premium data unlocked via PayAI!",
-      timestamp: new Date().toISOString(),
-    });
-  });
-
-  serve({ fetch: app.fetch, port: 3000 });
-}
-
-main();
-```
-
-## Benefits of Using PayAI
-
-### 1. No Infrastructure Management
-
-PayAI handles all facilitator infrastructure:
-
-- Server deployment and scaling
-- Monitoring and alerting
-- Updates and maintenance
-- Security patches
-
-### 2. Multi-Network Support
-
-Works seamlessly across networks:
-
-- SKALE chains (testnet and mainnet)
-- Ethereum mainnet
-- Other EVM-compatible chains
-- Automatic network detection
-
-### 3. High Availability
-
-Production-ready infrastructure:
-
-- 99.9% uptime SLA
-- Redundant servers
-- DDoS protection
-- Automatic failover
-
-### 4. Analytics & Monitoring
-
-Built-in payment tracking:
-
-- Transaction history
-- Payment success rates
-- Revenue analytics
-- Real-time monitoring
-
-## Advanced Configuration
-
-### Custom Payment Options
-
-Configure multiple payment options:
-
-```typescript
-const paymentOptions = [
-  {
-    scheme: "exact",
-    network: "eip155:324705682",
-    amount: "10000",
-    asset: "0x61a26022927096f444994dA1e53F0FD9487EAfcf",
-    payTo: receivingAddress,
-    extra: { name: "Axios USD", version: "1" },
-  },
-  {
-    scheme: "exact",
-    network: "eip155:324705682",
-    amount: "10000",
-    asset: "0x2e08028E3C4c2356572E096d8EF835cD5C6030bD",
-    payTo: receivingAddress,
-    extra: { name: "Bridged USDC", version: "1" },
-  },
-];
-```
-
-### Webhook Integration
-
-Receive notifications for payments:
-
-```typescript
-app.post("/webhooks/payai", async (c) => {
-  const payload = await c.req.json();
-  
-  // Verify webhook signature
-  // Process payment notification
-  
-  console.log("Payment received:", payload);
-  return c.json({ received: true });
-});
-```
 
 ## Troubleshooting
 
@@ -350,9 +213,8 @@ Common causes and solutions:
 
 ## Resources
 
-- PayAI Documentation (Coming Soon - Contact PayAI team for access)
+- [PayAI Documentation](https://docs.payai.network/x402/supported-networks)
 - [x402 Protocol Specification](https://x402.org)
-- Contact PayAI Team for access and pricing
 
 ---
 
