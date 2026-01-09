@@ -67,29 +67,42 @@ const httpClient = new x402HTTPClient(coreClient);
 
 // Access paywalled resource
 async function accessResource(url: string) {
-  const response = await fetch(url);
-  
-  if (response.status === 402) {
-    // Get payment requirements
-    const responseBody = await response.json();
-    const paymentRequired = httpClient.getPaymentRequiredResponse(
-      (name) => response.headers.get(name),
-      responseBody
-    );
+  try {
+    const response = await fetch(url);
     
-    // Create payment payload
-    const paymentPayload = await httpClient.createPaymentPayload(paymentRequired);
-    const paymentHeaders = httpClient.encodePaymentSignatureHeader(paymentPayload);
+    if (response.status === 402) {
+      // Get payment requirements
+      const responseBody = await response.json();
+      const paymentRequired = httpClient.getPaymentRequiredResponse(
+        (name) => response.headers.get(name),
+        responseBody
+      );
+      
+      // Create payment payload
+      const paymentPayload = await httpClient.createPaymentPayload(paymentRequired);
+      const paymentHeaders = httpClient.encodePaymentSignatureHeader(paymentPayload);
+      
+      // Retry with payment
+      const paidResponse = await fetch(url, {
+        headers: { ...paymentHeaders }
+      });
+      
+      if (!paidResponse.ok) {
+        throw new Error(`Request failed: ${paidResponse.status}`);
+      }
+      
+      return paidResponse.json();
+    }
     
-    // Retry with payment
-    const paidResponse = await fetch(url, {
-      headers: { ...paymentHeaders }
-    });
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
     
-    return paidResponse.json();
+    return response.json();
+  } catch (error) {
+    console.error("Error accessing resource:", error);
+    throw error;
   }
-  
-  return response.json();
 }
 ```
 
