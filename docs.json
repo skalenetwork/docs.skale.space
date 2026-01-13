@@ -1946,6 +1946,18 @@
     {
       "source": "/building-applications/cex-integration",
       "destination": "/developers/build-a-dapp"
+    },
+    {
+      "source": "/network/v3.0.x/setup-process",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/skale-manager/1.8.x/api/delegation/DelegationController",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/develop/hubs/gaming/integration-steps",
+      "destination": "/get-started/quick-start/skale-on-base"
     }
   ]
 }

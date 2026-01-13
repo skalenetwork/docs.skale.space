@@ -46,6 +46,12 @@ If you are looking to host your agent card with SKALE File Storage or have your 
 | Wrapped Ether | WETH | 6 | [0x420...006](https://basescan.org/token/0x4200000000000000000000000000000000000006) | [0x7bD...486](https://skale-base-explorer.skalenodes.com/token/0x7bD39ABBd0Dd13103542cAe3276C7fA332bCA486) |
 | ETH (ERC-20) | ETHC | 6 | Native ETH (Gas) on Base | [0xD2Aaa007...000](https://skale-base-explorer.skalenodes.com/address/0xD2Aaa00700000000000000000000000000000000) |
 
+### SKALE Base Mainnet Deployed Contracts
+
+| Contract | Address | Description |
+| --- | --- | --- |
+| Permit2 | [0x000000000022D473030F116dDEE9F6B43aC78BA3](https://skale-base-explorer.skalenodes.com/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) | Uniswap's signature-based approval system for ERC20 tokens |
+
 
 ## SKALE Base Testnet
 
@@ -72,13 +78,19 @@ If you are looking to host your agent card with SKALE File Storage or have your 
 | Wrapped Ether | WETH | 6 | [0x420...006](https://sepolia.basescan.org/token/0x4200000000000000000000000000000000000006) | [0xf94...fc0](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xf94056bd7f6965db3757e1b145f200b7346b4fc0) |
 | ETH (ERC-20) | ETHC | 6 | Native ETH (Gas) on Base | [0xD2Aaa007...000](https://base-sepolia-testnet-explorer.skalenodes.com/address/0xD2Aaa00700000000000000000000000000000000) |
 
+### SKALE Base Sepolia Testnet Deployed Contracts
+
+| Contract | Address | Description |
+| --- | --- | --- |
+| Permit2 | [0x000000000022D473030F116dDEE9F6B43aC78BA3](https://base-sepolia-testnet-explorer.skalenodes.com/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) | Uniswap's signature-based approval system for ERC20 tokens |
+
 
 ### Chain Notes
 - When bridging ETH from Base Sepolia to the SKALE Chain, the ETH is locked as native ETH (msg.value) and is minted as an ERC-20 called ETHC on the SKALE Chain.
 On the frontend you can show it as ETH.
 - WETH and ETHC are both ERC-20 on the SKALE Chain but are deposited differently. WETH is deposited as WETH on Base.
 - This testnet chain is 100% permissionless.
-- CREATE2Factory, SingletonFactory, and Multicall3 are deployed to their canonical addresses on this chain
+- CREATE2Factory, SingletonFactory, Multicall3, and Permit2 are deployed to their canonical addresses on this chain
 
 Join us in [Telegram](https://t.me/+o_7DCw9qcbI2NDYx) and ask for additional tokens.
 
