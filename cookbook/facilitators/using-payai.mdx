@@ -1,0 +1,223 @@
+---
+title: "PayAI"
+description: "Integrate PayAI facilitator for x402 payment processing"
+---
+
+PayAI is a hosted facilitator service that simplifies x402 payment processing. Instead of running your own facilitator infrastructure, you can use PayAI's endpoints to handle payment verification and settlement.
+
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Basic understanding of x402 protocol
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file with PayAI configuration:
+
+```bash
+# PayAI Facilitator URL
+FACILITATOR_URL=https://facilitator.payai.example.com
+
+# Facilitator Router Address
+RECEIVING_ADDRESS=0xFacilitatorRouterAddress
+
+# Payment token configuration
+PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
+PAYMENT_TOKEN_NAME="Axios USD"
+
+# SKALE network configuration
+NETWORK_CHAIN_ID=324705682
+
+# Server port
+PORT=3000
+```
+
+## Integration with PayAI
+
+<Tabs>
+  <Tab title="Server Setup">
+    
+    ```typescript
+    import { Hono } from "hono";
+    import { serve } from "@hono/node-server";
+    import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+    import { ExactEvmScheme } from "@x402/evm/exact/server";
+    import { HTTPFacilitatorClient } from "@x402/core/server";
+    import type { Network } from "@x402/core/types";
+    import "dotenv/config";
+
+    const app = new Hono();
+
+    async function main() {
+      // Point to PayAI facilitator
+      const facilitatorUrl = process.env.FACILITATOR_URL!;
+      const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
+      const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
+      const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Axios USD";
+      const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+      const network: Network = `eip155:${networkChainId}`;
+
+      // Initialize PayAI facilitator client
+      const facilitatorClient = new HTTPFacilitatorClient({ 
+        url: facilitatorUrl 
+      });
+      
+      const resourceServer = new x402ResourceServer(facilitatorClient);
+      resourceServer.register("eip155:*", new ExactEvmScheme());
+
+      // Apply payment middleware
+      app.use(
+        paymentMiddleware(
+          {
+            "GET /api/data": {
+              accepts: [
+                {
+                  scheme: "exact",
+                  network: network,
+                  payTo: receivingAddress,
+                  price: {
+                    amount: "10000", // 0.01 tokens
+                    asset: paymentTokenAddress,
+                    extra: {
+                      name: paymentTokenName,
+                      version: "1",
+                    },
+                  },
+                },
+              ],
+              description: "Premium data access",
+              mimeType: "application/json",
+            },
+          },
+          resourceServer
+        )
+      );
+
+      // Protected endpoint
+      app.get("/api/data", (c) => {
+        return c.json({
+          message: "Premium data unlocked via PayAI!",
+          timestamp: new Date().toISOString(),
+        });
+      });
+
+      const port = Number(process.env.PORT) || 3000;
+      serve({ fetch: app.fetch, port }, () => {
+        console.log(`Server running on http://localhost:${port}`);
+        console.log(`Using PayAI facilitator: ${facilitatorUrl}`);
+      });
+    }
+
+    main().catch(console.error);
+    ```
+
+  </Tab>
+  <Tab title="Client Setup">
+
+    ```typescript
+    import { x402Client, x402HTTPClient } from "@x402/core/client";
+    import { ExactEvmScheme } from "@x402/evm";
+    import { privateKeyToAccount } from "viem/accounts";
+    import "dotenv/config";
+
+    async function main() {
+      // Setup wallet
+      const account = privateKeyToAccount(
+        process.env.PRIVATE_KEY as `0x${string}`
+      );
+
+      // Create x402 client
+      const evmScheme = new ExactEvmScheme(account);
+      const coreClient = new x402Client().register("eip155:*", evmScheme);
+      const httpClient = new x402HTTPClient(coreClient);
+
+      // Access PayAI-protected resource
+      const url = "http://localhost:3000/api/data";
+      const response = await fetch(url);
+
+      if (response.status === 402) {
+        console.log("Payment required, processing via PayAI...");
+
+        const responseBody = await response.json();
+        const paymentRequired = httpClient.getPaymentRequiredResponse(
+          (name: string) => response.headers.get(name),
+          responseBody
+        );
+
+        const paymentPayload = await httpClient.createPaymentPayload(
+          paymentRequired
+        );
+        
+        const paymentHeaders = httpClient.encodePaymentSignatureHeader(
+          paymentPayload
+        );
+
+        const paidResponse = await fetch(url, {
+          headers: { ...paymentHeaders },
+        });
+
+        const data = await paidResponse.json();
+        console.log("Data received:", data);
+      }
+    }
+
+    main();
+    ```
+
+  </Tab>
+</Tabs>
+
+
+## Troubleshooting
+
+### Connection Issues
+
+If you cannot connect to PayAI:
+
+1. Verify the facilitator URL is correct
+2. Check network connectivity
+3. Ensure API credentials are valid
+4. Review firewall settings
+
+### Payment Failures
+
+Common causes and solutions:
+
+| Issue | Solution |
+|-------|----------|
+| Invalid signature | Verify wallet configuration and signing |
+| Insufficient balance | Ensure payer has enough tokens |
+| Network mismatch | Check chain ID matches configuration |
+| Expired authorization | Increase `maxTimeoutSeconds` |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Using x402x" icon="layer-group" href="/cookbook/x402/using-x402x">
+    Alternative facilitator with advanced features
+  </Card>
+  <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
+    Deploy your own facilitator infrastructure
+  </Card>
+  <Card title="Accept Payments" icon="dollar-sign" href="/cookbook/x402/accepting-payments">
+    Protect endpoints with payment middleware
+  </Card>
+  <Card title="Make Payments" icon="credit-card" href="/cookbook/x402/buying">
+    Build clients that handle x402 payments
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [PayAI Documentation](https://docs.payai.network/x402/supported-networks)
+- [x402 Protocol Specification](https://x402.org)
+
+---
+
+<Note>
+PayAI is a third-party service. Contact the PayAI team for access, pricing, and support information. The URLs in this guide are placeholders and will be updated when the service is publicly available.
+</Note>
