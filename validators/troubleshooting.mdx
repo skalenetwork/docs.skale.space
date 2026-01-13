@@ -14,7 +14,7 @@ out to the SKALE Network developer community on [Discord](https://discord.com/in
 <Accordion title="How should validators configure backup and restore?">
   Validators are responsible for backing up everything on the supernode. SKALE Network relies on validators to complete the backup procedure for each of the supernodes. SKALE Network replicates the data for each SKALE Chain across 16 nodes, adding an additional layer of data availability. If a node goes down for a long time, the other 2/3 of 15 will be responsible for taking the SKALE Chain's snapshot and shuffling the SKALE Chain in the SKALE Network. If a validator supernode is down for a long time, it may be reallocated to service new SKALE Chains depending on the length of the downtime.
   
-  Please check [supernode backup](https://github.com/skalenetwork/skale-node-cli/blob/develop/README.md#node-commands) and [sgx_backup](https://github.com/skalenetwork/sgxwallet/blob/develop/docs/backup-procedure.md) to learn more about how to back up the supernode or SGXWallet, and restore.
+  Please check [supernode backup](https://github.com/skalenetwork/skale-node-cli/blob/develop/README.md#node-commands) and [sgx_backup](https://github.com/skalenetwork/sgxwallet/blob/develop/docs/admin/backup-procedure.md) to learn more about how to back up the supernode or SGXWallet, and restore.
 </Accordion>
 
 <Accordion title="Where are the network communications between containers, shared configuration files, and volumes stored?">
