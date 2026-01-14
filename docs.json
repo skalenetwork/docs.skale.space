@@ -29,7 +29,8 @@
             "pages": [
               "get-started/quick-start/skale-on-base",
               "get-started/quick-start/skale-on-ethereum",
-              "get-started/quick-start/go-live"
+              "get-started/quick-start/go-live",
+              "get-started/quick-start/get-testnet-tokens"
             ]
           },
           {
