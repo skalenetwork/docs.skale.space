@@ -1,0 +1,8 @@
+services:
+  mintlify:
+    image: mintlify-dev
+    build: .
+    ports:
+      - "4444:4444"
+    volumes:
+      - .:/app

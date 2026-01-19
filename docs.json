@@ -40,6 +40,15 @@
             ]
           },
           {
+            "group": "Agentic Builders",
+            "pages": [
+              "get-started/agentic-builders/start-with-x402",
+              "get-started/agentic-builders/facilitators",
+              "get-started/agentic-builders/start-with-erc-8004",
+              "cookbook/agents/build-an-agent"
+            ]
+          },
+          {
             "group": "Resources",
             "pages": [
               "get-started/resources/official-links",
@@ -249,11 +258,18 @@
             ]
           },
           {
-            "group": "x402 Payments",
+            "group": "x402",
             "pages": [
               "cookbook/x402/facilitator",
               "cookbook/x402/accepting-payments",
               "cookbook/x402/buying"
+            ]
+          },
+          {
+            "group": "Facilitators",
+            "pages": [
+              "cookbook/facilitators/using-payai",
+              "cookbook/facilitators/using-x402x"
             ]
           },
           {

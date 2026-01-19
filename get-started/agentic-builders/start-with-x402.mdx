@@ -1,0 +1,177 @@
+---
+title: "Start with x402"
+description: "Build payment-enabled agents using the x402 protocol on SKALE"
+---
+
+x402 is an internet-native payments protocol that enables agents to send and receive payments for services. This helps developers build autonomous agents and agentic applications directly on SKALE. This guide covers the essential concepts for building agents that interact with x402 payments.
+
+## What is x402?
+
+x402 is a payment protocol that extends HTTP with native payment capabilities using the `402 Payment Required` status code. It enables:
+
+- **Paywalled Resources**: Protect APIs and services behind payments
+- **Autonomous Payments**: Agents can automatically pay for and access resources
+- **ERC-3009 Compatibility**: Uses `TransferWithAuthorization` for gasless payments
+- **Multi-Token Support**: Accept payments in various ERC-20 tokens
+
+## Core Components
+
+### 1. Facilitator
+
+A facilitator processes x402 payments by exposing endpoints that verify and settle payment authorizations:
+
+- `/verify` - Validates payment signatures without executing on-chain
+- `/settle` - Executes the on-chain payment settlement
+
+<Note>
+Facilitators generally support a 3rd endpoint -- `/supported` -- which allows agents to discover resources.
+</Note>
+
+**Learn More**: [Run a Facilitator](/cookbook/x402/facilitator)
+
+### 2. Payment Middleware
+
+Middleware that protects HTTP endpoints by enforcing the x402 payment handshake:
+
+- Returns `402 Payment Required` when payment is missing
+- Forwards payment to facilitator for verification
+- Allows request to proceed after successful settlement
+
+<Note>
+The middleware is implemented at the seller/merchant level and is able to be fully stateless. This is done through the use of a 3rd party facilitator who handles the above verification and settlement on your behalf.
+</Note>
+
+**Learn More**: [Accept Payments](/cookbook/x402/accepting-payments)
+
+### 3. Payment Client
+
+Client libraries that handle the x402 payment flow automatically:
+
+- Detect `402 Payment Required` responses
+- Create and sign payment authorizations
+- Retry requests with proper payment headers
+
+**Learn More**: [Make Payments](/cookbook/x402/buying)
+
+## Quick Start: Build a Payment-Enabled Agent
+
+Here's a minimal example of an agent that can access paywalled resources:
+
+```typescript
+import { x402Client, x402HTTPClient } from "@x402/core/client";
+import { ExactEvmScheme } from "@x402/evm";
+import { privateKeyToAccount } from "viem/accounts";
+
+// Setup wallet
+const account = privateKeyToAccount(process.env.PRIVATE_KEY as `0x${string}`);
+
+// Create x402 client
+const evmScheme = new ExactEvmScheme(account);
+const coreClient = new x402Client().register("eip155:*", evmScheme);
+const httpClient = new x402HTTPClient(coreClient);
+
+// Access paywalled resource
+async function accessResource(url: string) {
+  try {
+    const response = await fetch(url);
+    
+    if (response.status === 402) {
+      // Get payment requirements
+      const responseBody = await response.json();
+      const paymentRequired = httpClient.getPaymentRequiredResponse(
+        (name) => response.headers.get(name),
+        responseBody
+      );
+      
+      // Create payment payload
+      const paymentPayload = await httpClient.createPaymentPayload(paymentRequired);
+      const paymentHeaders = httpClient.encodePaymentSignatureHeader(paymentPayload);
+      
+      // Retry with payment
+      const paidResponse = await fetch(url, {
+        headers: { ...paymentHeaders }
+      });
+      
+      if (!paidResponse.ok) {
+        throw new Error(`Request failed: ${paidResponse.status}`);
+      }
+      
+      return paidResponse.json();
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error("Error accessing resource:", error);
+    throw error;
+  }
+}
+```
+
+## Use Cases
+
+### Autonomous Service Access
+
+Build agents that pay for API calls, data feeds, or AI services:
+
+```typescript
+// Agent pays for weather data automatically
+const weatherData = await agent.accessResource("https://api.example.com/weather");
+```
+
+### Monetize Agent Services
+
+Create services where agents pay to access your AI models or data:
+
+```typescript
+// Protect your AI endpoint with x402
+app.get("/ai/analyze", paymentMiddleware, async (c) => {
+  const result = await model.analyze(c.req.query);
+  return c.json(result);
+});
+```
+
+### Multi-Agent Economies
+
+Enable agents to pay each other for services in a decentralized economy:
+
+```typescript
+// Agent A requests work from Agent B, pays automatically
+const result = await agentA.requestWork(agentB.endpoint, taskData);
+```
+
+## Payment Tokens on SKALE
+
+SKALE Base Sepolia Testnet supports various tokens for x402 payments:
+
+| Token | Address | Decimals |
+|-------|---------|----------|
+| Axios USD | `0x61a26022927096f444994dA1e53F0FD9487EAfcf` | 6 |
+| Bridged USDC | `0x2e08028E3C4c2356572E096d8EF835cD5C6030bD` | 6 |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Build an Agent" icon="robot" href="/cookbook/agents/build-an-agent">
+    Create autonomous agents that handle x402 payments
+  </Card>
+  <Card title="Accept Payments" icon="dollar-sign" href="/cookbook/x402/accepting-payments">
+    Protect your APIs with x402 payment middleware
+  </Card>
+  <Card title="Make Payments" icon="credit-card" href="/cookbook/x402/buying">
+    Implement payment client for accessing paywalled resources
+  </Card>
+  <Card title="Run a Facilitator" icon="server" href="/cookbook/x402/facilitator">
+    Set up your own payment processing service
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [x402 Protocol Specification](https://x402.org)
+- [Coinbase x402 SDK](https://github.com/coinbase/x402)
+- [ERC-3009 Standard](https://eips.ethereum.org/EIPS/eip-3009)
+- [x402 Examples Repository](https://github.com/TheGreatAxios/x402-examples)
