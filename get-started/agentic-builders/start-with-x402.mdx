@@ -3,9 +3,7 @@ title: "Start with x402"
 description: "Build payment-enabled agents using the x402 protocol on SKALE"
 ---
 
-## Start with x402
-
-The x402 protocol enables agents to make and receive payments for services, allowing you to build autonomous payment-enabled applications on SKALE. This guide covers the essential concepts for building agents that interact with x402 payments.
+x402 is an internet-native payments protocol that enables agents to send and receive payments for services. This helps developers build autonomous agents and agentic applications directly on SKALE. This guide covers the essential concepts for building agents that interact with x402 payments.
 
 ## What is x402?
 
@@ -24,7 +22,10 @@ A facilitator processes x402 payments by exposing endpoints that verify and sett
 
 - `/verify` - Validates payment signatures without executing on-chain
 - `/settle` - Executes the on-chain payment settlement
-- `/supported` - Returns supported payment schemes and networks
+
+<Note>
+Facilitators generally support a 3rd endpoint -- `/supported` -- which allows agents to discover resources.
+</Note>
 
 **Learn More**: [Run a Facilitator](/cookbook/x402/facilitator)
 
@@ -36,15 +37,19 @@ Middleware that protects HTTP endpoints by enforcing the x402 payment handshake:
 - Forwards payment to facilitator for verification
 - Allows request to proceed after successful settlement
 
+<Note>
+The middleware is implemented at the seller/merchant level and is able to be fully stateless. This is done through the use of a 3rd party facilitator who handles the above verification and settlement on your behalf.
+</Note>
+
 **Learn More**: [Accept Payments](/cookbook/x402/accepting-payments)
 
 ### 3. Payment Client
 
 Client libraries that handle the x402 payment flow automatically:
 
-- Detects `402 Payment Required` responses
-- Creates and signs payment authorizations
-- Retries requests with payment headers
+- Detect `402 Payment Required` responses
+- Create and sign payment authorizations
+- Retry requests with proper payment headers
 
 **Learn More**: [Make Payments](/cookbook/x402/buying)
 
