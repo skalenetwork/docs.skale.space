@@ -1,0 +1,345 @@
+---
+title: "Kobaru"
+description: "Purpose-built payment infrastructure for developers who refuse to compromise on reliability, control, or speed"
+---
+
+[Kobaru](https://www.kobaru.io) is the payment infrastructure built from scratch by payment veterans who understand what production systems demand. Kobaru is a purpose-built payment engine designed for developers who need institutional-grade reliability, complete visibility into their revenue operations, and the freedom to focus on building their business instead of managing payment complexity. 
+
+Your API becomes payable by machines—AI agents, automated scripts, and developer tools pay fractions of a cent per request with instant settlement and zero gas fees. Kobaru handles all the complexity: cryptography, blockchain interactions, settlement verification, and reconciliation. You focus on your business logic.
+
+
+## Why SKALE Base with Kobaru?
+
+**Start instantly, no barriers.** Point your SDK to `https://gateway.kobaru.io` and start accepting payments with SKALE. No sign-up required, no API keys, no approval process. Advanced features (Console, enhanced SLAs, professional support) available when you want them.
+
+**Instant settlement.** SKALE's instant finality—faster than any other network. Your customers get immediate access, you get immediate revenue.
+
+**Predictable costs.** No gas price spikes or unexpected fees. Perfect for high-volume APIs processing thousands of micropayments daily.
+
+**Zero payment complexity for you.** [Kobaru](https://www.kobaru.io) handles cryptographic signatures, blockchain interactions, settlement verification and financial reconciliation. Your engineering team builds product features, not payment infrastructure.
+
+**Native Base bridge.** Seamless USDC transfers between Base and SKALE Base using SKALE's built-in bridge—no third-party risk, no additional trust assumptions.
+
+**Fiat Settlement.** Kobaru focuses on abstracting payment complexities and will soon introduce Fiat Settlement options for users looking to leverage SKALE's performance without any blockchain-related friction. Stay updated on [Kobaru's blog](https://blog.kobaru.io).
+
+**Institutional-grade infrastructure.** [Kobaru's production platform](https://www.kobaru.io) provides real-time analytics, professional reconciliation, comprehensive audit trails, and 24/7 enterprise support with SLA guarantees.
+
+---
+
+## Prerequisites
+
+- A EVM wallet address (to receive USDC payments)
+- An API you want to monetize
+- Basic understanding of x402 protocol (optional, [Kobaru documentation](https://docs.kobaru.io) covers all integration details)
+
+---
+
+## Instant API Monetization
+
+The Transparent Proxy transforms any existing API into a monetized endpoint without modifying your backend. No code changes. No deployment cycles. No infrastructure modifications.
+
+This is not just "zero code"—this is production-ready monetization that works with your existing infrastructure exactly as it runs today.
+
+### Step 1: create your Kobaru account
+
+1. Go to [console.kobaru.io](https://console.kobaru.io)
+2. Sign up with your email
+
+### Step 2: register your API
+
+In the Kobaru Console:
+
+1. Click **New Service**
+2. Configure your service:
+   - **Service name**: Descriptive name (e.g., `skale-data-api`)
+   - **Backend URL**: Your API's base URL (e.g., `https://api.yourcompany.com`)
+   - **Slug**: Unique identifier for proxy URL (e.g., `skale-data`)
+3. Define your first paid route:
+   - **Route pattern**: Endpoint path (e.g., `/premium-data`)
+   - **Price**: Cost per request in USD (e.g., `$0.001`)
+   - **Network**: Select **SKALE Base** (Mainnet or Sepolia)
+   - **Usage model**: `pay_per_request` or `pay_per_time`
+
+### Step 3: go live immediately
+
+Your API is now accessible at:
+
+```
+https://access.kobaru.io/{your-slug}/premium-data
+```
+
+**That's it.** Your API is monetized. Kobaru automatically:
+
+- Returns HTTP 402 with payment requirements to unpaid requests
+- Verifies payments on SKALE Base with cryptographic proof
+- Forwards authenticated requests to your backend
+- Settles payments to your wallet in ~1 second
+- Logs every transaction for reconciliation
+
+Your backend remains untouched. Your deployment pipeline unchanged. Your existing customers unaffected on non-monetized routes.
+
+---
+
+## x402 SDK integration
+
+### Quick start example
+
+Here's a minimal example to accept SKALE payments with Kobaru using Hono:
+
+```typescript
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { cors } from "hono/cors";
+import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
+import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { HTTPFacilitatorClient } from "@x402/core/server";
+import "dotenv/config";
+
+const app = new Hono();
+app.use("*", cors());
+
+async function main() {
+  // Configure Kobaru facilitator
+  const facilitatorUrl = process.env.FACILITATOR_URL || "https://gateway.kobaru.io";
+  const facilitatorClient = new HTTPFacilitatorClient({
+    url: facilitatorUrl,
+    ...(process.env.KOBARU_API_KEY && {
+      headers: { Authorization: `Bearer ${process.env.KOBARU_API_KEY}` }
+    })
+  });
+
+  // Register EVM payment scheme for SKALE
+  const resourceServer = new x402ResourceServer(facilitatorClient);
+  resourceServer.register("eip155:*", new ExactEvmScheme());
+
+  // Fetch token metadata from Kobaru instead of hardcoding
+  const networkId = "eip155:1187947933"; // SKALE Base Mainnet
+  const assetAddress = "0x85889c8c714505E0c94b8b30fcfcF64fE3Ac8FCb20"; // USDC on SKALE Base
+
+  const supported = await facilitatorClient.getSupported();
+  const networkData = supported.kinds?.find(
+    (kind: any) => kind.network === networkId &&
+    kind.extra?.asset?.toLowerCase() === assetAddress.toLowerCase()
+  );
+
+  const { name, version, decimals } = networkData?.extra ? {
+    name: networkData.extra.name as string,
+    version: networkData.extra.version as string,
+    decimals: networkData.extra.decimals as number
+  } : {
+    name: "USDC",
+    version: "1",
+    decimals: 6
+  };
+
+  // Define payment requirements
+  const routes = {
+    "GET /api/data": {
+      accepts: [
+        {
+          scheme: "exact",
+          network: networkId,
+          payTo: process.env.WALLET_ADDRESS as `0x${string}`,
+          price: {
+            amount: "1000", // 0.001 USDC
+            asset: assetAddress,
+            extra: { name, version }
+          }
+        }
+      ],
+      description: "Premium data access",
+      mimeType: "application/json"
+    }
+  };
+
+  // Apply payment middleware
+  app.use("*", paymentMiddleware(routes, resourceServer));
+
+  // Protected endpoint
+  app.get("/api/data", (c) => {
+    return c.json({
+      message: "Premium data unlocked!",
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  const port = Number(process.env.PORT) || 3000;
+  serve({ fetch: app.fetch, port }, () => {
+    console.log(`Server running on http://localhost:${port}`);
+    console.log(`Using Kobaru facilitator: ${facilitatorUrl}`);
+  });
+}
+
+main().catch(console.error);
+```
+
+**Environment variables:**
+
+```bash
+# Required: Your wallet to receive payments
+WALLET_ADDRESS=0xYourWalletAddress
+
+# Optional: Kobaru facilitator URL (defaults to https://gateway.kobaru.io)
+FACILITATOR_URL=https://gateway.kobaru.io
+
+# Optional: Kobaru API key for enhanced features
+KOBARU_API_KEY=your_api_key_from_console
+
+# Optional: Server port
+PORT=3000
+```
+
+### Instant integration: no sign-up required
+
+If you already have a working application with x402 v2 SDK, start processing payments immediately by pointing your application to Kobaru's URL:
+
+```typescript
+const facilitator = new HTTPFacilitatorClient({
+  url: "https://gateway.kobaru.io"
+});
+```
+
+**That's it.** Your application starts accepting payments instantly.
+
+### Integration guides
+
+For complete SDK integration tutorials and API reference, visit the [Kobaru technical documentation](https://docs.kobaru.io):
+
+**📘 Complete Integration Guides:**
+[docs.kobaru.io/integration/x402-sdk](https://docs.kobaru.io/integration/x402-sdk)
+
+The documentation includes:
+- Step-by-step setup for TypeScript, Go, and Python
+- Middleware configuration for all major frameworks
+- Environment setup and best practices
+- Complete working examples with Kobaru
+
+### Production-ready examples
+
+Kobaru maintains an open-source cookbook with production-grade examples demonstrating real-world integrations:
+
+**🍳 API Paywall Cookbook:**
+https://github.com/kobaru-io/api-paywall-cookbook
+
+The cookbook includes:
+- **Complete working examples** in TypeScript, Go, Python, and Rust
+- **Real-world patterns** - authentication, rate limiting, usage tracking
+- **Framework integrations** - Hono, Express, Gin, FastAPI
+- **Testing strategies** - unit tests, integration tests, E2E flows
+- **Production deployment** - Docker, Standalone, Cloudflare Workers compatibility, monitoring
+
+---
+
+## Kobaru Console
+
+The Kobaru Console is not just a dashboard—it is a complete revenue command center that gives you operational control over your entire payment infrastructure.
+
+**Create a free account** to unlock Console access with enhanced features:
+- **Real-time analytics** - Live transaction feed, revenue tracking, settlement confirmation
+- **Failure diagnostics** - Identify and resolve payment issues before they impact customers
+- **Professional reconciliation** - Complete audit trails and exportable reports for compliance
+- **Manage your payment infrastructure without touching code** - Adjust pricing, endpoints, and rate limits instantly
+- **Improved performance** - Priority routing and enhanced uptime guarantees
+- **Enterprise support** - 24/7 diagnostics with guaranteed response times
+
+**Using Console with the SDK:**
+
+When you have an API key from [console.kobaru.io](https://console.kobaru.io), include it for enhanced service:
+
+```typescript
+const facilitator = new HTTPFacilitatorClient({
+  url: "https://gateway.kobaru.io",
+  headers: {
+    "Authorization": `Bearer ${process.env.KOBARU_API_KEY}`
+  }
+});
+```
+
+---
+
+## Troubleshooting
+
+Kobaru provides detailed error messages and the Console shows real-time diagnostics. For common issues:
+
+### Payment verification fails
+
+**Common causes:**
+
+| Issue | Solution |
+|-------|----------|
+| Invalid API key | Verify `KOBARU_API_KEY` in console.kobaru.io |
+| Wrong network | Ensure application uses `eip155:1187947933` (mainnet) or `eip155:324705682` (testnet) |
+| Insufficient balance | User needs USDC on SKALE Base (bridge from Base) |
+| Expired signature | Client must sign fresh payment (check `maxTimeoutSeconds`) |
+| Wrong token address | Use `0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20` (mainnet) or `0x2e08028E3C4c2356572E096d8EF835cD5C6030bD` (testnet) |
+
+### Viem token metadata issues
+
+If using Viem with Node.js, token name fetching may fail. **Solution**: Fetch metadata from Kobaru's `/supported` endpoint instead of hardcoding:
+
+```typescript
+// Fetch from Kobaru instead of hardcoding
+const supported = await facilitatorClient.getSupported();
+const networkData = supported.kinds?.find(
+  (kind: any) => kind.network === networkId &&
+  kind.extra?.asset?.toLowerCase() === assetAddress.toLowerCase()
+  );
+if (networkData?.extra) {
+	const { name, version, decimals } = networkData.extra;
+	return {
+		name: (name as string),
+		version: (version as string),
+		decimals: (decimals as number)
+	};
+}
+```
+
+### Need help?
+
+Kobaru provides 24/7 enterprise support with guaranteed response times:
+
+- **Console diagnostics**: Real-time error logs and transaction traces
+- **Support email**: support@kobaru.io
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Using x402x" icon="layer-group" href="/cookbook/x402/using-x402x">
+    Alternative facilitator with advanced features
+  </Card>
+  <Card title="Kobaru Console" icon="gauge" href="https://console.kobaru.io">
+    Access your revenue command center
+  </Card>
+  <Card title="SDK Documentation" icon="book" href="https://docs.kobaru.io/integration/x402-sdk">
+    Complete x402 SDK integration guides
+  </Card>
+  <Card title="API Paywall Cookbook" icon="code" href="https://github.com/kobaru-io/api-paywall-cookbook">
+    Production-ready examples in TypeScript, Go, Python, and Rust
+  </Card>
+  <Card title="SKALE Bridge (Mainnet)" icon="bridge" href="https://base.skalenodes.com/bridge">
+    Bridge USDC from Base to SKALE Base Mainnet
+  </Card>
+  <Card title="Kobaru Blog & Updates" icon="newspaper" href="https://blog.kobaru.io">
+    Integration guides, best practices, and latest features (EN/PT/ES)
+  </Card>
+</CardGroup>
+
+---
+
+## Resources
+
+- **Kobaru Platform**: [www.kobaru.io](https://www.kobaru.io) - Production payment infrastructure overview
+- **Kobaru Blog**: [blog.kobaru.io](https://blog.kobaru.io) - Integration guides, best practices & updates (English, Portuguese, Spanish)
+- **Technical Documentation**: [docs.kobaru.io](https://docs.kobaru.io) - Complete API reference and integration guides
+- **Kobaru Console**: [console.kobaru.io](https://console.kobaru.io) - Revenue analytics and operational control
+- **Support Email**: support@kobaru.io
+- **x402 Protocol**: https://x402.org
+- **API Paywall Cookbook**: https://github.com/Kobaru-io/api-paywall-cookbook
+
+---
+
+<Note>
+**[Kobaru](https://www.kobaru.io) is production-grade payment infrastructure for developers.** Thousands of micropayments process daily on SKALE Base with sub-second settlement, professional reconciliation, and zero downtime. Start monetizing in seconds with the Transparent Proxy, or integrate the SDK for programmatic control. Enterprise support available 24/7 with SLA guarantees.
+</Note>
