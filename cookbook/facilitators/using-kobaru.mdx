@@ -3,7 +3,7 @@ title: "Kobaru"
 description: "Purpose-built payment infrastructure for developers who refuse to compromise on reliability, control, or speed"
 ---
 
-[Kobaru](https://www.kobaru.io) is the payment infrastructure built from scratch by payment veterans who understand what production systems demand. This is not a wrapper around existing payment rails or a quick adaptation of traditional processors. Kobaru is a purpose-built payment engine designed for developers who need institutional-grade reliability, complete visibility into their revenue operations, and the freedom to focus on building their business instead of managing payment complexity. Whether you are an Enterprise or Independent Developer, Kobaru has the right features for you.
+[Kobaru](https://www.kobaru.io) is the payment infrastructure built from scratch by payment veterans who understand what production systems demand. Kobaru is a purpose-built payment engine designed for developers who need institutional-grade reliability, complete visibility into their revenue operations, and the freedom to focus on building their business instead of managing payment complexity. 
 
 Your API becomes payable by machines—AI agents, automated scripts, and developer tools pay fractions of a cent per request with instant settlement and zero gas fees. Kobaru handles all the complexity: cryptography, blockchain interactions, settlement verification, and reconciliation. You focus on your business logic.
 
@@ -14,13 +14,11 @@ Your API becomes payable by machines—AI agents, automated scripts, and develop
 
 **Instant settlement.** SKALE's instant finality—faster than any other network. Your customers get immediate access, you get immediate revenue.
 
-**Zero gas fees.** Kobaru pays all gas fees on SKALE Base. Your users pay only the exact service amount—no hidden costs, no fee surprises, no variable unit economics.
-
 **Predictable costs.** No gas price spikes or unexpected fees. Perfect for high-volume APIs processing thousands of micropayments daily.
 
 **Zero payment complexity for you.** [Kobaru](https://www.kobaru.io) handles cryptographic signatures, blockchain interactions, settlement verification and financial reconciliation. Your engineering team builds product features, not payment infrastructure.
 
-**Native Base bridge.** Seamless USDC transfers between Base and SKALE using SKALE's built-in bridge—no third-party risk, no additional trust assumptions.
+**Native Base bridge.** Seamless USDC transfers between Base and SKALE Base using SKALE's built-in bridge—no third-party risk, no additional trust assumptions.
 
 **Fiat Settlement.** Kobaru focuses on abstracting payment complexities and will soon introduce Fiat Settlement options for users looking to leverage SKALE's performance without any blockchain-related friction. Stay updated on [Kobaru's blog](https://blog.kobaru.io).
 
@@ -36,7 +34,7 @@ Your API becomes payable by machines—AI agents, automated scripts, and develop
 
 ---
 
-## Quick start: production-ready monetization in seconds
+## Instant API Monetization
 
 The Transparent Proxy transforms any existing API into a monetized endpoint without modifying your backend. No code changes. No deployment cycles. No infrastructure modifications.
 
@@ -82,18 +80,7 @@ Your backend remains untouched. Your deployment pipeline unchanged. Your existin
 
 ---
 
-## SDK integration: 100% x402 compatible
-
-Kobaru is fully compatible with the official x402 SDK, supporting TypeScript/Node.js, Go, and Python. You can use the standard x402 libraries with Kobaru as your facilitator—no custom code or proprietary SDKs required.
-
-### Official x402 SDK support
-
-**Languages supported:**
-- **TypeScript/Node.js** - Full middleware support for Hono and Express
-- **Go** - Integration for Go backends with Gin
-- **Python** - Flask and FastAPI compatibility
-
-**Key advantage:** Use the same SDK code across any x402-compatible facilitator. Kobaru implements the complete x402 v2 specification, ensuring your integration works exactly as documented.
+## x402 SDK integration
 
 ### Quick start example
 
@@ -319,6 +306,9 @@ Kobaru provides 24/7 enterprise support with guaranteed response times:
 ## Next steps
 
 <CardGroup cols={2}>
+  <Card title="Using x402x" icon="layer-group" href="/cookbook/x402/using-x402x">
+    Alternative facilitator with advanced features
+  </Card>
   <Card title="Kobaru Console" icon="gauge" href="https://console.kobaru.io">
     Access your revenue command center
   </Card>
