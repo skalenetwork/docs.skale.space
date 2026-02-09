@@ -18,15 +18,12 @@ x402x is an advanced facilitator service that extends the base x402 protocol wit
 Create a `.env` file with x402x configuration:
 
 ```bash
-# x402x Facilitator URL
-FACILITATOR_URL=https://facilitator.x402x.dev/
-
 # Facilitator router address
 RECEIVING_ADDRESS=0x1Ae0E196dC18355aF3a19985faf67354213F833D
 
 # Payment token configuration
-PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
-PAYMENT_TOKEN_NAME="Axios USD"
+PAYMENT_TOKEN_ADDRESS=0x2e08028E3C4c2356572E096d8EF835cD5C6030bD
+PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
 
 # SKALE network configuration
 NETWORK_CHAIN_ID=324705682
@@ -53,7 +50,7 @@ import "dotenv/config";
 const app = new Hono();
 
 async function main() {
-  const facilitatorUrl = process.env.FACILITATOR_URL!;
+  const facilitatorUrl = "https://facilitator.x402x.dev";
   const apiKey = process.env.X402X_API_KEY!;
   const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
   const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
@@ -157,7 +154,7 @@ main();
 
 ### Connection Issues
 
-If you cannot connect to PayAI:
+If you cannot connect to x402x:
 
 1. Verify the facilitator URL is correct
 2. Check network connectivity
@@ -178,7 +175,7 @@ Common causes and solutions:
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Using PayAI" icon="dollar-sign" href="/cookbook/x402/using-payai">
+  <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
     Alternative hosted facilitator service
   </Card>
   <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
@@ -200,5 +197,5 @@ Common causes and solutions:
 ---
 
 <Note>
-x402x is a third-party enterprise service. Contact the x402x team for access, custom pricing, and enterprise support. The URLs in this guide are placeholders and will be updated when the service is publicly available.
+x402x is a third-party enterprise service. Contact the x402x team for access, custom pricing, and enterprise support.
 </Note>

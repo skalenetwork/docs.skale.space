@@ -1,0 +1,190 @@
+---
+title: "Corbits"
+description: "Integrate Corbits facilitator for x402 payment processing"
+---
+
+Corbits is a hosted facilitator service that streamlines x402 payment processing. By using Corbits’ endpoints, you can offload payment verification and settlement without needing to operate your own facilitator infrastructure.
+
+## Prerequisites
+
+- Node.js and npm installed
+- A SKALE Chain endpoint
+- Basic understanding of x402 protocol
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file with Corbits configuration:
+
+```bash
+# Receiver address for the x402 payment
+RECEIVING_ADDRESS=0xAddress_Receiving_Payment
+
+# please don't share your private key with anyone
+PRIVATE_KEY=0xyour_pk
+```
+
+### SDK import
+
+Please install the following Viem and Farmeter SDKs created by the Corbits team:
+
+```bash
+npm install viem
+```
+
+```bash
+npm install @faremeter/info
+```
+
+```bash
+npm install @faremeter/middleware
+```
+
+## Integration with Corbits
+
+<Tabs>
+  <Tab title="Server Setup">
+    
+    ```typescript
+    import { serve } from "@hono/node-server";
+    import { Hono } from "hono";
+    import { hono as middleware } from "@faremeter/middleware";
+    import { evm } from "@faremeter/info";
+    import "dotenv/config";
+
+    const app = new Hono();
+
+    const receiver_address = process.env.RECEIVING_ADDRESS || "0xsome_default_address";
+    const facilitator = "https://facilitator.corbits.dev";
+
+    const paywalledMiddleware = await middleware.createMiddleware({
+      facilitatorURL: facilitator,
+      accepts: [
+        evm.x402Exact({
+          network: "eip155:324705682",
+          asset: "USDC",
+          amount: "1000", // $0.0001 in USDC base units
+          payTo: receiver_address,
+        }),
+      ],
+    });
+
+    app.get("/api/free", (c) => {
+      return c.json({
+        type: "free",
+        message: "This is free data that does not require payment",
+        timestamp: new Date().toISOString(),
+        data: {
+          temperature: 72,
+          humidity: 45,
+          conditions: "Sunny",
+        },
+      });
+    });
+
+    // Premium endpoint with payment required
+    app.get("/api/premium", paywalledMiddleware, (c) => {
+        return c.json({
+        type: "paid",
+        message: "This is is a paid data that does require x402 payment",
+        timestamp: new Date().toISOString(),
+        data: {
+          temperature: 72,
+          humidity: 45,
+          conditions: "Sunny",
+        },
+      });
+    });
+
+    serve(app, (info) => {
+      console.log(`Listening on http://localhost:${info.port}`);
+    });
+    ```
+
+  </Tab>
+  <Tab title="Client Setup">
+
+    ```typescript
+    import { createLocalWallet } from "@faremeter/wallet-evm";
+    import { createPaymentHandler } from "@faremeter/payment-evm/exact";
+    import { wrap as wrapFetch } from "@faremeter/fetch";
+    import {skaleBaseSepoliaTestnet} from "viem/chains";
+    import "dotenv/config";
+
+    const pk = process.env.PRIVATE_KEY
+
+    if (!pk) {
+      throw new Error("PRIVATE_KEY must be set in your environment");
+    }
+
+    const url = `http://localhost:3000/api/premium`;
+
+    const wallet = await createLocalWallet(skaleBaseSepoliaTestnet, pk);
+
+    const fetchWithPayer = wrapFetch(fetch, {
+      handlers: [createPaymentHandler(wallet)],
+    });
+
+    const response = await fetchWithPayer(url);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Response data:", data);
+    } else {
+      console.error(`Error: ${response.statusText}`);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+
+## Troubleshooting
+
+### Connection Issues
+
+If you cannot connect to Corbits:
+
+1. Verify the facilitator URL is correct
+2. Check network connectivity
+3. Ensure API credentials are valid
+4. Review firewall settings
+
+### Payment Failures
+
+Common causes and solutions:
+
+| Issue | Solution |
+|-------|----------|
+| Invalid signature | Verify wallet configuration and signing |
+| Insufficient balance | Ensure payer has enough tokens |
+| Network mismatch | Check chain ID matches configuration |
+| Expired authorization | Increase `maxTimeoutSeconds` |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
+    Alternative facilitator with advanced features
+  </Card>
+  <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
+    Deploy your own facilitator infrastructure
+  </Card>
+  <Card title="Accept Payments" icon="dollar-sign" href="/cookbook/x402/accepting-payments">
+    Protect endpoints with payment middleware
+  </Card>
+  <Card title="Make Payments" icon="credit-card" href="/cookbook/x402/buying">
+    Build clients that handle x402 payments
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [Corbits Documentation](https://docs.corbits.dev/facilitator/introduction/overview)
+- [x402 Protocol Specification](https://x402.org)
+
+---
+
+<Note>
+Corbits is a third-party service. Contact the Corbits team for access, pricing, and support information.
+</Note>
