@@ -5,17 +5,27 @@ description: "Payment infrastructure for devs with reliability, control and spee
 
 [Kobaru](https://www.kobaru.io) enables machine-to-machine payments, allowing AI agents and automated systems to pay per request. With payment infrastructure built for developers they aim to deliver reliable, transparent payments without operational overhead.
 
+## Kobaru Products
+
+- **Kobaru Console**: A central revenue command center that allows users to manage payment infrastructure, track real-time analytics, and perform professional financial reconciliation without writing code.
+
+- **Transparent Proxy**: A no-code monetization tool that transforms any existing API into a paid endpoint by wrapping it in a payment layer without requiring changes to the original backend.
+
+- **Kobaru Gateway**: The core facilitator infrastructure that handles cryptographic signatures and verifies instant settlements on the SKALE network for incoming payment requests.
+
+- **API Paywall Cookbook**: An open-source repository of production-ready templates and examples that help developers implement various monetization patterns across multiple programming languages.
+
 ## Why SKALE Base with Kobaru?
 
-<Note>
 Kobaru makes it easy to get started with x402 payments on SKALE. Just hook right up to the gateway with your existing SDK -- setting Kobaru as the facilitator -- and you can start accepting payments on SKALE.
-</Note>
 
 **x402 Facilitator** Point your SDK to `https://gateway.kobaru.io` and start accepting payments with SKALE.
 
 **Instant settlement.** SKALE's instant finality—faster than any other network. Your customers get immediate access, you get immediate revenue.
 
 **Predictable costs.** No gas price spikes or unexpected fees. Perfect for high-volume APIs processing thousands of micropayments daily.
+
+**Fiat Settlement.** Kobaru focuses on abstracting payment complexities and will soon introduce Fiat Settlement options for users looking to leverage SKALE's performance without any blockchain-related friction.
 
 ---
 
@@ -71,7 +81,18 @@ https://access.kobaru.io/{your-slug}/premium-data
 
 ---
 
-## x402 SDK integration
+## x402 SDK
+
+### Official support
+
+**Languages supported:**
+- **TypeScript/Node.js** - Full middleware support for Hono and Express
+- **Go** - Integration for Go backends with Gin
+- **Python** - Flask and FastAPI compatibility
+
+**Key advantage:** Use the same SDK code across any x402-compatible facilitator. Kobaru implements the complete x402 v2 specification, ensuring your integration works exactly as documented.
+
+### Integration
 
 Environment variables:
 
@@ -220,6 +241,31 @@ https://github.com/kobaru-io/api-paywall-cookbook
 
 ---
 
+## Kobaru Console
+
+The Kobaru Console is not just a dashboard—it is a complete revenue command center that gives you operational control over your entire payment infrastructure.
+
+**Create a free account** to unlock Console access with enhanced features:
+- **Real-time analytics** - Live transaction feed, revenue tracking, settlement confirmation
+- **Failure diagnostics** - Identify and resolve payment issues before they impact customers
+- **Professional reconciliation** - Complete audit trails and exportable reports for compliance
+- **Manage your payment infrastructure without touching code** - Adjust pricing, endpoints, and rate limits instantly
+- **Improved performance** - Priority routing and enhanced uptime guarantees
+- **Enterprise support** - 24/7 diagnostics with guaranteed response times
+
+**Using Console with the SDK:**
+
+When you have an API key from [console.kobaru.io](https://console.kobaru.io), include it for enhanced service:
+
+```typescript
+const facilitator = new HTTPFacilitatorClient({
+  url: "https://gateway.kobaru.io",
+  headers: {
+    "Authorization": `Bearer ${process.env.KOBARU_API_KEY}`
+  }
+});
+```
+
 ## Troubleshooting
 
 Kobaru provides detailed error messages and the Console shows real-time diagnostics. For common issues:
@@ -233,6 +279,27 @@ Kobaru provides detailed error messages and the Console shows real-time diagnost
 | Insufficient balance | User needs USDC on SKALE Base (bridge from Base) |
 | Expired signature | Client must sign fresh payment (check `maxTimeoutSeconds`) |
 | Wrong token address | Use `0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20` (mainnet) or `0x2e08028E3C4c2356572E096d8EF835cD5C6030bD` (testnet) |
+
+### Viem token metadata issues
+
+If using Viem with Node.js, token name fetching may fail. **Solution**: Fetch metadata from Kobaru's `/supported` endpoint instead of hardcoding:
+
+```typescript
+// Fetch from Kobaru instead of hardcoding
+const supported = await facilitatorClient.getSupported();
+const networkData = supported.kinds?.find(
+  (kind: any) => kind.network === networkId &&
+  kind.extra?.asset?.toLowerCase() === assetAddress.toLowerCase()
+  );
+if (networkData?.extra) {
+	const { name, version, decimals } = networkData.extra;
+	return {
+		name: (name as string),
+		version: (version as string),
+		decimals: (decimals as number)
+	};
+}
+```
 
 ---
 
