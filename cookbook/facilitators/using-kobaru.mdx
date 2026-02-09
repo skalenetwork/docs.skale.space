@@ -3,13 +3,15 @@ title: "Kobaru"
 description: "Payment infrastructure for devs with reliability, control and speed"
 ---
 
-[Kobaru](https://www.kobaru.io) is a production-grade payment infrastructure built for developers. It delivers reliable, transparent payments without operational overhead.
-
-Kobaru enables machine-to-machine payments, allowing AI agents and automated systems to pay per request.
+[Kobaru](https://www.kobaru.io) enables machine-to-machine payments, allowing AI agents and automated systems to pay per request. With payment infrastructure built for developers they aim to deliver reliable, transparent payments without operational overhead.
 
 ## Why SKALE Base with Kobaru?
 
-**Start instantly, no barriers.** Point your SDK to `https://gateway.kobaru.io` and start accepting payments with SKALE.
+<Note>
+Kobaru makes it easy to get started with x402 payments on SKALE. Just hook right up to the gateway with your existing SDK -- setting Kobaru as the facilitator -- and you can start accepting payments on SKALE.
+</Note>
+
+**x402 Facilitator** Point your SDK to `https://gateway.kobaru.io` and start accepting payments with SKALE.
 
 **Instant settlement.** SKALE's instant finality—faster than any other network. Your customers get immediate access, you get immediate revenue.
 
@@ -27,16 +29,16 @@ Kobaru enables machine-to-machine payments, allowing AI agents and automated sys
 
 ## Instant API Monetization
 
-The Transparent Proxy transforms any existing API into a monetized endpoint without modifying your backend. No code changes. No deployment cycles. No infrastructure modifications.
+**Transparent Proxy**, a Kobaru product, transforms any existing API into a monetized endpoint without modifying your backend. No code changes. No deployment cycles. No infrastructure modifications.
 
 This is not just "zero code"—this is production-ready monetization that works with your existing infrastructure exactly as it runs today.
 
-### Step 1: create your Kobaru account
+### Step 1: Create Your Kobaru Account
 
 1. Go to [console.kobaru.io](https://console.kobaru.io)
 2. Sign up with your email
 
-### Step 2: register your API
+### Step 2: Register Your API
 
 In the Kobaru Console:
 
@@ -51,7 +53,7 @@ In the Kobaru Console:
    - **Network**: Select **SKALE Base** (Mainnet or Sepolia)
    - **Usage model**: `pay_per_request` or `pay_per_time`
 
-### Step 3: go live immediately
+### Step 3: Go Live and Get Paid
 
 Your API is now accessible at:
 
@@ -61,13 +63,11 @@ https://access.kobaru.io/{your-slug}/premium-data
 
 **That's it.** Your API is now x402-compatible an able to be paid for by both humans and agents using x402. Kobaru automatically:
 
-- Returns HTTP 402 with payment requirements to unpaid requests
+- Returns an HTTP 402 response with payment requirements on unpaid requests
 - Verifies payments on SKALE Base with cryptographic proof
 - Forwards authenticated requests to your backend
 - Settles payments to your wallet in ~1 second
 - Logs every transaction for reconciliation
-
-Your backend remains untouched. Your deployment pipeline unchanged. Your existing customers unaffected on non-monetized routes.
 
 ---
 
