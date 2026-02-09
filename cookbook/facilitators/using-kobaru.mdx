@@ -105,11 +105,9 @@ Here's a minimal example to accept SKALE payments with Kobaru:
       // Configure Kobaru facilitator
       const facilitatorUrl = "https://gateway.kobaru.io";
       const facilitatorClient = new HTTPFacilitatorClient({
-        url: facilitatorUrl,
-        ...(process.env.KOBARU_API_KEY && {
-          headers: { Authorization: `Bearer ${process.env.KOBARU_API_KEY}` }
-        })
-      });
+        url: facilitatorUrl
+            })
+      
 
       // Register EVM payment scheme for SKALE
       const resourceServer = new x402ResourceServer(facilitatorClient);
