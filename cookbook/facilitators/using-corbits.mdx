@@ -15,12 +15,9 @@ Corbits is a hosted facilitator service that streamlines x402 payment processing
 
 ### Environment Variables
 
-Create a `.env` file with PayAI configuration:
+Create a `.env` file with Corbits configuration:
 
 ```bash
-# PayAI Facilitator URL
-FACILITATOR_URL=https://facilitator.corbits.dev
-
 # Receiver address for the x402 payment
 RECEIVING_ADDRESS=0xAddress_Receiving_Payment
 
@@ -59,7 +56,7 @@ npm install @faremeter/middleware
     const app = new Hono();
 
     const receiver_address = process.env.RECEIVING_ADDRESS || "0xsome_default_address";
-    const facilitator = process.env.FACILITATOR_URL;
+    const facilitator = "https://facilitator.corbits.dev";
 
     const paywalledMiddleware = await middleware.createMiddleware({
       facilitatorURL: facilitator,
@@ -183,11 +180,11 @@ Common causes and solutions:
 
 ## Resources
 
-- [PayAI Documentation](https://docs.corbits.dev/facilitator/introduction/overview)
+- [Corbits Documentation](https://docs.corbits.dev/facilitator/introduction/overview)
 - [x402 Protocol Specification](https://x402.org)
 
 ---
 
 <Note>
-Corbits is a third-party service. Contact the Corbits team for access, pricing, and support information. The URLs in this guide are placeholders and will be updated when the service is publicly available.
+Corbits is a third-party service. Contact the Corbits team for access, pricing, and support information.
 </Note>
