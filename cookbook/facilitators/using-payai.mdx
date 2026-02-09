@@ -19,21 +19,15 @@ PayAI is a hosted facilitator service that simplifies x402 payment processing. I
 Create a `.env` file with PayAI configuration:
 
 ```bash
-# PayAI Facilitator URL
-FACILITATOR_URL=https://facilitator.payai.example.com
-
 # Facilitator Router Address
-RECEIVING_ADDRESS=0xFacilitatorRouterAddress
+RECEIVING_ADDRESS=0xFacilitatorReceivingAddress
 
 # Payment token configuration
-PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
-PAYMENT_TOKEN_NAME="Axios USD"
+PAYMENT_TOKEN_ADDRESS=0x2e08028E3C4c2356572E096d8EF835cD5C6030bD
+PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
 
 # SKALE network configuration
 NETWORK_CHAIN_ID=324705682
-
-# Server port
-PORT=3000
 ```
 
 ## Integration with PayAI
@@ -54,11 +48,11 @@ PORT=3000
 
     async function main() {
       // Point to PayAI facilitator
-      const facilitatorUrl = process.env.FACILITATOR_URL!;
+      const facilitatorUrl = "https://facilitator.payai.network";
       const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
       const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
-      const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Axios USD";
-      const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+      const paymentTokenName = process.env.PAYMENT_TOKEN_NAME ;
+      const networkChainId = process.env.NETWORK_CHAIN_ID;
       const network: Network = `eip155:${networkChainId}`;
 
       // Initialize PayAI facilitator client
@@ -105,7 +99,7 @@ PORT=3000
         });
       });
 
-      const port = Number(process.env.PORT) || 3000;
+      const port = 3000;
       serve({ fetch: app.fetch, port }, () => {
         console.log(`Server running on http://localhost:${port}`);
         console.log(`Using PayAI facilitator: ${facilitatorUrl}`);
@@ -198,7 +192,7 @@ Common causes and solutions:
 
 <CardGroup cols={2}>
   <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
-    Alternative hosted facilitator service
+    Alternative facilitator with advanced features
   </Card>
   <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
     Deploy your own facilitator infrastructure
