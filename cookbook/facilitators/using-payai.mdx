@@ -19,15 +19,12 @@ PayAI is a hosted facilitator service that simplifies x402 payment processing. I
 Create a `.env` file with PayAI configuration:
 
 ```bash
-# PayAI Facilitator URL
-FACILITATOR_URL=https://facilitator.payai.example.com
-
 # Facilitator Router Address
-RECEIVING_ADDRESS=0xFacilitatorRouterAddress
+RECEIVING_ADDRESS=0xFacilitatorReceivingAddress
 
 # Payment token configuration
-PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
-PAYMENT_TOKEN_NAME="Axios USD"
+PAYMENT_TOKEN_ADDRESS=0x2e08028E3C4c2356572E096d8EF835cD5C6030bD
+PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
 
 # SKALE network configuration
 NETWORK_CHAIN_ID=324705682
@@ -54,11 +51,11 @@ PORT=3000
 
     async function main() {
       // Point to PayAI facilitator
-      const facilitatorUrl = process.env.FACILITATOR_URL!;
+      const facilitatorUrl = "https://facilitator.payai.network";
       const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
       const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
-      const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Axios USD";
-      const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+      const paymentTokenName = process.env.PAYMENT_TOKEN_NAME ;
+      const networkChainId = process.env.NETWORK_CHAIN_ID;
       const network: Network = `eip155:${networkChainId}`;
 
       // Initialize PayAI facilitator client
@@ -197,7 +194,7 @@ Common causes and solutions:
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Using x402x" icon="layer-group" href="/cookbook/x402/using-x402x">
+  <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
     Alternative facilitator with advanced features
   </Card>
   <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
@@ -219,5 +216,5 @@ Common causes and solutions:
 ---
 
 <Note>
-PayAI is a third-party service. Contact the PayAI team for access, pricing, and support information. The URLs in this guide are placeholders and will be updated when the service is publicly available.
+This entity -- PayAI -- is deployed and activley supporting SKALE. These are 3rd party services that may have their own terms and conditions and privacy polices. Use these services at your own risk. AI and agents is a highly experimental space; the 3rd party software solutions may have bugs or be unaudited. You and your agents and your customers use all 3rd party services chosen at your own risk and per their terms.
 </Note>

@@ -18,15 +18,8 @@ x402x is an advanced facilitator service that extends the base x402 protocol wit
 Create a `.env` file with x402x configuration:
 
 ```bash
-# x402x Facilitator URL
-FACILITATOR_URL=https://facilitator.x402x.dev/
-
-# Facilitator router address
-RECEIVING_ADDRESS=0x1Ae0E196dC18355aF3a19985faf67354213F833D
-
-# Payment token configuration
-PAYMENT_TOKEN_ADDRESS=0x61a26022927096f444994dA1e53F0FD9487EAfcf
-PAYMENT_TOKEN_NAME="Axios USD"
+# Your receiving address
+RECEIVING_ADDRESS=0xyour_address_to_receive_payment
 
 # SKALE network configuration
 NETWORK_CHAIN_ID=324705682
@@ -46,63 +39,76 @@ import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { paymentMiddleware, x402ResourceServer } from "@x402/hono";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
+import { registerExactEvmScheme } from "@x402/evm/exact/server";
+import type { RouteConfig as X402RouteConfig } from "@x402/core/server";
 import { HTTPFacilitatorClient } from "@x402/core/server";
-import type { Network } from "@x402/core/types";
+import {
+  registerRouterSettlement,
+  registerSettlementHooks,
+  createSettlementRouteConfig,
+} from "@x402x/extensions";
 import "dotenv/config";
 
 const app = new Hono();
+const PORT = Number(process.env.PORT) || 3001;
 
 async function main() {
-  const facilitatorUrl = process.env.FACILITATOR_URL!;
-  const apiKey = process.env.X402X_API_KEY!;
+
+app.use(
+  "/*",
+  cors({
+    origin: "*",
+    credentials: false,
+    exposeHeaders: ["PAYMENT-REQUIRED", "PAYMENT-RESPONSE"],
+    allowHeaders: [
+      "Content-Type",
+      "PAYMENT-SIGNATURE",
+      "PAYMENT-RESPONSE",
+      "X-PAYMENT-SIGNATURE",
+      "X-PAYMENT-RESPONSE",
+    ],
+  }),
+);
+
+  const facilitatorUrl = "https://facilitator.x402x.dev";
   const receivingAddress = process.env.RECEIVING_ADDRESS as `0x${string}`;
-  const paymentTokenAddress = process.env.PAYMENT_TOKEN_ADDRESS as `0x${string}`;
-  const paymentTokenName = process.env.PAYMENT_TOKEN_NAME || "Axios USD";
   const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
-  const network: Network = `eip155:${networkChainId}`;
+  const network = `eip155:${networkChainId}`;
 
   // Initialize x402x facilitator client with authentication
   const facilitatorClient = new HTTPFacilitatorClient({
-    url: facilitatorUrl,
-    headers: {
-      "X-API-Key": apiKey,
-      "Authorization": `Bearer ${apiKey}`,
-    },
-  });
+    url: facilitatorUrl
+    });
 
   const resourceServer = new x402ResourceServer(facilitatorClient);
-  resourceServer.register("eip155:*", new ExactEvmScheme());
+  registerExactEvmScheme(resourceServer, {
+    networks: ["eip155:*"],
+  });
+  registerRouterSettlement(resourceServer);
+  registerSettlementHooks(resourceServer);
+  await resourceServer.initialize();
 
-  // Apply payment middleware
-  app.use(
-    paymentMiddleware(
+  const routes = {
+    "GET /api/premium": createSettlementRouteConfig(
       {
-        "GET /api/premium": {
-          accepts: [
-            {
-              scheme: "exact",
-              network: network,
-              payTo: receivingAddress,
-              price: {
-                amount: "50000", // 0.05 tokens
-                asset: paymentTokenAddress,
-                extra: {
-                  name: paymentTokenName,
-                  version: "1",
-                },
-              },
-            },
-          ],
-          description: "Premium content with x402x",
-          mimeType: "application/json",
+        accepts: {
+          scheme: "exact",
+          network,
+          payTo: receivingAddress,
+          price: "$0.01",
         },
       },
-      resourceServer
-    )
-  );
+      {
+        // Dynamic fee: query facilitator /calculate-fee on 402 probe
+        facilitatorUrl,
+      },
+  
+    ) as X402RouteConfig,
+  };
+  app.use("/api/premium", paymentMiddleware(routes, resourceServer));
 
-  // Protected endpoint
-  app.get("/api/premium", (c) => {
+  app.get("/api/premium", async (c) => {
+    console.log("[Server] Weather request received");
     return c.json({
       message: "Premium content unlocked via x402x!",
       features: ["analytics", "webhooks", "rate-limiting"],
@@ -110,7 +116,6 @@ async function main() {
     });
   });
 
-  const port = Number(process.env.PORT) || 3000;
   serve({ fetch: app.fetch, port }, () => {
     console.log(`Server running on http://localhost:${port}`);
     console.log(`Using x402x facilitator: ${facilitatorUrl}`);
@@ -125,26 +130,54 @@ main().catch(console.error);
       import { wrapFetchWithPayment } from "x402-fetch";
       import { x402Client } from "@x402/core/client";
       import { registerX402xScheme } from "@x402x/extensions";
+      import { privateKeyToAccount } from "viem/accounts";
 
       import "dotenv/config";
 
       async function main() {
-            const account = privateKeyToAccount(
-              process.env.PRIVATE_KEY as `0x${string}`
+          const account = privateKeyToAccount(
+            process.env.PRIVATE_KEY as `0x${string}`
+          );
+          const baseUrl = process.env.BASE_URL || "http://localhost:3001";
+          const networkChainId = process.env.NETWORK_CHAIN_ID || "324705682";
+
+          const client = new x402Client();
+          const networkId = `eip155:${networkChainId}` as `${string}:${string}`;
+          registerX402xScheme(client, "eip155:324705682", account);
+
+          const fetchWithPayment = wrapFetchWithPayment(fetch, client);
+          
+          const fetchWithPayment = wrapFetchWithPayment(
+              fetch,
+              client
             );
 
-        // 2. Create client and register x402x scheme
-        const client = new x402Client();
-        registerX402xScheme(client, "eip155:324705682", account);
-        // 3. Wrap fetch - it handles 402 automatically!
-        const fetchWithPayment = wrapFetchWithPayment(fetch, client);
-        // 4. Use like normal fetch - payment happens transparently
-        const response = await fetchWithPayment("/api/premium-content", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ /* your data */ }),
-        });
-        const result = await response.json();
+          const premium_url = `${baseUrl}/api/premium`;
+
+          try{
+          const response = await fetchWithPayment(premium_url, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+          const data = await response.json();
+          console.log(data);
+          }
+          catch(error){
+            console.error(
+              "[Client] Error:",
+              error instanceof Error ? error.message : error
+            );
+            process.exit(1);
+          }
+
+          const response = await fetchWithPayment("/api/premium-content", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ /* your data */ }),
+          });
+          const result = await response.json();
         }
 
 main();
@@ -157,7 +190,7 @@ main();
 
 ### Connection Issues
 
-If you cannot connect to PayAI:
+If you cannot connect to x402x:
 
 1. Verify the facilitator URL is correct
 2. Check network connectivity
@@ -200,5 +233,5 @@ Common causes and solutions:
 ---
 
 <Note>
-x402x is a third-party enterprise service. Contact the x402x team for access, custom pricing, and enterprise support. The URLs in this guide are placeholders and will be updated when the service is publicly available.
+This entity -- x402x -- is deployed and activley supporting SKALE. These are 3rd party services that may have their own terms and conditions and privacy polices. Use these services at your own risk. AI and agents is a highly experimental space; the 3rd party software solutions may have bugs or be unaudited. You and your agents and your customers use all 3rd party services chosen at your own risk and per their terms.
 </Note>
