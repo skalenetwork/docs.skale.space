@@ -28,14 +28,7 @@
             "group": "Hackathon",
             "tag": "LIVE",
             "pages": [
-              "get-started/hackathon/intro",
-              "get-started/hackathon/chains",
-              "get-started/hackathon/faucets",
-              "get-started/hackathon/quick-concepts",
-              "get-started/hackathon/tutorials"
-
-
-
+              "get-started/hackathon/info"             
             ]
           },
           {

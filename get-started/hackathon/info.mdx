@@ -1,0 +1,275 @@
+---
+title: "Info"
+description: "SKALE Network Hackathon Guide - Agentic Commerce"
+---
+
+## Introduction
+
+Autonomous agents can now discover each other, communicate, and move value — **for real**.
+
+A growing set of open standards and platforms already exists:
+- HTTP-native payments
+- Agent discovery and identity
+- Agent-to-agent messaging
+- Cheap (or zero-gas) execution environments
+
+What’s still early is seeing these pieces **composed together** into working systems, experiments, and new kinds of businesses.  
+This hackathon is a space to explore exactly that.
+
+### The Tech Landscape
+
+Here are some of the building blocks available to you.
+
+#### Payments & Commerce
+
+- **x402** — native HTTP payments for APIs, resources, and services  
+- **Commerce primitives** — escrow, conditional payments, settlement flows  
+- **SKALE Chains** — instant finallity, encrypted txs with BITE (v1 and v2) protocol, support for agentic payment standards  
+
+These tools make it practical for agents to pay each other, meter usage, or settle value without constant human involvement.
+
+#### Agent Identity & Communication
+
+- **ERC-8004** — agent discovery and interaction standard  
+- **Agent registries & reputation systems** — discoverable, composable agents  
+- **Google AP2 / A2A** — agent-to-agent communication protocols  
+
+This layer is about agents finding each other, negotiating, coordinating, and exchanging intent.
+
+#### Agent Frameworks
+
+- **LangChain**
+- **OpenAI / Anthropic**
+- **Virtuals**
+
+Use these to define agent behavior, reasoning, and workflows — whether fully autonomous or human-supervised.
+
+---
+
+## Chain Selection
+
+For this hackathon, we recommend using one of the two SKALE Chains below. Both offer instant finality, and are optimized for agent commerce workflows.
+
+### Key Features
+
+Compare the features available on each chain:
+
+| Feature | [SKALE Base Sepolia Testnet](#skale-base-sepolia-testnet) | [BITE V2 Sandbox](#bite-v2-sandbox) |
+|---------|---------------------------|-----------------|
+| **Instant Finality** | ✅ | ✅ |
+| **Native Bridge** | ✅ Base ↔ SKALE | ❌ |
+| **Native RNG** | ✅ | ✅ |
+| **BITE V1** | ✅ | ✅ |
+| **BITE V2** | ❌ | ✅ |
+| **Multi-transaction Mode** | ✅ | ✅  |
+| **x402 Facilitators** | ✅ | ❌ |
+
+---
+
+### SKALE Base Sepolia Testnet
+
+| Name | Value |
+| --- | --- |
+| Name | SKALE Base Sepolia |
+| RPC Url | https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha |
+| Explorer | https://base-sepolia-testnet-explorer.skalenodes.com/ |
+| Native Token | CREDIT |
+| Native Token Decimals | 18 |
+| Chain Id | 324705682 |
+| Chain Id Hex | 0x135A9D92 |
+| Portal | https://base-sepolia.skalenodes.com |
+| Faucet | https://base-sepolia-faucet.skale.space |
+
+#### Testnet Tokens
+
+| Name | Symbol | Decimals | Base Sepolia Address | SKALE Base Sepolia Address |
+| --- | --- | --- | --- | --- |
+| SKALE | SKL | 18 | [0xC20...2cF](https://sepolia.basescan.org/token/0xC20874EB2D51e4e61bBC07a4E7CA1358F449A2cF) | [0xaf2...57b](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xaf2e0ff5b5f51553fdb34ce7f04a6c3201cee57b) |
+| USDC | USDC.e | 6 | [0x036...F7e](https://sepolia.basescan.org/token/0x036CbD53842c5426634e7929541eC2318f3dCF7e) | [0x2e0...0bD](https://base-sepolia-testnet-explorer.skalenodes.com/token/0x2e08028E3C4c2356572E096d8EF835cD5C6030bD) |
+| Tether USD | USDT | 6 | [0x0ed...4a8](https://sepolia.basescan.org/token/0x0eda7df37785f570560dA74ceCFD435AB60D84a8) | [0x3ca...0bf](https://base-sepolia-testnet-explorer.skalenodes.com/token/0x3ca0a49f511c2c89c4dcbbf1731120d8919050bf) |
+| Wrapped BTC | WBTC | 8 | [0xC38...8Bc](https://sepolia.basescan.org/token/0xC3893AEC98b41c198A11AcD9db17688D858588Bc) | [0x451...e87](https://base-sepolia-testnet-explorer.skalenodes.com/token/0x4512eacd4186b025186e1cf6cc0d89497c530e87) |
+| Wrapped Ether | WETH | 6 | [0x420...006](https://sepolia.basescan.org/token/0x4200000000000000000000000000000000000006) | [0xf94...fc0](https://base-sepolia-testnet-explorer.skalenodes.com/token/0xf94056bd7f6965db3757e1b145f200b7346b4fc0) |
+| ETH (ERC-20) | ETHC | 6 | Native ETH (Gas) on Base | [0xD2Aaa007...000](https://base-sepolia-testnet-explorer.skalenodes.com/address/0xD2Aaa00700000000000000000000000000000000) |
+
+#### Deployed Contracts
+
+| Contract | Address | Description |
+| --- | --- | --- |
+| Permit2 | [0x000000000022D473030F116dDEE9F6B43aC78BA3](https://base-sepolia-testnet-explorer.skalenodes.com/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) | Uniswap's signature-based approval system for ERC20 tokens |
+
+#### Chain Notes
+
+- When bridging ETH from Base Sepolia to the SKALE Chain, ETH is locked as native ETH (msg.value) and minted as an ERC-20 called ETHC on the SKALE Chain
+- WETH and ETHC are both ERC-20 on the SKALE Chain but are deposited differently
+- This testnet chain is 100% permissionless
+- CREATE2Factory, SingletonFactory, Multicall3, and Permit2 are deployed to their canonical addresses
+
+---
+
+### BITE V2 Sandbox
+
+| Name | Value |
+| --- | --- |
+| Name | BITE V2 Sandbox |
+| RPC Url | https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox |
+| Explorer | https://base-sepolia-testnet-explorer.skalenodes.com:10012/ |
+| Native Token | sFUEL |
+| Native Token Decimals | 18 |
+| Chain Id | 2090472038 |
+| Chain Id Hex | 0x7CA8E676 |
+
+#### Testnet Tokens
+
+<Note>
+**Feel free to create your own testnet tokens** on the BITE V2 Sandbox for your hackathon project. Use any standard token factory or deploy directly using Remix, Hardhat, or Foundry.
+</Note>
+
+Common testnet tokens can be deployed or bridged as needed. For token creation, refer to the [Deploy ERC20 Token](/cookbook/smart-contracts/deploy-erc20-token) guide.
+
+#### Chain Notes
+
+- BITE V2 Sandbox is optimized for testing encrypted transaction flows
+- Both BITE V1 and V2 encryption protocols are supported
+- Ideal for projects exploring private agent communications and encrypted payment flows
+
+---
+
+## Faucets
+
+---
+## Quick Concepts and Demos
+
+Building on SKALE and agentic commerce involves a set of core concepts, tools, and smart contracts that work together.
+
+This section introduces those concepts and links to deeper explanations, along with demos that show how they can be used and composed in practice.
+
+### SKALE Native Features
+
+#### Random Number Generation (RNG)
+
+Verifiable randomness directly on-chain — SKALE Chains RNG is 100% mathematical provable, decentralized and does not relay on any third party.
+
+<CardGroup cols={2}>
+  <Card title="Demo" icon="code" href="/cookbook/native-features/rng-get-random-number">
+    See RNG in action with code examples.
+  </Card>
+</CardGroup>
+
+#### SKALE Native Bridge
+
+SKALE Native Bridge or SKALE’s Interchain Messaging Agent (IMA) is a decentralized, high-performance message transport layer and bridging protocol.
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/developers/skale-bridge/overview">
+    Canonical bridge. Links BASE - SKALE Base Sepolia
+  </Card>
+  <Card title="Demo" icon="play" href="https://base-sepolia.skalenodes.com/bridge?from=mainnet&to=jubilant-horrible-ancha&token=skl&type=erc20">
+    Head to the SKALE Portal and use the bridge implementation.
+  </Card>
+</CardGroup>
+
+#### BITE Transaction
+
+On SKALE Chains it's possible to send encrypted transactions. How? Using the native threshold encryption utilized on the concensus and mantains the chain secure.
+
+With the native threshold encryption of SKALE Chains it was create the BITE Protocol - it allows to encrypt transactions and only after consensus does the validator committee decrypt for execution using threshold keys—no single party can peek or tamper early.
+
+As of now the BITE protocol it's at phase 2, which means it can be used in two different ways:
+- BITE V1: transaction gets ecrypted on the client side and gets decrypted during consensus;
+- BITE V2 or BITE CTX: transaction gets ecrypted on the client and decrypt on the smart contract when some condition is met (defined on the contract);
+
+<CardGroup cols={2}>
+  <Card title="BITE V1" icon="book" href="/concepts/bite-protocol/intro-bite-protocol">
+    Documentation on how BITE Works
+  </Card>
+  <Card title="BITE V1" icon="play" href="/cookbook/privacy/sending-encrypted-transactions-with-bite">
+    Demo on how to use BITE V1.
+  </Card>
+  <Card title="BITE V2" icon="book" href="">
+     Documentation on how BITE V2 or BITE CTX works.
+  </Card>
+  <Card title="BITE V2" icon="play" href="https://github.com/TheGreatAxios/ctxs/tree/thegreataxios/ctxs-1.4">
+    Demo on how to use BITE V2.
+  </Card>
+  <Card title="Threshold encryption" icon="book" href="/concepts/elliptic-curve-cryptography">
+    Theory about threshold encryption.
+  </Card>
+</CardGroup>
+
+<Note>
+For this hackathon the BITE V2 can only be utilized on the [BITE V2 Sandbox](/get-started/hackathon/info#bite-v2-sandbox).
+</Note>
+
+**MEV Protection**
+
+Encrypted mempool means front-running, sandwiching, and other MEV attacks are prevented. Using BITE protocol it's possible to fully prevent MEV in a decentralized manner.
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/concepts/bite-protocol/mev-deep-dive">
+    Understanding MEV and how SKALE protects against it.
+  </Card>
+</CardGroup>
+
+
+### Agentic Commerce
+
+#### Agents
+
+Autonomous software programs that can discover services, negotiate terms, and execute transactions on behalf of users or other agents.
+
+<CardGroup cols={2}>
+  <Card title="Demo" icon="play" href="/cookbook/agents/build-an-agent">
+    Create your first agent.
+  </Card>
+</CardGroup>
+
+#### A2A (Agent-to-Agent)
+
+Direct communication and value exchange between agents. No intermediary required — agents discover, negotiate, and settle peer-to-peer.
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="https://a2a-protocol.org/latest/">
+    Agent discovery and messaging protocols.
+  </Card>
+</CardGroup>
+
+#### ERC-8004
+
+The standard for agent discovery and interaction. Agents register themselves, announce capabilities, and become discoverable to other agents and systems.
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/get-started/agentic-builders/start-with-erc-8004">
+    ERC-8004 specification.
+  </Card>
+</CardGroup>
+
+#### x402
+
+HTTP-native payments for APIs and services. Inspired by HTTP 402 "Payment Required" — makes any API monetizable without blockchain complexity.
+
+On the x402 payment protocol there's different parties involved to make this kind of payment possible:
+- **Facilitator**: Off-chain entity that handles BITE V2 decryption and payment routing
+- **Merchant**:  Agent or service offering goods/services for payment
+- **Buyer**: Agent or user purchasing goods/services
+- **Agent**: Autonomous actor that can be a buyer, merchant, or both (optional)
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book" href="/get-started/agentic-builders/start-with-x402">
+    x402 protocol and integration guide.
+  </Card>
+  <Card title="Faciliatators" icon="book" href="/get-started/agentic-builders/facilitators">
+    Available facilitators on SKALE
+  </Card>
+</CardGroup>
+<CardGroup cols={3}>
+  <Card title="Demo" icon="play" href="/cookbook/x402/facilitator">
+    Run your own facilitator
+  </Card>
+  <Card title="Demo" icon="play" href="/cookbook/x402/accepting-payments">
+    Make your business taking x402 payments
+  </Card>
+  <Card title="Demo" icon="play" href="/cookbook/x402/buying">
+    Make your clients pay with x402
+  </Card>
+</CardGroup>
+
