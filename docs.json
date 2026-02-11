@@ -78,7 +78,8 @@
             "pages": [
               "concepts/bite-protocol/intro-bite-protocol",
               "concepts/bite-protocol/phases",
-              "concepts/bite-protocol/mev-deep-dive"
+              "concepts/bite-protocol/encrypted-transactions",
+              "concepts/bite-protocol/conditional-transactions"
             ]
           },
           {
@@ -220,6 +221,8 @@
             "group": "BITE Protocol",
             "pages": [
               "developers/bite-protocol/typescript-sdk",
+              "developers/bite-protocol/encrypted-transactions",
+              "developers/bite-protocol/conditional-transactions",
               "developers/bite-protocol/bite-api-and-faqs"
             ]
           },
@@ -261,8 +264,8 @@
           {
             "group": "Privacy",
             "pages": [
-              "cookbook/privacy/sending-encrypted-transactions-with-bite",
-              "cookbook/privacy/bitev2-rps"
+              "cookbook/privacy/encrypted-transactions",
+              "cookbook/privacy/conditional-transactions"
             ]
           },
           {
@@ -372,6 +375,10 @@
     }
   },
   "redirects": [
+    {
+      "source": "/concepts/bite-protocol/mev-deep-dive",
+      "destination": "/concepts/bite-protocol/encrypted-transactions"
+    },
     {
       "source": "/welcome/intro-to-skale",
       "destination": "/get-started/skale"
