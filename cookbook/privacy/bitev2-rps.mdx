@@ -1,0 +1,515 @@
+---
+title: "BITE V2 - Rock Paper Scissors"
+description: "Complete step-by-step guide to implementing a private Rock-Paper-Scissors game using BITE V2 CTX transactions"
+---
+
+## Rock-Paper-Scissors with BITE V2
+
+This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses BITE V2's Confidential Transaction (CTX) feature to keep player moves encrypted until both players have committed. The game automatically decrypts moves on-chain and determines the winner without any manual reveal phase.
+
+<Tip title="Why CTX for RPS?">
+In a traditional Rock-Paper-Scissors game, if Player 1 submits their move first, Player 2 could see it and counter. Using CTX, both moves remain encrypted until both players commit. The network then automatically decrypts them in the next block, ensuring a fair game.
+</Tip>
+
+## How the Game Works
+
+The game implements a **commit-reveal pattern with automatic decryption** using BITE V2 CTX:
+
+### Game Flow Summary
+
+| Phase | Description | Key Action |
+|--------|-------------|------------|
+| **1. Create** | Player 1 creates a game with encrypted move and wager | Move encrypted via BITE SDK, stored on-chain |
+| **2. Join** | Player 2 joins with encrypted move and CTX gas payment | CTX automatically submitted for decryption |
+| **3. Decrypt** | Network decrypts both moves in next block | `onDecrypt` callback triggered automatically |
+| **4. Resolve** | Contract determines winner and distributes funds | Winner gets 2x wager, draw = refunds |
+
+
+<Note title="Before You Start">
+This tutorial requires access to a BITE V2-enabled SKALE chain. The demo is configured for **Bite V2 Sandbox 2**. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+</Note>
+
+### Prerequisites
+
+- Node.js 18+ and npm/yarn
+- Wallet browser extension
+- Access to a BITE V2-enabled SKALE chain
+- Basic knowledge of Solidity and React
+
+---
+
+## Step 1: Clone the Project
+
+Clone the Rock-Paper-Scissors demo repository:
+
+```bash
+# Clone the repository
+git clone -b thegreataxios/rps https://github.com/TheGreatAxios/ctxs.git
+
+# Navigate into the project
+cd ctxs/rock-paper-scissors
+```
+
+### Project Structure
+
+```
+rock-paper-scissors/
+├── contracts/              # Solidity smart contracts
+│   ├── src/
+│   │   ├── RockPaperScissors.sol    # Main game contract
+│   │   └── encryption/
+│   │       ├── Precompiled.sol        # BITE V2 precompile library
+│   │       └── types.sol             # Type definitions
+│   └── test/                       # Foundry tests
+├── frontend/              # React + Vite frontend
+│   ├── src/
+│   │   ├── components/               # React components
+│   │   ├── config/                  # Configuration files
+│   │   ├── hooks/                   # Custom React hooks
+│   │   └── utils/                  # Utility functions
+│   └── package.json
+└── README.md
+```
+
+---
+
+## Step 2: Smart Contract Overview
+
+The core game logic is in `RockPaperScissors.sol`. Let's break down the key components.
+
+### Game State Structure
+
+```solidity
+enum Move { None, Rock, Paper, Scissors }
+enum GameState { Created, Joined, Finished, Expired }
+
+struct Game {
+    address player1;
+    address player2;
+    bytes encryptedMove1;      // Encrypted move from Player 1
+    bytes encryptedMove2;      // Encrypted move from Player 2
+    uint8 move1;              // Decrypted move (revealed after CTX)
+    uint8 move2;              // Decrypted move (revealed after CTX)
+    uint256 wagerAmount;
+    address wagerToken;
+    GameState state;
+    uint256 joinDeadline;
+    address winner;
+}
+```
+
+### BITE V2 Precompile Addresses
+
+The contract imports `Precompiled.sol` to interact with BITE V2's precompiled contracts:
+
+```solidity
+import "./encryption/Precompiled.sol";
+
+contract RockPaperScissors is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
+    // BITE V2 Precompile addresses
+    address public constant SUBMIT_CTX = 0x000000000000000000000000000000000000001B;
+    address public constant ENCRYPT_TE = 0x000000000000000000000000000000000000001c;
+
+    uint256 public constant CTX_GAS_LIMIT = 2500000;     // 2.5M gas limit for CTX
+    uint256 public constant CTX_GAS_PAYMENT = 0.06 ether; // Cost for CTX execution
+    // ...
+}
+```
+
+**Precompile Addresses:**
+- `SUBMIT_CTX (0x...1B)`: Submits encrypted data for automatic decryption
+- `ENCRYPT_TE (0x...1C)`: Encrypts data using threshold encryption (not used directly - frontend encrypts)
+
+### Creating a Game
+
+```solidity
+function createGame(bytes calldata _encryptedMove, uint256 _wagerAmount, address _wagerToken)
+    external
+    nonReentrant
+    returns (uint256 gameId)
+{
+    require(_encryptedMove.length > 0, "Invalid encrypted move");
+    require(_wagerToken != address(0), "Must use ERC20 token");
+
+    // Transfer wager tokens from player to contract
+    IERC20(_wagerToken).safeTransferFrom(msg.sender, address(this), _wagerAmount);
+
+    gameId = nextGameId++;
+    games[gameId] = Game({
+        player1: msg.sender,
+        player2: address(0),
+        encryptedMove1: _encryptedMove,
+        encryptedMove2: "",
+        move1: 0,
+        move2: 0,
+        wagerAmount: _wagerAmount,
+        wagerToken: _wagerToken,
+        state: GameState.Created,
+        joinDeadline: block.timestamp + JOIN_TIMEOUT,
+        winner: address(0)
+    });
+
+    emit GameCreated(gameId, msg.sender, _wagerAmount, _wagerToken);
+}
+```
+
+**What happens:**
+1. Player 1's encrypted move is stored on-chain
+2. Wager tokens are transferred to the contract
+3. Game enters `Created` state with a 1-hour join deadline
+
+### Joining a Game & Submitting CTX
+
+```solidity
+function joinGame(uint256 _gameId, bytes calldata _encryptedMove)
+    external
+    payable
+    nonReentrant
+{
+    Game storage game = games[_gameId];
+    require(game.player1 != address(0), "Game not found");
+    require(game.player2 == address(0), "Game full");
+    require(game.state == GameState.Created, "Invalid state");
+    require(block.timestamp <= game.joinDeadline, "Expired");
+    require(_encryptedMove.length > 0, "Invalid encrypted move");
+    require(msg.value == CTX_GAS_PAYMENT, "Invalid CTX gas payment");
+
+    // Transfer wager tokens from player to contract
+    IERC20(game.wagerToken).safeTransferFrom(msg.sender, address(this), game.wagerAmount);
+
+    game.player2 = msg.sender;
+    game.encryptedMove2 = _encryptedMove;
+    game.state = GameState.Joined;
+
+    emit GameJoined(_gameId, msg.sender, _encryptedMove);
+
+    // Submit CTX to decrypt both moves
+    _submitDecryptCTX(_gameId);
+}
+```
+
+### Submitting the CTX
+
+```solidity
+function _submitDecryptCTX(uint256 _gameId) internal {
+    Game storage game = games[_gameId];
+
+    // Prepare encrypted args (both moves)
+    bytes[] memory encryptedArgs = new bytes[](2);
+    encryptedArgs[0] = game.encryptedMove1;
+    encryptedArgs[1] = game.encryptedMove2;
+
+    // Prepare plaintext args (game ID for callback)
+    bytes[] memory plaintextArgs = new bytes[](1);
+    plaintextArgs[0] = abi.encode(_gameId);
+
+    // Get CTX sender address and transfer gas payment
+    address payable ctxSender = Precompiled.submitCTX(
+        SUBMIT_CTX,
+        CTX_GAS_LIMIT,
+        encryptedArgs,
+        plaintextArgs
+    );
+
+    // Transfer gas payment to CTX sender
+    payable(ctxSender).transfer(CTX_GAS_PAYMENT);
+}
+```
+
+**What happens:**
+1. Both encrypted moves are packaged into `encryptedArgs`
+2. The Game ID is passed as plaintext for callback identification
+3. `Precompiled.submitCTX()` returns the CTX sender address
+4. 0.06 ETH is transferred to cover CTX execution costs
+
+### Handling Decryption Callback
+
+```solidity
+function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plaintextArguments)
+    external
+    nonReentrant
+{
+    // Decode game ID from plaintext args
+    uint256 gameId = abi.decode(plaintextArguments[0], (uint256));
+    Game storage game = games[gameId];
+
+    require(game.player1 != address(0), "Game not found");
+    require(game.state == GameState.Joined, "Invalid state");
+
+    // Decrypt moves from BITE
+    game.move1 = uint8(bytes1(decryptedArguments[0]));
+    game.move2 = uint8(bytes1(decryptedArguments[1]));
+
+    require(game.move1 >= 1 && game.move1 <= 3, "Invalid move1");
+    require(game.move2 >= 1 && game.move2 <= 3, "Invalid move2");
+
+    emit MovesDecrypted(gameId, game.move1, game.move2);
+
+    // Resolve game
+    _resolveGame(gameId);
+}
+```
+
+### Resolving the Game
+
+```solidity
+function _resolveGame(uint256 _gameId) internal {
+    Game storage game = games[_gameId];
+
+    Move move1 = Move(game.move1);
+    Move move2 = Move(game.move2);
+
+    if (move1 == move2) {
+        // Draw - refund both
+        game.winner = address(0);
+        _refundPlayer(game.player1, game.wagerAmount, game.wagerToken);
+        _refundPlayer(game.player2, game.wagerAmount, game.wagerToken);
+    } else if (
+        (move1 == Move.Rock && move2 == Move.Scissors) ||
+        (move1 == Move.Paper && move2 == Move.Rock) ||
+        (move1 == Move.Scissors && move2 == Move.Paper)
+    ) {
+        // Player 1 wins
+        game.winner = game.player1;
+        _transferPayout(game.player1, game.wagerAmount * 2, game.wagerToken);
+    } else {
+        // Player 2 wins
+        game.winner = game.player2;
+        _transferPayout(game.player2, game.wagerAmount * 2, game.wagerToken);
+    }
+
+    game.state = GameState.Finished;
+    emit GameFinished(_gameId, game.winner);
+}
+```
+
+---
+
+## Step 3: Frontend Setup
+
+### Install Dependencies
+
+Navigate to the frontend directory and install dependencies:
+
+```bash
+cd frontend
+npm install
+```
+
+The frontend uses the `@skalenetwork/bite` package for encryption:
+
+```bash
+npm install @skalenetwork/bite
+```
+
+### Frontend Project Structure
+
+```
+frontend/
+├── src/
+│   ├── components/           # React components
+│   │   ├── CreateGame.tsx   # Game creation form
+│   │   ├── JoinGame.tsx     # Game joining form
+│   │   ├── GameView.tsx     # Game state display
+│   │   └── GameList.tsx     # Browse games
+│   ├── config/
+│   │   └── contract.ts      # Contract addresses & ABI
+│   ├── hooks/
+│   │   └── useGameState.ts  # Custom hook for game state
+│   ├── utils/
+│   │   └── encryption.ts   # Encryption utilities
+│   ├── App.tsx              # Main app component
+│   └── main.tsx            # Entry point
+└── package.json
+```
+
+**Key Files:**
+- [`CreateGame.tsx`](https://github.com/TheGreatAxios/ctxs/blob/thegreataxios/rps/rock-paper-scissors/frontend/src/components/CreateGame.tsx) - Handles game creation with move encryption
+- [`JoinGame.tsx`](https://github.com/TheGreatAxios/ctxs/blob/thegreataxios/rps/rock-paper-scissors/frontend/src/components/JoinGame.tsx) - Handles game joining with CTX gas payment
+- [`config/contract.ts`](https://github.com/TheGreatAxios/ctxs/blob/thegreataxios/rps/rock-paper-scissors/frontend/src/config/contract.ts) - Contract configuration
+- [`App.tsx`](https://github.com/TheGreatAxios/ctxs/blob/thegreataxios/rps/rock-paper-scissors/frontend/src/App.tsx) - Main application layout
+
+---
+
+## Step 4: CreateGame Component
+
+The `CreateGame.tsx` component handles game creation. Here are the key parts:
+
+### BITE SDK Initialization
+
+```tsx
+import { BITE } from '@skalenetwork/bite'
+
+// Encrypt move using BITE V2
+const encryptMove = async (move: Move): Promise<string> => {
+  // Convert move number to hex (1 -> "01", 2 -> "02", 3 -> "03")
+  const moveHex = move.toString(16).padStart(2, '0')
+  const rpcUrl = 'https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2'
+  const bite = new BITE(rpcUrl)
+  const encryptedMove = await bite.encryptMessage(moveHex)
+  return encryptedMove
+}
+```
+
+**Encryption Flow:**
+1. Move value (1-3) is converted to hex: `move.toString(16).padStart(2, '0')`
+2. BITE SDK encrypts the hex string using threshold encryption
+3. Encrypted bytes are returned as a hex string for contract submission
+
+### Creating the Game
+
+```tsx
+const handleCreateGame = async () => {
+  if (!selectedMove || !tokenAddress) return
+
+  const amount = wagerAmount ? parseEther(wagerAmount) : BigInt(0)
+  const needsApproval = allowance !== undefined && amount > (allowance || 0n)
+
+  try {
+    // Step 1: Approve token spending if needed
+    if (needsApproval) {
+      setIsApproving(true)
+      const approveHash = await writeContract({
+        address: tokenAddress,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        args: [contractAddress, amount],
+      })
+      if (approveHash && publicClient) {
+        await publicClient.waitForTransactionReceipt({ hash: approveHash })
+        await refetchAllowance()
+      }
+      setIsApproving(false)
+    }
+
+    // Step 2: Encrypt the selected move
+    setIsEncrypting(true)
+    const encryptedMove = await encryptMove(selectedMove)
+    setIsEncrypting(false)
+
+    // Step 3: Create game with encrypted move
+    setIsCreating(true)
+    const hash = await writeContract({
+      address: contractAddress,
+      abi: CONTRACT_ABI,
+      functionName: 'createGame',
+      args: [encryptedMove, amount, tokenAddress],
+    })
+    setCreateTxHash(hash)
+    setIsCreating(false)
+  } catch (e) {
+    console.error('Error:', e)
+    setIsApproving(false)
+    setIsEncrypting(false)
+    setIsCreating(false)
+  }
+}
+```
+
+**Flow Summary:**
+1. Check if token approval is needed (allowance vs wager amount)
+2. If needed, approve the contract to spend tokens
+3. **Encrypt the move** using BITE SDK
+4. Call `createGame` with encrypted move, wager amount, and token address
+
+---
+
+## Step 5: JoinGame Component
+
+The `JoinGame.tsx` component handles joining an existing game. Key differences from `CreateGame`:
+
+### Fetching Game Details
+
+```tsx
+// Get game details for wager amount
+const { data: gameData } = useReadContract({
+  address: contractAddress,
+  abi: CONTRACT_ABI,
+  functionName: 'getGame',
+  args: gameId ? [BigInt(gameId)] : undefined,
+  query: {
+    enabled: !!gameId,
+  },
+}) as { data: GameData | undefined }
+
+const wagerAmount = gameData?.wagerAmount
+```
+
+### Joining with CTX Gas Payment
+
+```tsx
+// CTX gas payment amount (0.06 ETH) - matches contract CTX_GAS_PAYMENT
+const CTX_GAS_PAYMENT = BigInt(60000000000000000) // 0.06 ether for 2.5M gas limit
+
+const handleJoinGame = async () => {
+  if (!selectedMove || !gameId || !wagerAmount || !tokenAddress) return
+
+  try {
+    // Step 1: Approve token spending if needed
+    const needsApproval = allowance !== undefined && wagerAmount > (allowance || 0n)
+
+    if (needsApproval) {
+      setIsApproving(true)
+      const approveHash = await writeContract({
+        address: tokenAddress,
+        abi: ERC20_ABI,
+        functionName: 'approve',
+        args: [contractAddress, wagerAmount],
+      })
+      if (approveHash && publicClient) {
+        await publicClient.waitForTransactionReceipt({ hash: approveHash })
+        await refetchAllowance()
+      }
+      setIsApproving(false)
+    }
+
+    // Step 2: Encrypt the selected move
+    setIsEncrypting(true)
+    const encryptedMove = await encryptMove(selectedMove)
+    setIsEncrypting(false)
+
+    // Step 3: Join game with CTX gas payment
+    setIsJoining(true)
+    const joinHash = await writeContract({
+      address: contractAddress,
+      abi: CONTRACT_ABI,
+      functionName: 'joinGame',
+      args: [BigInt(gameId), encryptedMove],
+      value: CTX_GAS_PAYMENT, // 0.06 ETH for CTX execution
+    })
+    setJoinTxHash(joinHash)
+    setIsJoining(false)
+  } catch (e) {
+    console.error('Error:', e)
+    setIsApproving(false)
+    setIsEncrypting(false)
+    setIsJoining(false)
+  }
+}
+```
+
+**Key Difference:** The `joinGame` call includes `value: CTX_GAS_PAYMENT` (0.06 ETH) which is required for the CTX execution.
+
+---
+
+## Step 6: Run the Application
+
+```bash
+npm run dev
+```
+
+Open your browser to `http://localhost:5173` and:
+
+1. **Connect Wallet** - Connect your wallet to the Bite V2 Sandbox 2 network
+2. **Get Test Tokens** - Visit the faucet to get gas tokens 
+3. **Play a Game** - Select your move, set wager amount, and create
+
+---
+
+### Resources
+
+- **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
+- **Demo Repository**: [TheGreatAxios/ctxs](https://github.com/TheGreatAxios/ctxs/tree/thegreataxios/rps)
+- **BITE Protocol**: [Introduction](/concepts/bite-protocol/intro-bite-protocol)
