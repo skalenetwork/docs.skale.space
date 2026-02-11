@@ -1,11 +1,11 @@
 ---
-title: "BITE V2 - Rock Paper Scissors"
-description: "Complete step-by-step guide to implementing a private Rock-Paper-Scissors game using BITE V2 CTX transactions"
+title: "Conditional Transactions"
+description: "Complete step-by-step guide to implementing a private Rock-Paper-Scissors game using BITE Conditional Transactions"
 ---
 
-## Rock-Paper-Scissors with BITE V2
+## Rock-Paper-Scissors with Conditional Transactions
 
-This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses BITE V2's Confidential Transaction (CTX) feature to keep player moves encrypted until both players have committed. The game automatically decrypts moves on-chain and determines the winner without any manual reveal phase.
+This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses BITE's Conditional Transaction (CTX) feature to keep player moves encrypted until both players have committed. The game automatically decrypts moves on-chain and determines the winner without any manual reveal phase.
 
 <Tip title="Why CTX for RPS?">
 In a traditional Rock-Paper-Scissors game, if Player 1 submits their move first, Player 2 could see it and counter. Using CTX, both moves remain encrypted until both players commit. The network then automatically decrypts them in the next block, ensuring a fair game.
@@ -13,9 +13,9 @@ In a traditional Rock-Paper-Scissors game, if Player 1 submits their move first,
 
 ## How the Game Works
 
-The game implements a **commit-reveal pattern with automatic decryption** using BITE V2 CTX:
+The game implements a **commit-reveal pattern with automatic decryption** using BITE CTX:
 
-### Game Flow Summary
+**Game Flow:**
 
 | Phase | Description | Key Action |
 |--------|-------------|------------|
@@ -26,14 +26,13 @@ The game implements a **commit-reveal pattern with automatic decryption** using 
 
 
 <Note title="Before You Start">
-This tutorial requires access to a BITE V2-enabled SKALE chain. The demo is configured for **Bite V2 Sandbox 2**. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+This tutorial requires access to a CTX-enabled SKALE chain. The demo is configured for **BITE V2 Sandbox 2**. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
 </Note>
 
-### Prerequisites
-
+**Prerequisites:**
 - Node.js 18+ and npm/yarn
 - Wallet browser extension
-- Access to a BITE V2-enabled SKALE chain
+- Access to a CTX-enabled SKALE chain
 - Basic knowledge of Solidity and React
 
 ---
@@ -50,7 +49,65 @@ git clone -b thegreataxios/rps https://github.com/TheGreatAxios/ctxs.git
 cd ctxs/rock-paper-scissors
 ```
 
-### Project Structure
+**Install Dependencies & Build:**
+
+<Tabs>
+  <Tab title="Foundry">
+  ```bash
+  # Install Foundry dependencies
+  forge install
+
+  # Build contracts
+  forge build
+  ```
+  </Tab>
+
+  <Tab title="Frontend">
+  ```bash
+  # Install frontend dependencies
+  cd frontend
+  npm install
+  ```
+  </Tab>
+</Tabs>
+
+**Deploy Contracts:**
+
+The deployment script deploys both the MockSKL token and the RockPaperScissors game contract.
+
+<Note>
+**Update Addresses:** After deploying, copy the output addresses to your frontend `config/contracts.ts`.
+</Note>
+
+```bash
+# Set your environment variables
+export RPC_URL="https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2"
+export PRIVATE_KEY="0x..."  # Your wallet private key
+
+# From the rock-paper-scissors/contracts directory
+cd contracts
+
+# Deploy both MockSKL and RockPaperScissors
+forge script script/Deploy.s.sol:Deploy --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
+```
+
+**Expected Output:**
+```
+MockSKL deployed at: 0x...
+RockPaperScissors deployed at: 0x...
+Deployer: 0x...
+Network: 103698795
+
+=== UPDATE FRONTEND ===
+TOKEN_ADDRESS[chainId] = 0x...
+CONTRACT_ADDRESS[chainId] = 0x...
+```
+
+<Note>
+**Fund Your Wallet:** After deployment, the script outputs the token address. Use a block explorer or cast to call `mint()` on the MockSKL contract to get tokens for testing.
+</Note>
+
+**Project Structure:**
 
 ```
 rock-paper-scissors/
@@ -77,7 +134,7 @@ rock-paper-scissors/
 
 The core game logic is in `RockPaperScissors.sol`. Let's break down the key components.
 
-### Game State Structure
+**Game State Structure:**
 
 ```solidity
 enum Move { None, Rock, Paper, Scissors }
@@ -98,9 +155,9 @@ struct Game {
 }
 ```
 
-### BITE V2 Precompile Addresses
+**BITE Precompile Addresses:**
 
-The contract imports `Precompiled.sol` to interact with BITE V2's precompiled contracts:
+The contract imports `Precompiled.sol` to interact with BITE's precompiled contracts:
 
 ```solidity
 import "./encryption/Precompiled.sol";
@@ -108,7 +165,7 @@ import "./encryption/Precompiled.sol";
 contract RockPaperScissors is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    // BITE V2 Precompile addresses
+    // BITE Precompile addresses
     address public constant SUBMIT_CTX = 0x000000000000000000000000000000000000001B;
     address public constant ENCRYPT_TE = 0x000000000000000000000000000000000000001c;
 
@@ -122,7 +179,7 @@ contract RockPaperScissors is ReentrancyGuard {
 - `SUBMIT_CTX (0x...1B)`: Submits encrypted data for automatic decryption
 - `ENCRYPT_TE (0x...1C)`: Encrypts data using threshold encryption (not used directly - frontend encrypts)
 
-### Creating a Game
+**Creating a Game:**
 
 ```solidity
 function createGame(bytes calldata _encryptedMove, uint256 _wagerAmount, address _wagerToken)
@@ -160,7 +217,7 @@ function createGame(bytes calldata _encryptedMove, uint256 _wagerAmount, address
 2. Wager tokens are transferred to the contract
 3. Game enters `Created` state with a 1-hour join deadline
 
-### Joining a Game & Submitting CTX
+**Joining a Game & Submitting CTX:**
 
 ```solidity
 function joinGame(uint256 _gameId, bytes calldata _encryptedMove)
@@ -190,7 +247,7 @@ function joinGame(uint256 _gameId, bytes calldata _encryptedMove)
 }
 ```
 
-### Submitting the CTX
+**Submitting the CTX:**
 
 ```solidity
 function _submitDecryptCTX(uint256 _gameId) internal {
@@ -224,7 +281,7 @@ function _submitDecryptCTX(uint256 _gameId) internal {
 3. `Precompiled.submitCTX()` returns the CTX sender address
 4. 0.06 ETH is transferred to cover CTX execution costs
 
-### Handling Decryption Callback
+**Handling Decryption Callback:**
 
 ```solidity
 function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plaintextArguments)
@@ -252,7 +309,7 @@ function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plainte
 }
 ```
 
-### Resolving the Game
+**Resolving the Game:**
 
 ```solidity
 function _resolveGame(uint256 _gameId) internal {
@@ -289,7 +346,7 @@ function _resolveGame(uint256 _gameId) internal {
 
 ## Step 3: Frontend Setup
 
-### Install Dependencies
+**Install Dependencies:**
 
 Navigate to the frontend directory and install dependencies:
 
@@ -304,7 +361,7 @@ The frontend uses the `@skalenetwork/bite` package for encryption:
 npm install @skalenetwork/bite
 ```
 
-### Frontend Project Structure
+**Frontend Project Structure:**
 
 ```
 frontend/
@@ -337,12 +394,12 @@ frontend/
 
 The `CreateGame.tsx` component handles game creation. Here are the key parts:
 
-### BITE SDK Initialization
+**BITE SDK Initialization:**
 
 ```tsx
 import { BITE } from '@skalenetwork/bite'
 
-// Encrypt move using BITE V2
+// Encrypt move using BITE
 const encryptMove = async (move: Move): Promise<string> => {
   // Convert move number to hex (1 -> "01", 2 -> "02", 3 -> "03")
   const moveHex = move.toString(16).padStart(2, '0')
@@ -358,7 +415,7 @@ const encryptMove = async (move: Move): Promise<string> => {
 2. BITE SDK encrypts the hex string using threshold encryption
 3. Encrypted bytes are returned as a hex string for contract submission
 
-### Creating the Game
+**Creating the Game:**
 
 ```tsx
 const handleCreateGame = async () => {
@@ -420,7 +477,7 @@ const handleCreateGame = async () => {
 
 The `JoinGame.tsx` component handles joining an existing game. Key differences from `CreateGame`:
 
-### Fetching Game Details
+**Fetching Game Details:**
 
 ```tsx
 // Get game details for wager amount
@@ -437,7 +494,7 @@ const { data: gameData } = useReadContract({
 const wagerAmount = gameData?.wagerAmount
 ```
 
-### Joining with CTX Gas Payment
+**Joining with CTX Gas Payment:**
 
 ```tsx
 // CTX gas payment amount (0.06 ETH) - matches contract CTX_GAS_PAYMENT
@@ -502,13 +559,13 @@ npm run dev
 
 Open your browser to `http://localhost:5173` and:
 
-1. **Connect Wallet** - Connect your wallet to the Bite V2 Sandbox 2 network
+1. **Connect Wallet** - Connect your wallet to the BITE V2 Sandbox 2 network
 2. **Get Test Tokens** - Visit the faucet to get gas tokens 
 3. **Play a Game** - Select your move, set wager amount, and create
 
 ---
 
-### Resources
+**Resources:**
 
 - **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
 - **Demo Repository**: [TheGreatAxios/ctxs](https://github.com/TheGreatAxios/ctxs/tree/thegreataxios/rps)
