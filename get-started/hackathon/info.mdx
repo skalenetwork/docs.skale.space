@@ -24,7 +24,7 @@ This hackathon is a space to explore agent-to-agent commerce: agents paying each
 | Chain ID | `103698795` (Hex: `0x62e516b`) |
 | Tokens & Contracts | USDC: [0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8](https://base-sepolia-testnet-explorer.skalenodes.com:10032/address/0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8) |
 | Features | **x402** Facilitator, Encrypted Transactions (**BITE Phase 1 & 2**) |
-| BITE V2| [Documentation](/developers/bite-protocol/typescript-sdk#bite-v2)|
+| BITE V2| [Documentation](/developers/bite-protocol/conditional-transactions)|
 | BITE Demo| [Cookbook](/cookbook/privacy/conditional-transactions#rock-paper-scissors-with-bite-v2)|
 | Facilitator | Kobaru: https://gateway.kobaru.io |
 
@@ -34,11 +34,26 @@ You can also built on **SKALE Base Sepolia Testnet** if you are looking for acce
 
 ---
 
+## FAQ & Important Developer Information
+
+**Q: Why is my contract failing to deploy/Out of Gas?**
+
+Solidity contracts should be compiled and deployed with version Shanghai or lower on SKALE Base.
+
+<Note>
+If you are using SKALE's BITE Sandbox for the hackathon, deploy contracts with EVM Version Istanbul.
+</Note>
+
+**Q: Need to add SKALE to your Wallet?**
+
+Go [here](https://base-sepolia.skalenodes.com/chains/bite-v2-sandbox) for the SKALE BITE Sandbox chain or [here](https://base-sepolia.skalenodes.com/chains/base-testnet) for SKALE's long running SKALE Base Sepolia testnet. Connect your wallet and then click "Connect to Chain" and it will automatically add the chain to your wallet for you.
+
 ## Resources
 
 | Resource | What It Does | Link |
 |----------|--------------|------|
 | **x402** | HTTP-native payments for APIs and services | [Start with x402](/get-started/agentic-builders/start-with-x402) |
+| **BITE** | Transaction encryption protocol developed by the SKALE Team | [BITE Protocol Intro](/concepts/bite-protocol/intro-bite-protocol) |
 | **Facilitators** | Off-chain entities handling payment routing | [Available facilitators](/get-started/agentic-builders/facilitators) |
 | **Encrypted Transactions** | Send encrypted transactions with built-in MEV protection (V1 = consensus-level, V2 = smart contract-level) | [TypeScript SDK](/developers/bite-protocol/typescript-sdk) |
 | **Google AP2 / A2A** | Agent-to-agent communication and protocols | [Google A2A](https://a2a-protocol.org/latest/) |
