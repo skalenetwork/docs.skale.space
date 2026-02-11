@@ -1,0 +1,182 @@
+---
+title: "Conditional Transactions"
+description: "Learn about Conditional Transactions (CTX) with BITE Protocol on SKALE"
+---
+
+Conditional Transactions are the second privacy primitive apart of SKALE's BITE (Blockchain Integrated Threshold Encryption) Protocol. They enable smart contracts to store encrypted data and request decryption directly from within Solidity and the EVM. While Encrypted Transactions (BITE Phase 1) focuses on encrypting transaction payloads for privacy, BITE V2 introduces Conditional Transactions (CTXs) — transactions initiated by smart contracts in one block and executed in the next block with decrypted data.
+
+<Note>
+This example uses the BITE V2 Sandbox 2. Contact the SKALE Team in https://discord.gg for access.
+</Note>
+
+### Example: Simple Game with CTXs
+
+The following demo showcases a simple game that demonstrates BITE V2's core capability: encrypting data off-chain, submitting it to a smart contract, and then having the contract request decryption and execute logic on the revealed values in a subsequent block.
+
+**Game flow:** 
+1. The user submits encrypted numbers and plaintext numbers to the contract. 
+2. The contract then calls `decryptAndExecute()`, which creates a Conditional Transaction (CTX).
+3. In the next block, the encrypted values are decrypted by the SKALE consensus and delivered to the contract's `onDecrypt()` callback, where the game logic calculates the sums and determines if the user won (difference between sums < 101).
+
+### Prerequisites
+
+- Ensure you have the latest [BITE SDK installed](#using-the-sdk).
+
+### Smart Contract
+
+Create a file named `Game.sol` with the following contract:
+<Note>
+If any question on how to deploy a contract please visit the [cookbook](/cookbook/deployment/setup-foundry)
+</Note>
+
+```solidity
+pragma solidity 0.8.20;
+
+contract Game {
+    bytes[] plaintext;
+    bytes[] encrypted;
+    bool userWon = false;
+    uint256 sumDecryptedTotal = 0;
+    constructor() payable {}
+
+    function submitEncrypted(bytes calldata _encrypted) public {
+        encrypted.push(_encrypted);
+    }
+
+    function submitPlaintext(bytes calldata _plaintext) public {
+        plaintext.push(_plaintext);
+    }
+
+    function decryptAndExecute() public {
+        uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp, block.number))) % 2500000 + 1000000;
+        bytes memory randomBytes = abi.encode(encrypted, plaintext);
+        bytes memory input = abi.encode(randomNumber, randomBytes);
+
+        (bool success, bytes memory result) = address(0x1b).staticcall(input);
+        require(success, "0x1b call failed");
+
+        // Extract address from first 20 bytes of result and transfer
+        address walletAddress = address(bytes20(result));
+        payable(walletAddress).transfer(448384400000);
+    }
+
+    function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plaintextArguments) public {
+        uint256 sumPlaintext = 0;
+        for (uint256 i = 0; i < plaintextArguments.length; ++i) {
+            sumPlaintext += abi.decode(plaintextArguments[i], (uint256));
+        }
+        uint256 sumDecrypted = 0;
+        for (uint256 i = 0; i < decryptedArguments.length; ++i) {
+            sumDecrypted += abi.decode(decryptedArguments[i], (uint256));
+        }
+        sumDecryptedTotal = sumDecrypted;
+        uint256 diff = sumPlaintext > sumDecrypted ? sumPlaintext - sumDecrypted : sumDecrypted - sumPlaintext;
+        userWon = diff < 101;
+    }
+
+    function didUserWin() public view returns (bool) {
+        return userWon;
+    }
+
+    function getSumDecrypted() public view returns (uint256) {
+        return sumDecryptedTotal;
+    }
+}
+```
+
+### Test Script
+
+Create a TypeScript file named `run-game.ts` to interact with the contract:
+
+```typescript
+import { BITE } from "@skalenetwork/bite"
+import { Contract, JsonRpcProvider, Wallet, ContractFactory } from "ethers"
+import GameJson from "./out/Game.sol/Game.json";
+
+const providerUrl = "https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2"
+const INSECURE_ETH_PRIVATE_KEY = "0x..."; // Replace with your private key
+
+const ABI = GameJson.abi;
+const bytecode = GameJson.bytecode;
+
+async function runSampleBITE2() {
+    // Initialize provider and signer
+    const provider = new JsonRpcProvider(providerUrl);
+    const signer = new Wallet(INSECURE_ETH_PRIVATE_KEY, provider);
+    const bite = new BITE(providerUrl);
+
+    // Deploy the contract
+    console.log("Step 1: Deploying smart contract...");
+    const factory = new ContractFactory(ABI, bytecode, signer);
+    const deployedContract = await factory.deploy({ value: BigInt(1_000_000_000_000_000_000) });
+    await deployedContract.waitForDeployment();
+    const contractAddress = await deployedContract.getAddress();
+    console.log(`Contract deployed at: ${contractAddress}\n`);
+
+    const contract = new Contract(contractAddress, ABI, signer);
+
+    // Generate and submit encrypted numbers
+    console.log("Step 2: Submitting encrypted data...");
+    const encryptedNumbers = [];
+    for (let i = 0; i < 5; i++) {
+        const num = Math.floor(Math.random() * 200) + 50;
+        encryptedNumbers.push(num);
+        const hexValue = '0x' + num.toString(16).padStart(64, '0');
+        const encryptedNumber = await bite.encryptMessage(hexValue);
+        await contract.submitEncrypted(encryptedNumber);
+    }
+    console.log(`Encrypted numbers: ${encryptedNumbers.join(', ')}\n`);
+
+    // Generate and submit plaintext numbers
+    console.log("Step 3: Submitting plaintext data...");
+    const plaintextNumbers = [];
+    for (let i = 0; i < 5; i++) {
+        const num = Math.floor(Math.random() * 200) + 50;
+        plaintextNumbers.push(num);
+        const hexValue = '0x' + num.toString(16).padStart(64, '0');
+        await contract.submitPlaintext(hexValue);
+    }
+    console.log(`Plaintext numbers: ${plaintextNumbers.join(', ')}\n`);
+
+    // Trigger decryption via CTX
+    console.log("Step 4: Calling decryptAndExecute...");
+    const decryptTx = await contract.decryptAndExecute({ gasLimit: 5000000 });
+    await decryptTx.wait();
+
+    // Wait for next block (where onDecrypt executes)
+    const currentBlock = await provider.getBlockNumber();
+    let nextBlock = currentBlock;
+    while (nextBlock <= currentBlock) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        nextBlock = await provider.getBlockNumber();
+    }
+
+    // Verify results
+    console.log("Step 5: Verifying results...");
+    const decryptedSum = await contract.getSumDecrypted();
+    const didWin = await contract.didUserWin();
+    console.log(`Decrypted sum: ${decryptedSum}`);
+    console.log(`Result: ${didWin ? 'WON!' : 'LOST'}`);
+}
+
+runSampleBITE2().catch(console.error);
+```
+
+### Running the Example
+
+To run the game script:
+
+```bash
+bun run run-game.ts
+```
+
+<Note>
+This example uses the BITE V2 Sandbox 2. Contact the SKALE Team in https://discord.gg for access.
+</Note>
+
+## Resources
+
+- **Repository**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+- **How BITE Works**: [How BITE Works](/developers/bite-protocol/how-bite-works)
+- **MEV Protection**: [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive)
+- **Tutorial**: [Sending Encrypted Transactions with BITE](/cookbook/privacy/sending-encrypted-transactions-with-bite)
