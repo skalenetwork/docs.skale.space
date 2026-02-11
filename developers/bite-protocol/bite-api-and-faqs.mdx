@@ -7,9 +7,102 @@ description: "Technical documentation for BITE's JSON-RPC API methods and transa
 
 This section provides detailed technical documentation for BITE's JSON-RPC API methods, transaction structure, and common use cases.
 
-## JSON-RPC API Methods
+## Library API
 
-BITE extends standard Ethereum JSON-RPC with several custom methods for threshold encryption operations.
+The `@skalenetwork/bite` TypeScript library provides the following methods:
+
+### `new BITE(endpoint: string)`
+
+Creates a new BITE instance configured with a JSON-RPC endpoint.
+
+**Parameters:**
+- `endpoint: string` – The BITE URL provider (JSON-RPC endpoint)
+
+---
+
+### `bite.encryptTransaction(tx)`
+
+Encrypts a transaction using BLS threshold encryption. The encrypted transaction will have its `to` field set to the BITE magic address.
+
+**Parameters:**
+- `tx: object` – Transaction object with `data` and `to` fields as hex strings
+
+**Returns:**
+- `Promise<Transaction>` – Encrypted transaction with modified `data` and `to` fields
+
+**Encryption Process:**
+1. RLP encodes original `data` and `to` fields
+2. Encrypts encoded data using AES with randomly generated key
+3. Encrypts AES key using BLS threshold encryption
+4. Creates final payload: `[EPOCH_ID, ENCRYPTED_BITE_DATA]`
+
+**Committee Behavior:**
+- **Single Committee:** AES key encrypted with current BLS public key
+- **Dual Committee:** During rotation, AES key encrypted twice (current + next committee keys)
+
+---
+
+### `BITE.encryptTransactionWithCommitteeInfo(tx, committees)`
+
+Static method that encrypts using provided committee info, avoiding internal RPC call.
+
+**Parameters:**
+- `tx: object` – Transaction with `data` and `to` fields
+- `committees: Array` – Committee info objects (from `getCommitteesInfo`)
+
+**Returns:**
+- `Promise<Transaction>` – Encrypted transaction
+
+**Use Case:** Offline/cached encryption when committee info is already known.
+
+---
+
+### `bite.encryptMessage(message)`
+
+Encrypts a raw hex-encoded message using BLS threshold encryption.
+
+**Parameters:**
+- `message: string` – Hex string to encrypt (with/without `0x` prefix)
+
+**Returns:**
+- `Promise<string>` – Encrypted hex string in RLP format with epoch and encryption data
+
+**Note:** Encrypts raw data directly without transaction formatting.
+
+---
+
+### `bite.getDecryptedTransactionData(transactionHash)`
+
+Retrieves decrypted transaction data after consensus finality using `bite_getDecryptedTransactionData` JSON-RPC method.
+
+**Parameters:**
+- `transactionHash: string` – The transaction hash
+
+**Returns:**
+- `Promise<object>` – JSON with `data` and `to` keys containing original decrypted fields
+
+---
+
+### `bite.getCommitteesInfo()`
+
+Fetches committee information using `bite_getCommitteesInfo` JSON-RPC method.
+
+**Returns:**
+- `Promise<Array>` – Array of 1-2 committee objects:
+  - `commonBLSPublicKey: string` – 256-char hex (128-byte BLS public key)
+  - `epochId: number` – Epoch identifier
+
+**Array Contents:**
+- **1 element:** Normal operation (single active committee)
+- **2 elements:** Committee rotation period (scheduled for next 3 minutes)
+
+**Use Cases:** Rotation monitoring, epoch tracking, key management
+
+---
+
+## Underlying JSON-RPC Methods
+
+The library wraps these JSON-RPC methods (usually called indirectly through the library):
 
 ### `bite_getDecryptedTransactionData`
 
@@ -117,12 +210,14 @@ interface BiteTransaction {
 
 The encrypted `data` field contains RLP-encoded array:
 ```
-[EPOCH_ID, ENCRYPTED_AES_KEY, AES_ENCRYPTED_DATA]
+[EPOCH_ID, ENCRYPTED_BITE_DATA]
 ```
 
 - `EPOCH_ID`: Current committee epoch
-- `ENCRYPTED_AES_KEY`: AES key encrypted with committee BLS public key(s)
-- `AES_ENCRYPTED_DATA`: Original transaction data encrypted with AES
+- `ENCRYPTED_BITE_DATA`: Contains the encrypted transaction data (AES-encrypted payload with BLS-encrypted AES key)
+
+> **Important: Gas Limit Requirement**
+> When passing a transaction to `bite.ts`, you must set `gasLimit` manually. `estimateGas` does not return proper values for encrypted transactions. If `gasLimit` is omitted, `bite.ts` will automatically set it to **300000**.
 
 ## Common Use Cases
 
@@ -152,7 +247,27 @@ const tx = {
 const encryptedTx = await bite.encryptTransaction(tx);
 ```
 
-### 3. Committee Rotation Monitoring
+### 3. Raw Message Encryption
+
+```typescript
+// Encrypt raw hex data directly
+const message = '0x1234567890abcdef';
+const encryptedMessage = await bite.encryptMessage(message);
+console.log('Encrypted:', encryptedMessage);
+```
+
+### 4. Cached Committee Encryption
+
+```typescript
+// Fetch committee info once, reuse for multiple transactions
+const committees = await bite.getCommitteesInfo();
+
+// Encrypt multiple transactions without additional RPC calls
+const tx1 = await BITE.encryptTransactionWithCommitteeInfo(transaction1, committees);
+const tx2 = await BITE.encryptTransactionWithCommitteeInfo(transaction2, committees);
+```
+
+### 5. Committee Rotation Monitoring
 
 ```typescript
 // Monitor for upcoming rotations
