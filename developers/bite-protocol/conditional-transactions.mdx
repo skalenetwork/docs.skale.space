@@ -53,8 +53,8 @@ This example uses the BITE V2 Sandbox 2. Contact the SKALE Team in https://disco
   forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
 
   # Add to remappings.txt
-  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/" >> remappings.txt
-  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/" >> remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
   ```
   </Tab>
 </Tabs>
@@ -76,19 +76,24 @@ contract SimpleSecret is IBiteSupplicant {
     bytes public decryptedMessage;
     address public ctxSender;
 
+    uint256 public constant CTX_GAS_LIMIT = 2500000; 
+    uint256 public constant CTX_GAS_PAYMENT = 0.06 ether;
+
     error AccessViolation();
 
     // Submit encrypted secret for decryption
     function revealSecret(bytes calldata encrypted) external payable {
+        require(msg.value == CTX_GAS_PAYMENT, "Invalid CTX gas payment");
+
         bytes[] memory encryptedArgs = new bytes[](1);
         encryptedArgs[0] = encrypted;
 
         bytes[] memory plaintextArgs = new bytes[](0);
 
         // Submit CTX - returns address that will call onDecrypt
-        ctxSender = BITE.submitCTX(
+        address payable ctxSender = BITE.submitCTX(
             BITE.SUBMIT_CTX_ADDRESS,
-            msg.value / tx.gasprice,
+            CTX_GAS_LIMIT,
             encryptedArgs,
             plaintextArgs
         );
@@ -102,13 +107,14 @@ contract SimpleSecret is IBiteSupplicant {
         bytes[] calldata decryptedArgs,
         bytes[] calldata /* plaintextArgs */
     ) external override {
-        require(msg.sender == ctxSender, AccessViolation());
         decryptedMessage = decryptedArgs[0];
     }
 
     function getSecret() external view returns (bytes memory) {
         return decryptedMessage;
     }
+    receive() external payable {}
+    fallback() external payable {}
 }
 ```
 
@@ -135,6 +141,7 @@ async function main() {
     const provider = new JsonRpcProvider(providerUrl);
     const signer = new Wallet(INSECURE_ETH_PRIVATE_KEY, provider);
     const bite = new BITE(providerUrl);
+    const CTX_GAS_PAYMENT = BigInt(60000000000000000)
 
     // Deploy contract
     console.log("Deploying SimpleSecret...");
@@ -156,7 +163,10 @@ async function main() {
 
     // Submit encrypted secret to contract
     console.log("Submitting encrypted secret...");
-    const tx = await contract.revealSecret(encrypted, { gasLimit: 500000 });
+    const tx = await contract.revealSecret(encrypted, { 
+        gasLimit: 500000,
+        value: CTX_GAS_PAYMENT 
+    });
     await tx.wait();
     console.log("Submitted! Waiting for next block...\n");
 
@@ -180,20 +190,19 @@ main().catch(console.error);
 ## Running
 
 <Tabs>
-  <Tab title="Foundry">
+  <Tab title="Hardhat">
   ```bash
   # Build contract
-  forge build
+  npx hardhat compile
 
   # Run script
   bun run run-simple.ts
   ```
   </Tab>
-
-  <Tab title="Hardhat">
+  <Tab title="Foundry">
   ```bash
   # Build contract
-  npx hardhat compile
+  forge build
 
   # Run script
   bun run run-simple.ts
