@@ -77,11 +77,14 @@ contract SimpleSecret is IBiteSupplicant {
     address public ctxSender;
 
     uint256 public constant CTX_GAS_LIMIT = 2500000; 
+    uint256 public constant CTX_GAS_PAYMENT = 0.06 ether;
 
     error AccessViolation();
 
     // Submit encrypted secret for decryption
     function revealSecret(bytes calldata encrypted) external payable {
+        require(msg.value == CTX_GAS_PAYMENT, "Invalid CTX gas payment");
+
         bytes[] memory encryptedArgs = new bytes[](1);
         encryptedArgs[0] = encrypted;
 
@@ -110,6 +113,8 @@ contract SimpleSecret is IBiteSupplicant {
     function getSecret() external view returns (bytes memory) {
         return decryptedMessage;
     }
+    receive() external payable {}
+    fallback() external payable {}
 }
 ```
 
@@ -136,6 +141,7 @@ async function main() {
     const provider = new JsonRpcProvider(providerUrl);
     const signer = new Wallet(INSECURE_ETH_PRIVATE_KEY, provider);
     const bite = new BITE(providerUrl);
+    const CTX_GAS_PAYMENT = BigInt(60000000000000000)
 
     // Deploy contract
     console.log("Deploying SimpleSecret...");
@@ -157,7 +163,10 @@ async function main() {
 
     // Submit encrypted secret to contract
     console.log("Submitting encrypted secret...");
-    const tx = await contract.revealSecret(encrypted, { gasLimit: 500000 });
+    const tx = await contract.revealSecret(encrypted, { 
+        gasLimit: 500000,
+        value: CTX_GAS_PAYMENT 
+    });
     await tx.wait();
     console.log("Submitted! Waiting for next block...\n");
 
@@ -181,20 +190,19 @@ main().catch(console.error);
 ## Running
 
 <Tabs>
-  <Tab title="Foundry">
+  <Tab title="Hardhat">
   ```bash
   # Build contract
-  forge build
+  npx hardhat compile
 
   # Run script
   bun run run-simple.ts
   ```
   </Tab>
-
-  <Tab title="Hardhat">
+  <Tab title="Foundry">
   ```bash
   # Build contract
-  npx hardhat compile
+  forge build
 
   # Run script
   bun run run-simple.ts
