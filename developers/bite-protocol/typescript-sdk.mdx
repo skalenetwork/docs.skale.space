@@ -1,5 +1,5 @@
 ---
-title: "BITE JavaScript SDK"
+title: "BITE JS/TS SDK"
 description: "SDK for JavaScript and Typescript developers to build encrypted transactions on SKALE"
 ---
 
@@ -146,47 +146,7 @@ if (committeesInfo.length === 2) {
 }
 ```
 
-## Integration Examples
 
-```typescript MetaMask
-import { BITE } from '@skalenetwork/bite';
-
-const bite = new BITE('https://your-skale-chain.skale.network');
-
-async function sendEncryptedTransaction(to, data) {
-    const tx = { to, data };
-    const encryptedTx = await bite.encryptTransaction(tx);
-    
-    const txHash = await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [encryptedTx],
-    });
-    
-    return txHash;
-}
-```
-
-```typescript Ethers.js
-import { BITE } from '@skalenetwork/bite';
-import { ethers } from 'ethers';
-
-const bite = new BITE('https://your-skale-chain.skale.network');
-const provider = new ethers.BrowserProvider(window.ethereum);
-const signer = await provider.getSigner();
-
-async function sendEncryptedERC20Transfer(tokenAddress, to, amount) {
-    const iface = new ethers.Interface([
-        'function transfer(address to, uint256 amount)'
-    ]);
-    const data = iface.encodeFunctionData('transfer', [to, amount]);
-    
-    const tx = { to: tokenAddress, data };
-    const encryptedTx = await bite.encryptTransaction(tx);
-    
-    const txResponse = await signer.sendTransaction(encryptedTx);
-    return txResponse.hash;
-}
-```
 
 ## Best Practices
 
@@ -234,10 +194,3 @@ async function monitorCommitteeRotation() {
 <Note>
 This is not a requirement for single use encrypted transactions. If you are building with Conditional Transactions, you can optionally monitor committee changes to handle expiration of a conditional transaction which can occur during 
 </Note>
-
-## Resources
-
-- **Repository**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
-- **How BITE Works**: [How BITE Works](/developers/bite-protocol/how-bite-works)
-- **MEV Protection**: [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive)
-- **Tutorial**: [Sending Encrypted Transactions with BITE](/cookbook/privacy/sending-encrypted-transactions-with-bite)

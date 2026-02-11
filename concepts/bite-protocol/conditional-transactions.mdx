@@ -1,0 +1,186 @@
+---
+title: "Conditional Transactions"
+description: "Phase 2 of BITE - smart contracts that request decryption on-demand"
+---
+
+<Note>
+**Sandbox Access** - Conditional Transactions (Phase 2) is available in a Sandbox environment. Contact the SKALE team at [https://discord.gg/skale](https://discord.gg/skale) for access.
+</Note>
+
+## What Are Conditional Transactions?
+
+Conditional Transactions (CTX) let smart contracts request decryption of encrypted data. Instead of decrypting everything at consensus time, contracts selectively reveal only what they need—when they need it.
+
+## How It Works
+
+1. **Submit Encrypted Data** - Client encrypts data and sends it to a smart contract
+2. **Store Encrypted State** - Contract stores the encrypted bytes
+3. **Request Decryption** - Contract calls the `submitCTX` precompile with encrypted and plaintext arguments
+4. **Threshold Decrypt** - The validator committee decrypts the requested data
+5. **Callback Execution** - The decrypted data is delivered to your contract's `onDecrypt` function
+
+## The Smart Contract Flow
+
+Your contract implements `IBiteSupplicant`:
+
+```solidity
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+
+contract MyContract is IBiteSupplicant {
+    address public ctxSender;
+
+    function revealSecret(bytes calldata encrypted) external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encrypted;
+
+        bytes[] memory plaintextArgs = new bytes[](0);
+
+        // Create a Conditional Transaction
+        ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            plaintextArgs
+        );
+
+        payable(ctxSender).sendValue(msg.value);
+    }
+
+    // Called by the network with decrypted data
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata plaintextArgs
+    ) external override {
+        require(msg.sender == ctxSender, "Unauthorized");
+        // Use decryptedArgs[0] in your logic
+    }
+}
+```
+
+## Example: Confidential Game
+
+A simple game where encrypted numbers are decrypted and compared:
+
+```solidity
+contract ConfidentialGame is IBiteSupplicant {
+    bytes[] public encryptedNumbers;
+    bytes[] public plaintextNumbers;
+    uint256 public sumDecrypted;
+    address public ctxSender;
+    bool public userWon;
+
+    function submitEncrypted(bytes calldata encrypted) external {
+        encryptedNumbers.push(encrypted);
+    }
+
+    function submitPlaintext(bytes calldata plaintext) external {
+        plaintextNumbers.push(plaintext);
+    }
+
+    function decryptAndExecute() external payable {
+        ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedNumbers,
+            plaintextNumbers
+        );
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata
+    ) external override {
+        require(msg.sender == ctxSender, "Unauthorized");
+
+        for (uint i = 0; i < decryptedArgs.length; i++) {
+            sumDecrypted += uint256(bytes32(decryptedArgs[i]));
+        }
+
+        userWon = sumDecrypted < 1000;
+    }
+}
+```
+
+## Use Cases
+
+### Confidential Auctions
+
+Bidders submit encrypted bids. The contract decrypts all bids after the deadline and determines the winner without revealing losing bids:
+
+```solidity
+function resolveAuction() external {
+    // Decrypt all encrypted bids
+    ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        encryptedBids,
+        new bytes[](0)
+    );
+}
+
+function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
+    // Find highest bid and award item
+    uint256 highestBid = 0;
+    address winner;
+
+    for (uint i = 0; i < decryptedArgs.length; i++) {
+        (address bidder, uint256 amount) = abi.decode(decryptedArgs[i], (address, uint256));
+        if (amount > highestBid) {
+            highestBid = amount;
+            winner = bidder;
+        }
+    }
+
+    // Award to winner (losing bids stay secret)
+}
+```
+
+### Private Voting with Tallying
+
+Votes remain encrypted until tally time, preventing bribery and coercion:
+
+```solidity
+function tallyVotes() external {
+    ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        encryptedVotes,
+        new bytes[](0)
+    );
+}
+
+function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
+    // Tally all decrypted votes
+    for (uint i = 0; i < decryptedArgs.length; i++) {
+        uint256 proposalId = uint256(bytes32(decryptedArgs[i]));
+        voteCounts[proposalId]++;
+    }
+}
+```
+
+### Confidential Oracle Data
+
+Oracles can submit encrypted data that only decrypts when a contract explicitly requests it:
+
+```solidity
+function updatePrice(bytes calldata encryptedPrice) external {
+    latestEncryptedPrice = encryptedPrice;
+}
+
+function executeTrade() external {
+    // Request decryption to execute trade
+    ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        new bytes[](1),
+        new bytes[](0)
+    );
+}
+```
+
+## Getting Started
+
+- [BITE API Reference](/developers/bite-protocol/bite-api-and-faqs) - Solidity helpers and `submitCTX` docs
+- [Conditional Transactions Cookbook](/cookbook/privacy/conditional-transactions) - Step-by-step tutorials
+- [Introduction](/concepts/bite-protocol/intro-bite-protocol) - BITE Protocol overview
