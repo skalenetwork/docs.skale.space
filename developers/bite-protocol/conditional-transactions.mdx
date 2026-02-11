@@ -53,8 +53,8 @@ This example uses the BITE V2 Sandbox 2. Contact the SKALE Team in https://disco
   forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
 
   # Add to remappings.txt
-  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/" >> remappings.txt
-  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/" >> remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
   ```
   </Tab>
 </Tabs>
@@ -76,6 +76,8 @@ contract SimpleSecret is IBiteSupplicant {
     bytes public decryptedMessage;
     address public ctxSender;
 
+    uint256 public constant CTX_GAS_LIMIT = 2500000; 
+
     error AccessViolation();
 
     // Submit encrypted secret for decryption
@@ -86,9 +88,9 @@ contract SimpleSecret is IBiteSupplicant {
         bytes[] memory plaintextArgs = new bytes[](0);
 
         // Submit CTX - returns address that will call onDecrypt
-        ctxSender = BITE.submitCTX(
+        address payable ctxSender = BITE.submitCTX(
             BITE.SUBMIT_CTX_ADDRESS,
-            msg.value / tx.gasprice,
+            CTX_GAS_LIMIT,
             encryptedArgs,
             plaintextArgs
         );
@@ -102,7 +104,6 @@ contract SimpleSecret is IBiteSupplicant {
         bytes[] calldata decryptedArgs,
         bytes[] calldata /* plaintextArgs */
     ) external override {
-        require(msg.sender == ctxSender, AccessViolation());
         decryptedMessage = decryptedArgs[0];
     }
 
