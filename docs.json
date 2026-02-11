@@ -25,6 +25,13 @@
             ]
           },
           {
+            "group": "Hackathon",
+            "tag": "LIVE",
+            "pages": [
+              "get-started/hackathon/info"             
+            ]
+          },
+          {
             "group": "Quick Start",
             "pages": [
               "get-started/quick-start/skale-on-base",
