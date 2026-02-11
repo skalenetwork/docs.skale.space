@@ -1,0 +1,92 @@
+---
+title: "Encrypted Transactions"
+description: "Phase 1 of BITE - encrypted mempool and MEV-resistant transactions"
+---
+
+<Note>
+**Live on SKALE Base** - Encrypted Transactions (Phase 1) is available on SKALE Base Mainnet and Testnet.
+</Note>
+
+## What Are Encrypted Transactions?
+
+BITE's first phase hides the `to` address and `data` fields of transactions until after they execute. Once decrypted and executed, transaction details are visible on-chain like any other transaction.
+
+The encryption protects during mempool and consensus—before finality. After execution, the transaction is part of the immutable blockchain record and fully visible.
+
+## How It Works
+
+1. **Encrypt** - Wallet encrypts the transaction payload using SKALE's threshold public key
+2. **Submit** - Encrypted transaction is sent to the BITE precompile (magic address)
+3. **Finalize** - Consensus finalizes the encrypted transaction without seeing contents
+4. **Decrypt** - After finality, the validator committee runs threshold decryption
+5. **Execute** - Decrypted transaction executes in the EVM
+
+Because inclusion happens before decryption, SKALE achieves commit-then-reveal semantics at the protocol layer.
+
+## MEV Resistance
+
+MEV bots need visible transaction data to extract value. By encrypting `to` and `data` during mempool and consensus, BITE removes the information they rely on:
+
+- **No front-running** - Transaction intent is hidden until execution
+- **No sandwich attacks** - Bots cannot see incoming swaps
+- **No censorship** - Validators cannot selectively filter based on content
+
+Combined with SKALE's zero gas fees and instant finality, encrypted transactions eliminate the primary MEV vectors that plague other chains.
+
+## Use Cases
+
+### Private Token Transfers
+
+Encrypt ERC20 transfers to hide amounts and recipients:
+
+```typescript
+import { BITE } from '@skalenetwork/bite';
+
+const bite = new BITE(rpcEndpoint);
+
+const transferData = iface.encodeFunctionData('transfer', [recipient, amount]);
+const tx = {
+  to: tokenAddress,
+  data: transferData,
+  gasLimit: 200000
+};
+
+const encryptedTx = await bite.encryptTransaction(tx);
+// Send encryptedTx - to and data are now hidden
+```
+
+### Confidential Contract Interactions
+
+Keep function calls and parameters private:
+
+```typescript
+const callData = iface.encodeFunctionData('confidentialFunction', [secretParam]);
+const tx = { to: contractAddress, data: callData, gasLimit: 300000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### Private Voting
+
+Encrypt votes to prevent bribery and coercion:
+
+```typescript
+const voteData = iface.encodeFunctionData('vote', [proposalId, support]);
+const tx = { to: governanceAddress, data: voteData, gasLimit: 100000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### NFT Mint Privacy
+
+Hide metadata and mint details until reveal:
+
+```typescript
+const mintData = iface.encodeFunctionData('mint', [recipient, encryptedMetadata]);
+const tx = { to: nftAddress, data: mintData, gasLimit: 250000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+## Getting Started
+
+- [BITE API Reference](/developers/bite-protocol/bite-api-and-faqs) - TypeScript SDK and JSON-RPC methods
+- [Encrypted Transactions Cookbook](/cookbook/privacy/encrypted-transactions) - Step-by-step tutorials
+- [Introduction](/concepts/bite-protocol/intro-bite-protocol) - BITE Protocol overview

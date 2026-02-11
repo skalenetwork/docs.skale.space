@@ -1,0 +1,210 @@
+---
+title: "Conditional Transactions"
+description: "Learn about Conditional Transactions (CTX) with BITE Protocol on SKALE"
+---
+
+Conditional Transactions are the second privacy primitive part of SKALE's BITE (Blockchain Integrated Threshold Encryption) Protocol. They enable smart contracts to store encrypted data and request decryption directly from within Solidity and the EVM. While Encrypted Transactions focuses on encrypting transaction payloads for privacy, Conditional Transactions (CTXs) are transactions initiated by smart contracts in one block and executed in the next block with decrypted data.
+
+<Note>
+This example uses the BITE V2 Sandbox 2. Contact the SKALE Team in https://discord.gg for access.
+</Note>
+
+## How CTX Works
+
+1. **Encrypt off-chain:** Use `bite.encryptMessage()` to encrypt data
+2. **Submit to contract:** Send encrypted data to a smart contract
+3. **Request decryption:** Contract calls `BITE.submitCTX()` to create a Conditional Transaction
+4. **Next block:** SKALE consensus decrypts and calls `onDecrypt()` callback with decrypted values
+
+## Prerequisites
+
+- Node.js 18+ and bun or npm
+- `@skalenetwork/bite` TypeScript SDK
+- `@skalenetwork/bite-solidity` Solidity helpers
+- Access to BITE V2 Sandbox 2
+
+<Warning>
+**Compiler Requirements**
+- Solidity version: **>= 0.8.27**
+- EVM version: **istanbul** or lower (via `pragma` or compiler settings)
+</Warning>
+
+## Project Setup
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  mkdir ctx-example && cd ctx-example
+  npm init -y
+  npm i --save-dev hardhat
+  npx hardhat init
+
+  # Install BITE dependencies
+  npm i @skalenetwork/bite @skalenetwork/bite-solidity @openzeppelin/contracts
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  mkdir ctx-example && cd ctx-example
+  forge init
+
+  # Install BITE dependencies
+  forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
+
+  # Add to remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/" >> remappings.txt
+  ```
+  </Tab>
+</Tabs>
+
+## Smart Contract
+
+Create `SimpleSecret.sol`:
+
+```solidity
+pragma solidity >=0.8.27;
+
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+
+contract SimpleSecret is IBiteSupplicant {
+    using Address for address payable;
+
+    bytes public decryptedMessage;
+    address public ctxSender;
+
+    error AccessViolation();
+
+    // Submit encrypted secret for decryption
+    function revealSecret(bytes calldata encrypted) external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encrypted;
+
+        bytes[] memory plaintextArgs = new bytes[](0);
+
+        // Submit CTX - returns address that will call onDecrypt
+        ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            plaintextArgs
+        );
+
+        // Refund any unused ETH
+        payable(ctxSender).sendValue(msg.value);
+    }
+
+    // Called by SKALE consensus in next block with decrypted data
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata /* plaintextArgs */
+    ) external override {
+        require(msg.sender == ctxSender, AccessViolation());
+        decryptedMessage = decryptedArgs[0];
+    }
+
+    function getSecret() external view returns (bytes memory) {
+        return decryptedMessage;
+    }
+}
+```
+
+### Key Points
+
+- `IBiteSupplicant` requires implementing `onDecrypt()` callback
+- `BITE.submitCTX()` creates the Conditional Transaction
+- `BITE.SUBMIT_CTX_ADDRESS` is the predeployed CTX handler
+- `ctxSender` stores the address that will call back - used for security
+
+## Test Script
+
+Create `run-simple.ts`:
+
+```typescript
+import { BITE } from "@skalenetwork/bite";
+import { Contract, JsonRpcProvider, Wallet, ContractFactory } from "ethers";
+import SimpleSecretJson from "./out/SimpleSecret.sol/SimpleSecret.json";
+
+const providerUrl = "https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2";
+const INSECURE_ETH_PRIVATE_KEY = "0x..."; // Replace with your private key
+
+async function main() {
+    const provider = new JsonRpcProvider(providerUrl);
+    const signer = new Wallet(INSECURE_ETH_PRIVATE_KEY, provider);
+    const bite = new BITE(providerUrl);
+
+    // Deploy contract
+    console.log("Deploying SimpleSecret...");
+    const factory = new ContractFactory(
+        SimpleSecretJson.abi,
+        SimpleSecretJson.bytecode,
+        signer
+    );
+    const contract = await factory.deploy();
+    await contract.waitForDeployment();
+    const address = await contract.getAddress();
+    console.log(`Contract: ${address}\n`);
+
+    // Encrypt a secret message
+    const secret = "0x" + Buffer.from("Hello BITE!").toString("hex");
+    console.log(`Encrypting: "${secret}"`);
+    const encrypted = await bite.encryptMessage(secret);
+    console.log(`Encrypted: ${encrypted}\n`);
+
+    // Submit encrypted secret to contract
+    console.log("Submitting encrypted secret...");
+    const tx = await contract.revealSecret(encrypted, { gasLimit: 500000 });
+    await tx.wait();
+    console.log("Submitted! Waiting for next block...\n");
+
+    // Wait for next block (onDecrypt executes)
+    const currentBlock = await provider.getBlockNumber();
+    let nextBlock = currentBlock;
+    while (nextBlock <= currentBlock) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        nextBlock = await provider.getBlockNumber();
+    }
+
+    // Check decrypted result
+    const result = await contract.getSecret();
+    const decoded = Buffer.from(result.slice(2), "hex").toString();
+    console.log(`Decrypted secret: "${decoded}"`);
+}
+
+main().catch(console.error);
+```
+
+## Running
+
+<Tabs>
+  <Tab title="Foundry">
+  ```bash
+  # Build contract
+  forge build
+
+  # Run script
+  bun run run-simple.ts
+  ```
+  </Tab>
+
+  <Tab title="Hardhat">
+  ```bash
+  # Build contract
+  npx hardhat compile
+
+  # Run script
+  bun run run-simple.ts
+  ```
+  </Tab>
+</Tabs>
+
+## Resources
+
+- **BITE API Reference**: [BITE API](/developers/bite-protocol/bite-api-and-faqs)
+- **Repository**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+- **Solidity Helpers**: [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+- **How BITE Works**: [How BITE Works](/developers/bite-protocol/how-bite-works)
+- **Tutorial**: [Conditional Transactions Demo](/cookbook/privacy/conditional-transactions)
