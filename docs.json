@@ -263,7 +263,8 @@
           {
             "group": "Privacy",
             "pages": [
-              "cookbook/privacy/sending-encrypted-transactions-with-bite"
+              "cookbook/privacy/sending-encrypted-transactions-with-bite",
+              "cookbook/privacy/bitev2-rps"
             ]
           },
           {
