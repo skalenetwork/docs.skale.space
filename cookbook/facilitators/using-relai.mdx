@@ -1,0 +1,206 @@
+---
+title: "RelAI"
+description: "Integrate RelAI facilitator for x402 payment processing"
+---
+
+RelAI is a hosted facilitator service that simplifies x402 payment processing on SKALE Network. Instead of running your own facilitator infrastructure, you can use RelAI's SDK to handle payment verification and settlement across multiple tokens.
+
+## Highlights
+
+The RelAI facilitator has **enabled BITE transactions** for both **SKALE Base** and **SKALE Base Sepolia**.
+
+**What does this mean?** 
+- When a merchant settles any x402 transaction through RelAI facilitator it gets automatically encrypted through BITE and only decrypted at the consensus level
+
+For more inforamtion around BITE please check [here](concepts/bite-protocol/intro-bite-protocol).
+
+## Prerequisites
+
+- Node.js and npm installed
+- A wallet on SKALE Base or SKALE Base Sepolia
+- Basic understanding of x402 protocol
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file with RelAI configuration:
+
+```bash
+# Your wallet address to receive payments
+PAYMENT_RECEIVER_ADDRESS=0xYourWalletAddressHere
+
+# Private key for client (NEVER commit this!)
+PRIVATE_KEY=0xYourPrivateKeyHere
+
+# Server port
+PORT=3000
+
+# Price for premium endpoint (in USD)
+PREMIUM_PRICE=0.01
+```
+
+### Supported Networks and Tokens
+
+RelAI supports the following SKALE networks:
+
+| Network | Tokens |
+|---------|--------|
+| SKALE Base Sepolia | USDC, USDT, ETH, SKL, WBTC |
+| SKALE Base| USDC, USDT, ETH, SKL, WBTC |
+
+## Integration with RelAI
+
+Make sure to install the RelAI SDK:
+```sh
+ npm install @relai-fi/x402
+```
+
+<Tabs>
+  <Tab title="Server Setup">
+
+    ```typescript
+    import express from 'express';
+    import cors from 'cors';
+    import dotenv from 'dotenv';
+    import Relai from '@relai-fi/x402/server';
+
+    dotenv.config();
+
+    const app = express();
+    const PORT = process.env.PORT || 3000;
+
+    // Middleware
+    app.use(cors());
+    app.use(express.json());
+
+    // Initialize RelAI SDK for SKALE Base Sepolia
+    const relai = new Relai({
+      network: 'skale-base-sepolia',
+      facilitatorUrl: 'https://facilitator.x402.fi'
+    });
+
+    // Public endpoint - no payment required
+    app.get('/api/public', (req, res) => {
+      res.json({
+        message: 'This is a public endpoint - no payment required',
+        network: 'SKALE Base Sepolia'
+      });
+    });
+
+    // Premium endpoint - protected by x402 payment
+    app.get(
+      '/api/premium',
+      relai.protect({
+        payTo: process.env.PAYMENT_RECEIVER_ADDRESS!,
+        price: parseFloat(process.env.PREMIUM_PRICE || '0.01'),
+      }),
+      (req, res) => {
+        // Payment is automatically verified by the middleware
+        // req.payment contains the payment details
+        res.json({
+          success: true,
+          message: 'Premium data unlocked via RelAI!',
+          payment: req.payment
+        });
+      }
+    );
+
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+    ```
+
+  </Tab>
+  <Tab title="Client Setup">
+
+    ```typescript
+    import dotenv from 'dotenv';
+    import { createX402Client } from '@relai-fi/x402/client';
+    import { privateKeyToAccount } from 'viem/accounts';
+
+    dotenv.config();
+
+    async function main() {
+      const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000';
+
+      // Create account from private key
+      const privateKey = process.env.PRIVATE_KEY as `0x${string}`;
+      const account = privateKeyToAccount(privateKey);
+
+      // Create x402 client with RelAI
+      const client = createX402Client({
+        wallets: {
+          evm: {
+            address: account.address,
+            signTypedData: (params) =>
+              account.signTypedData(params as any),
+          },
+        },
+      });
+
+      // Access RelAI-protected resource
+      const response = await client.fetch(`${SERVER_URL}/api/premium`);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Data received:', data);
+      }
+    }
+
+    main().catch(console.error);
+    ```
+
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+### Connection Issues
+
+If you cannot connect to RelAI:
+
+1. Verify the facilitator URL is correct
+2. Check network connectivity
+3. Ensure your wallet has tokens for gas fees
+4. Review firewall settings
+
+### Payment Failures
+
+Common causes and solutions:
+
+| Issue | Solution |
+|-------|----------|
+| Invalid signature | Verify wallet configuration and signing |
+| Insufficient balance | Ensure payer has enough tokens |
+| Network mismatch | Check network matches configuration |
+| Invalid receiver | Verify PAYMENT_RECEIVER_ADDRESS is correct |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
+    Alternative facilitator with advanced features
+  </Card>
+  <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
+    Deploy your own facilitator infrastructure
+  </Card>
+  <Card title="Accept Payments" icon="dollar-sign" href="/cookbook/x402/accepting-payments">
+    Protect endpoints with payment middleware
+  </Card>
+  <Card title="Make Payments" icon="credit-card" href="/cookbook/x402/buying">
+    Build clients that handle x402 payments
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [RelAI Documentation](https://relai.fi/documentation)
+- [x402 Protocol Specification](https://x402.org)
+
+---
+
+<Note>
+This entity -- RelAI -- is deployed and actively supporting SKALE. These are 3rd party services that may have their own terms and conditions and privacy policies. Use these services at your own risk. AI and agents is a highly experimental space; the 3rd party software solutions may have bugs or be unaudited. You and your agents and your customers use all 3rd party services chosen at your own risk and per their terms.
+</Note>
