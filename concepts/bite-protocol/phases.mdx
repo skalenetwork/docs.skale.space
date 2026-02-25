@@ -3,54 +3,30 @@ title: "Phases of BITE"
 description: "Roadmap to encrypted-by-default SKALE Chains"
 ---
 
-## Overview
+<Note>
+**Deployment Status**
+- **Phase 1: Encrypted Transactions** is live on SKALE Base Mainnet and Testnet
+- **Phase 2: Conditional Transactions** is available in a Sandbox environment — contact the SKALE team at [https://discord.gg/skale](https://discord.gg/skale) for access
+</Note>
 
-BITE rolls out in four phases, moving from encrypted transaction inclusion to fully homomorphic encrypted computation. Each step keeps SKALE EVM-compatible while dialing up privacy and MEV resistance.
+BITE rolls out in four phases, keeping SKALE EVM-compatible while adding privacy and MEV resistance.
 
-## BITE Protocol Phases
+## Phase 1: Encrypted Transactions
 
-### Phase 1: Threshold Decryption During Consensus
+Transactions are encrypted before entering the mempool, then decrypted by the validator committee after block finality. Transaction details remain hidden during mempool and consensus—preventing front-running and manipulation. Once executed, transactions are visible on-chain like any other.
 
-The first phase establishes threshold decryption capabilities during the consensus process:
+[Learn more →](/concepts/bite-protocol/encrypted-transactions)
 
-- **Encrypted Transaction Inclusion** - Transactions are encrypted before entering the mempool
-- **Threshold Decryption** - Validator committee collaborates to decrypt transactions after block finality
-- **MEV Resistance** - Transaction details remain hidden until after consensus commitment
-- **Commit-Then-Reveal** - Ensures transactions cannot be front-run or manipulated
+## Phase 2: Conditional Transactions
 
-### Phase 2: Threshold Decryption on Smart Contract Data
+Smart contracts can request decryption of specific encrypted data on-demand. Contract state remains confidential throughout its lifecycle, with selective disclosure only when needed for execution.
 
-Building on Phase 1, Phase 2 extends threshold decryption to smart contract data:
+[Learn more →](/concepts/bite-protocol/conditional-transactions)
 
-- **Encrypted State** - Smart contract data can be stored in encrypted form
-- **On-Demand Decryption** - Data is decrypted only when needed for execution
-- **Enhanced Privacy** - Contract state remains confidential throughout its lifecycle
-- **Confidential Applications (cApps)** - Enables applications that process sensitive data securely
+## Phase 3: Threshold Re-encryption
 
-### Phase 3: Threshold Re-encryption
+Data can be re-encrypted with new keys without decryption, enabling fine-grained access control and dynamic privacy settings without exposing the underlying data.
 
-Phase 3 introduces threshold re-encryption capabilities:
+## Phase 4: Threshold Fully Homomorphic Encryption (THFE)
 
-- **Key Rotation** - Ability to re-encrypt data with new keys without decryption
-- **Access Control** - Fine-grained control over who can decrypt specific data
-- **Dynamic Privacy** - Privacy settings can be adjusted without exposing data
-- **Advanced Use Cases** - Supports more complex privacy-preserving applications
-
-### Phase 4: Threshold Fully Homomorphic Encryption (THFE) Within Smart Contracts
-
-The final phase enables computation on encrypted data:
-
-- **Homomorphic Operations** - Perform computations directly on encrypted data
-- **Zero-Knowledge Execution** - Execute smart contracts without revealing inputs or outputs
-- **Maximum Privacy** - Data never needs to be decrypted for computation
-- **Next-Generation Applications** - Enables previously impossible privacy-preserving use cases
-
-## Current Status
-
-BITE Protocol is actively being developed across these phases, with Phase 1 providing the foundation for MEV resistance and transaction privacy on SKALE.
-
-## Related Topics
-
-- [BITE Protocol Introduction](/concepts/bite-protocol/intro-bite-protocol) - Overview of BITE Protocol
-- [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive) - Understanding MEV in the context of BITE
-
+Computation on encrypted data becomes possible—smart contracts execute without revealing inputs or outputs, enabling privacy-preserving applications previously impossible on EVM chains.

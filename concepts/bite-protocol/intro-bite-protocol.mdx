@@ -1,55 +1,80 @@
 ---
 title: "Introduction"
-description: "BITE Protocol: encrypted transactions, MEV resistance, and confidential apps on SKALE"
+description: "BITE Protocol: encrypted transactions, MEV resistance, and confidential computing on SKALE"
 ---
 
-## What Is Proof‑of‑Encryption?
+## What Is BITE?
 
-Proof-of-Encryption (PoE) keeps SKALE transactions sealed from submission through finality. Data stays encrypted in flight, preventing front-running, snooping, or manipulation. Only after consensus does the validator committee decrypt for execution using threshold keys—no single party can peek or tamper early.
+BITE (Blockchain Interoperability and Trustless Execution) adds encryption to SKALE while keeping full EVM compatibility. Transactions stay encrypted during mempool and consensus, then are decrypted by the validator committee for execution. Once executed, transaction details are visible on-chain like any other transaction.
 
-## How BITE Enables Proof‑of‑Encryption
+## Why BITE?
 
-BITE extends the EVM with threshold encryption so builders keep their existing Solidity, wallets, and tooling. Its goals:
-- **Kill MEV at the root** by hiding calldata and destination until after finality.
-- **Make privacy default** so Web2-grade apps can ship without revealing sensitive data.
-- **Stay EVM-native** so Metamask, Foundry, Ethers, and Viem work as-is.
+Public blockchains expose everything—transaction amounts, contract calls, user intent. This creates problems:
 
-BITE rolls out in four phases—from encrypted transaction inclusion to fully homomorphic encryption inside contracts. See [Phases of BITE](/concepts/bite-protocol/phases) for the roadmap.
+- **MEV** - Bots see your transactions before they're confirmed and front-run them
+- **Privacy** - Sensitive business and personal data is visible to everyone
+- **Competition** - Competitors can monitor your contract interactions
 
-## Native MEV Resistance
+BITE solves these problems at the protocol layer without breaking EVM compatibility.
 
-By encrypting the `to` and `data` fields, BITE removes the information MEV bots need. Transactions are opaque until after finality, making front-running and sandwich attacks impossible.
+## How It Works
 
-How it works:
-1. Wallet encrypts payload with SKALE’s threshold encryption (same tx format, no custom wallet needed).
-2. Consensus finalizes the encrypted transaction.
-3. Validators jointly decrypt after finality, then execute in the EVM.
+BITE extends SKALE with threshold encryption built into consensus:
 
-## Two‑Phase Execution Model
+1. **Encrypt** - Your wallet encrypts the `to` and `data` fields using SKALE's threshold public key
+2. **Submit** - Encrypted transaction goes to the BITE precompile (magic address)
+3. **Finalize** - Consensus finalizes the encrypted transaction without seeing contents
+4. **Decrypt** - After finality, the validator committee runs threshold decryption
+5. **Execute** - Transaction executes normally in the EVM
 
-1. Inclusion Phase – Encrypted transactions are verified and finalized onchain.
-2. Execution Phase – After block finality, the validator committee runs threshold decryption and reveals the transaction for EVM execution.
+This is **commit-then-reveal** at the protocol level—inclusion happens before anyone can read the transaction.
 
-Because inclusion happens before decryption, SKALE achieves commit‑then‑reveal semantics, preventing frontrunning and censorship at the protocol layer.
+## Key Properties
 
-## Censorship Resistance
+### MEV Resistance
 
-With BITE Protocol:
+By encrypting `to` and `data`, BITE removes the information MEV bots need:
 
-* The transaction to field is encrypted.
-* Similar transactions (same gas/data patterns) cannot be easily correlated or censored.
-* Routine activity becomes opaque to outside observers.
+- No front-running (intent hidden until finality)
+- No sandwich attacks (bots can't see swaps)
+- No censorship (validators can't filter by content)
 
-## Consensus And Key Management
+### Threshold Decryption
 
-* Threshold encryption is built directly into SKALE consensus.
-* Fresh public/private keys are generated each epoch using an onchain Distributed Key Generation (DKG) protocol.
-* A new random committee is selected each epoch for encryption and decryption duties.
-* SKALE combines DKG, threshold BLS signatures, and encrypted mempool‑less execution.
+No single node can decrypt transactions. The validator committee jointly decrypts using threshold BLS—a minimum number of validators must collaborate. Keys rotate each epoch using onchain DKG.
 
-This rotating, onchain-managed key system keeps trust decentralized while enabling privacy-by-default.
+### Zero Trust
+
+You don't need to trust any single party. The cryptography ensures:
+
+- No early decryption (requires threshold of validators)
+- No selective decryption (all or nothing per epoch)
+- No single point of failure (distributed key generation)
+
+## EVM Compatible
+
+BITE works with existing tooling:
+
+- Metamask, WalletConnect, and other wallets
+- Foundry, Hardhat, and other development frameworks
+- Ethers.js, Viem, and other web3 libraries
+- Existing Solidity contracts (no changes needed for Phase 1)
+
+## Phases
+
+BITE rolls out in four phases:
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 1 | Encrypted Transactions | Live on SKALE Base |
+| 2 | Conditional Transactions | Sandbox |
+| 3 | Threshold Re-encryption | Roadmap |
+| 4 | Fully Homomorphic Encryption | Roadmap |
+
+See [Phases of BITE](/concepts/bite-protocol/phases) for the full roadmap.
 
 ## Learn More
 
 - [Phases of BITE](/concepts/bite-protocol/phases) - Evolution and phases of BITE Protocol
-- [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive) - Understanding MEV in the context of BITE
+- [Encrypted Transactions](/concepts/bite-protocol/encrypted-transactions) - Phase 1 details and use cases
+- [Conditional Transactions](/concepts/bite-protocol/conditional-transactions) - Phase 2 details and use cases
