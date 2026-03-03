@@ -5,95 +5,192 @@ description: "Technical documentation for BITE's JSON-RPC API methods and transa
 
 ## BITE API
 
-This section provides detailed technical documentation for BITE's JSON-RPC API methods, transaction structure, and common use cases.
+This section provides detailed technical documentation for BITE's APIs, both off-chain (TypeScript SDK) and on-chain (Solidity helpers).
 
-## JSON-RPC API Methods
+## Off-Chain API (bite-ts)
 
-BITE extends standard Ethereum JSON-RPC with several custom methods for threshold encryption operations.
+The `@skalenetwork/bite` TypeScript library provides methods for encrypting data before submitting to the blockchain.
 
-### `bite_getDecryptedTransactionData`
+### `new BITE(endpoint: string)`
 
-Retrieves decrypted transaction data for a BITE transaction after consensus finality.
-
-**Parameters:**
-- `transactionHash: string` – The hash of the BITE transaction
-
-**Returns:**
-- `object` – Contains `to` and `data` fields with original decrypted values
-
-**Example Request:**
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "bite_getDecryptedTransactionData",
-  "params": ["0x1234567890abcdef1234567890abcdef12345678"],
-  "id": 1
-}
-```
-
-**Example Response:**
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "to": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-    "data": "0xa9059cbb0000000000000000000000008ba1f109551b4d4a11d4a9b3d5c5b0c8e4b5b9d50000000000000000000000000000000000000000000000000000000000000000a"
-  }
-}
-```
-
-### `bite_getCommitteesInfo`
-
-Fetches current committee information including BLS public keys and epoch details.
+Creates a new BITE instance configured with a JSON-RPC endpoint.
 
 **Parameters:**
-- None
+- `endpoint: string` – The BITE URL provider (JSON-RPC endpoint)
+
+---
+
+### `bite.encryptTransaction(tx)`
+
+Encrypts a transaction using BLS threshold encryption. The encrypted transaction will have its `to` field set to the BITE magic address.
+
+**Parameters:**
+- `tx: object` – Transaction object with `data` and `to` fields as hex strings
 
 **Returns:**
-- `array` – Array of committee objects (1-2 elements)
+- `Promise<Transaction>` – Encrypted transaction with modified `data` and `to` fields
 
-**Example Request:**
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "bite_getCommitteesInfo",
-  "params": [],
-  "id": 1
-}
+**Encryption Process:**
+1. RLP encodes original `data` and `to` fields
+2. Encrypts encoded data using AES with randomly generated key
+3. Encrypts AES key using BLS threshold encryption
+4. Creates final payload: `[EPOCH_ID, ENCRYPTED_BITE_DATA]`
+
+**Committee Behavior:**
+- **Single Committee:** AES key encrypted with current BLS public key
+- **Dual Committee:** During rotation, AES key encrypted twice (current + next committee keys)
+
+---
+
+### `BITE.encryptTransactionWithCommitteeInfo(tx, committees)`
+
+Static method that encrypts using provided committee info, avoiding internal RPC call.
+
+**Parameters:**
+- `tx: object` – Transaction with `data` and `to` fields
+- `committees: Array` – Committee info objects (from `getCommitteesInfo`)
+
+**Returns:**
+- `Promise<Transaction>` – Encrypted transaction
+
+**Use Case:** Offline/cached encryption when committee info is already known.
+
+---
+
+### `bite.encryptMessage(message)`
+
+Encrypts a raw hex-encoded message using BLS threshold encryption.
+
+**Parameters:**
+- `message: string` – Hex string to encrypt (with/without `0x` prefix)
+
+**Returns:**
+- `Promise<string>` – Encrypted hex string in RLP format with epoch and encryption data
+
+**Note:** Encrypts raw data directly without transaction formatting.
+
+---
+
+### `bite.getDecryptedTransactionData(transactionHash)`
+
+Retrieves decrypted transaction data after consensus finality using `bite_getDecryptedTransactionData` JSON-RPC method.
+
+**Parameters:**
+- `transactionHash: string` – The transaction hash
+
+**Returns:**
+- `Promise<object>` – JSON with `data` and `to` keys containing original decrypted fields
+
+---
+
+### `bite.getCommitteesInfo()`
+
+Fetches committee information using `bite_getCommitteesInfo` JSON-RPC method.
+
+**Returns:**
+- `Promise<Array>` – Array of 1-2 committee objects:
+  - `commonBLSPublicKey: string` – 256-char hex (128-byte BLS public key)
+  - `epochId: number` – Epoch identifier
+
+**Array Contents:**
+- **1 element:** Normal operation (single active committee)
+- **2 elements:** Committee rotation period (scheduled for next 3 minutes)
+
+**Use Cases:** Rotation monitoring, epoch tracking, key management
+
+---
+
+## On-Chain API (bite-solidity)
+
+The `@skalenetwork/bite-solidity` library provides Solidity helpers for creating Conditional Transactions (CTX) that request decryption from within smart contracts.
+
+### Installation
+
+```bash
+# npm
+npm i @skalenetwork/bite-solidity
+
+# forge
+forge install skalenetwork/bite-solidity
+echo "@skalenetwork/bite-solidity/=lib/bite-solidity/" >> remappings.txt
 ```
 
-**Example Response (Single Committee):**
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": [
-    {
-      "commonBLSPublicKey": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      "epochId": 12345
+<Warning>
+**Compiler Requirements**
+- Solidity version: **>= 0.8.27**
+- EVM version: **istanbul** or lower
+</Warning>
+
+### Import
+
+```solidity
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+```
+
+### `BITE.submitCTX(address, gasLimit, encryptedArgs, plaintextArgs)`
+
+Creates a Conditional Transaction for decryption.
+
+**Parameters:**
+- `address`: CTX handler address (use `BITE.SUBMIT_CTX_ADDRESS`)
+- `gasLimit`: Gas for callback (in gas units, e.g., `msg.value / tx.gasprice`)
+- `encryptedArgs`: Array of encrypted bytes to decrypt
+- `plaintextArgs`: Array of unencrypted bytes to pass through
+
+**Returns:** `address` – The CTX supplicant address that will call `onDecrypt()`
+
+---
+
+### `IBiteSupplicant.onDecrypt(decryptedArgs, plaintextArgs)`
+
+Callback that your contract must implement. Called by SKALE consensus with decrypted data.
+
+**Parameters:**
+- `decryptedArgs`: Array of decrypted byte arrays
+- `plaintextArgs`: Array of plaintext byte arrays (passed through)
+
+**Example:**
+
+```solidity
+pragma solidity >=0.8.27;
+
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+
+contract MyContract is IBiteSupplicant {
+    using Address for address payable;
+
+    address public ctxSender;
+
+    function revealSecret(bytes calldata encrypted) external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encrypted;
+
+        bytes[] memory plaintextArgs = new bytes[](0);
+
+        ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            plaintextArgs
+        );
+
+        payable(ctxSender).sendValue(msg.value);
     }
-  ]
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata
+    ) external override {
+        require(msg.sender == ctxSender, "Unauthorized");
+        // Handle decrypted data
+    }
 }
 ```
 
-**Example Response (During Rotation):**
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": [
-    {
-      "commonBLSPublicKey": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      "epochId": 12345
-    },
-    {
-      "commonBLSPublicKey": "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
-      "epochId": 12346
-    }
-  ]
-}
-```
+---
 
 ## Transaction Structure
 
@@ -117,12 +214,16 @@ interface BiteTransaction {
 
 The encrypted `data` field contains RLP-encoded array:
 ```
-[EPOCH_ID, ENCRYPTED_AES_KEY, AES_ENCRYPTED_DATA]
+[EPOCH_ID, ENCRYPTED_BITE_DATA]
 ```
 
 - `EPOCH_ID`: Current committee epoch
-- `ENCRYPTED_AES_KEY`: AES key encrypted with committee BLS public key(s)
-- `AES_ENCRYPTED_DATA`: Original transaction data encrypted with AES
+- `ENCRYPTED_BITE_DATA`: Contains the encrypted transaction data (AES-encrypted payload with BLS-encrypted AES key)
+
+> **Important: Gas Limit Requirement**
+> When passing a transaction to `bite.ts`, you must set `gasLimit` manually. `estimateGas` does not return proper values for encrypted transactions. If `gasLimit` is omitted, `bite.ts` will automatically set it to **300000**.
+
+---
 
 ## Common Use Cases
 
@@ -152,7 +253,27 @@ const tx = {
 const encryptedTx = await bite.encryptTransaction(tx);
 ```
 
-### 3. Committee Rotation Monitoring
+### 3. Raw Message Encryption
+
+```typescript
+// Encrypt raw hex data directly
+const message = '0x1234567890abcdef';
+const encryptedMessage = await bite.encryptMessage(message);
+console.log('Encrypted:', encryptedMessage);
+```
+
+### 4. Cached Committee Encryption
+
+```typescript
+// Fetch committee info once, reuse for multiple transactions
+const committees = await bite.getCommitteesInfo();
+
+// Encrypt multiple transactions without additional RPC calls
+const tx1 = await BITE.encryptTransactionWithCommitteeInfo(transaction1, committees);
+const tx2 = await BITE.encryptTransactionWithCommitteeInfo(transaction2, committees);
+```
+
+### 5. Committee Rotation Monitoring
 
 ```typescript
 // Monitor for upcoming rotations

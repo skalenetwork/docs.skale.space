@@ -28,9 +28,6 @@ PAYMENT_TOKEN_NAME="Bridged USDC (SKALE Bridge)"
 
 # SKALE network configuration
 NETWORK_CHAIN_ID=324705682
-
-# Server port
-PORT=3000
 ```
 
 ## Integration with PayAI
@@ -102,7 +99,7 @@ PORT=3000
         });
       });
 
-      const port = Number(process.env.PORT) || 3000;
+      const port = 3000;
       serve({ fetch: app.fetch, port }, () => {
         console.log(`Server running on http://localhost:${port}`);
         console.log(`Using PayAI facilitator: ${facilitatorUrl}`);
