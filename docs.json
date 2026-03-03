@@ -25,18 +25,13 @@
             ]
           },
           {
-            "group": "Hackathon",
-            "tag": "LIVE",
-            "pages": [
-              "get-started/hackathon/info"             
-            ]
-          },
-          {
             "group": "Quick Start",
             "pages": [
               "get-started/quick-start/skale-on-base",
+              "get-started/quick-start/bite-sandbox",
               "get-started/quick-start/skale-on-ethereum",
-              "get-started/quick-start/go-live"
+              "get-started/quick-start/go-live",
+              "get-started/quick-start/get-testnet-tokens"
             ]
           },
           {
@@ -279,8 +274,10 @@
           {
             "group": "Facilitators",
             "pages": [
+              "cookbook/facilitators/using-corbits",
               "cookbook/facilitators/using-kobaru",
-	      "cookbook/facilitators/using-payai",
+	            "cookbook/facilitators/using-payai",
+              "cookbook/facilitators/using-relai",
               "cookbook/facilitators/using-x402x"
             ]
           },
@@ -1974,6 +1971,10 @@
     {
       "source": "/develop/hubs/gaming/integration-steps",
       "destination": "/get-started/quick-start/skale-on-base"
+    },
+    {
+      "source": "/get-started/hackathon/info",
+      "destination": "/get-started/quick-start/bite-sandbox"
     }
   ]
 }
