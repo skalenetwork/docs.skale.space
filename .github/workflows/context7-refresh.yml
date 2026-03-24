@@ -7,11 +7,11 @@ on:
 
 jobs:
     refresh:
-        runs-on: ubunut-latest
+        runs-on: ubuntu-latest
         steps:
-            - name: Trigger Context7 Refresh
-            run: |
-              curl -s -X POST https://context7.com/api/v1/refresh \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer ${{ secrets.CONTEXT7_API_KEY }}" \
-              -d '{"libraryName": "/${{ github.repository }}"}'
+            - uses: actions/checkout@v4
+
+            - name: Update Context7 Documentation
+              uses: rennf93/upsert-context7@v1
+              with:
+                operation: refresh
