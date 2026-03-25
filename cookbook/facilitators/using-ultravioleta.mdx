@@ -1,0 +1,175 @@
+---
+title: "Ultravioleta DAO"
+description: "Integrate Ultravioleta DAO facilitator for x402 payment processing on SKALE Base"
+---
+
+Ultravioleta DAO is a hosted facilitator service that supports x402 v1 and v2 payment processing across 33+ networks. By using its endpoints, you can offload payment verification and settlement on SKALE Base — with zero gas costs thanks to SKALE's free CREDIT token.
+
+## Prerequisites
+
+- Node.js 18+ or Python 3.10+
+- A wallet with USDC.e on SKALE Base
+- Basic understanding of x402 protocol
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file with Ultravioleta DAO configuration:
+
+```bash
+# Receiver address for the x402 payment
+RECEIVING_ADDRESS=0xYourWalletAddress
+
+# please don't share your private key with anyone
+PRIVATE_KEY=0xyour_pk
+```
+
+## Integration with Ultravioleta DAO
+
+<Tabs>
+  <Tab title="Server Setup">
+
+    Install dependencies:
+
+    ```bash
+    npm install hono @hono/node-server uvd-x402-sdk dotenv
+    ```
+
+    ```typescript
+    import { Hono } from 'hono';
+    import { serve } from '@hono/node-server';
+    import { createHonoMiddleware } from 'uvd-x402-sdk';
+    import 'dotenv/config';
+
+    const app = new Hono();
+    const receiver = process.env.RECEIVING_ADDRESS as string;
+
+    // Create x402 payment middleware for SKALE Base
+    const paywall = createHonoMiddleware({
+      accepts: [{
+        network: 'skale-base',
+        asset: '0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20',
+        amount: '1000000', // $1.00 USDC.e (6 decimals)
+        payTo: receiver,
+        extra: {
+          name: 'Bridged USDC (SKALE Bridge)',
+          version: '2',
+        },
+      }],
+    });
+
+    // Free endpoint — no payment required
+    app.get('/api/free', (c) => {
+      return c.json({
+        type: 'free',
+        message: 'This endpoint is free!',
+        timestamp: new Date().toISOString(),
+      });
+    });
+
+    // Protected endpoint — middleware handles 402, verify, and settle automatically
+    app.get('/api/premium', paywall, (c) => {
+      return c.json({
+        type: 'premium',
+        message: 'Payment verified and settled on SKALE Base!',
+        timestamp: new Date().toISOString(),
+      });
+    });
+
+    serve({ fetch: app.fetch, port: 3000 });
+    console.log('Server running on http://localhost:3000');
+    ```
+
+  </Tab>
+  <Tab title="Client Setup">
+
+    Install dependencies:
+
+    ```bash
+    npm install uvd-x402-sdk ethers dotenv
+    ```
+
+    ```typescript
+    import { X402Client } from 'uvd-x402-sdk';
+    import 'dotenv/config';
+
+    const client = new X402Client({ defaultChain: 'skale-base' });
+
+    // Connect with private key (works in Node.js, no browser wallet needed)
+    await client.connectWithPrivateKey(process.env.PRIVATE_KEY as string);
+
+    const result = await client.createPayment({
+      recipient: process.env.RECEIVING_ADDRESS as string,
+      amount: '1.00',
+    });
+
+    const response = await fetch('http://localhost:3000/api/premium', {
+      headers: { 'X-PAYMENT': result.paymentHeader },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Response data:', data);
+    } else {
+      console.error(`Error: ${response.statusText}`);
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+
+## Troubleshooting
+
+### Connection Issues
+
+If you cannot connect to the Ultravioleta DAO facilitator:
+
+1. Verify the facilitator URL is correct: `https://facilitator.ultravioletadao.xyz`
+2. Check network connectivity
+3. Review firewall settings
+
+### Payment Failures
+
+Common causes and solutions:
+
+| Issue | Solution |
+|-------|----------|
+| "Invalid signature" on SKALE | Verify EIP-712 domain name is `"Bridged USDC (SKALE Bridge)"` with version `"2"` |
+| Transaction reverts | SKALE uses legacy (type 0) transactions — do not set `maxFeePerGas` |
+| Balance shows 0 | Check USDC.e at `0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20`, not native CREDIT |
+| Network mismatch | Use network name `skale-base` (Chain ID `1187947933`) |
+| Expired authorization | Increase `maxTimeoutSeconds` |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
+    See all available facilitators for SKALE
+  </Card>
+  <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
+    Deploy your own facilitator infrastructure
+  </Card>
+  <Card title="Accept Payments" icon="dollar-sign" href="/cookbook/x402/accepting-payments">
+    Protect endpoints with payment middleware
+  </Card>
+  <Card title="Make Payments" icon="credit-card" href="/cookbook/x402/buying">
+    Build clients that handle x402 payments
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [Ultravioleta DAO](https://ultravioletadao.xyz)
+- [Facilitator API Docs](https://facilitator.ultravioletadao.xyz/docs)
+- [OpenAPI Spec](https://facilitator.ultravioletadao.xyz/api-docs/openapi.json)
+- [TypeScript SDK (npm)](https://www.npmjs.com/package/uvd-x402-sdk)
+- [Python SDK (PyPI)](https://pypi.org/project/uvd-x402-sdk/)
+- [x402 Protocol Specification](https://x402.org)
+
+---
+
+<Note>
+This entity -- Ultravioleta DAO -- is deployed and actively supporting SKALE. These are 3rd party services that may have their own terms and conditions and privacy policies. Use these services at your own risk. AI and agents is a highly experimental space; the 3rd party software solutions may have bugs or be unaudited. You and your agents and your customers use all 3rd party services chosen at your own risk and per their terms.
+</Note>
