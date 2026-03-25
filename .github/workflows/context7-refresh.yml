@@ -12,6 +12,6 @@ jobs:
             - uses: actions/checkout@v4
 
             - name: Update Context7 Documentation
-              uses: rennf93/upsert-context7@v1
+              uses: rennf93/upsert-context7@1.1
               with:
                 operation: refresh
