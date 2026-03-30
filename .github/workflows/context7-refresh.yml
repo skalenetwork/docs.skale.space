@@ -1,0 +1,17 @@
+name: Refresh Context7 Docs
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    refresh:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Update Context7 Documentation
+              uses: rennf93/upsert-context7@1.1
+              with:
+                operation: refresh
