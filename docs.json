@@ -274,12 +274,13 @@
           {
             "group": "Facilitators",
             "pages": [
+              "cookbook/facilitators/using-autoincentive",
               "cookbook/facilitators/using-corbits",
               "cookbook/facilitators/using-kobaru",
 	            "cookbook/facilitators/using-payai",
               "cookbook/facilitators/using-relai",
               "cookbook/facilitators/using-x402x",
-              "cookbook/facilitators/using-autoincentive"
+              "cookbook/facilitators/using-ultravioleta"
             ]
           },
           {
