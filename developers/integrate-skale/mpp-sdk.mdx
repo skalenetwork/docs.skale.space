@@ -1,0 +1,228 @@
+---
+title: "MPP SDK"
+description: "SDK for JavaScript and TypeScript developers to enable private, gasless payments on SKALE using MPP (Machine Payments Protocol)"
+---
+
+<Note>
+The MPP SDK is compatible with both JavaScript and TypeScript in Node.js and browser environments.
+If you have any issues, please join us in [Discord](https://discord.gg/skale) or open an issue on [GitHub](https://github.com/skalenetwork/mpp-sdk).
+</Note>
+
+## Overview
+
+The MPP SDK enables developers to integrate private, gasless payments into their applications on the SKALE Network. It provides support for:
+
+- **Standard transfers** on SKALE Base
+- **Gasless payments** via EIP-3009 and EIP-2612 permits
+- **BITE encryption** for confidential transaction amounts (Phase I)
+- **Confidential tokens** for native privacy (Phase II)
+
+## Installation
+
+```bash
+# npm
+npm install @skalenetwork/mpp
+
+# yarn
+yarn add @skalenetwork/mpp
+
+# pnpm
+pnpm add @skalenetwork/mpp
+```
+
+## Quick Start
+
+### Client-Side Usage
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+
+// Standard transfer on SKALE Base
+const method = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e'
+})
+
+// Gasless with EIP-3009
+const gaslessMethod = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+
+// Encrypted (BITE Phase I)
+const encryptedMethod = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { skale: { encrypted: true } }
+})
+
+// Confidential token (BITE Phase II) + gasless
+const confidentialMethod = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { encrypted: true, confidentialToken: true },
+    gasless: 'eip3009'
+  }
+})
+```
+
+### Server-Side Usage
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/server'
+
+const method = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+
+// In your MPPx server setup
+const mppx = Mppx.create({
+  methods: [method],
+  realm: 'api.example.com',
+  secretKey: process.env.MPP_SECRET
+})
+```
+
+## Supported Chains
+
+| Chain | Network | Chain ID |
+|-------|---------|----------|
+| `skale-base` | SKALE Base Mainnet | 284351530983 |
+| `skale-base-sepolia` | SKALE Base Testnet | 2024883468 |
+| `bite-sandbox` | BITE Sandbox Testnet | 103698795 |
+| `base` | Base Mainnet | 8453 |
+| `base-sepolia` | Base Sepolia | 84532 |
+
+## API Reference
+
+### `mpp.charge(options)`
+
+Creates a payment method for MPP integration.
+
+**Parameters:**
+- `chain: string | Chain` – Chain identifier (string) or custom viem `Chain` object
+- `currency: string | CurrencyConfig` – Currency identifier or custom configuration
+- `extensions?: object` – Optional extensions for gasless and privacy features
+
+**Returns:** `PaymentMethod` – Configured payment method for MPP
+
+### Extensions
+
+#### Gasless Payments
+
+Enable gasless transactions using EIP-3009 or EIP-2612:
+
+```typescript
+extensions: { gasless: 'eip3009' }  // EIP-3009 transfer with authorization
+extensions: { gasless: 'eip2612' }  // ERC-2612 permit
+extensions: { gasless: true }       // Auto-detect EIP-3009
+```
+
+<Note>
+Gasless payments allow users to pay without holding the native gas token (sFUEL/ETH). The transaction fees are deducted from the token being transferred.
+</Note>
+
+#### BITE Encryption (Phase I)
+
+Encrypt transaction amounts onchain:
+
+```typescript
+extensions: { skale: { encrypted: true } }
+```
+
+<Note>
+BITE encryption uses threshold encryption to hide transaction amounts while maintaining verifiability. Requires a BITE-enabled SKALE chain.
+</Note>
+
+#### Confidential Tokens (Phase II)
+
+Use native confidential tokens with built-in privacy:
+
+```typescript
+extensions: {
+  skale: {
+    encrypted: true,
+    confidentialToken: true
+  }
+}
+```
+
+<Note>
+Confidential tokens are native tokens with built-in privacy features. Currently available on BITE Sandbox testnet with tokens like `eUSDC`.
+</Note>
+
+## Payment Strategies
+
+The SDK supports various combinations of features:
+
+| Chain | Currency | Gasless | Encrypted | Confidential Token | Mode |
+|-------|----------|---------|-----------|-------------------|------|
+| skale-base | USDC.e | - | - | - | Standard transfer |
+| skale-base | USDC.e | EIP-3009 | - | - | Gasless permit |
+| skale-base | USDC.e | - | ✓ | - | Encrypted amount |
+| skale-base | USDC.e | EIP-3009 | ✓ | - | Gasless + encrypted |
+| bite-sandbox | eUSDC | - | - | ✓ | Confidential token |
+| bite-sandbox | eUSDC | EIP-3009 | - | ✓ | Confidential + gasless |
+| bite-sandbox | eUSDC | - | ✓ | ✓ | Confidential + encrypted |
+| bite-sandbox | eUSDC | EIP-3009 | ✓ | ✓ | Full privacy (all) |
+
+## Custom Chains
+
+You can use any viem `Chain` object for custom chain configurations:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+import { defineChain } from 'viem'
+
+const myChain = defineChain({
+  id: 123456,
+  name: 'My Chain',
+  nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://mychain.rpc'] }
+  }
+})
+
+const method = mpp.charge({
+  chain: myChain,
+  currency: {
+    address: '0xTokenAddress...',
+    symbol: 'TOKEN',
+    decimals: 18,
+    eip3009: true
+  }
+})
+```
+
+## Best Practices
+
+### Choosing the Right Configuration
+
+<Note>
+Select the simplest configuration that meets your privacy and UX requirements. Standard transfers are fastest and most cost-effective, while full privacy configurations provide maximum confidentiality.
+</Note>
+
+### Testing
+
+Always test payment flows on testnet before mainnet deployment:
+
+- Use `skale-base-sepolia` or `bite-sandbox` for testing
+- Verify gasless transactions work with your token contracts
+- Test encrypted transaction decryption and retrieval
+
+### Security Considerations
+
+<Warning>
+When using server-side MPP integration, never expose your `secretKey` in client-side code. Always handle sensitive credentials in secure server environments.
+</Warning>
+
+## Resources
+
+- **GitHub:** https://github.com/skalenetwork/mpp-sdk
+- **NPM:** https://www.npmjs.com/package/@skalenetwork/mpp
+- **MPP Protocol:** https://mpp.dev/
+- **Support:** https://discord.gg/skale

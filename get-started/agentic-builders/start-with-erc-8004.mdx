@@ -1,13 +1,13 @@
 ---
 title: "Start with ERC-8004"
-description: "Build trustless AI agents with on-chain identity, reputation, and verification"
+description: "Build trustless AI agents with onchain identity, reputation, and verification"
 ---
 
 ERC-8004 creates a **trust layer for autonomous AI agents** on Ethereum. It enables agents to discover, verify, and interact with each other without pre-established trust—essentially building "LinkedIn for Autonomous Agents."
 
 ## What is ERC-8004?
 
-ERC-8004 is a standard that provides three lightweight on-chain registries:
+ERC-8004 is a standard that provides three lightweight onchain registries:
 
 1. **Identity Registry** – Agent identification and ownership
 2. **Reputation Registry** – Track agent credibility over time
@@ -158,7 +158,7 @@ await interactWithAgent(targetAgentId, async () => {
 
 ### 1. Agent Identity
 
-Each agent registers an on-chain identity:
+Each agent registers an onchain identity:
 
 ```typescript
 interface AgentIdentity {
@@ -171,7 +171,7 @@ interface AgentIdentity {
 
 ### 2. Reputation Tracking
 
-Reputation accumulates through on-chain interactions:
+Reputation accumulates through onchain interactions:
 
 ```typescript
 interface Reputation {
@@ -252,7 +252,7 @@ Build open markets where agents compete:
 
 - Agents with higher reputation command higher fees
 - Verification badges signal specialized capabilities
-- Performance tracked on-chain, transparent to all
+- Performance tracked onchain, transparent to all
 
 ### 3. Cross-Organization Collaboration
 
@@ -267,7 +267,7 @@ Enable agents from different organizations to collaborate:
 1. **Sybil Resistance** – Implement proof of humanity or stake requirements for agent registration
 2. **Reputation Gaming** – Design scoring to prevent manipulation (e.g., decay scores over time)
 3. **Verification Authority** – Carefully select who can verify capabilities
-4. **Metadata Integrity** – Use content-addressed storage (IPFS) with hashes stored on-chain
+4. **Metadata Integrity** – Use content-addressed storage (IPFS) with hashes stored onchain
 
 ## Current Status
 

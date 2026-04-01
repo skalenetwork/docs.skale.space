@@ -1,0 +1,269 @@
+---
+title: "Gasless Payments"
+description: "Accept standard and gasless MPP payments on SKALE using USDC.e"
+---
+
+Accept gasless and standard payments using the MPP SDK on SKALE. These payment methods work on SKALE Base chains using USDC.e—ideal for applications that need fast, low-cost transactions with optional gasless UX.
+
+## Prerequisites
+
+- Node.js, Bun, or pnpm installed
+- A SKALE Base chain endpoint
+- USDC.e tokens for testing
+
+## Overview
+
+Available payment strategies:
+
+- **Standard transfers** – Users hold sFUEL for gas, pay with USDC.e
+- **Gasless payments** – Users pay without holding any gas tokens (EIP-3009)
+- **Encrypted amounts** – Hide transaction amounts onchain (optional)
+
+---
+
+## Environment Setup
+
+Create a `.env` file:
+
+```bash
+# SKALE Base RPC
+SKALE_RPC=https://mainnet.skalenodes.com/v1/lanky-ill-funny-testnet
+
+# Your receiving address
+RECEIVING_ADDRESS=0xYourReceivingAddress
+
+# Chain configuration
+CHAIN=skale-base
+CURRENCY=USDC.e
+```
+
+---
+
+## Standard Payment
+
+Users need sFUEL (gas token) to send transactions:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+
+// Setup wallet
+const account = privateKeyToAccount('0xYourPrivateKey')
+const walletClient = createWalletClient({
+  account,
+  transport: http(process.env.SKALE_RPC)
+})
+
+// Create standard payment method
+const standardPayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e'
+})
+
+async function processStandardPayment(amount: string) {
+  const tx = await standardPayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount, // Amount in base units (e.g., "1000000" for 1 USDC)
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Payment sent:', hash)
+  return hash
+}
+
+// Process 5 USDC
+await processStandardPayment('5000000')
+```
+
+---
+
+## Gasless Payment
+
+Users pay without holding sFUEL—fees deducted from USDC.e:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+
+// Create gasless payment method
+const gaslessPayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+
+async function processGaslessPayment(amount: string) {
+  const tx = await gaslessPayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Gasless payment sent:', hash)
+  return hash
+}
+
+// Process 5 USDC without gas
+await processGaslessPayment('5000000')
+```
+
+---
+
+## Encrypted Payments (Optional)
+
+Hide transaction amounts onchain:
+
+```typescript
+// Encrypted payment method
+const encryptedPayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { skale: { encrypted: true } }
+})
+
+async function processEncryptedPayment(amount: string) {
+  const tx = await encryptedPayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Encrypted payment sent:', hash)
+  return hash
+}
+```
+
+---
+
+## Gasless + Encrypted
+
+Combine both features:
+
+```typescript
+const privatePayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: {
+    gasless: 'eip3009',
+    skale: { encrypted: true }
+  }
+})
+
+async function processPrivatePayment(amount: string) {
+  const tx = await privatePayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Private payment sent:', hash)
+  return hash
+}
+```
+
+---
+
+## Server Integration
+
+Backend payment processing:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/server'
+import express from 'express'
+
+const app = express()
+
+const method = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+
+app.post('/api/payment', async (req, res) => {
+  const { amount, from, signature } = req.body
+  
+  try {
+    const tx = await method.createTransfer({
+      to: process.env.RECEIVING_ADDRESS,
+      amount,
+      from
+    })
+    
+    // Process with signature...
+    
+    res.json({ success: true })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+})
+```
+
+---
+
+## Testing
+
+Use SKALE Base Sepolia testnet:
+
+```bash
+SKALE_RPC=https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet
+CHAIN=skale-base-sepolia
+CURRENCY=USDC.e
+```
+
+```typescript
+const testPayment = mpp.charge({
+  chain: 'skale-base-sepolia',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+
+const tx = await testPayment.createTransfer({
+  to: '0xTestReceiver',
+  amount: '100000', // 0.1 USDC
+  from: account.address
+})
+```
+
+---
+
+## Error Handling
+
+```typescript
+try {
+  const hash = await processGaslessPayment('1000000')
+} catch (error) {
+  if (error.message.includes('insufficient funds')) {
+    console.error('User lacks USDC.e balance')
+  } else if (error.message.includes('EIP-3009')) {
+    console.error('Token not approved for gasless')
+  }
+}
+```
+
+---
+
+## Best Practices
+
+<Note>
+- **Standard**: Use when users already have sFUEL (fastest)
+- **Gasless**: Best UX for new users (no gas token needed)
+- **Encrypted**: Add for sensitive transaction amounts
+</Note>
+
+<Warning>
+- Never expose private keys client-side
+- Validate amounts server-side
+- Test thoroughly on testnet first
+</Warning>
+
+---
+
+## Resources
+
+- [MPP SDK Reference](/developers/sdks/skalenetwork-mpp-sdk)
+- [Confidential Payments](/cookbook/mpp/confidential-payments) – For eUSDC
+- [GitHub](https://github.com/skalenetwork/mpp-sdk)
