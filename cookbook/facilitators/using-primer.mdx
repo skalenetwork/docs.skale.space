@@ -24,25 +24,10 @@ description: "x402 facilitator with full ERC-20 support, browser payments, and a
 
 ## Prerequisites
 
-- Node.js 18+ and npm
 - A wallet with USDC (or any ERC-20) on SKALE Base
 - Basic understanding of x402 protocol — learn more [here](/get-started/agentic-builders/start-with-x402)
 
----
-
-## Getting Started
-
-### Environment Variables
-
-```bash
-# Your wallet address to receive payments
-RECEIVING_ADDRESS=0xYourWalletAddress
-
-# Private key for the client (payer) — do not share
-PRIVATE_KEY=0xYourPrivateKey
-```
-
-### Supported Networks
+## Supported Networks
 
 | Network | CAIP-2 ID | Status |
 |---------|-----------|--------|
@@ -53,14 +38,16 @@ PRIVATE_KEY=0xYourPrivateKey
 
 ## Integration with Primer SDK
 
-Install the Primer x402 SDK:
-
-```bash
-npm install @primersystems/x402
-```
+The Primer x402 SDK is available for TypeScript and Python. The Primer facilitator is used by default — no endpoint configuration needed.
 
 <Tabs>
-  <Tab title="Server Setup (Hono)">
+  <Tab title="TypeScript">
+
+    ```bash
+    npm install @primersystems/x402
+    ```
+
+    **Server (Hono):**
 
     ```typescript
     const { x402Hono } = require("@primersystems/x402");
@@ -69,7 +56,6 @@ npm install @primersystems/x402
 
     const app = new Hono();
 
-    // Add x402 payment middleware — Primer facilitator is used by default
     app.use("*", x402Hono(process.env.RECEIVING_ADDRESS, {
       "/api/premium": {
         amount: "0.001",
@@ -79,55 +65,65 @@ npm install @primersystems/x402
     }));
 
     app.get("/api/premium", (c) => {
-      return c.json({
-        message: "Payment verified and settled on SKALE Base!",
-        timestamp: new Date().toISOString(),
-      });
+      return c.json({ message: "Payment verified on SKALE Base!" });
     });
 
     serve({ fetch: app.fetch, port: 3000 });
     ```
 
-  </Tab>
-  <Tab title="Server Setup (Express)">
-
-    ```typescript
-    const { x402Express } = require("@primersystems/x402");
-    const express = require("express");
-
-    const app = express();
-
-    app.use(x402Express(process.env.RECEIVING_ADDRESS, {
-      "/api/premium": {
-        amount: "0.001",
-        asset: "0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20", // USDC on SKALE Base
-        network: "eip155:1187947933",                          // SKALE Base Mainnet
-      },
-    }));
-
-    app.get("/api/premium", (req, res) => {
-      res.json({ message: "Payment verified and settled on SKALE Base!" });
-    });
-
-    app.listen(3000);
-    ```
-
-  </Tab>
-  <Tab title="Client Setup">
+    **Client:**
 
     ```typescript
     const { createSigner, x402Fetch } = require("@primersystems/x402");
 
-    // Create a signer for SKALE Base
     const signer = await createSigner("eip155:1187947933", process.env.PRIVATE_KEY);
-
-    // Wrap fetch — payments are handled automatically
     const fetch402 = x402Fetch(fetch, signer, { maxAmount: "1.00" });
 
-    // Use like normal fetch
     const response = await fetch402("http://localhost:3000/api/premium");
-    const data = await response.json();
-    console.log("Data received:", data);
+    console.log(await response.json());
+    ```
+
+  </Tab>
+  <Tab title="Python">
+
+    ```bash
+    pip install primer-x402[fastapi]  # or primer-x402[flask]
+    ```
+
+    **Server (FastAPI):**
+
+    ```python
+    from fastapi import FastAPI
+    from primer_x402 import x402_fastapi
+
+    app = FastAPI()
+
+    app.add_middleware(x402_fastapi(
+        '0xYourWalletAddress',
+        {
+            '/api/premium': {
+                'amount': '0.001',
+                'asset': '0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20',  # USDC on SKALE Base
+                'network': 'eip155:1187947933',                           # SKALE Base Mainnet
+            }
+        }
+    ))
+
+    @app.get('/api/premium')
+    async def premium():
+        return {'message': 'Payment verified on SKALE Base!'}
+    ```
+
+    **Client:**
+
+    ```python
+    from primer_x402 import create_signer, x402_requests
+
+    signer = create_signer('eip155:1187947933', os.environ['PRIVATE_KEY'])
+
+    with x402_requests(signer, max_amount='1.00') as session:
+        response = session.get('http://localhost:3000/api/premium')
+        print(response.json())
     ```
 
   </Tab>
@@ -136,11 +132,13 @@ npm install @primersystems/x402
     No code needed — make payments directly from the terminal:
 
     ```bash
-    # Check if a URL requires payment
+    # TypeScript
     npx @primersystems/x402 probe https://api.example.com/paid
-
-    # Make a payment
     X402_PRIVATE_KEY=0x... npx @primersystems/x402 pay https://api.example.com/paid --max-amount 0.10
+
+    # Python
+    x402 probe https://api.example.com/paid
+    X402_PRIVATE_KEY=0x... x402 pay https://api.example.com/paid --max-amount 0.10
     ```
 
   </Tab>
@@ -213,12 +211,9 @@ pip install multiclaw[gui]
 
 | Issue | Solution |
 |-------|----------|
-| "Invalid signature" on SKALE | Verify EIP-712 domain name is `"Bridged USDC (SKALE Bridge)"` with version `"2"` |
-| Transaction reverts | SKALE uses legacy (type 0) transactions — do not set `maxFeePerGas` |
-| Balance shows 0 | Check USDC at `0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20` (mainnet) or `0x2e08028E3C4c2356572E096d8EF835cD5C6030bD` (testnet), not native CREDIT |
-| Network mismatch | Use `eip155:1187947933` (mainnet) or `eip155:324705682` (testnet) |
-| ERC-20 token not working | Ensure payer has approved the Prism contract — query `GET /contracts` for addresses |
-| Expired authorization | Increase `maxTimeoutSeconds` in payment config |
+| ERC-20 token not working | Payer must approve the Prism contract once before first payment — query `GET /contracts` for the contract address on your network |
+
+Use the [x402 Validator](https://www.primer.systems/validate) to debug payment header formatting issues.
 
 ---
 
@@ -236,20 +231,10 @@ pip install multiclaw[gui]
 
 ## Next Steps
 
-<CardGroup cols={2}>
-  <Card title="SKALE Supported Facilitators" icon="dollar-sign" href="/get-started/agentic-builders/facilitators">
-    See all available facilitators for SKALE
-  </Card>
-  <Card title="Run Your Own" icon="server" href="/cookbook/x402/facilitator">
-    Deploy your own facilitator infrastructure
-  </Card>
-  <Card title="Accept Payments" icon="dollar-sign" href="/cookbook/x402/accepting-payments">
-    Protect endpoints with payment middleware
-  </Card>
-  <Card title="Make Payments" icon="credit-card" href="/cookbook/x402/buying">
-    Build clients that handle x402 payments
-  </Card>
-</CardGroup>
+- [SKALE Supported Facilitators](/get-started/agentic-builders/facilitators) — See all available facilitators
+- [Run Your Own Facilitator](/cookbook/x402/facilitator) — Deploy your own facilitator infrastructure
+- [Accept Payments](/cookbook/x402/accepting-payments) — Protect endpoints with payment middleware
+- [Make Payments](/cookbook/x402/buying) — Build clients that handle x402 payments
 
 ## Resources
 
