@@ -5,15 +5,13 @@ description: "x402 facilitator with full ERC-20 support, browser payments, and a
 
 [Primer](https://primer.systems) builds tools and infrastructure for the agentic economy. The Primer facilitator supports **all ERC-20 tokens** on SKALE — not just USDC — through the Prism settlement contract. Combined with consumer tools like Primer Pay and MultiClaw, Primer provides the full stack for x402 payments: facilitator, browser extension, agent authorization, and developer SDKs.
 
-## Why Primer on SKALE?
+## Primer on SKALE
 
 **All ERC-20 tokens.** Most facilitators only support USDC via EIP-3009. Primer's Prism contract enables gasless x402 payments with any ERC-20 token on SKALE Base. The facilitator auto-detects token type — EIP-3009 tokens (USDC, EURC) use native `transferWithAuthorization`, everything else routes through Prism.
 
 **Zero configuration.** The Primer facilitator is the default in the [Primer x402 SDK](https://docs.primer.systems/sdk/overview.html) — `npm install @primersystems/x402` and start accepting payments immediately. No facilitator URL configuration needed.
 
-**Gasless settlement.** Zero gas fees for both payers and the facilitator, powered by SKALE's CREDITS system. Instant finality on every transaction.
-
-**Complete toolkit.** Primer isn't just a facilitator — it's a full ecosystem for x402 payments:
+**Complete toolkit.** Complementing our facilitator are several other useful x402 tools:
 
 - [**Primer Pay**](https://docs.primer.systems/primer-pay.html) — Chrome extension that automatically handles x402 payments as you browse. Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/primer-pay/bckienhfmjoolgkafljofomegfafanmh).
 - [**MultiClaw**](https://docs.primer.systems/multiclaw/overview.html) — Desktop app for authorizing AI agent payments. Delegate spending authority with daily caps, per-request limits, and domain restrictions — your keys never leave the device. Available as a portable executable or via `pip install multiclaw`.
@@ -186,7 +184,8 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/pri
 
 - **Key isolation** — agents receive tokens with spending limits, not your private keys
 - **Spend policies** — daily caps, per-request limits, auto-approve thresholds, domain restrictions
-- **Multi-agent support** — register unlimited agents, each with their own policy
+- **Multi-agent support** — register unlimited agents, each with their own policy.
+- **Universally compatible** — fast setup with all types of agent, any model.
 - **Portable** — download as a standalone executable (runs from USB) or `pip install multiclaw`
 
 ```bash
@@ -204,16 +203,6 @@ pip install multiclaw[gui]
 **[Test Paywall Generator](https://www.primer.systems/test-paywall)** — Generate a working x402 paywall endpoint instantly. Use it to test your client integration without deploying your own server.
 
 **[x402 Validator](https://www.primer.systems/validate)** — Paste an x402 payment header and validate the formatting, signature, and fields. Essential for debugging integration issues.
-
----
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| ERC-20 token not working | Payer must approve the Prism contract once before first payment — query `GET /contracts` for the contract address on your network |
-
-Use the [x402 Validator](https://www.primer.systems/validate) to debug payment header formatting issues.
 
 ---
 
