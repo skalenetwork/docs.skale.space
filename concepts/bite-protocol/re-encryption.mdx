@@ -1,0 +1,73 @@
+---
+title: "Re-encryption"
+description: "Phase 3 of BITE - re-encrypt data with new keys without decryption, enabling viewer keys and selective disclosure"
+---
+
+<Note>
+**Roadmap** - Threshold Re-encryption (Phase 3) is currently in development. Stay tuned for updates on the [SKALE Discord](https://discord.gg/skale).
+</Note>
+
+## What Is Re-encryption?
+
+Re-encryption allows data encrypted under one key to be transformed so it can be decrypted by a different key — without ever exposing the plaintext. The data never touches plaintext during the re-encryption operation.
+
+BITE's first two phases encrypt data for specific purposes:
+
+- **Phase 1** encrypts transactions during mempool and consensus, then decrypts for execution
+- **Phase 2** lets smart contracts request decryption of specific encrypted data on-demand
+
+**Phase 3** is fundamentally different: the data stays encrypted, but the *recipient* changes. A smart contract holding threshold-encrypted data can re-encrypt it for a specific viewer's ECIES public key, enabling granular access control without ever revealing the underlying value to the contract or the network.
+
+## How It Works
+
+1. **Encrypt** - Owner encrypts data using BITE's threshold encryption (`BITE.encryptTE`)
+2. **Store** - Encrypted data is stored in contract state
+3. **Grant Access** - Owner calls `grantAccess()` with a viewer's ECIES public key and sends a gas deposit for the callback
+4. **Re-encrypt** - The network runs `submitCTX` to threshold-decrypt, then in the `onDecrypt` callback, re-encrypts the plaintext with the viewer's ECIES public key via the `EncryptECIES` precompile
+5. **Retrieve** - Viewer calls `getEncryptedValue()` to receive data encrypted under their own ECIES key, then decrypts locally
+
+The plaintext only exists momentarily inside the `onDecrypt` callback — it is never stored in contract state.
+
+## Key Concepts
+
+### Viewer Keys
+
+Viewer keys are ECIES public key pairs registered by users who need to view encrypted data. When access is granted, the re-encryption process transforms threshold-encrypted data into ECIES-encrypted data for that specific viewer. Each viewer decrypts using their own private key.
+
+### Selective Disclosure
+
+Owners control who can see their data. Access is granted per-viewer by providing their ECIES public key. This enables patterns like:
+
+- **Compliance**: Grant auditors temporary read access without exposing data publicly
+- **Customer support**: Allow support staff to view encrypted balances for troubleshooting
+- **Multi-party data**: Different viewers receive the same data encrypted under different keys
+
+### Dual Encryption
+
+Data encrypted once with the threshold key (for smart contract logic) can be re-encrypted with any number of user public keys (for viewing). The two encryption layers serve different purposes:
+
+| Layer | Encryption | Purpose |
+|-------|-----------|---------|
+| Threshold | BLS threshold key | Smart contract logic, consensus-level security |
+| ECIES | Viewer's public key | Individual viewing, local decryption |
+
+## Use Cases
+
+### Confidential State
+
+Smart contract state that only authorized parties can view — private order books, confidential governance votes, sealed-bid auction results visible only to participants.
+
+### Access-Controlled Data
+
+Healthcare records, enterprise data, and compliance-sensitive information where different parties need different access levels. The owner grants and revokes access without re-submitting the underlying value.
+
+### Dynamic Privacy Settings
+
+Change who can see data after it is stored. Grant access to new viewers, or update encryption for existing viewers, without ever exposing the plaintext on-chain.
+
+## Getting Started
+
+- [Re-encryption Developer Guide](/developers/bite-protocol/re-encryption) - Implementation patterns and precompile details
+- [Re-encryption Tutorial](/cookbook/privacy/re-encryption) - Step-by-step walkthrough with EncryptedValueRegistry
+- [Introduction](/concepts/bite-protocol/intro-bite-protocol) - BITE Protocol overview
+- [Confidential Tokens](/concepts/bite-protocol/confidential-tokens) - Application of re-encryption to token balances

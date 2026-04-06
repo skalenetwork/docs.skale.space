@@ -1,0 +1,281 @@
+---
+title: "Confidential Tokens"
+description: "Step-by-step tutorial: deploy a confidential token, make encrypted transfers, and view encrypted balances"
+---
+
+## Building with Confidential Tokens
+
+This tutorial walks you through deploying a `MintableConfidentialToken`, making encrypted transfers between accounts, and viewing balances using viewer keys. You will learn the full lifecycle of a confidential token — from deployment to private transfers to balance viewing.
+
+<Tip title="Why Confidential Tokens?">
+Standard ERC-20 tokens expose balances and transfer amounts to everyone. Confidential tokens encrypt balances on-chain so only the holder can see their balance, and only sender and receiver know the transfer amount.
+</Tip>
+
+<Note title="Before You Start">
+This tutorial requires access to a SKALE chain with Confidential Token support (BITE Phase 3). Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+</Note>
+
+**Prerequisites:**
+- Node.js 18+ and npm/yarn
+- Wallet browser extension
+- Access to a BITE Phase 3-enabled SKALE chain
+- Basic knowledge of Solidity and TypeScript
+
+---
+
+## Step 1: Project Setup
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  mkdir confidential-token-demo && cd confidential-token-demo
+  npm init -y
+  npm i --save-dev hardhat
+  npx hardhat init
+
+  # Install dependencies
+  npm i @skalenetwork/bite @skalenetwork/bite-solidity @openzeppelin/contracts ethers
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  mkdir confidential-token-demo && cd confidential-token-demo
+  forge init
+
+  # Install BITE dependencies
+  forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
+
+  # Add to remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
+
+  # Also install JS SDK
+  npm i @skalenetwork/bite ethers
+  ```
+  </Tab>
+</Tabs>
+
+---
+
+## Step 2: Deploy the Confidential Token
+
+Use `scripts/deploy.ts` to deploy a `MintableConfidentialToken`:
+
+```typescript
+import { Contract, JsonRpcProvider, Wallet, ContractFactory } from 'ethers';
+import { BITE } from '@skalenetwork/bite';
+
+const providerUrl = 'https://your-skale-chain-endpoint';
+const PRIVATE_KEY = '0x...'; // Replace with your private key
+const bite = new BITE(providerUrl);
+
+async function main() {
+    const provider = new JsonRpcProvider(providerUrl);
+    const signer = new Wallet(PRIVATE_KEY, provider);
+
+    // Deploy MintableConfidentialToken
+    console.log('Deploying MintableConfidentialToken...');
+    const factory = new ContractFactory(
+        TokenJson.abi,
+        TokenJson.bytecode,
+        signer
+    );
+    const token = await factory.deploy('Confidential Token', 'cTOKEN');
+    await token.waitForDeployment();
+    const tokenAddress = await token.getAddress();
+    console.log(`Token deployed at: ${tokenAddress}`);
+
+    // Mint initial supply to deployer
+    const mintAmount = BigInt('1000000000000000000000'); // 1000 tokens
+    const mintTx = await token.mint(signer.address, mintAmount, { gasLimit: 500000 });
+    await mintTx.wait();
+    console.log(`Minted ${mintAmount / 10n**18n} tokens to deployer`);
+}
+
+main().catch(console.error);
+```
+
+---
+
+## Step 3: Set Viewer Keys
+
+Each account that wants to view its balance must register an ECIES public key:
+
+```typescript
+import { BITE } from '@skalenetwork/bite';
+import { JsonRpcProvider, Wallet } from 'ethers';
+
+const bite = new BITE(providerUrl);
+const provider = new JsonRpcProvider(providerUrl);
+const holder = new Wallet(PRIVATE_KEY, provider);
+
+// Generate ECIES key pair for the holder
+const { publicKey, privateKey } = generateECIESKeyPair();
+
+// Register viewer key on the token contract
+const tx = await token.connect(holder).setViewerPublicKey(
+    ethers.AbiCoder.defaultAbiCoder().encode(
+        ['uint256', 'uint256'],
+        [publicKey.x, publicKey.y]
+    ),
+    { gasLimit: 200000 }
+);
+await tx.wait();
+console.log('Viewer key registered');
+```
+
+<Warning>
+Store the private key securely. You will need it to decrypt your encrypted balance locally.
+</Warning>
+
+---
+
+## Step 4: Make an Encrypted Transfer
+
+The sender encrypts the transfer amount using threshold encryption and submits an encrypted transfer:
+
+```typescript
+import { BITE } from '@skalenetwork/bite';
+
+const bite = new BITE(providerUrl);
+const sender = new Wallet(SENDER_PRIVATE_KEY, provider);
+const recipient = '0x...'; // Recipient address
+const transferAmount = BigInt('100000000000000000000'); // 100 tokens
+
+// Encrypt the transfer amount using threshold encryption
+const encodedAmount = ethers.AbiCoder.defaultAbiCoder().encode(
+    ['uint256'],
+    [transferAmount]
+);
+const encryptedAmount = await bite.encryptMessage(encodedAmount);
+
+console.log(`Encrypted amount for transfer of ${transferAmount / 10n**18n} tokens`);
+
+// Deposit gas for callback execution (required for encrypted transfers)
+const gasDeposit = ethers.parseEther('0.06');
+await token.connect(sender).depositGas({ value: gasDeposit });
+
+// Submit encrypted transfer
+const transferTx = await token.connect(sender).encryptedTransfer(
+    recipient,
+    encryptedAmount,
+    { gasLimit: 500000 }
+);
+await transferTx.wait();
+console.log('Encrypted transfer complete');
+```
+
+The transfer amount is hidden from the public — only the sender and recipient know how much was transferred. The contract verifies sufficient balance via `submitCTX` without ever seeing the plaintext amount.
+
+<Note>
+For double privacy (hiding both the transfer amount and the transaction destination in the mempool), wrap the transfer call with `bite.encryptTransaction()`.
+</Note>
+
+---
+
+## Step 5: View Your Encrypted Balance
+
+Call `encryptedBalanceOf()` and decrypt the result locally:
+
+```typescript
+// Get balance encrypted under your ECIES key
+const encryptedBalance = await token.encryptedBalanceOf(holder.address);
+
+// Decrypt locally using your ECIES private key
+const decrypted = decryptECIES(encryptedBalance, holderPrivateKey);
+
+// Decode the balance
+const [balance] = ethers.AbiCoder.defaultAbiCoder().decode(['uint256'], decrypted);
+console.log(`Balance: ${(balance / 10n**18n).toString()} cTOKEN`);
+```
+
+<Warning>
+Never call `balanceOf()` on a confidential token — it intentionally reverts to prevent accidental disclosure. Always use `encryptedBalanceOf()`.
+</Warning>
+
+---
+
+## Step 6: Wrap an Existing ERC-20 (Optional)
+
+If you have an existing ERC-20 token, you can wrap it into a confidential representation:
+
+```typescript
+// Deploy ConfidentialWrapper around an existing ERC-20
+const wrapperFactory = new ContractFactory(
+    WrapperJson.abi,
+    WrapperJson.bytecode,
+    signer
+);
+const wrapper = await wrapperFactory.deploy(
+    existingTokenAddress, // Existing ERC-20 address
+    'Confidential USDC',
+    'cUSDC'
+);
+await wrapper.waitForDeployment();
+
+// Approve the wrapper to spend your tokens
+await existingToken.approve(await wrapper.getAddress(), depositAmount);
+
+// Deposit tokens → receive confidential tokens
+await wrapper.depositFor(holder.address, depositAmount);
+
+// Withdraw confidential tokens → receive underlying tokens
+const withdrawAmount = await bite.encryptMessage(
+    ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [withdrawAmountRaw])
+);
+await wrapper.withdrawTo(holder.address, withdrawAmount);
+```
+
+---
+
+## Step 7: Run the Tutorial
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  # Build
+  npx hardhat compile
+
+  # Deploy
+  bun run scripts/deploy.ts
+
+  # Set viewer keys, transfer, and view balances
+  bun run scripts/interact.ts
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  # Build
+  forge build
+
+  # Deploy
+  bun run scripts/deploy.ts
+
+  # Set viewer keys, transfer, and view balances
+  bun run scripts/interact.ts
+  ```
+  </Tab>
+</Tabs>
+
+**Expected output:**
+```
+Token deployed at: 0x...
+Minted 1000 tokens to deployer
+Viewer key registered
+Encrypted amount for transfer of 100 tokens
+Encrypted transfer complete
+Balance: 100 cTOKEN
+```
+
+---
+
+**Resources:**
+
+- **Confidential Token Repository**: [https://github.com/skalenetwork/confidential-token](https://github.com/skalenetwork/confidential-token)
+- **BITE TypeScript SDK**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+- **BITE Solidity Helpers**: [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+- **Confidential Token Concepts**: [Confidential Tokens](/concepts/bite-protocol/confidential-tokens)
+- **Confidential Token Developer Guide**: [Confidential Tokens Integration](/developers/bite-protocol/confidential-tokens)
+- **Re-encryption Concepts**: [Re-encryption](/concepts/bite-protocol/re-encryption)

@@ -1,0 +1,250 @@
+---
+title: "Re-encryption"
+description: "Implement threshold re-encryption with BITE Protocol - precompile addresses, Solidity patterns, and SDK usage"
+---
+
+Threshold re-encryption is the third privacy primitive in BITE Protocol. It enables smart contracts to re-encrypt data from threshold encryption to a viewer's ECIES public key — all within the `onDecrypt` callback. The plaintext data never touches contract storage.
+
+<Note>
+**Roadmap** - Threshold Re-encryption (Phase 3) is currently in development. Stay tuned for updates on the [SKALE Discord](https://discord.gg/skale).
+</Note>
+
+## How Re-encryption Works
+
+1. **Encrypt off-chain:** Owner encrypts data using `bite.encryptMessage()` (threshold encryption)
+2. **Submit to contract:** Send encrypted data to a smart contract for storage
+3. **Grant access:** Owner calls `grantAccess()` with a viewer's ECIES public key and a gas deposit
+4. **Threshold decrypt + re-encrypt:** Contract calls `BITE.submitCTX()` to threshold-decrypt, then in `onDecrypt()`, re-encrypts with the viewer's ECIES key via the `EncryptECIES` precompile
+5. **Viewer retrieves:** Viewer calls `getEncryptedValue()` to get data encrypted under their ECIES key, then decrypts locally
+
+## Precompile Addresses
+
+| Precompile | Address | Purpose |
+|-----------|---------|---------|
+| `EncryptECIES` | `0x000000000000000000000000000000000000001C` | Encrypt data with an ECIES public key |
+| `EncryptTE` | `0x000000000000000000000000000000000000001D` | Encrypt data with threshold encryption |
+| `SubmitCTX` | `0x000000000000000000000000000000000000001B` | Submit conditional transaction for decryption |
+
+## Prerequisites
+
+- Node.js 18+ and bun or npm
+- `@skalenetwork/bite` TypeScript SDK (>= 0.7.1)
+- `@skalenetwork/bite-solidity` Solidity helpers (>= 1.0.0-stable.0)
+- `@openzeppelin/contracts`
+
+<Warning>
+**Compiler Requirements**
+- Solidity version: **>= 0.8.27**
+- EVM version: **istanbul** or lower (via `pragma` or compiler settings)
+</Warning>
+
+## Project Setup
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  mkdir reencryption-example && cd reencryption-example
+  npm init -y
+  npm i --save-dev hardhat
+  npx hardhat init
+
+  # Install BITE dependencies
+  npm i @skalenetwork/bite @skalenetwork/bite-solidity @openzeppelin/contracts
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  mkdir reencryption-example && cd reencryption-example
+  forge init
+
+  # Install BITE dependencies
+  forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
+
+  # Add to remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
+  ```
+  </Tab>
+</Tabs>
+
+## Smart Contract Pattern: EncryptedValueRegistry
+
+This contract demonstrates the re-encryption pattern: store threshold-encrypted data, grant access to specific viewers, and re-encrypt for their ECIES public key on demand.
+
+```solidity
+pragma solidity >=0.8.27;
+
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+
+struct PublicKey {
+    uint256 x;
+    uint256 y;
+}
+
+contract EncryptedValueRegistry is IBiteSupplicant {
+    using Address for address payable;
+
+    address public owner;
+    bytes public encryptedValue;
+    address public ctxSender;
+
+    uint256 public constant CTX_GAS_LIMIT = 2500000;
+    uint256 public constant MIN_CALLBACK_GAS = 300_000;
+
+    // Track viewer access: viewer address => ECIES-encrypted value
+    mapping(address => bytes) public accessList;
+
+    // Track pending viewers for re-encryption
+    PublicKey public pendingViewerKey;
+    address public pendingViewer;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not owner");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    /// @notice Encrypt and store a value using threshold encryption
+    /// @param _value The plaintext value to encrypt on-chain
+    function setValue(uint256 _value) external onlyOwner {
+        bytes memory encoded = abi.encode(_value);
+
+        // Threshold-encrypt via precompile
+        (bool success, bytes memory encrypted) = address(0x1D).staticcall(encoded);
+        require(success, "Threshold encryption failed");
+
+        encryptedValue = encrypted;
+    }
+
+    /// @notice Grant a viewer access to the encrypted value
+    /// @param publicKey The viewer's ECIES public key (x, y coordinates)
+    function grantAccess(PublicKey calldata publicKey) external payable onlyOwner {
+        require(msg.value / tx.gasprice >= MIN_CALLBACK_GAS, "Insufficient gas deposit");
+
+        pendingViewerKey = publicKey;
+        pendingViewer = msg.sender;
+
+        // Prepare encrypted args for threshold decryption
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encryptedValue;
+
+        // Pass the viewer's ECIES public key as plaintext
+        bytes[] memory plaintextArgs = new bytes[](1);
+        plaintextArgs[0] = abi.encode(publicKey);
+
+        // Submit CTX for threshold decryption
+        ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            plaintextArgs
+        );
+
+        payable(ctxSender).sendValue(msg.value);
+    }
+
+    /// @notice Called by the network with decrypted data
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata plaintextArgs
+    ) external override {
+        require(msg.sender == ctxSender, "Unauthorized");
+
+        // Decode the viewer's ECIES public key from plaintext args
+        PublicKey memory viewerKey = abi.decode(plaintextArgs[0], (PublicKey));
+
+        // Re-encrypt the decrypted value with the viewer's ECIES key
+        bytes memory reEncrypted = _reEncryptECIES(decryptedArgs[0], viewerKey);
+
+        // Store the ECIES-encrypted value for the viewer
+        address viewer = _pubKeyToAddress(viewerKey);
+        accessList[viewer] = reEncrypted;
+    }
+
+    /// @notice Get the ECIES-encrypted value for a viewer
+    function getEncryptedValue() external view returns (bytes memory) {
+        bytes memory value = accessList[msg.sender];
+        require(value.length > 0, "No access granted");
+        return value;
+    }
+
+    /// @notice Re-encrypt data using ECIES precompile (0x1C)
+    function _reEncryptECIES(
+        bytes memory data,
+        PublicKey memory publicKey
+    ) internal view returns (bytes memory) {
+        bytes memory input = abi.encode(data, publicKey.x, publicKey.y);
+        (bool success, bytes memory encrypted) = address(0x1C).staticcall(input);
+        require(success, "ECIES encryption failed");
+        return encrypted;
+    }
+
+    /// @notice Convert a public key to an address
+    function _pubKeyToAddress(PublicKey memory publicKey) internal pure returns (address) {
+        return address(uint160(uint256(keccak256(abi.encode(publicKey.x, publicKey.y)))));
+    }
+
+    receive() external payable {}
+    fallback() external payable {}
+}
+```
+
+### Key Points
+
+- `setValue()` uses the `EncryptTE` precompile (0x1D) to threshold-encrypt data on-chain
+- `grantAccess()` calls `BITE.submitCTX()` to request threshold decryption, passing the viewer's ECIES public key as a plaintext argument
+- `onDecrypt()` receives the plaintext value and re-encrypts it with the viewer's ECIES key via the `EncryptECIES` precompile (0x1C)
+- The viewer calls `getEncryptedValue()` to receive data encrypted under their own key, then decrypts locally with their private key
+- The plaintext value only exists inside `onDecrypt()` — it is never stored
+
+## SDK Usage
+
+### Encrypt a Value (Threshold Encryption)
+
+```typescript
+import { BITE } from '@skalenetwork/bite';
+
+const bite = new BITE(providerUrl);
+
+// Encode and encrypt a value for on-chain storage
+const value = BigInt(42);
+const encoded = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [value]);
+const encrypted = await bite.encryptMessage(encoded);
+```
+
+### Grant Viewer Access
+
+```typescript
+// Call grantAccess with the viewer's ECIES public key
+const tx = await contract.grantAccess(
+    { x: viewerPubKeyX, y: viewerPubKeyY },
+    { value: gasDeposit, gasLimit: 500000 }
+);
+await tx.wait();
+```
+
+### Viewer Retrieves and Decrypts
+
+```typescript
+// Get ECIES-encrypted value (encrypted under viewer's key)
+const encryptedForViewer = await contract.getEncryptedValue();
+
+// Decrypt locally using viewer's ECIES private key
+const decrypted = decryptECIES(encryptedForViewer, viewerPrivateKey);
+const value = ethers.AbiCoder.defaultAbiCoder().decode(['uint256'], decrypted);
+console.log(`Decrypted value: ${value[0].toString()}`);
+```
+
+## Resources
+
+- [BITE API Reference](/developers/bite-protocol/bite-api-and-faqs) - TypeScript SDK and JSON-RPC methods
+- [BITE TypeScript SDK](https://github.com/skalenetwork/bite-ts/releases/tag/0.7.1) - bite.ts 0.7.1 release
+- [BITE Solidity Helpers](https://github.com/skalenetwork/bite-solidity/releases/tag/1.0.0-stable.0) - bite.sol stable release
+- [Re-encryption Tutorial](/cookbook/privacy/re-encryption) - Step-by-step walkthrough
+- [Introduction](/concepts/bite-protocol/intro-bite-protocol) - BITE Protocol overview

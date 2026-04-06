@@ -1,19 +1,22 @@
 ---
 title: "Introduction"
-description: "BITE Protocol: encrypted transactions, MEV resistance, and confidential computing on SKALE"
+description: "BITE enables native privacy and confidentiality on SKALE"
 ---
 
 ## What Is BITE?
 
-BITE (Blockchain Interoperability and Trustless Execution) adds encryption to SKALE while keeping full EVM compatibility. Transactions stay encrypted during mempool and consensus, then are decrypted by the validator committee for execution. Once executed, transaction details are visible on-chain like any other transaction.
+BITE, Blockchain Integrated Threshold Encryption, enables native privacy and confidentiality on SKALE by allowing the validators to come to conensus on encrypted transactions in addition to decrypting them 
+
+BITE enables native privacy and confidentiality through consensus-level encryption and decryption via a SKALE Chains validators. This provides users with private EVM features like encrypted transactions, conditional transactions, re-encryption, and confidential tokens.
 
 ## Why BITE?
 
-Public blockchains expose everything—transaction amounts, contract calls, user intent. This creates problems:
+BITE allows commercially viable products to work onchain through SKALE's confidential and compliant execution. Public blockchains expose everything—transaction amounts, contract calls, user intent. This creates problems like:
 
-- **MEV** - Bots see your transactions before they're confirmed and front-run them
-- **Privacy** - Sensitive business and personal data is visible to everyone
-- **Competition** - Competitors can monitor your contract interactions
+- **Privacy** - Sensitive data is visible to everyone
+- **Compliance** - Existing tokens and privacy solutions are not compliant
+- **Lack of MEV Resistance** - Bots see your transactions before they're confirmed and front-run them
+- **Lack of User Viability** - real users don't want their bank accounts public onchain
 
 BITE solves these problems at the protocol layer without breaking EVM compatibility.
 
@@ -51,30 +54,10 @@ You don't need to trust any single party. The cryptography ensures:
 - No selective decryption (all or nothing per epoch)
 - No single point of failure (distributed key generation)
 
-## EVM Compatible
-
-BITE works with existing tooling:
-
-- Metamask, WalletConnect, and other wallets
-- Foundry, Hardhat, and other development frameworks
-- Ethers.js, Viem, and other web3 libraries
-- Existing Solidity contracts (no changes needed for Phase 1)
-
-## Phases
-
-BITE rolls out in four phases:
-
-| Phase | Name | Status |
-|-------|------|--------|
-| 1 | Encrypted Transactions | Live on SKALE Base |
-| 2 | Conditional Transactions | Sandbox |
-| 3 | Threshold Re-encryption | Roadmap |
-| 4 | Fully Homomorphic Encryption | Roadmap |
-
-See [Phases of BITE](/concepts/bite-protocol/phases) for the full roadmap.
-
 ## Learn More
 
 - [Phases of BITE](/concepts/bite-protocol/phases) - Evolution and phases of BITE Protocol
 - [Encrypted Transactions](/concepts/bite-protocol/encrypted-transactions) - Phase 1 details and use cases
 - [Conditional Transactions](/concepts/bite-protocol/conditional-transactions) - Phase 2 details and use cases
+- [Re-encryption](/concepts/bite-protocol/re-encryption) - Phase 3: viewer keys and selective disclosure
+- [Confidential Tokens](/concepts/bite-protocol/confidential-tokens) - Encrypted ERC-20 balances

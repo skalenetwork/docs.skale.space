@@ -1,0 +1,140 @@
+---
+title: "Confidential Tokens"
+description: "ERC-20 compatible tokens with encrypted balances using BITE Protocol's privacy primitives"
+---
+
+<Note>
+**Roadmap** - Confidential Tokens depend on BITE Phase 3 (Threshold Re-encryption) which is currently in development. Stay tuned for updates on the [SKALE Discord](https://discord.gg/skale).
+</Note>
+
+## What Are Confidential Tokens?
+
+Confidential Tokens use SKALE's native Blockchain Integrated Threshold Encryption (BITE) Protocol to store encrypted balances onchain. By combining the privacy primitives available within BITE — Encrypted Transactions, Conditional Transactions, and Re-encryption — SKALE enables private balances on top of an existing ERC-20.
+
+This means Alice can send N tokens to Bob and nobody but Alice or Bob knows the amount, unless they are given explicit access via a viewer key. Nobody wants their neighbors seeing how much they were paid.
+
+Standard `balanceOf()` is intentionally disabled (reverts) — holders use viewer keys to decrypt their own balance via `encryptedBalanceOf()`.
+
+## How It Works
+
+1. **Set Viewer Key** - Token holder registers an ECIES public key via `setViewerPublicKey()`
+2. **Encrypted Transfer** - Sender calls `encryptedTransfer()` with a threshold-encrypted amount; the contract verifies sufficient balance via `submitCTX` without ever seeing plaintext
+3. **View Balance** - Holder calls `encryptedBalanceOf()` which returns their balance re-encrypted under their ECIES public key
+4. **Decrypt Locally** - Holder decrypts using their ECIES private key off-chain
+
+## Dual Encryption Model
+
+Confidential tokens use two encryption layers that serve different purposes:
+
+| Layer | Encryption | Purpose |
+|-------|-----------|---------|
+| Threshold | BLS threshold key | Smart contract logic — verifying balances and executing transfers |
+| ECIES | Holder's public key | Viewing — balance queries decrypted locally by the holder |
+
+The contract uses threshold encryption to verify that a sender has sufficient balance and update encrypted state, without ever knowing the actual amount. Viewers use ECIES encryption to retrieve and decrypt their own balance locally.
+
+## Standards and Compatibility
+
+### ERC-20
+
+Confidential tokens extend ERC-20 with privacy extensions. Standard functions like `transfer()`, `approve()`, and `allowance()` work as expected but with encrypted parameters.
+
+### EIP-3009 (Transfer with Authorization)
+
+Supports signed authorization for confidential transfers — enabling meta-transactions and gasless payments where the transfer amount remains private.
+
+### EIP-2612 (Permit)
+
+Supports off-chain signed approvals via `permit()`, allowing gasless approvals for confidential token interactions.
+
+## Token Types
+
+### ConfidentialWrapper
+
+Wraps an existing ERC-20 token into a confidential representation at a 1:1 ratio. Deposit regular tokens to receive confidential tokens, and withdraw to burn them back.
+
+This lets projects add privacy to existing tokens without migrating liquidity or changing the underlying asset.
+
+### MintableConfidentialToken
+
+Deploy a new confidential token from scratch with minting capability. Suitable for new projects launching with privacy from day one.
+
+## The Barista Test
+
+SKALE's confidential tokens use a simple but clear benchmark for whether an onchain action respects the baseline privacy people expect: **The Barista Test.**
+
+When you buy a coffee, the barista does not get to inspect your bank account and see how much money you have or your history of purchases. They receive just enough information to accept the payment, hand you the drink, and nothing more.
+
+### How onchain payments fail today
+
+Most onchain payments fail the Barista Test because balances and flows are public by default. If you pay from an identifiable wallet, anyone can see:
+
+- The exact payment amount
+- The wallet's full balance
+- Past and future transactions
+- Funding sources from other wallets
+
+### The benchmark
+
+For any payment flow, confidential tokens should ensure:
+
+- **Minimal disclosure** — counterparties learn only what they need to fulfill the transaction
+- **Balance shielding** — routine payments don't expose total balances or unrelated flows
+- **Regulatory compatibility** — selective, auditable disclosure when required
+- **Payment-scale performance** — privacy without turning payments into a slow, high-latency experience
+
+For the original post from SKALE's VP of Strategy Conner, see [here](https://x.com/Connermurphy/status/2000654294995894446).
+
+## Use Cases
+
+### Stablecoin Issuers & Fintech Rails
+
+- Keep balances and payment amounts confidential
+- Enable payroll, vendor payments, treasury, and B2B settlement without broadcasting sensitive flows
+- Support "selective disclosure" patterns when visibility is required
+
+### Wallet Providers
+
+- "Bank-like" private balances and private transfers as a first-class wallet feature
+- Pass the Barista Test — pay for coffee without exposing your full balance or the purchase amount onchain
+- Power confidential payouts, tips, and subscriptions without leaking commercial terms
+- Build confidential payments in by default for agentic wallets
+
+### dApps (Consumer Apps, Marketplaces, Games)
+
+- Users can participate without revealing balances or spend
+- Private in-app economies: loyalty points, in-app currencies, rewards, and creator payouts with confidential amounts
+- Reduce the "I won't connect my wallet because you'll see everything" friction
+
+### DeFi & Trading Infrastructure
+
+- Private sealed orders, private RFQs/OTC, and confidential position sizing
+- Reduce adverse selection by minimizing information leakage from visible flows
+- Institutions can settle without telegraphing inventory and strategy
+- Private lending pools, AMMs, and more via custom encrypted transfer integrations
+
+## What's Different vs. a Normal Token
+
+- **Balances are encrypted onchain** — not stored as plaintext
+- **`balanceOf()` is disabled** — intentionally reverts to avoid disclosure
+- **Private transfers** use a two-step schedule → callback execution model (not a single-transaction balance update)
+- **Amounts are not emitted in events**
+- **Transfer values are not observable** via events, `eth_call`, or gas estimation
+- **Callback funding** uses a "gas deposit" model — users deposit ETH to cover callback costs for re-encryption
+
+## Privacy Stack
+
+Confidential tokens map directly to BITE's phased rollout:
+
+| BITE Phase | Feature | Token Capability |
+|-----------|---------|-----------------|
+| Phase 1 | Encrypted Transactions | Transfer amounts hidden in mempool |
+| Phase 2 | Conditional Transactions | Contract verifies balance without plaintext |
+| Phase 3 | Threshold Re-encryption | Holder views balance via viewer key |
+
+## Getting Started
+
+- [Confidential Tokens Developer Guide](/developers/bite-protocol/confidential-tokens) - Integration and deployment
+- [Confidential Tokens Tutorial](/cookbook/privacy/confidential-tokens) - Step-by-step walkthrough
+- [Re-encryption](/concepts/bite-protocol/re-encryption) - Phase 3 concept behind viewer keys
+- [Introduction](/concepts/bite-protocol/intro-bite-protocol) - BITE Protocol overview

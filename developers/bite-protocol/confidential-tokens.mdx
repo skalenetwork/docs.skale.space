@@ -1,0 +1,258 @@
+---
+title: "Confidential Tokens"
+description: "Deploy and integrate confidential ERC-20 tokens with encrypted balances on SKALE"
+---
+
+Confidential Tokens extend ERC-20 with encrypted balances using BITE Protocol's threshold encryption and re-encryption primitives. Token transfers happen with encrypted amounts, and holders view their own balances via viewer keys.
+
+<Note>
+**Roadmap** - Confidential Tokens depend on BITE Phase 3 (Threshold Re-encryption) which is currently in development. Stay tuned for updates on the [SKALE Discord](https://discord.gg/skale).
+</Note>
+
+## Prerequisites
+
+- Node.js 18+ and bun or npm
+- `@skalenetwork/bite` TypeScript SDK (>= 0.7.1)
+- `@skalenetwork/bite-solidity` Solidity helpers (>= 1.0.0-stable.0)
+- `@openzeppelin/contracts`
+- Access to a SKALE chain with Confidential Token support
+
+<Warning>
+**Compiler Requirements**
+- Solidity version: **>= 0.8.27**
+- EVM version: **istanbul** or lower (via `pragma` or compiler settings)
+</Warning>
+
+## Architecture Overview
+
+Confidential tokens use a dual encryption model:
+
+- **Threshold encryption** (BLS) — Used by the smart contract to verify balances and execute transfers. The contract can confirm a sender has sufficient balance without knowing the actual amount.
+- **ECIES encryption** — Used for viewing. Holders register an ECIES public key and receive their balance encrypted under that key, which they decrypt locally.
+
+Private transfers follow a two-step schedule → callback execution model:
+
+1. Sender submits `encryptedTransfer()` with threshold-encrypted amount
+2. Contract calls `submitCTX` to verify the amount is sufficient
+3. `onDecrypt` callback updates the encrypted balances
+4. If the receiver has a viewer key, their balance is re-encrypted and stored
+
+## Contract Types
+
+### ConfidentialWrapper
+
+Wraps an existing ERC-20 token into a confidential representation at a 1:1 ratio. Users deposit regular tokens and receive confidential tokens, or burn confidential tokens to withdraw the underlying asset.
+
+```solidity
+// Deposit regular tokens → receive confidential tokens
+token.approve(wrapperAddress, amount);
+wrapper.depositFor(account, amount);
+
+// Burn confidential tokens → receive regular tokens
+wrapper.withdrawTo(account, encryptedAmount);
+```
+
+### MintableConfidentialToken
+
+Deploy a new confidential token from scratch with minting capability. Suitable for new projects launching with privacy from day one.
+
+```solidity
+constructor(
+    string memory name_,
+    string memory symbol_,
+    address accessManager_
+) MintableConfidentialToken(name_, symbol_, accessManager_) {}
+```
+
+## Key Functions
+
+| Function | Description |
+|----------|-------------|
+| `setViewerPublicKey(bytes)` | Register an ECIES public key for balance viewing |
+| `encryptedTransfer(address, bytes)` | Transfer tokens with a threshold-encrypted amount |
+| `encryptedBalanceOf(address)` | Get balance encrypted under the caller's ECIES key |
+| `balanceOf(address)` | **Disabled** — always reverts to prevent disclosure |
+| `transferWithAuthorization(...)` | EIP-3009 gasless confidential transfer |
+| `permit(address, uint256, ...)` | EIP-2612 gasless approval for confidential tokens |
+| `depositGas()` | Deposit ETH to cover callback execution costs |
+| `withdrawGas()` | Withdraw unused gas deposit |
+
+## Project Setup
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  mkdir confidential-token-example && cd confidential-token-example
+  npm init -y
+  npm i --save-dev hardhat
+  npx hardhat init
+
+  # Install dependencies
+  npm i @skalenetwork/bite @skalenetwork/bite-solidity @openzeppelin/contracts
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  mkdir confidential-token-example && cd confidential-token-example
+  forge init
+
+  # Install dependencies
+  forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
+
+  # Add to remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
+  ```
+  </Tab>
+</Tabs>
+
+## Deployment: ConfidentialWrapper
+
+```typescript
+import { Contract, JsonRpcProvider, Wallet, ContractFactory } from 'ethers';
+
+const provider = new JsonRpcProvider(providerUrl);
+const signer = new Wallet(PRIVATE_KEY, provider);
+
+// Deploy wrapper around existing ERC-20
+const wrapperFactory = new ContractFactory(
+    ConfidentialWrapperJson.abi,
+    ConfidentialWrapperJson.bytecode,
+    signer
+);
+const wrapper = await wrapperFactory.deploy(
+    underlyingTokenAddress,  // Address of the existing ERC-20
+    "Confidential USDC",      // Name
+    "cUSDC"                   // Symbol
+);
+await wrapper.waitForDeployment();
+console.log(`ConfidentialWrapper: ${await wrapper.getAddress()}`);
+```
+
+## SDK Integration
+
+### Set Viewer Public Key
+
+```typescript
+import { BITE } from '@skalenetwork/bite';
+
+const bite = new BITE(providerUrl);
+
+// Generate ECIES key pair for the holder
+const { publicKey, privateKey } = generateECIESKeyPair();
+
+// Register viewer key on the token contract
+const tx = await token.setViewerPublicKey(publicKey);
+await tx.wait();
+```
+
+### Encrypted Transfer
+
+```typescript
+// Encrypt the transfer amount using threshold encryption
+const amount = BigInt(100);
+const encodedAmount = ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [amount]);
+const encryptedAmount = await bite.encryptMessage(encodedAmount);
+
+// Submit encrypted transfer
+const transferTx = await token.encryptedTransfer(recipient, encryptedAmount, {
+    gasLimit: 500000
+});
+await transferTx.wait();
+```
+
+### View Encrypted Balance
+
+```typescript
+// Get balance encrypted under your ECIES key
+const encryptedBalance = await token.encryptedBalanceOf(holderAddress);
+
+// Decrypt locally with your ECIES private key
+const decrypted = decryptECIES(encryptedBalance, privateKey);
+const balance = ethers.AbiCoder.defaultAbiCoder().decode(['uint256'], decrypted);
+console.log(`Balance: ${balance[0].toString()}`);
+```
+
+## Gas Deposit Model
+
+Confidential tokens use a callback funding model for operations that require re-encryption (like `encryptedTransfer`). Users deposit ETH to cover the callback execution costs.
+
+```typescript
+// Deposit gas for callback execution
+await token.depositGas({ value: ethers.parseEther("0.1") });
+
+// Check gas deposit balance
+const deposit = await token.gasDeposits(holderAddress);
+console.log(`Gas deposit: ${deposit.toString()}`);
+
+// Withdraw unused gas
+await token.withdrawGas(amount);
+```
+
+<Warning>
+Callback gas is consumed each time `submitCTX` is called on your behalf (e.g., during encrypted transfers). Monitor your gas deposit balance to ensure operations don't fail due to insufficient callback gas.
+</Warning>
+
+## EIP-3009 and EIP-2612 Support
+
+### EIP-3009: Transfer with Authorization
+
+Enable gasless confidential transfers where the transfer amount remains private:
+
+```typescript
+// Sign an authorization for a confidential transfer off-chain
+const authorization = signTransferAuthorization(signer, {
+    from: holderAddress,
+    to: recipientAddress,
+    encryptedAmount: encryptedAmount,
+    validAfter: timestamp,
+    validBefore: expiryTimestamp
+});
+
+// Anyone can submit the signed authorization
+await token.transferWithAuthorization(
+    authorization.from,
+    authorization.to,
+    authorization.encryptedAmount,
+    authorization.validAfter,
+    authorization.validBefore,
+    authorization.nonce,
+    authorization.signature
+);
+```
+
+### EIP-2612: Permit
+
+Enable gasless approvals for confidential token interactions:
+
+```typescript
+// Sign a permit off-chain
+const permitSignature = await signer._signTypedData(
+    permitDomain,
+    permitTypes,
+    { owner, spender, value, nonce, deadline }
+);
+
+// Submit the signed permit
+await token.permit(owner, spender, value, deadline, permitSignature);
+```
+
+## Integration Checklist
+
+- [ ] Deploy `ConfidentialWrapper` or `MintableConfidentialToken` on a BITE-enabled SKALE chain
+- [ ] Set viewer public key for each user via `setViewerPublicKey()`
+- [ ] Deposit gas for re-encryption callbacks via `depositGas()`
+- [ ] Use `encryptedTransfer()` instead of `transfer()` for confidential transfers
+- [ ] Use `encryptedBalanceOf()` instead of `balanceOf()` (which intentionally reverts)
+- [ ] Handle local ECIES decryption in your application
+- [ ] Wrap transactions with `bite.encryptTransaction()` for mempool-level privacy
+
+## Resources
+
+- [Confidential Token Repository](https://github.com/skalenetwork/confidential-token) - Contract source code and deployment scripts
+- [BITE TypeScript SDK](https://github.com/skalenetwork/bite-ts/releases/tag/0.7.1) - bite.ts 0.7.1 release
+- [BITE Solidity Helpers](https://github.com/skalenetwork/bite-solidity/releases/tag/1.0.0-stable.0) - bite.sol stable release
+- [BITE API Reference](/developers/bite-protocol/bite-api-and-faqs) - TypeScript SDK and JSON-RPC methods
+- [Confidential Tokens Tutorial](/cookbook/privacy/confidential-tokens) - Step-by-step walkthrough
+- [Introduction](/concepts/bite-protocol/intro-bite-protocol) - BITE Protocol overview

@@ -74,7 +74,9 @@
               "concepts/bite-protocol/intro-bite-protocol",
               "concepts/bite-protocol/phases",
               "concepts/bite-protocol/encrypted-transactions",
-              "concepts/bite-protocol/conditional-transactions"
+              "concepts/bite-protocol/conditional-transactions",
+              "concepts/bite-protocol/re-encryption",
+              "concepts/bite-protocol/confidential-tokens"
             ]
           },
           {
@@ -218,6 +220,8 @@
               "developers/bite-protocol/typescript-sdk",
               "developers/bite-protocol/encrypted-transactions",
               "developers/bite-protocol/conditional-transactions",
+              "developers/bite-protocol/re-encryption",
+              "developers/bite-protocol/confidential-tokens",
               "developers/bite-protocol/bite-api-and-faqs"
             ]
           },
@@ -260,7 +264,9 @@
             "group": "Privacy",
             "pages": [
               "cookbook/privacy/encrypted-transactions",
-              "cookbook/privacy/conditional-transactions"
+              "cookbook/privacy/conditional-transactions",
+              "cookbook/privacy/re-encryption",
+              "cookbook/privacy/confidential-tokens"
             ]
           },
           {

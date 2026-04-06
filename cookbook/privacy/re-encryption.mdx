@@ -1,0 +1,308 @@
+---
+title: "Re-encryption"
+description: "Step-by-step tutorial: deploy EncryptedValueRegistry, set encrypted values, grant viewer access, and retrieve re-encrypted data"
+---
+
+## Encrypted Value Registry with Re-encryption
+
+This tutorial walks you through deploying an `EncryptedValueRegistry` contract that stores confidential data and grants selective access through BITE's re-encryption. You will encrypt a value on-chain, grant a viewer access, and have the viewer retrieve and decrypt the re-encrypted data.
+
+<Tip title="Why Re-encryption?">
+Re-encryption lets you share encrypted data with specific viewers without ever exposing the plaintext on-chain. The data stays encrypted throughout its lifecycle — only the intended viewer can decrypt it with their private key.
+</Tip>
+
+<Note title="Before You Start">
+This tutorial requires access to a BITE Phase 3-enabled SKALE chain. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+</Note>
+
+**Prerequisites:**
+- Node.js 18+ and npm/yarn
+- Wallet browser extension
+- Access to a BITE Phase 3-enabled SKALE chain
+- Basic knowledge of Solidity and TypeScript
+
+---
+
+## Step 1: Project Setup
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  mkdir reencryption-demo && cd reencryption-demo
+  npm init -y
+  npm i --save-dev hardhat
+  npx hardhat init
+
+  # Install BITE dependencies
+  npm i @skalenetwork/bite @skalenetwork/bite-solidity @openzeppelin/contracts ethers
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  mkdir reencryption-demo && cd reencryption-demo
+  forge init
+
+  # Install BITE dependencies
+  forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
+
+  # Add to remappings.txt
+  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
+  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
+
+  # Also install JS SDK
+  npm i @skalenetwork/bite ethers
+  ```
+  </Tab>
+</Tabs>
+
+---
+
+## Step 2: Deploy the Contract
+
+Create `contracts/EncryptedValueRegistry.sol`:
+
+```solidity
+pragma solidity >=0.8.27;
+
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+
+struct PublicKey {
+    uint256 x;
+    uint256 y;
+}
+
+contract EncryptedValueRegistry is IBiteSupplicant {
+    using Address for address payable;
+
+    address public owner;
+    bytes public encryptedValue;
+    address public ctxSender;
+
+    uint256 public constant CTX_GAS_LIMIT = 2500000;
+    uint256 public constant MIN_CALLBACK_GAS = 300_000;
+
+    mapping(address => bytes) public accessList;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not owner");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    event ValueSet(bytes encrypted);
+    event AccessGranted(address viewer);
+    event ValueReEncrypted(address viewer);
+
+    function setValue(uint256 _value) external onlyOwner {
+        bytes memory encoded = abi.encode(_value);
+        (bool success, bytes memory encrypted) = address(0x1D).staticcall(encoded);
+        require(success, "Threshold encryption failed");
+        encryptedValue = encrypted;
+        emit ValueSet(encrypted);
+    }
+
+    function grantAccess(PublicKey calldata publicKey) external payable onlyOwner {
+        require(msg.value / tx.gasprice >= MIN_CALLBACK_GAS, "Insufficient gas deposit");
+
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encryptedValue;
+
+        bytes[] memory plaintextArgs = new bytes[](1);
+        plaintextArgs[0] = abi.encode(publicKey);
+
+        ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            plaintextArgs
+        );
+
+        emit AccessGranted(_pubKeyToAddress(publicKey));
+
+        payable(ctxSender).sendValue(msg.value);
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata plaintextArgs
+    ) external override {
+        require(msg.sender == ctxSender, "Unauthorized");
+
+        PublicKey memory viewerKey = abi.decode(plaintextArgs[0], (PublicKey));
+        bytes memory reEncrypted = _reEncryptECIES(decryptedArgs[0], viewerKey);
+
+        address viewer = _pubKeyToAddress(viewerKey);
+        accessList[viewer] = reEncrypted;
+
+        emit ValueReEncrypted(viewer);
+    }
+
+    function getEncryptedValue() external view returns (bytes memory) {
+        bytes memory value = accessList[msg.sender];
+        require(value.length > 0, "No access granted");
+        return value;
+    }
+
+    function _reEncryptECIES(
+        bytes memory data,
+        PublicKey memory publicKey
+    ) internal view returns (bytes memory) {
+        bytes memory input = abi.encode(data, publicKey.x, publicKey.y);
+        (bool success, bytes memory encrypted) = address(0x1C).staticcall(input);
+        require(success, "ECIES encryption failed");
+        return encrypted;
+    }
+
+    function _pubKeyToAddress(PublicKey memory publicKey) internal pure returns (address) {
+        return address(uint160(uint256(keccak256(abi.encode(publicKey.x, publicKey.y)))));
+    }
+
+    receive() external payable {}
+    fallback() external payable {}
+}
+```
+
+Deploy with `scripts/deploy.ts`:
+
+```typescript
+import { Contract, JsonRpcProvider, Wallet, ContractFactory } from 'ethers';
+import EncryptedValueRegistryJson from './out/EncryptedValueRegistry.sol/EncryptedValueRegistry.json';
+
+const providerUrl = 'https://your-skale-chain-endpoint';
+const PRIVATE_KEY = '0x...'; // Replace with your private key
+
+async function main() {
+    const provider = new JsonRpcProvider(providerUrl);
+    const signer = new Wallet(PRIVATE_KEY, provider);
+
+    console.log('Deploying EncryptedValueRegistry...');
+    const factory = new ContractFactory(
+        EncryptedValueRegistryJson.abi,
+        EncryptedValueRegistryJson.bytecode,
+        signer
+    );
+    const contract = await factory.deploy();
+    await contract.waitForDeployment();
+    console.log(`Deployed at: ${await contract.getAddress()}`);
+}
+
+main().catch(console.error);
+```
+
+---
+
+## Step 3: Set an Encrypted Value
+
+The owner encrypts a value on-chain using the threshold encryption precompile:
+
+```typescript
+// The contract's setValue() encrypts on-chain via the EncryptTE precompile
+// No client-side encryption needed — just pass the plaintext value
+const value = 42;
+const tx = await contract.setValue(value, { gasLimit: 500000 });
+await tx.wait();
+console.log(`Encrypted value set: ${value}`);
+```
+
+The value is now stored as threshold-encrypted bytes in contract state. Nobody — not even the contract — can read it without running `submitCTX`.
+
+---
+
+## Step 4: Grant Viewer Access
+
+The owner grants a viewer access by providing the viewer's ECIES public key:
+
+```typescript
+import { BITE } from '@skalenetwork/bite';
+
+const bite = new BITE(providerUrl);
+
+// Viewer generates an ECIES key pair
+const { publicKey, privateKey } = generateECIESKeyPair();
+
+// Owner calls grantAccess with viewer's public key
+const GAS_DEPOSIT = ethers.parseEther('0.06');
+const tx = await contract.grantAccess(
+    { x: publicKey.x, y: publicKey.y },
+    { value: GAS_DEPOSIT, gasLimit: 500000 }
+);
+await tx.wait();
+console.log('Access granted, waiting for re-encryption callback...');
+```
+
+After the next block, the `onDecrypt` callback executes: the network threshold-decrypts the value and re-encrypts it with the viewer's ECIES public key. The re-encrypted value is stored in `accessList[viewerAddress]`.
+
+---
+
+## Step 5: Viewer Retrieves Re-encrypted Data
+
+The viewer calls `getEncryptedValue()` and decrypts locally:
+
+```typescript
+// Viewer retrieves data encrypted under their own ECIES key
+const encryptedForViewer = await contract.getEncryptedValue();
+
+// Decrypt locally using the viewer's ECIES private key
+const decrypted = decryptECIES(encryptedForViewer, privateKey);
+
+// Decode the original value
+const [value] = ethers.AbiCoder.defaultAbiCoder().decode(['uint256'], decrypted);
+console.log(`Decrypted value: ${value.toString()}`);
+```
+
+The plaintext value was never stored on-chain. It only existed momentarily inside the `onDecrypt` callback, where it was immediately re-encrypted for the viewer.
+
+---
+
+## Step 6: Run the Tutorial
+
+<Tabs>
+  <Tab title="Hardhat">
+  ```bash
+  # Build contract
+  npx hardhat compile
+
+  # Deploy
+  bun run scripts/deploy.ts
+
+  # Interact (replace CONTRACT_ADDRESS)
+  CONTRACT_ADDRESS=0x... bun run scripts/interact.ts
+  ```
+  </Tab>
+
+  <Tab title="Foundry">
+  ```bash
+  # Build contract
+  forge build
+
+  # Deploy
+  bun run scripts/deploy.ts
+
+  # Interact (replace CONTRACT_ADDRESS)
+  CONTRACT_ADDRESS=0x... bun run scripts/interact.ts
+  ```
+  </Tab>
+</Tabs>
+
+**Expected output:**
+```
+Encrypted value set: 42
+Access granted, waiting for re-encryption callback...
+Decrypted value: 42
+```
+
+---
+
+**Resources:**
+
+- **BITE TypeScript SDK**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+- **BITE Solidity Helpers**: [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+- **Confidential Token Repo**: [https://github.com/skalenetwork/confidential-token](https://github.com/skalenetwork/confidential-token)
+- **Re-encryption Concepts**: [Re-encryption](/concepts/bite-protocol/re-encryption)
+- **Re-encryption Developer Guide**: [Re-encryption Integration](/developers/bite-protocol/re-encryption)
