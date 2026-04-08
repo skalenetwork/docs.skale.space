@@ -280,6 +280,7 @@
           {
             "group": "MPP",
             "pages": [
+              "cookbook/mpp/accepting-payments",
               "cookbook/mpp/gasless-payments",
               "cookbook/mpp/confidential-payments"
             ]

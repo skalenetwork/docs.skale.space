@@ -1,11 +1,15 @@
 ---
-title: "@skalenetwork/mpp"
+title: "MPP SDK"
 description: "SDK for JavaScript and TypeScript developers to enable private, gasless payments on SKALE using MPP (Machine Payments Protocol)"
 ---
 
 <Note>
 The MPP SDK is compatible with both JavaScript and TypeScript in Node.js, Bun, and browser environments.
 If you have any issues, please join us in [Discord](https://discord.gg/skale) or open an issue on [GitHub](https://github.com/skalenetwork/mpp-sdk).
+</Note>
+
+<Note>
+Code examples in this page use the exact currency identifiers configured on each supported chain, such as `USDC.e` on SKALE Base and `eUSDC` on BITE Sandbox. In your application UI, you can still present a normalized display label like `USDC` if that is clearer for users.
 </Note>
 
 ## Overview
@@ -89,6 +93,10 @@ const mppx = Mppx.create({
   secretKey: process.env.MPP_SECRET
 })
 ```
+
+<Note>
+`MPP_SECRET` is a server-only secret used by your MPPx backend to sign or verify payment requests. Generate a long random value for your application, store it in your server environment, and never expose it in client-side code or commit it to your repository.
+</Note>
 
 ## Supported Chains
 
