@@ -42,7 +42,7 @@ bunx @skalenetwork/cli <command>
 skale chains list
 
 # Read contract data
-skale read configController version --chain skale-base
+skale read configController version --chain europa
 
 # Check SKL token balance
 skale token balance 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
@@ -229,14 +229,6 @@ skale wallet ens vitalik.eth
 # Generate address from private key
 skale wallet address 0x...privateKey...
 
-# Generate new wallet
-skale wallet generate
-skale wallet generate --password mypassword
-
-# Recover wallet from private key or mnemonic
-skale wallet recover --private-key 0x...
-skale wallet recover --mnemonic "word1 word2 word3 ..."
-
 # Get explorer URL for address
 skale wallet explorer 0x... --chain skale-base
 ```
@@ -248,17 +240,8 @@ Check gas prices and estimates.
 ```bash
 skale gas price --chain skale-base
 skale gas estimate --to 0x... --value 1 --eth --chain skale-base
-skale gas history --chain skale-base
-skale gas simulate --to 0x... --value 1 --eth --chain skale-base
-```
-
-### Faucet (`faucet`)
-
-Request SFUEL from the faucet.
-
-```bash
-skale faucet --address 0x... --chain skale-base
-skale faucet --address 0x... --chain skale-base-sepolia --network sepolia
+skale gas history --network mainnet
+skale gas simulate --to 0x... --value 1000000000000000000 --chain skale-base
 ```
 
 ### Explorer (`explorer`)

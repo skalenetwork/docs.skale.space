@@ -95,11 +95,7 @@ AGENT_ADDRESS="0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
 
 ## Step 3: Fund the Wallet
 
-Get SFUEL for the SKALE Base testnet:
-
-```bash
-skale faucet --address $AGENT_ADDRESS --chain skale-base-sepolia --network sepolia
-```
+Fund the wallet on your target chain before preparing the transaction. For `skale-base-sepolia`, you can use the [SKALE Base Sepolia faucet](https://base-sepolia-faucet.skale.space) or transfer test funds from another wallet.
 
 Verify the balance:
 
@@ -109,14 +105,14 @@ skale wallet balance $AGENT_ADDRESS --chain skale-base-sepolia
 
 ## Step 4: Prepare Transaction Data
 
-Use SKALE CLI to prepare the transaction data. In this example, we'll prepare a simple ETH transfer:
+Use SKALE CLI to build the unsigned transaction data. OWS handles secure key storage and signing, but it does not prepare the transaction payload for you. In this example, we build a simple ETH transfer:
 
 ```bash
 # Build an unsigned transaction
 skale txprep build-tx 0xRecipientAddress... 0.001 --eth --chain skale-base-sepolia > tx.json
 ```
 
-This creates a transaction object with the proper chain ID, nonce, and gas settings.
+This creates an unsigned transaction object with the target chain ID and fee fields. If your flow requires a specific nonce or gas limit, set those explicitly when you build the transaction.
 
 ## Step 5: Encrypt with BITE
 
@@ -138,7 +134,7 @@ BITE transactions require a manually set gas limit since `estimateGas` doesn't w
 
 ## Step 6: Sign with OWS
 
-Use OWS to sign the encrypted transaction. The private key never leaves the secure vault:
+Use OWS to sign the encrypted transaction. At this stage, the transaction has already been prepared and encrypted; OWS is only responsible for signing with the wallet in its secure vault:
 
 ```bash
 # Sign the transaction using OWS
@@ -153,14 +149,21 @@ OWS returns the signed transaction without exposing the private key.
 
 ## Step 7: Submit Transaction
 
-Submit the signed transaction to SKALE Base:
+Submit the signed transaction to SKALE Base through the chain RPC:
 
 ```bash
 # Get the raw signed transaction
 RAW_TX=$(cat signed_tx.json | jq -r '.raw')
 
-# Submit via SKALE CLI or your preferred method
-skale tx send --chain skale-base-sepolia --raw $RAW_TX
+# Submit via JSON-RPC
+curl -s https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"jsonrpc\":\"2.0\",
+    \"method\":\"eth_sendRawTransaction\",
+    \"params\":[\"$RAW_TX\"],
+    \"id\":1
+  }"
 ```
 
 ## Complete Agent Script
@@ -223,9 +226,12 @@ ows sign \
 # Step 7: Submit
 echo "🚀 Submitting transaction..."
 RAW_TX=$(jq -r '.raw' /tmp/signed_tx.json)
-RESULT=$(skale tx send --chain "$CHAIN" --raw "$RAW_TX" --format json)
+RPC_URL="https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha"
+RESULT=$(curl -s "$RPC_URL" \
+  -H "Content-Type: application/json" \
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"eth_sendRawTransaction\",\"params\":[\"$RAW_TX\"],\"id\":1}")
 
-TX_HASH=$(echo "$RESULT" | jq -r '.hash')
+TX_HASH=$(echo "$RESULT" | jq -r '.result')
 echo "✅ Transaction submitted! Hash: $TX_HASH"
 echo "🔗 View on explorer:"
 skale explorer tx "$TX_HASH" --chain "$CHAIN"
