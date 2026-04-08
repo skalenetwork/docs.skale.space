@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "about-skale": {
+      "source": "skalenetwork/skills",
+      "sourceType": "github",
+      "computedHash": "516df54e87b859397b9f44c2b75bde8e4db91e88a874c7126f4f4d72334e4eca"
+    },
+    "build-with-bite": {
+      "source": "skalenetwork/skills",
+      "sourceType": "github",
+      "computedHash": "9c1b8512d227f9c6a48842fdb82a6fd45bcea168661f5114657fb1d3bf0360bd"
+    },
+    "deploy-to-skale": {
+      "source": "skalenetwork/skills",
+      "sourceType": "github",
+      "computedHash": "b1d35099488e7f14ee1699bbcd0ac4f0fe48cdd736d3d59403247690f7735a37"
+    },
+    "ima-bridging-on-skale": {
+      "source": "skalenetwork/skills",
+      "sourceType": "github",
+      "computedHash": "b277e428f18182c14f8ce9bf9438e46b9cd0ff4a5791c3fa50a6b9a5bf3e07e2"
+    },
+    "skale-cli": {
+      "source": "skalenetwork/skills",
+      "sourceType": "github",
+      "computedHash": "2c5e7bd8b752962b7685b9ee088149a43a52281446c6cac6d0a328491ffdf341"
+    },
+    "x402-on-skale": {
+      "source": "skalenetwork/skills",
+      "sourceType": "github",
+      "computedHash": "affd915bfb1fa0876a0dc54b9202c9d47031a2aa427124e624c54e8fac3a2fcd"
+    }
+  }
+}

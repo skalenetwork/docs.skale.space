@@ -172,6 +172,12 @@
             ]
           },
           {
+            "group": "SDKs",
+            "pages": [
+              "developers/sdks/skalenetwork-mpp-sdk"
+            ]
+          },
+          {
             "group": "Chain Types",
             "pages": [
               "developers/chain-types/appchain",
@@ -269,6 +275,14 @@
               "cookbook/x402/facilitator",
               "cookbook/x402/accepting-payments",
               "cookbook/x402/buying"
+            ]
+          },
+          {
+            "group": "MPP",
+            "pages": [
+              "cookbook/mpp/accepting-payments",
+              "cookbook/mpp/gasless-payments",
+              "cookbook/mpp/confidential-payments"
             ]
           },
           {

@@ -1,0 +1,306 @@
+---
+title: "Confidential Payments"
+description: "Accept private payments using confidential tokens (eUSDC) on BITE chains"
+---
+
+Accept fully confidential payments using the MPP SDK on BITE-enabled SKALE chains. Confidential tokens (eUSDC) provide native privacy—hiding sender, receiver, and amount onchain.
+
+## Prerequisites
+
+- Node.js, Bun, or pnpm installed
+- BITE-enabled SKALE chain access (BITE Sandbox)
+- eUSDC tokens for testing
+- Understanding of confidential tokens vs standard tokens
+
+## Overview
+
+Confidential token features:
+
+- **Native privacy** – Amounts hidden by default at the token level
+- **Optional encryption** – Add BITE encryption for extra security
+- **Gasless support** – EIP-3009 for gas-free UX
+- **BITE chains only** – Requires BITE-enabled chain
+
+---
+
+## Environment Setup
+
+Create a `.env` file:
+
+```bash
+# BITE Sandbox RPC
+SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
+
+# Your receiving address
+RECEIVING_ADDRESS=0xYourReceivingAddress
+
+# Chain configuration
+CHAIN=bite-sandbox
+CURRENCY=eUSDC
+```
+
+---
+
+## Confidential Token Payment
+
+Basic confidential payment with eUSDC:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+
+// Setup wallet
+const account = privateKeyToAccount('0xYourPrivateKey')
+const walletClient = createWalletClient({
+  account,
+  transport: http(process.env.SKALE_RPC)
+})
+
+// Create confidential payment method
+const confidentialPayment = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { confidentialToken: true }
+  }
+})
+
+async function processConfidentialPayment(amount: string) {
+  const tx = await confidentialPayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount, // Amount in base units
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Confidential payment sent:', hash)
+  return hash
+}
+
+// Process 5 eUSDC privately
+await processConfidentialPayment('5000000')
+```
+
+---
+
+## Gasless Confidential Payments
+
+Combine gasless UX with full privacy:
+
+```typescript
+const gaslessConfidential = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { confidentialToken: true },
+    gasless: 'eip3009'
+  }
+})
+
+async function processPrivateGaslessPayment(amount: string) {
+  const tx = await gaslessConfidential.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Private gasless payment:', hash)
+  return hash
+}
+```
+
+---
+
+## Maximum Privacy (All Features)
+
+Enable all privacy layers:
+
+```typescript
+const fullPrivacy = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { 
+      encrypted: true,      // BITE encryption
+      confidentialToken: true // Native token privacy
+    },
+    gasless: 'eip3009'        // No gas needed
+  }
+})
+
+async function processMaximumPrivacy(amount: string) {
+  const tx = await fullPrivacy.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Maximum privacy payment:', hash)
+  return hash
+}
+```
+
+---
+
+## Server Integration
+
+Backend processing for confidential payments:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/server'
+import express from 'express'
+
+const app = express()
+
+const confidentialMethod = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { confidentialToken: true },
+    gasless: 'eip3009'
+  }
+})
+
+app.post('/api/private-payment', async (req, res) => {
+  const { amount, from, proof } = req.body
+  
+  try {
+    // Verify proof (confidential token specific)
+    const isValid = await verifyConfidentialProof(proof)
+    if (!isValid) throw new Error('Invalid proof')
+    
+    const tx = await confidentialMethod.createTransfer({
+      to: process.env.RECEIVING_ADDRESS,
+      amount,
+      from
+    })
+    
+    res.json({ success: true, txData: tx })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+})
+```
+
+---
+
+## Payment Verification
+
+Verifying confidential transactions:
+
+```typescript
+import { createPublicClient, http } from 'viem'
+
+const publicClient = createPublicClient({
+  transport: http(process.env.SKALE_RPC)
+})
+
+async function verifyConfidentialPayment(txHash: string) {
+  const receipt = await publicClient.getTransactionReceipt({ hash: txHash })
+  
+  if (receipt.status !== 'success') {
+    throw new Error('Transaction failed')
+  }
+  
+  // Confidential tokens emit different events
+  // Check for confidential transfer events
+  const confidentialEvents = receipt.logs.filter(
+    log => log.topics[0] === '0xConfidentialTransferTopic'
+  )
+  
+  console.log('Confidential payment verified')
+  return { verified: true, events: confidentialEvents }
+}
+```
+
+---
+
+## Testing on BITE Sandbox
+
+BITE Sandbox is the testnet for confidential tokens:
+
+```bash
+SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
+CHAIN=bite-sandbox
+CURRENCY=eUSDC
+```
+
+```typescript
+const testConfidential = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { confidentialToken: true },
+    gasless: 'eip3009'
+  }
+})
+
+const tx = await testConfidential.createTransfer({
+  to: '0xTestReceiver',
+  amount: '100000', // 0.1 eUSDC
+  from: account.address
+})
+```
+
+---
+
+## Comparing Payment Types
+
+| Feature | Standard | Gasless | Encrypted | Confidential |
+|---------|----------|---------|-----------|------------|
+| Chain | SKALE Base | SKALE Base | SKALE Base | BITE Sandbox |
+| Token | USDC.e | USDC.e | USDC.e | eUSDC |
+| Gas token | sFUEL required | Not needed | sFUEL required | Not needed (gasless) |
+| Amount visible | ✓ | ✓ | Hidden | Hidden |
+| Native privacy | - | - | - | ✓ |
+
+---
+
+## Error Handling
+
+```typescript
+try {
+  const hash = await processConfidentialPayment('1000000')
+} catch (error) {
+  if (error.message.includes('BITE')) {
+    console.error('Not on BITE-enabled chain')
+  } else if (error.message.includes('confidential')) {
+    console.error('Token not configured for confidentiality')
+  } else if (error.message.includes('eUSDC')) {
+    console.error('Insufficient eUSDC balance')
+  }
+}
+```
+
+---
+
+## Best Practices
+
+<Note>
+**When to use confidential tokens:**
+- Maximum privacy requirements
+- Sensitive transaction amounts
+- BITE-enabled chains available
+- Users comfortable with eUSDC
+</Note>
+
+<Warning>
+**Important considerations:**
+- Confidential tokens only work on BITE chains
+- eUSDC is different from USDC.e (different addresses)
+- Always test on BITE Sandbox first
+- Verify chain supports BITE before deploying
+</Warning>
+
+---
+
+## Resources
+
+- [MPP SDK Reference](/developers/sdks/skalenetwork-mpp-sdk)
+- [Gasless Payments](/cookbook/mpp/gasless-payments) – For USDC.e
+- [BITE Protocol](/concepts/bite-protocol/intro-bite-protocol)
+- [GitHub](https://github.com/skalenetwork/mpp-sdk)
+- [Testnet Faucet](https://sfuelstation.com)

@@ -1,0 +1,383 @@
+---
+title: "Accept MPP Payments"
+description: "Implement gasless and private payments using the MPP SDK on SKALE"
+---
+
+Accept payments using the MPP (Machine Payments Protocol) SDK on SKALE. MPP enables gasless transactions, encrypted amounts, and confidential token transfers—making it ideal for agentic and privacy-focused applications.
+
+## Prerequisites
+
+- Node.js, Bun, or pnpm installed
+- A SKALE Chain endpoint (SKALE Base or BITE Sandbox)
+- Understanding of MPP protocol
+- USDC.e or eUSDC tokens for testing
+
+## Overview
+
+The MPP SDK provides multiple payment strategies:
+
+- **Standard transfers** – Simple token transfers on SKALE Base
+- **Gasless payments** – Users pay without holding gas tokens (EIP-3009/EIP-2612)
+- **Encrypted amounts** – Hide transaction amounts using BITE encryption
+- **Confidential tokens** – Native privacy with eUSDC on BITE chains
+
+---
+
+## Environment Setup
+
+Create a `.env` file:
+
+```bash
+# SKALE Chain RPC
+SKALE_RPC=https://mainnet.skalenodes.com/v1/lanky-ill-funny-testnet
+
+# Your receiving address
+RECEIVING_ADDRESS=0xYourReceivingAddress
+
+# Chain configuration
+CHAIN=skale-base  # or 'bite-sandbox' for confidential tokens
+CURRENCY=USDC.e     # or 'eUSDC' for confidential tokens
+```
+
+---
+
+## Basic Payment Example
+
+### Step 1: Install Dependencies
+
+```bash
+npm install @skalenetwork/mpp viem
+```
+
+### Step 2: Create Payment Method
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+
+// Setup wallet
+const account = privateKeyToAccount('0xYourPrivateKey')
+const walletClient = createWalletClient({
+  account,
+  transport: http(process.env.SKALE_RPC)
+})
+
+// Create standard payment method
+const standardPayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e'
+})
+
+// Create gasless payment method
+const gaslessPayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+```
+
+### Step 3: Process Payment
+
+```typescript
+async function processPayment(amount: string, useGasless = false) {
+  const method = useGasless ? gaslessPayment : standardPayment
+  
+  // Create payment transaction
+  const tx = await method.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount, // Amount in base units (e.g., "1000000" for 1 USDC)
+    from: account.address
+  })
+  
+  // Sign and send
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Payment sent:', hash)
+  
+  return hash
+}
+
+// Process 5 USDC payment
+await processPayment('5000000', true) // Gasless
+```
+
+---
+
+## Encrypted Payments (BITE Phase I)
+
+Hide transaction amounts onchain using BITE encryption:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+
+// Create encrypted payment method
+const encryptedPayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { skale: { encrypted: true } }
+})
+
+async function processEncryptedPayment(amount: string) {
+  const tx = await encryptedPayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Encrypted payment sent:', hash)
+  
+  return hash
+}
+```
+
+---
+
+## Gasless + Encrypted Payments
+
+Combine both features for maximum UX and privacy:
+
+```typescript
+const privatePayment = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: {
+    gasless: 'eip3009',
+    skale: { encrypted: true }
+  }
+})
+
+async function processPrivatePayment(amount: string) {
+  const tx = await privatePayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Private payment sent:', hash)
+  return hash
+}
+```
+
+---
+
+## Confidential Token Payments (BITE Phase II)
+
+Use native confidential tokens (eUSDC) on BITE Sandbox for full privacy:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/client'
+
+// Confidential token with gasless + encryption
+const confidentialPayment = mpp.charge({
+  chain: 'bite-sandbox',
+  currency: 'eUSDC',
+  extensions: {
+    skale: { 
+      encrypted: true, 
+      confidentialToken: true 
+    },
+    gasless: 'eip3009'
+  }
+})
+
+async function processConfidentialPayment(amount: string) {
+  const tx = await confidentialPayment.createTransfer({
+    to: process.env.RECEIVING_ADDRESS,
+    amount: amount,
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Confidential payment sent:', hash)
+  return hash
+}
+```
+
+---
+
+## Server-Side Integration
+
+For backend payment processing:
+
+```typescript
+import { mpp } from '@skalenetwork/mpp/server'
+import { Mppx } from '@skalenetwork/mppx' // MPPx server SDK
+
+// Setup MPPx server
+const method = mpp.charge({
+  chain: 'skale-base',
+  currency: 'USDC.e',
+  extensions: { gasless: 'eip3009' }
+})
+
+const mppx = Mppx.create({
+  methods: [method],
+  realm: 'api.yourservice.com',
+  secretKey: process.env.MPP_SECRET
+})
+
+// Express middleware example
+app.post('/api/payment', async (req, res) => {
+  const { amount, from } = req.body
+  
+  try {
+    const result = await mppx.process({
+      amount,
+      from,
+      to: process.env.RECEIVING_ADDRESS
+    })
+    
+    res.json({ success: true, txHash: result.hash })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+})
+```
+
+---
+
+## Webhook Integration
+
+Handle payment confirmations:
+
+```typescript
+app.post('/webhook/mpp', async (req, res) => {
+  const { txHash, status, amount, sender } = req.body
+  
+  if (status === 'confirmed') {
+    // Update database
+    await db.payments.create({
+      txHash,
+      amount,
+      sender,
+      status: 'completed',
+      timestamp: new Date()
+    })
+    
+    // Trigger service delivery
+    await deliverService(sender, amount)
+  }
+  
+  res.sendStatus(200)
+})
+```
+
+---
+
+## Payment Verification
+
+Verify payments onchain:
+
+```typescript
+import { createPublicClient, http } from 'viem'
+
+const publicClient = createPublicClient({
+  transport: http(process.env.SKALE_RPC)
+})
+
+async function verifyPayment(txHash: string, expectedAmount: string) {
+  const receipt = await publicClient.getTransactionReceipt({ hash: txHash })
+  
+  if (receipt.status !== 'success') {
+    throw new Error('Transaction failed')
+  }
+  
+  // For encrypted transactions, use BITE SDK to decrypt
+  // For standard transactions, verify logs
+  console.log('Payment verified:', receipt)
+  return true
+}
+```
+
+---
+
+## Testing
+
+Test payments on testnet before mainnet:
+
+```bash
+# SKALE Base Sepolia
+SKALE_RPC=https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet
+CHAIN=skale-base-sepolia
+CURRENCY=USDC.e
+
+# BITE Sandbox
+SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
+CHAIN=bite-sandbox
+CURRENCY=eUSDC
+```
+
+```typescript
+// Test payment
+async function testPayment() {
+  const testPayment = mpp.charge({
+    chain: 'skale-base-sepolia', // Use testnet
+    currency: 'USDC.e',
+    extensions: { gasless: 'eip3009' }
+  })
+  
+  const tx = await testPayment.createTransfer({
+    to: '0xTestReceiver',
+    amount: '100000', // 0.1 USDC
+    from: account.address
+  })
+  
+  const hash = await walletClient.sendTransaction(tx)
+  console.log('Test payment:', hash)
+}
+```
+
+---
+
+## Error Handling
+
+Common errors and solutions:
+
+```typescript
+try {
+  const hash = await processPayment('1000000')
+} catch (error) {
+  if (error.message.includes('insufficient funds')) {
+    // For gasless: User lacks token balance
+    // For standard: User lacks gas (sFUEL)
+    console.error('Insufficient balance')
+  } else if (error.message.includes('EIP-3009')) {
+    // Token doesn't support gasless or user hasn't approved
+    console.error('Gasless not available for this token')
+  } else if (error.message.includes('BITE')) {
+    // Chain doesn't support encryption
+    console.error('BITE encryption not available on this chain')
+  }
+}
+```
+
+---
+
+## Best Practices
+
+<Note>
+**Choose the right strategy:**
+- Standard: Fastest, lowest overhead
+- Gasless: Best UX for new users
+- Encrypted: Privacy for sensitive amounts
+- Confidential: Maximum privacy (BITE chains only)
+</Note>
+
+<Warning>
+**Security considerations:**
+- Never expose private keys in client-side code
+- Use server-side MPPx for production payment processing
+- Validate all payment amounts before processing
+- Implement idempotency for payment webhooks
+</Warning>
+
+---
+
+## Resources
+
+- [MPP SDK Documentation](/developers/sdks/skalenetwork-mpp-sdk)
+- [MPP Protocol](https://mpp.dev/)
+- [GitHub Examples](https://github.com/skalenetwork/mpp-sdk/tree/main/examples)
+- [Support](https://discord.gg/skale)
