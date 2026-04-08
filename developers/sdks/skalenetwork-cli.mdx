@@ -4,12 +4,12 @@ description: "Command-line interface for interacting with the SKALE Network - bu
 ---
 
 <Note>
-The SKALE CLI is built for AI agents and automation workflows. All commands support structured JSON output for easy parsing by automated systems.
+SKALE CLI is a command-line tool for reading chain data, preparing transactions, checking balances, and working with BITE. Every command can return structured JSON for scripting and agent workflows.
 </Note>
 
 ## Installation
 
-Install globally or use without installation via npx/bunx.
+Install it globally, or run it without installing via `npx` or `bunx`.
 
 ```bash
 # npm
@@ -25,7 +25,7 @@ pnpm add -g @skalenetwork/cli
 bun install -g @skalenetwork/cli
 ```
 
-### One-Time Usage (No Installation)
+### Run Without Installing
 
 ```bash
 # Using npx
@@ -53,14 +53,14 @@ skale gas price --chain skale-base
 
 ## AI Agent Support
 
-The SKALE CLI is optimized for AI agents and automated workflows:
+If you are calling the CLI from a script, agent, or automation job, these features matter most:
 
 | Feature | Description |
 |---------|-------------|
-| **Structured JSON Output** | All commands support JSON output for easy parsing |
-| **MCP Compatible** | Works with Model Context Protocol and agent frameworks |
-| **Deterministic Responses** | Consistent output format for reliable automation |
-| **No Interactive Prompts** | All inputs via flags and arguments |
+| **Structured JSON Output** | Commands can return JSON that is easy to parse |
+| **MCP Compatible** | Works with Model Context Protocol and similar agent setups |
+| **Deterministic Responses** | Output stays consistent across repeated calls |
+| **No Interactive Prompts** | Inputs are passed through flags and arguments |
 
 ### JSON Output Examples
 
@@ -77,11 +77,11 @@ skale read configController version --chain skale-base --format json
 
 ## Command Reference
 
-Complete reference for all SKALE CLI commands. Each command supports `--help` for detailed usage information.
+The sections below cover the main command groups. For flags and edge cases, use `--help` on any command.
 
 ### Chain Management (`chains`)
 
-Aggregate portfolio, compare balances, and list supported chains.
+List supported chains, aggregate balances, and compare addresses across networks.
 
 ```bash
 # List all supported chains
@@ -119,7 +119,7 @@ skale read sklToken balanceOf 0x... --network mainnet
 
 ### SKL Token (`token`)
 
-SKL token information and balance queries.
+Check SKL token details and balances.
 
 ```bash
 # Get SKL token info
@@ -132,7 +132,7 @@ skale token balance 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
 
 ### Access Control (`access`)
 
-Check whitelist status and access control.
+Check whitelist status and access control settings.
 
 ```bash
 skale access 0x... --chain skale-base
@@ -140,7 +140,7 @@ skale access 0x... --chain skale-base
 
 ### IMA Bridge (`ima`)
 
-Interchain Messaging Agent (IMA) bridge operations.
+Use IMA bridge-related commands.
 
 ```bash
 # Get chain ID from MessageProxy
@@ -159,7 +159,7 @@ skale ima withdraw --chain skale-base --token 0x...
 
 ### SKALE Manager (`manager`)
 
-SKALE Manager contract interactions.
+Read SKALE Manager contract settings.
 
 ```bash
 # Get ConfigController version
@@ -174,7 +174,7 @@ skale manager fcd-status --chain skale-base
 
 ### BITE Encryption (`bite`)
 
-Blockchain Integrated Threshold Encryption (BITE) commands. Available on `skale-base`, `skale-base-sepolia`, and `skale-bite-sandbox` chains.
+Use these commands to encrypt transactions and messages with BITE. They are available on `skale-base`, `skale-base-sepolia`, and `skale-bite-sandbox`.
 
 ```bash
 # Encrypt a transaction
@@ -192,7 +192,7 @@ skale bite info --chain skale-base
 
 ### Transaction Preparation (`txprep`)
 
-Prepare and encode transaction data.
+Encode calldata and prepare transaction data.
 
 ```bash
 # Generate calldata for contract method
@@ -213,7 +213,7 @@ skale txprep build-tx 0x... 1000000000000000000 --chain calypso --data 0xa9059cb
 
 ### Wallet Operations (`wallet`)
 
-Wallet management and address utilities.
+Use wallet and address utilities.
 
 ```bash
 # Get ETH or token balance
@@ -243,7 +243,7 @@ skale wallet explorer 0x... --chain skale-base
 
 ### Gas (`gas`)
 
-Get gas price and estimates.
+Check gas prices and estimates.
 
 ```bash
 skale gas price --chain skale-base
@@ -263,7 +263,7 @@ skale faucet --address 0x... --chain skale-base-sepolia --network sepolia
 
 ### Explorer (`explorer`)
 
-Open addresses, transactions, or blocks in the SKALE Explorer.
+Open addresses, transactions, contracts, or blocks in the SKALE Explorer.
 
 ```bash
 skale explorer address 0x... --chain skale-base
@@ -274,7 +274,7 @@ skale explorer contract 0x... --chain skale-base
 
 ### Contract (`contract`)
 
-Inspect and analyze smart contracts.
+Inspect smart contracts.
 
 ```bash
 # Check contract source code information
@@ -301,7 +301,7 @@ All commands support these global options:
 
 ## Output Formats
 
-The CLI supports multiple output formats:
+The CLI supports a few output formats:
 
 - **text**: Human-readable output (default)
 - **json**: Structured JSON for programmatic use

@@ -5,11 +5,11 @@ description: "Build an AI agent that creates a secure wallet using Open Wallet S
 
 ## Building an AI Agent with Secure Wallet Management
 
-This tutorial demonstrates how to build an AI agent that creates a secure wallet using the [Open Wallet Standard (OWS)](https://openwallet.sh/) and encrypts transactions using the SKALE CLI. The agent can generate wallets, prepare transactions, and submit encrypted transactions to SKALE Base.
+This guide walks through a simple agent setup that uses [Open Wallet Standard (OWS)](https://openwallet.sh/) for wallet storage and SKALE CLI for transaction prep and BITE encryption. The result is an agent that can generate wallets, prepare transactions, and submit encrypted transactions on SKALE Base.
 
-### What You'll Build
+### In This Guide
 
-An AI agent that:
+You'll build an agent that:
 - Creates a secure, encrypted wallet using OWS
 - Generates a new Ethereum address for SKALE transactions
 - Prepares transaction data using SKALE CLI
@@ -149,7 +149,7 @@ ows sign \
   > signed_tx.json
 ```
 
-The signed transaction is returned without the private key ever being exposed.
+OWS returns the signed transaction without exposing the private key.
 
 ## Step 7: Submit Transaction
 
@@ -165,7 +165,7 @@ skale tx send --chain skale-base-sepolia --raw $RAW_TX
 
 ## Complete Agent Script
 
-Here's a complete bash script that automates the entire flow:
+Here is a complete bash script for the full flow:
 
 ```bash
 #!/bin/bash
@@ -233,13 +233,13 @@ skale explorer tx "$TX_HASH" --chain "$CHAIN"
 echo "🎉 Agent workflow complete!"
 ```
 
-## Key Security Benefits
+## Security Benefits
 
 | Feature | Benefit |
 |---------|---------|
 | **Local-First** | Keys stored in `~/.ows/`, not in cloud or browser |
 | **No API Calls** | Works entirely offline, no vendor lock-in |
-| **AES-256-GCM** | Military-grade encryption for wallet storage |
+| **AES-256-GCM** | Strong encryption for wallet storage |
 | **Agent Isolation** | Private keys never exposed to the agent |
 | **Policy Engine** | Built-in spending limits and allowlists |
 
@@ -263,7 +263,7 @@ This makes it easy to parse results in any programming language.
 ## Next Steps
 
 - Learn more about [BITE encryption](/developers/bite-protocol/encrypted-transactions)
-- Explore [SKALE CLI commands](/developers/skale-cli)
+- Explore [SKALE CLI](/developers/sdks/skalenetwork-cli)
 - Read the [Open Wallet Standard specification](https://docs.openwallet.sh/)
 - Build more complex agent workflows with conditional transactions
 

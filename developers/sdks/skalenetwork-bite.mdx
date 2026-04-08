@@ -4,13 +4,13 @@ description: "Privacy SDK enabling developers to consume native primary primiati
 ---
 
 <Note>
-Typescript transpiles to JavaScript. The SDK is compatible with both JavaScript and Typescript in both Node.js, Bun, and browser environments.
-If you have any issues, please join us in [Discord](https://discord.gg/skale) to report the problem or open an issue on [GitHub](https://github.com/skalenetwork/bite-ts).
+TypeScript transpiles to JavaScript, so the SDK works in both TypeScript and JavaScript across Node.js, Bun, and browser environments.
+If you run into an issue, reach out in [Discord](https://discord.gg/skale) or open an issue on [GitHub](https://github.com/skalenetwork/bite-ts).
 </Note>
 
 ## Using the SDK
 
-The BITE JavaScript SDK enables application and wallet developers to encrypt EVM transactions. BITE extends SKALE's provably secure consensus protocol with threshold encryption, allowing developers to build private and confidential applications on SKALE.
+The BITE JavaScript SDK lets applications and wallets encrypt EVM transactions. It adds threshold encryption to SKALE so developers can build private and confidential applications on the network.
 
 ### Installation
 
@@ -29,7 +29,7 @@ bun add @skalenetwork/bite
 ```
 
 <Note>
-The SDK works with any BITE-enabled SKALE chain. Currently, BITE is available on [SKALE Base Mainnet and Testnet](/get-started/quick-start/skale-on-base) ONLY.
+The SDK works with any BITE-enabled SKALE chain. Right now, BITE is available on [SKALE Base Mainnet and Testnet](/get-started/quick-start/skale-on-base) only.
 </Note>
 
 ### Quick Start
@@ -59,10 +59,10 @@ const result = await bite.getDecryptedTransactionData('<txHash>');
 
 ### `new BITE(endpoint)`
 
-Creates a new BITE instance configured to use a specific BITE JSON-RPC endpoint.
+Creates a BITE instance for a specific BITE JSON-RPC endpoint.
 
 **Parameters:**
-- `endpoint: string` – BITE URL provider (JSON-RPC endpoint)
+- `endpoint: string` - BITE JSON-RPC endpoint
 
 **Example:**
 ```typescript
@@ -71,7 +71,7 @@ const bite = new BITE('https://your-skale-chain.skale.network');
 
 ### `bite.encryptTransaction(tx)`
 
-Encrypts a transaction object using the BLS threshold encryption public key(s) from the configured BITE provider. The encrypted transaction will have its `to` field set to the BITE magic address.
+Encrypts a transaction object with the BLS threshold encryption public key or keys from the configured BITE provider. The encrypted transaction uses the BITE magic address in the `to` field.
 
 **Parameters:**
 - `tx: { to: string; data: string; /* optional gas and other fields */ }` – Standard hex strings
@@ -79,7 +79,7 @@ Encrypts a transaction object using the BLS threshold encryption public key(s) f
 **Returns:** `Promise<Transaction>` – Encrypted params safe to submit to `eth_sendTransaction`
 
 <Warning>
-When passing a transaction to `bite.ts`, it is necessary to set the gasLimit field manually. This is because estimateGas does not return a proper value for encrypted transactions. If gasLimit is omitted, `bite.ts` will automatically set it to **300000**.
+When passing a transaction to `bite.ts`, set `gasLimit` manually. `estimateGas` does not return a reliable value for encrypted transactions. If `gasLimit` is omitted, `bite.ts` defaults it to **300000**.
 </Warning>
 
 **Encryption Process:**
@@ -90,7 +90,7 @@ When passing a transaction to `bite.ts`, it is necessary to set the gasLimit fie
 
 ### `bite.encryptMessage(message)`
 
-Encrypts a raw hex-encoded message using the BLS threshold encryption from the configured BITE provider.
+Encrypts a raw hex-encoded message using BLS threshold encryption from the configured BITE provider.
 
 **Parameters:**
 - `message: string` – A hex string to encrypt (with or without `0x` prefix)
@@ -104,7 +104,7 @@ console.log('Encrypted:', encryptedMessage);
 ```
 
 <Note>
-When using the SDK in browser environments, you may need to polyfill `Buffer`. Install the buffer package and configure your bundler:
+When using the SDK in the browser, you may need to polyfill `Buffer`. Install the `buffer` package and configure your bundler:
 
 ```bash
 npm install buffer
@@ -137,7 +137,7 @@ module.exports = {
 
 ### `bite.getDecryptedTransactionData(transactionHash)`
 
-Retrieves decrypted transaction data from the configured BITE provider using the `bite_getDecryptedTransactionData` JSON-RPC method.
+Retrieves decrypted transaction data from the configured BITE provider with the `bite_getDecryptedTransactionData` JSON-RPC method.
 
 **Parameters:**
 - `transactionHash: string` – The transaction hash to decrypt
@@ -152,20 +152,20 @@ console.log('Original data:', decryptedData.data);
 ```
 
 <Note>
-This method only works for BITE transactions that have been processed and decrypted by the consensus. If the transaction doesn't exist or has no decrypted data, an error is thrown.
+This method works only for BITE transactions that have already been processed and decrypted by the network. If the transaction does not exist, or if decrypted data is unavailable, the call throws an error.
 </Note>
 
 ### `bite.getCommitteesInfo()`
 
-Fetches committee information from the configured BITE provider using the `bite_getCommitteesInfo` JSON-RPC method.
+Fetches committee information from the configured BITE provider with the `bite_getCommitteesInfo` JSON-RPC method.
 
 **Returns:** `Promise<Array>` – An array of 1-2 JSON objects, each containing:
 - `commonBLSPublicKey`: A 256-character hex string (128-byte BLS public key)
 - `epochId`: An integer representing the epoch identifier
 
 **Array Contents:**
-- **1 element**: During normal operation (single active committee)
-- **2 elements**: During committee rotation periods (scheduled for next 3 minutes)
+- **1 element**: Normal operation with a single active committee
+- **2 elements**: Committee rotation window, usually covering the next 3 minutes
 
 **Example:**
 ```typescript
@@ -185,7 +185,7 @@ if (committeesInfo.length === 2) {
 ### Gas Limit Management
 
 <Warning>
-Always set a proper gas limit for encrypted transactions. Do not rely on `estimateGas()` as it doesn't work correctly with encrypted payloads.
+Always set an explicit gas limit for encrypted transactions. Do not rely on `estimateGas()`, since it does not handle encrypted payloads correctly.
 </Warning>
 
 ```typescript
@@ -224,5 +224,5 @@ async function monitorCommitteeRotation() {
 ```
 
 <Note>
-This is not a requirement for single use encrypted transactions. If you are building with Conditional Transactions, you can optionally monitor committee changes to handle expiration of a conditional transaction which can occur during 
+This is not required for one-off encrypted transactions. If you are building with conditional transactions, you can optionally monitor committee changes to handle expirations during committee rotation.
 </Note>
