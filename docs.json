@@ -219,9 +219,15 @@
             ]
           },
           {
+            "group": "SDKs",
+            "pages": [
+              "developers/sdks/skalenetwork-cli",
+              "developers/sdks/skalenetwork-bite"
+            ]
+          },
+          {
             "group": "BITE Protocol",
             "pages": [
-              "developers/bite-protocol/typescript-sdk",
               "developers/bite-protocol/encrypted-transactions",
               "developers/bite-protocol/conditional-transactions",
               "developers/bite-protocol/bite-api-and-faqs"
@@ -300,7 +306,8 @@
           {
             "group": "AI Agents",
             "pages": [
-              "cookbook/agents/build-an-agent"
+              "cookbook/agents/build-an-agent",
+              "cookbook/agents/open-wallet-skale-cli"
             ]
           },
           {
