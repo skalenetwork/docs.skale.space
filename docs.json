@@ -28,7 +28,6 @@
             "group": "Quick Start",
             "pages": [
               "get-started/quick-start/skale-on-base",
-              "get-started/quick-start/bite-sandbox",
               "get-started/quick-start/skale-on-ethereum",
               "get-started/quick-start/go-live",
               "get-started/quick-start/get-testnet-tokens"
@@ -174,7 +173,10 @@
           {
             "group": "SDKs",
             "pages": [
-              "developers/sdks/skalenetwork-mpp-sdk"
+              
+              "developers/sdks/skalenetwork-cli",
+              "developers/sdks/skalenetwork-mpp-sdk",
+              "developers/sdks/skalenetwork-bite"
             ]
           },
           {
@@ -216,13 +218,6 @@
                   "developers/skale-bridge/messaging-layer/using-custom-contracts"
                 ]
               }
-            ]
-          },
-          {
-            "group": "SDKs",
-            "pages": [
-              "developers/sdks/skalenetwork-cli",
-              "developers/sdks/skalenetwork-bite"
             ]
           },
           {
@@ -1998,7 +1993,11 @@
     },
     {
       "source": "/get-started/hackathon/info",
-      "destination": "/get-started/quick-start/bite-sandbox"
+      "destination": "/get-started/quick-start/skale-on-base#skale-base-sepolia-testnet"
+    },
+    {
+      "source": "/get-started/quick-start/bite-sandbox",
+      "destination": "/get-started/quick-start/skale-on-base#skale-base-sepolia-testnet"
     }
   ]
 }
