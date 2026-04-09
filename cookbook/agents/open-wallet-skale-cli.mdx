@@ -1,0 +1,280 @@
+---
+title: "Agent Wallet with Open Wallet Standard"
+description: "Build an AI agent that creates a secure wallet using Open Wallet Standard and encrypts transactions with SKALE CLI"
+---
+
+## Building an AI Agent with Secure Wallet Management
+
+This guide walks through a simple agent setup that uses [Open Wallet Standard (OWS)](https://openwallet.sh/) for wallet storage and SKALE CLI for transaction prep and BITE encryption. The result is an agent that can generate wallets, prepare transactions, and submit encrypted transactions on SKALE Base.
+
+### In This Guide
+
+You'll build an agent that:
+- Creates a secure, encrypted wallet using OWS
+- Generates a new Ethereum address for SKALE transactions
+- Prepares transaction data using SKALE CLI
+- Encrypts transactions using BITE encryption
+- Operates without exposing private keys to the agent
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- SKALE CLI installed: `npm install -g @skalenetwork/cli`
+- Open Wallet Standard CLI: `npm install -g @open-wallet-standard/core`
+- Access to SKALE Base (BITE-enabled chain)
+
+## Architecture Overview
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Agent     │────▶│     OWS      │────▶│  Wallet     │
+│  (SKALE CLI)│     │  (Secure     │     │  Vault      │
+│             │     │   Storage)   │     │ (~/.ows/)   │
+└──────────────┘     └──────────────┘     └─────────────┘
+       │
+       ▼
+┌─────────────┐
+│  SKALE      │
+│  Network    │
+│ (BITE tx)   │
+└─────────────┘
+```
+
+The agent never sees private keys. OWS handles all signing operations with AES-256-GCM encryption.
+
+## Step 1: Install Dependencies
+
+Install both CLIs globally:
+
+```bash
+# Install SKALE CLI
+npm install -g @skalenetwork/cli
+
+# Install Open Wallet Standard CLI
+npm install -g @open-wallet-standard/core
+```
+
+Verify installations:
+
+```bash
+skale --version
+ows --version
+```
+
+## Step 2: Create Agent Wallet
+
+Create a new wallet for your agent using OWS:
+
+```bash
+ows wallet create --name skale-agent
+```
+
+You'll be prompted to set a password. This encrypts the wallet with AES-256-GCM.
+
+<Note title="Wallet Location">
+The wallet is stored encrypted at `~/.ows/wallets/skale-agent`. The agent never has direct access to the private key.
+</Note>
+
+### Get the Wallet Address
+
+Retrieve the Ethereum address for SKALE:
+
+```bash
+ows wallet list
+```
+
+Look for the `eip155:1` entry under your `skale-agent` wallet. The address will be formatted like:
+```
+eip155:1:0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+```
+
+Extract just the address part (after the last colon):
+```bash
+AGENT_ADDRESS="0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
+```
+
+## Step 3: Fund the Wallet
+
+Fund the wallet on your target chain before preparing the transaction. For `skale-base-sepolia`, you can use the [SKALE Base Sepolia faucet](https://base-sepolia-faucet.skale.space) or transfer test funds from another wallet.
+
+Verify the balance:
+
+```bash
+skale wallet balance $AGENT_ADDRESS --chain skale-base-sepolia
+```
+
+## Step 4: Prepare Transaction Data
+
+Use SKALE CLI to build the unsigned transaction data. OWS handles secure key storage and signing, but it does not prepare the transaction payload for you. In this example, we build a simple ETH transfer:
+
+```bash
+# Build an unsigned transaction
+skale txprep build-tx 0xRecipientAddress... 0.001 --eth --chain skale-base-sepolia > tx.json
+```
+
+This creates an unsigned transaction object with the target chain ID and fee fields. If your flow requires a specific nonce or gas limit, set those explicitly when you build the transaction.
+
+## Step 5: Encrypt with BITE
+
+Now encrypt the transaction using BITE. The SKALE CLI can encrypt transactions for BITE-enabled chains:
+
+```bash
+# Extract the transaction data and encrypt it
+skale bite encrypt-tx \
+  --chain skale-base-sepolia \
+  --to $(cat tx.json | jq -r '.transaction.to') \
+  --data $(cat tx.json | jq -r '.transaction.data // "0x"') \
+  --value $(cat tx.json | jq -r '.transaction.value') \
+  > encrypted_tx.json
+```
+
+<Warning title="Gas Limit Required">
+BITE transactions require a manually set gas limit since `estimateGas` doesn't work with encrypted payloads. SKALE CLI automatically sets a default of 300000 gas if not specified.
+</Warning>
+
+## Step 6: Sign with OWS
+
+Use OWS to sign the encrypted transaction. At this stage, the transaction has already been prepared and encrypted; OWS is only responsible for signing with the wallet in its secure vault:
+
+```bash
+# Sign the transaction using OWS
+ows sign \
+  --wallet skale-agent \
+  --chain eip155:1 \
+  --tx-file encrypted_tx.json \
+  > signed_tx.json
+```
+
+OWS returns the signed transaction without exposing the private key.
+
+## Step 7: Submit Transaction
+
+Submit the signed transaction to SKALE Base through the chain RPC:
+
+```bash
+# Get the raw signed transaction
+RAW_TX=$(cat signed_tx.json | jq -r '.raw')
+
+# Submit via JSON-RPC
+curl -s https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"jsonrpc\":\"2.0\",
+    \"method\":\"eth_sendRawTransaction\",
+    \"params\":[\"$RAW_TX\"],
+    \"id\":1
+  }"
+```
+
+## Complete Agent Script
+
+Here is a complete bash script for the full flow:
+
+```bash
+#!/bin/bash
+
+# Agent Wallet with Open Wallet Standard + SKALE CLI
+# This script demonstrates how an AI agent can securely manage wallets
+
+set -e
+
+# Configuration
+WALLET_NAME="skale-agent"
+CHAIN="skale-base-sepolia"
+RECIPIENT="0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
+AMOUNT="0.001"
+
+echo "🤖 Agent: Starting secure wallet operations..."
+
+# Step 1: Create wallet if it doesn't exist
+if ! ows wallet list | grep -q "$WALLET_NAME"; then
+    echo "🔐 Creating new wallet: $WALLET_NAME"
+    ows wallet create --name "$WALLET_NAME"
+fi
+
+# Step 2: Get wallet address
+AGENT_ADDRESS=$(ows wallet export --name "$WALLET_NAME" --format json | jq -r '.addresses[] | select(.chain == "eip155:1") | .address')
+echo "📬 Agent Address: $AGENT_ADDRESS"
+
+# Step 3: Check balance
+BALANCE=$(skale wallet balance "$AGENT_ADDRESS" --chain "$CHAIN" --format json | jq -r '.formatted')
+echo "💰 Current Balance: $BALANCE ETH"
+
+# Step 4: Prepare transaction
+echo "📝 Preparing transaction..."
+skale txprep build-tx "$RECIPIENT" "$AMOUNT" --eth --chain "$CHAIN" > /tmp/tx.json
+
+# Step 5: Encrypt with BITE
+echo "🔒 Encrypting transaction with BITE..."
+TO=$(jq -r '.transaction.to' /tmp/tx.json)
+DATA=$(jq -r '.transaction.data // "0x"' /tmp/tx.json)
+VALUE=$(jq -r '.transaction.value' /tmp/tx.json)
+
+skale bite encrypt-tx \
+    --chain "$CHAIN" \
+    --to "$TO" \
+    --data "$DATA" \
+    --value "$VALUE" > /tmp/encrypted_tx.json
+
+# Step 6: Sign with OWS
+echo "✍️  Signing with OWS (secure vault)..."
+ows sign \
+    --wallet "$WALLET_NAME" \
+    --chain eip155:1 \
+    --tx-file /tmp/encrypted_tx.json > /tmp/signed_tx.json
+
+# Step 7: Submit
+echo "🚀 Submitting transaction..."
+RAW_TX=$(jq -r '.raw' /tmp/signed_tx.json)
+RPC_URL="https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha"
+RESULT=$(curl -s "$RPC_URL" \
+  -H "Content-Type: application/json" \
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"eth_sendRawTransaction\",\"params\":[\"$RAW_TX\"],\"id\":1}")
+
+TX_HASH=$(echo "$RESULT" | jq -r '.result')
+echo "✅ Transaction submitted! Hash: $TX_HASH"
+echo "🔗 View on explorer:"
+skale explorer tx "$TX_HASH" --chain "$CHAIN"
+
+echo "🎉 Agent workflow complete!"
+```
+
+## Security Benefits
+
+| Feature | Benefit |
+|---------|---------|
+| **Local-First** | Keys stored in `~/.ows/`, not in cloud or browser |
+| **No API Calls** | Works entirely offline, no vendor lock-in |
+| **AES-256-GCM** | Strong encryption for wallet storage |
+| **Agent Isolation** | Private keys never exposed to the agent |
+| **Policy Engine** | Built-in spending limits and allowlists |
+
+## JSON Output for Agents
+
+Both CLIs support JSON output for programmatic use:
+
+```bash
+# Get wallet info as JSON
+ows wallet export --name skale-agent --format json
+
+# Get encrypted transaction as JSON
+skale bite encrypt-tx --chain skale-base --to 0x... --format json
+
+# Check balance as JSON
+skale wallet balance 0x... --chain skale-base --format json
+```
+
+This makes it easy to parse results in any programming language.
+
+## Next Steps
+
+- Learn more about [BITE encryption](/developers/bite-protocol/encrypted-transactions)
+- Explore [SKALE CLI](/developers/sdks/skalenetwork-cli)
+- Read the [Open Wallet Standard specification](https://docs.openwallet.sh/)
+- Build more complex agent workflows with conditional transactions
+
+## References
+
+- [Open Wallet Standard](https://openwallet.sh/)
+- [SKALE CLI GitHub](https://github.com/skalenetwork/skale-cli)
+- [OWS Core GitHub](https://github.com/open-wallet-standard/core)

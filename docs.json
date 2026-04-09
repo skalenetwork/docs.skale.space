@@ -172,6 +172,12 @@
             ]
           },
           {
+            "group": "SDKs",
+            "pages": [
+              "developers/sdks/skalenetwork-mpp-sdk"
+            ]
+          },
+          {
             "group": "Chain Types",
             "pages": [
               "developers/chain-types/appchain",
@@ -213,9 +219,15 @@
             ]
           },
           {
+            "group": "SDKs",
+            "pages": [
+              "developers/sdks/skalenetwork-cli",
+              "developers/sdks/skalenetwork-bite"
+            ]
+          },
+          {
             "group": "BITE Protocol",
             "pages": [
-              "developers/bite-protocol/typescript-sdk",
               "developers/bite-protocol/encrypted-transactions",
               "developers/bite-protocol/conditional-transactions",
               "developers/bite-protocol/bite-api-and-faqs"
@@ -272,12 +284,21 @@
             ]
           },
           {
+            "group": "MPP",
+            "pages": [
+              "cookbook/mpp/accepting-payments",
+              "cookbook/mpp/gasless-payments",
+              "cookbook/mpp/confidential-payments"
+            ]
+          },
+          {
             "group": "Facilitators",
             "pages": [
               "cookbook/facilitators/using-autoincentive",
               "cookbook/facilitators/using-corbits",
               "cookbook/facilitators/using-kobaru",
-	            "cookbook/facilitators/using-payai",
+	        	"cookbook/facilitators/using-payai",
+				"cookbook/facilitators/using-primer",
               "cookbook/facilitators/using-relai",
               "cookbook/facilitators/using-x402x",
               "cookbook/facilitators/using-ultravioleta"
@@ -286,7 +307,8 @@
           {
             "group": "AI Agents",
             "pages": [
-              "cookbook/agents/build-an-agent"
+              "cookbook/agents/build-an-agent",
+              "cookbook/agents/open-wallet-skale-cli"
             ]
           },
           {

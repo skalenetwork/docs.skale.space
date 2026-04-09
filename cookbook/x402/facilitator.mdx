@@ -17,8 +17,8 @@ A facilitator in the x402 protocol is a service that processes payments and prov
 
 A facilitator service:
 
-1. Exposes `/verify` endpoint - Validates payment authorizations without on-chain settlement
-2. Exposes `/settle` endpoint - Executes on-chain payment settlements
+1. Exposes `/verify` endpoint - Validates payment authorizations without onchain settlement
+2. Exposes `/settle` endpoint - Executes onchain payment settlements
 3. Exposes `/supported` endpoint - Returns supported payment schemes and networks
 4. Handles EIP-712 signature verification
 5. Prevents replay attacks via nonce tracking
@@ -335,7 +335,7 @@ A facilitator service:
 
     ### POST /verify
 
-    Validates payment authorization without on-chain settlement.
+    Validates payment authorization without onchain settlement.
 
     **Request:**
 
@@ -400,7 +400,7 @@ A facilitator service:
 
     ### POST /settle
 
-    Settles a verified payment by broadcasting the transaction on-chain.
+    Settles a verified payment by broadcasting the transaction onchain.
 
     Request body is identical to `/verify`.
 

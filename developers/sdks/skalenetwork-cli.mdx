@@ -1,0 +1,301 @@
+---
+title: "SKALE CLI"
+description: "Command-line interface for interacting with the SKALE Network - built for AI agents and developers"
+---
+
+<Note>
+SKALE CLI is a command-line tool for reading chain data, preparing transactions, checking balances, and working with BITE. Every command can return structured JSON for scripting and agent workflows.
+</Note>
+
+## Installation
+
+Install it globally, or run it without installing via `npx` or `bunx`.
+
+```bash
+# npm
+npm install -g @skalenetwork/cli
+
+# yarn
+yarn global add @skalenetwork/cli
+
+# pnpm
+pnpm add -g @skalenetwork/cli
+
+# Bun
+bun install -g @skalenetwork/cli
+```
+
+### Run Without Installing
+
+```bash
+# Using npx
+npx @skalenetwork/cli <command>
+
+# Using bunx
+bunx @skalenetwork/cli <command>
+```
+
+## Quick Start
+
+```bash
+# List available SKALE chains
+skale chains list
+
+# Read contract data
+skale read configController version --chain europa
+
+# Check SKL token balance
+skale token balance 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+
+# Get gas price
+skale gas price --chain skale-base
+```
+
+## AI Agent Support
+
+If you are calling the CLI from a script, agent, or automation job, these features matter most:
+
+| Feature | Description |
+|---------|-------------|
+| **Structured JSON Output** | Commands can return JSON that is easy to parse |
+| **MCP Compatible** | Works with Model Context Protocol and similar agent setups |
+| **Deterministic Responses** | Output stays consistent across repeated calls |
+| **No Interactive Prompts** | Inputs are passed through flags and arguments |
+
+### JSON Output Examples
+
+```bash
+# List chains as JSON
+skale chains list --format json
+
+# Check balance with JSON output
+skale token balance 0x... --format json
+
+# Read contract data
+skale read configController version --chain skale-base --format json
+```
+
+## Command Reference
+
+The sections below cover the main command groups. For flags and edge cases, use `--help` on any command.
+
+### Chain Management (`chains`)
+
+List supported chains, aggregate balances, and compare addresses across networks.
+
+```bash
+# List all supported chains
+skale chains list
+skale chains list --network skale
+skale chains list --status
+
+# Aggregate token balances across chains
+skale chains portfolio 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+skale chains portfolio 0x... --chains skale-base,titan
+skale chains portfolio 0x... --token 0x... --value-in USD
+
+# Compare address balance across chains
+skale chains compare 0x... --chains skale-base,titan,mainnet
+skale chains compare 0x... --format table
+```
+
+### Contract Reading (`read`)
+
+Call read-only contract methods on SKALE or Ethereum.
+
+```bash
+# SKALE chain
+skale read configController version --chain skale-base
+skale read configController isAddressWhitelisted 0x... --chain skale-base
+
+# Ethereum mainnet
+skale read sklToken totalSupply --network mainnet
+skale read sklToken balanceOf 0x... --network mainnet
+```
+
+**Valid Contracts:**
+- **SKALE chains:** `configController`, `messageProxyForSchain`, `tokenManagerERC20`
+- **Ethereum:** `messageProxy`, `sklToken`
+
+### SKL Token (`token`)
+
+Check SKL token details and balances.
+
+```bash
+# Get SKL token info
+skale token info
+skale token info --network mainnet
+
+# Get SKL token balance
+skale token balance 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+```
+
+### Access Control (`access`)
+
+Check whitelist status and access control settings.
+
+```bash
+skale access 0x... --chain skale-base
+```
+
+### IMA Bridge (`ima`)
+
+Use IMA bridge-related commands.
+
+```bash
+# Get chain ID from MessageProxy
+skale ima chain-id --chain skale-base
+skale ima chain-id --network mainnet
+
+# Check if chain is connected
+skale ima connected-chains --chain skale-base --check-chain mainnet
+
+# Get deposit information
+skale ima deposit --chain skale-base --network mainnet --token 0x...
+
+# Get withdraw information
+skale ima withdraw --chain skale-base --token 0x...
+```
+
+### SKALE Manager (`manager`)
+
+Read SKALE Manager contract settings.
+
+```bash
+# Get ConfigController version
+skale manager version --chain skale-base
+
+# Check if Multi-Transaction Mode is enabled
+skale manager mtm-status --chain skale-base
+
+# Check if Free Contract Deployment is enabled
+skale manager fcd-status --chain skale-base
+```
+
+### BITE Encryption (`bite`)
+
+Use these commands to encrypt transactions and messages with BITE. They are available on `skale-base`, `skale-base-sepolia`, and `skale-bite-sandbox`.
+
+```bash
+# Encrypt a transaction
+skale bite encrypt-tx --chain skale-base --to 0x... --data 0x...
+
+# Decrypt transaction data from tx hash
+skale bite decrypt-tx --chain skale-base --txhash 0x...
+
+# Encrypt a message
+skale bite encrypt-msg --chain skale-base --message "Hello World"
+
+# Get BITE protocol info
+skale bite info --chain skale-base
+```
+
+### Transaction Preparation (`txprep`)
+
+Encode calldata and prepare transaction data.
+
+```bash
+# Generate calldata for contract method
+skale txprep encode 'transfer(address,uint256)' '0x...,100'
+
+# Get function selector
+skale txprep selector 'transfer(address,uint256)'
+
+# Encode parameters
+skale txprep encode-param address 0x...
+skale txprep encode-param uint256 1000
+skale txprep encode-param string 'hello world'
+
+# Build unsigned transaction
+skale txprep build-tx 0x... 100 --eth
+skale txprep build-tx 0x... 1000000000000000000 --chain calypso --data 0xa9059cbb...
+```
+
+### Wallet Operations (`wallet`)
+
+Use wallet and address utilities.
+
+```bash
+# Get ETH or token balance
+skale wallet balance 0x... --chain skale-base
+skale wallet balance 0x... --network mainnet --token 0x...
+
+# Validate Ethereum address format
+skale wallet validate 0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B
+
+# Resolve ENS name to address
+skale wallet ens vitalik.eth
+
+# Generate address from private key
+skale wallet address 0x...privateKey...
+
+# Get explorer URL for address
+skale wallet explorer 0x... --chain skale-base
+```
+
+### Gas (`gas`)
+
+Check gas prices and estimates.
+
+```bash
+skale gas price --chain skale-base
+skale gas estimate --to 0x... --value 1 --eth --chain skale-base
+skale gas history --network mainnet
+skale gas simulate --to 0x... --value 1000000000000000000 --chain skale-base
+```
+
+### Explorer (`explorer`)
+
+Open addresses, transactions, contracts, or blocks in the SKALE Explorer.
+
+```bash
+skale explorer address 0x... --chain skale-base
+skale explorer tx 0x... --chain skale-base
+skale explorer block 12345 --chain skale-base
+skale explorer contract 0x... --chain skale-base
+```
+
+### Contract (`contract`)
+
+Inspect smart contracts.
+
+```bash
+# Check contract source code information
+skale contract source 0x... --chain skale-base
+
+# Check ERC standard compliance (ERC20, ERC721, ERC165)
+skale contract standards 0x... --chain skale-base
+
+# Get contract interface details (read/write functions, ABI)
+skale contract interface 0x... --chain skale-base
+```
+
+## Global Options
+
+All commands support these global options:
+
+| Option | Description |
+|--------|-------------|
+| `--help, -h` | Show help for the command |
+| `--version, -v` | Show CLI version |
+| `--format` | Output format: json, text, table (default: text) |
+| `--chain` | SKALE chain name |
+| `--network` | Ethereum network: mainnet, sepolia |
+
+## Output Formats
+
+The CLI supports a few output formats:
+
+- **text**: Human-readable output (default)
+- **json**: Structured JSON for programmatic use
+- **table**: Tabular format for easy reading
+
+Example:
+```bash
+skale chains list --format json
+skale chains portfolio 0x... --format table
+```
+
+## GitHub Repository
+
+[skalenetwork/skale-cli](https://github.com/skalenetwork/skale-cli)

@@ -5,7 +5,7 @@ description: "Complete step-by-step guide to implementing a private Rock-Paper-S
 
 ## Rock-Paper-Scissors with Conditional Transactions
 
-This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses BITE's Conditional Transaction (CTX) feature to keep player moves encrypted until both players have committed. The game automatically decrypts moves on-chain and determines the winner without any manual reveal phase.
+This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses BITE's Conditional Transaction (CTX) feature to keep player moves encrypted until both players have committed. The game automatically decrypts moves onchain and determines the winner without any manual reveal phase.
 
 <Tip title="Why CTX for RPS?">
 In a traditional Rock-Paper-Scissors game, if Player 1 submits their move first, Player 2 could see it and counter. Using CTX, both moves remain encrypted until both players commit. The network then automatically decrypts them in the next block, ensuring a fair game.
@@ -19,7 +19,7 @@ The game implements a **commit-reveal pattern with automatic decryption** using 
 
 | Phase | Description | Key Action |
 |--------|-------------|------------|
-| **1. Create** | Player 1 creates a game with encrypted move and wager | Move encrypted via BITE SDK, stored on-chain |
+| **1. Create** | Player 1 creates a game with encrypted move and wager | Move encrypted via BITE SDK, stored onchain |
 | **2. Join** | Player 2 joins with encrypted move and CTX gas payment | CTX automatically submitted for decryption |
 | **3. Decrypt** | Network decrypts both moves in next block | `onDecrypt` callback triggered automatically |
 | **4. Resolve** | Contract determines winner and distributes funds | Winner gets 2x wager, draw = refunds |
@@ -213,7 +213,7 @@ function createGame(bytes calldata _encryptedMove, uint256 _wagerAmount, address
 ```
 
 **What happens:**
-1. Player 1's encrypted move is stored on-chain
+1. Player 1's encrypted move is stored onchain
 2. Wager tokens are transferred to the contract
 3. Game enters `Created` state with a 1-hour join deadline
 

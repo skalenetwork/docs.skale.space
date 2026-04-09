@@ -1,0 +1,243 @@
+---
+title: "Primer"
+description: "x402 facilitator with full ERC-20 support, browser payments, and agent authorization tools for SKALE"
+---
+
+[Primer](https://primer.systems) builds tools and infrastructure for the agentic economy. The Primer facilitator supports **all ERC-20 tokens** on SKALE — not just USDC — through the Prism settlement contract. Combined with consumer tools like Primer Pay and MultiClaw, Primer provides the full stack for x402 payments: facilitator, browser extension, agent authorization, and developer SDKs.
+
+## Primer on SKALE
+
+**All ERC-20 tokens.** Most facilitators only support USDC via EIP-3009. Primer's Prism contract enables gasless x402 payments with any ERC-20 token on SKALE Base. The facilitator auto-detects token type — EIP-3009 tokens (USDC, EURC) use native `transferWithAuthorization`, everything else routes through Prism.
+
+**Zero configuration.** The Primer facilitator is the default in the [Primer x402 SDK](https://docs.primer.systems/sdk/overview.html) — `npm install @primersystems/x402` and start accepting payments immediately. No facilitator URL configuration needed.
+
+**Complete toolkit.** Complementing our facilitator are several other useful x402 tools:
+
+- [**Primer Pay**](https://docs.primer.systems/primer-pay.html) — Chrome extension that automatically handles x402 payments as you browse. Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/primer-pay/bckienhfmjoolgkafljofomegfafanmh).
+- [**MultiClaw**](https://docs.primer.systems/multiclaw/overview.html) — Desktop app for authorizing AI agent payments. Delegate spending authority with daily caps, per-request limits, and domain restrictions — your keys never leave the device. Available as a portable executable or via `pip install multiclaw`.
+- [**Test Paywall Generator**](https://www.primer.systems/test-paywall) — Instantly generate a working x402 paywall to test your integration.
+- [**x402 Validator**](https://www.primer.systems/validate) — Validate x402 payment headers and debug formatting issues.
+
+---
+
+## Prerequisites
+
+- A wallet with USDC (or any ERC-20) on SKALE Base
+- Basic understanding of x402 protocol — learn more [here](/get-started/agentic-builders/start-with-x402)
+
+## Supported Networks
+
+| Network | CAIP-2 ID | Status |
+|---------|-----------|--------|
+| SKALE Base Mainnet | `eip155:1187947933` | Supported |
+| SKALE Base Sepolia | `eip155:324705682` | Supported |
+
+**Facilitator endpoint:** `https://x402.primer.systems`
+
+---
+
+## Integration with Primer SDK
+
+The Primer x402 SDK is available for TypeScript and Python. The Primer facilitator is used by default — no endpoint configuration needed.
+
+<Tabs>
+  <Tab title="TypeScript">
+
+    ```bash
+    npm install @primersystems/x402
+    ```
+
+    **Server (Hono):**
+
+    ```typescript
+    const { x402Hono } = require("@primersystems/x402");
+    const { Hono } = require("hono");
+    const { serve } = require("@hono/node-server");
+
+    const app = new Hono();
+
+    app.use("*", x402Hono(process.env.RECEIVING_ADDRESS, {
+      "/api/premium": {
+        amount: "0.001",
+        asset: "0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20", // USDC on SKALE Base
+        network: "eip155:1187947933",                          // SKALE Base Mainnet
+      },
+    }));
+
+    app.get("/api/premium", (c) => {
+      return c.json({ message: "Payment verified on SKALE Base!" });
+    });
+
+    serve({ fetch: app.fetch, port: 3000 });
+    ```
+
+    **Client:**
+
+    ```typescript
+    const { createSigner, x402Fetch } = require("@primersystems/x402");
+
+    const signer = await createSigner("eip155:1187947933", process.env.PRIVATE_KEY);
+    const fetch402 = x402Fetch(fetch, signer, { maxAmount: "1.00" });
+
+    const response = await fetch402("http://localhost:3000/api/premium");
+    console.log(await response.json());
+    ```
+
+  </Tab>
+  <Tab title="Python">
+
+    ```bash
+    pip install primer-x402[fastapi]  # or primer-x402[flask]
+    ```
+
+    **Server (FastAPI):**
+
+    ```python
+    from fastapi import FastAPI
+    from primer_x402 import x402_fastapi
+
+    app = FastAPI()
+
+    app.add_middleware(x402_fastapi(
+        '0xYourWalletAddress',
+        {
+            '/api/premium': {
+                'amount': '0.001',
+                'asset': '0x85889c8c714505E0c94b30fcfcF64fE3Ac8FCb20',  # USDC on SKALE Base
+                'network': 'eip155:1187947933',                           # SKALE Base Mainnet
+            }
+        }
+    ))
+
+    @app.get('/api/premium')
+    async def premium():
+        return {'message': 'Payment verified on SKALE Base!'}
+    ```
+
+    **Client:**
+
+    ```python
+    from primer_x402 import create_signer, x402_requests
+
+    signer = create_signer('eip155:1187947933', os.environ['PRIVATE_KEY'])
+
+    with x402_requests(signer, max_amount='1.00') as session:
+        response = session.get('http://localhost:3000/api/premium')
+        print(response.json())
+    ```
+
+  </Tab>
+  <Tab title="CLI">
+
+    No code needed — make payments directly from the terminal:
+
+    ```bash
+    # TypeScript
+    npx @primersystems/x402 probe https://api.example.com/paid
+    X402_PRIVATE_KEY=0x... npx @primersystems/x402 pay https://api.example.com/paid --max-amount 0.10
+
+    # Python
+    x402 probe https://api.example.com/paid
+    X402_PRIVATE_KEY=0x... x402 pay https://api.example.com/paid --max-amount 0.10
+    ```
+
+  </Tab>
+</Tabs>
+
+---
+
+## Prism: Full ERC-20 Support
+
+Most x402 facilitators are limited to tokens that implement EIP-3009 (like USDC). Primer's **Prism** settlement contract extends x402 to any standard ERC-20 token on SKALE.
+
+**How it works:**
+
+1. Payer approves the Prism contract once (one-time on-chain transaction)
+2. For each payment, the payer signs an EIP-712 authorization off-chain
+3. The facilitator calls `settleERC20()` on Prism to execute the transfer
+4. Prism moves tokens from payer to payee — gasless on SKALE
+
+The facilitator auto-detects token type. If a token supports EIP-3009, it uses the native `transferWithAuthorization` path. Otherwise, it routes through Prism automatically.
+
+Query Prism contract addresses:
+
+```bash
+curl https://x402.primer.systems/contracts
+```
+
+---
+
+## Primer Pay: Browser Extension
+
+[Primer Pay](https://docs.primer.systems/primer-pay.html) is a Chrome extension that detects HTTP 402 responses and handles payment automatically. When you visit a paid resource, the extension intercepts the request, signs an authorization, and retries — all without leaving the page.
+
+- **Automatic interception** — patches `fetch` and `XMLHttpRequest` to detect 402 responses
+- **Spend controls** — per-payment limits, daily caps, confirmation thresholds
+- **Multi-network balances** — view balances across all supported SKALE networks
+- **Transaction history** — track all payments by domain and network
+
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/primer-pay/bckienhfmjoolgkafljofomegfafanmh).
+
+---
+
+## MultiClaw: Agent Payment Authorization
+
+[MultiClaw](https://docs.primer.systems/multiclaw/overview.html) is a portable desktop application that acts as a payment authorization oracle for AI agents. When your agents encounter x402 paywalls, they request authorization from MultiClaw. You approve or deny — your private keys never leave the device.
+
+- **Key isolation** — agents receive tokens with spending limits, not your private keys
+- **Spend policies** — daily caps, per-request limits, auto-approve thresholds, domain restrictions
+- **Multi-agent support** — register unlimited agents, each with their own policy.
+- **Universally compatible** — fast setup with all types of agent, any model.
+- **Portable** — download as a standalone executable (runs from USB) or `pip install multiclaw`
+
+```bash
+# Install via pip
+pip install multiclaw[gui]
+
+# Or download the portable executable from GitHub
+# https://github.com/primer-systems/multiclaw/releases
+```
+
+---
+
+## Developer Tools
+
+**[Test Paywall Generator](https://www.primer.systems/test-paywall)** — Generate a working x402 paywall endpoint instantly. Use it to test your client integration without deploying your own server.
+
+**[x402 Validator](https://www.primer.systems/validate)** — Paste an x402 payment header and validate the formatting, signature, and fields. Essential for debugging integration issues.
+
+---
+
+## API Reference
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /verify` | Verify payment signature without settling |
+| `POST /settle` | Verify and execute payment on-chain |
+| `GET /supported` | List supported schemes and networks |
+| `GET /health` | Health check and configuration status |
+| `GET /contracts` | Get Prism contract addresses |
+
+---
+
+## Next Steps
+
+- [SKALE Supported Facilitators](/get-started/agentic-builders/facilitators) — See all available facilitators
+- [Run Your Own Facilitator](/cookbook/x402/facilitator) — Deploy your own facilitator infrastructure
+- [Accept Payments](/cookbook/x402/accepting-payments) — Protect endpoints with payment middleware
+- [Make Payments](/cookbook/x402/buying) — Build clients that handle x402 payments
+
+## Resources
+
+- [Primer Documentation](https://docs.primer.systems)
+- [Primer Pay (Chrome Web Store)](https://chromewebstore.google.com/detail/primer-pay/bckienhfmjoolgkafljofomegfafanmh)
+- [MultiClaw (GitHub)](https://github.com/primer-systems/multiclaw)
+- [x402 SDK — TypeScript](https://docs.primer.systems/sdk/typescript.html)
+- [x402 SDK — Python](https://docs.primer.systems/sdk/python.html)
+- [x402 Protocol Specification](https://x402.org)
+
+---
+
+<Note>
+This entity -- Primer -- is deployed and actively supporting SKALE. These are 3rd party services that may have their own terms and conditions and privacy policies. Use these services at your own risk. AI and agents is a highly experimental space; the 3rd party software solutions may have bugs or be unaudited. You and your agents and your customers use all 3rd party services chosen at your own risk and per their terms.
+</Note>
