@@ -173,7 +173,7 @@
           {
             "group": "SDKs",
             "pages": [
-              
+
               "developers/sdks/skalenetwork-cli",
               "developers/sdks/skalenetwork-mpp-sdk",
               "developers/sdks/skalenetwork-bite"
@@ -267,7 +267,8 @@
             "group": "Privacy",
             "pages": [
               "cookbook/privacy/encrypted-transactions",
-              "cookbook/privacy/conditional-transactions"
+              "cookbook/privacy/conditional-transactions",
+              "cookbook/privacy/encrypted-chat"
             ]
           },
           {

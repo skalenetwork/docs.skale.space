@@ -1,0 +1,676 @@
+---
+title: "Example 1: Encrypted Chat"
+description: "Complete step-by-step guide to implementing a private on-chain chat using BITE Threshold Encryption, ECIES, and Conditional Transactions"
+---
+
+## Encrypted Chat with BITE
+
+This tutorial walks you through building an **Encrypted Chat** that combines all three of BITE-enabled SKALE chains core capabilities: Threshold Encryption (TE), ECIES Precompile, and Conditional Transactions (CTX). Messages and session secrets are committed on-chain as ciphertext. No plaintext ever appears in a normal transaction — only inside the trusted BITE callback path.
+
+<Tip title="Why BITE for On-Chain Chat?">
+Standard messaging dApps either store plaintext on-chain (publicly readable) or rely on off-chain relayers for encryption. With BITE, confidential data travels through the network's threshold decryption layer and is immediately re-encrypted on-chain for the intended recipients. No server ever holds plaintext, and no third party manages your keys.
+</Tip>
+
+## How it Works
+
+The contract uses three BITE primitives in a coordinated flow:
+
+| Phase | Description | Key Action |
+|-------|-------------|------------|
+| **1. Register** | Each user registers a long-term secp256k1 public key and optionally pre-funds their callback gas balance. | Save the user's public key (+ optional callback gas). |
+| **2. Create Session (CTX + TE)** | The session initiator encrypts a fresh session private key off-chain via Threshold Encryption, then submits it as a CTX encrypted argument. | Submit the session secret as a CTX-encrypted argument. |
+| **2.1. Session Callback (ECIES)** | BITE decrypts the session key and calls `onDecrypt`. The contract immediately re-encrypts the session secret for each participant using their registered public key via on-chain ECIES. | Re-encrypt the session secret for each recipient using ECIES. |
+| **3. Send Message (CTX + TE)** | A sender encrypts plaintext off-chain via TE and calls `sendMessage`. The contract submits a CTX with the ciphertext as the encrypted argument. | Submit the message ciphertext as a CTX-encrypted argument. |
+| **3.1. Message Callback (ECIES)** | BITE decrypts the message and calls `onDecrypt`. The contract re-encrypts the plaintext under the session's public key via ECIES and stores the resulting ciphertext. | Re-encrypt under the session public key with ECIES; store ciphertext. |
+| **4. Read + Decrypt Off-Chain** | Participants fetch their individualized encrypted session key, ECIES-decrypt it locally, then use that session key to ECIES-decrypt each stored message. | Client-side ECIES decryption of session key and messages. |
+
+<Note title="Before You Start">
+This tutorial requires access to a CTX-enabled SKALE chain. The demo is configured for **SKALE on Base Testnet**. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+</Note>
+
+**Prerequisites:**
+- Node.js 22+ and yarn/npm
+- Access to a CTX-enabled SKALE chain
+- Basic knowledge of Solidity and TypeScript
+
+---
+
+## Step 1: Clone the Project
+
+Clone the `bite-solidity` repository. It contains multiple examples that demonstrate different BITE features.
+
+```bash
+# Clone the repository
+git clone https://github.com/skalenetwork/bite-solidity.git
+
+# (Optional) Checkout a stable commit for this example
+git checkout 665e6a4b4ab287621f991ce350932398c38f3b47
+
+# (Optional) If in detached HEAD state
+git switch -c my-experiment-branch
+
+# Navigate to the encrypted-chat example
+cd bite-solidity/examples/encrypted-chat
+```
+
+**Install Dependencies & Build:**
+
+```bash
+# Install Hardhat dependencies
+yarn install
+
+# Compile smart contracts
+yarn compile
+```
+
+**Deploy the Contract:**
+
+<Note>
+**Fund Your Wallet:** This process consumes gas tokens.
+</Note>
+
+```bash
+# Set environment variables - Adjust your endpoint acordingly
+export ENDPOINT="https://base-sepolia-testnet.skalenodes.com/v1/base-testnets"
+export PRIVATE_KEY="0x..."  # Your wallet private key
+
+# Deploy EncryptedMessenger and run smoke test
+yarn hardhat run scripts/deploy.ts --network custom
+```
+
+**Expected Output:**
+```
+Deployer: 0x...
+EncryptedMessenger deployed at: 0x...
+EncryptedMessenger verified.
+
+--- Smoke Test ---
+Deployer registered.
+User2 (0x...) funded with 1 ETH.
+User2 registered.
+Both users confirmed registered.
+createSession tx confirmed — waiting for callback...
+Session created successfully!
+
+--- Smoke Test Passed ---
+```
+
+**Project Structure:**
+
+```
+encrypted-chat/
+├── contracts/
+│   └── EncryptedMessenger.sol   # Main contract
+├── scripts/
+│   └── deploy.ts                # Deploy + smoke-test script
+├── demo/                        # Next.js demo UI
+│   └── src/
+│       ├── app/
+│       │   ├── api/             # Server-side API routes
+│       │   └── page.tsx         # Chat UI
+│       └── lib/
+│           ├── contract.ts      # Ethers contract helpers
+│           ├── service.ts       # Service layer (write ops)
+│           └── crypto.ts        # Off-chain ECIES helpers
+└── hardhat.config.ts
+```
+
+---
+
+## Step 2: Smart Contract Overview
+
+The contract is `EncryptedMessenger.sol`. It stores sessions and messages exclusively as ciphertext, and all sensitive plaintext is only ever handled inside the `onDecrypt` callback triggered by BITE.
+
+**Core Data Structures:**
+
+```solidity
+import { BITE, PublicKey } from "@skalenetwork/bite-solidity/contracts/BITE.sol";
+import { IBiteSupplicant } from "@skalenetwork/bite-solidity/contracts/interfaces/IBiteSupplicant.sol";
+
+contract EncryptedMessenger is IBiteSupplicant {
+
+    struct Session {
+        address user1;
+        address user2;
+        uint256[] messageIds;
+        PublicKey publicSessionKey;               // Session public key (used to re-encrypt messages)
+        bytes encryptedSessionKeyForUser1;  // ECIES ciphertext of Private SessionKey encrypted with user1's key
+        bytes encryptedSessionKeyForUser2;  // ECIES ciphertext of Private SessionKey encrypted with user2's key
+    }
+
+    struct Message {
+        uint256 timestamp;
+        address sender;
+        uint256 sessionId;
+        bytes encryptedContent;  // ECIES ciphertext using public session key
+    }
+
+    mapping(uint256 sessionId => Session session)    public sessions;
+    mapping(uint256 messageId => Message message)    public messages;
+    mapping(address user => PublicKey publicKey)     public userPublicKeys;
+    mapping(address user => uint256 deposits)        public userDeposits;
+    mapping(address callbackSender => bool authorized) private _accessList;
+}
+```
+
+**BITE Precompile Addresses (from `bite-solidity`):**
+
+| Constant | Address | Purpose |
+|----------|---------|---------|
+| `BITE.SUBMIT_CTX_ADDRESS` | `0x...1B` | Submit encrypted arguments for automatic decryption |
+| `BITE.ENCRYPT_ECIES_ADDRESS` | `0x...1D` | On-chain ECIES encryption using a secp256k1 public key |
+
+---
+
+## Step 3: User Registration & Deposit System
+
+Before a session can be created, both users must register their long-term secp256k1 public key. This key will be used later to ECIES-encrypt the session secret specifically for each user.
+
+**Registration:**
+
+```solidity
+function registerUser(PublicKey memory publicKey) external payable {
+    // Derives address from public key to use as mapping key
+    userPublicKeys[_publicKeyToAddress(publicKey)] = publicKey;
+    // Allows depositing Gas tokens to the registered user
+    _deposit(_publicKeyToAddress(publicKey)); // Any Gas tokens sent are credited toward future callback gas for the registered user
+}
+```
+
+**Off-Chain (TypeScript):**
+
+```typescript
+import { SigningKey } from "ethers";
+
+// Derive the uncompressed secp256k1 public key from a wallet private key
+export const privateKeyToPublicKey = (privateKey: string): PublicKey => {
+    const signingKey = new SigningKey(privateKey);
+    const publicKey = signingKey.publicKey; // "0x04<x><y>"
+
+    return {
+        x: `0x${publicKey.slice(4, 68)}`,
+        y: `0x${publicKey.slice(68, 132)}`,
+    };
+};
+
+// Register user on-chain
+const publicKey = privateKeyToPublicKey(env.USER1_PRIVATE_KEY);
+await contract.registerUser(publicKey, { gas: 1_000_000 });
+```
+
+**Deposit System:**
+
+The contract includes a pre-funding mechanism so users don't need to attach Gas Tokens to every message transaction. The contract deducts from the deposited balance when a CTX is submitted.
+
+```solidity
+function _createCTX(
+    bytes[] memory encryptedArgs,
+    bytes[] memory plaintextArgs,
+    uint256 callbackGas
+) private {
+    uint256 gasTokens = msg.value;
+    if (gasTokens == 0) {
+        // Deduct from pre-funded deposit
+        if (userDeposits[msg.sender] < callbackGas * tx.gasprice) {
+            revert NotEnoughFundsForCallback();
+        }
+        gasTokens = callbackGas * tx.gasprice;
+        userDeposits[msg.sender] -= gasTokens;
+    }
+
+    uint256 allowedGas = gasTokens / tx.gasprice;
+    address payable sender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        allowedGas,
+        encryptedArgs,
+        plaintextArgs
+    );
+
+    // Whitelist this CTX sender and forward the gas budget
+    _accessList[sender] = true;
+    sender.sendValue(gasTokens);
+}
+```
+
+<Tip title="Why pre-fund?">
+Without deposits, every `sendMessage` call requires the user to calculate and attach the exact Gas Tokens amount for callback gas. Deposits improve UX by letting the contract handle that internally.
+</Tip>
+
+<Tip title="Withdraw">
+Users can withdraw their deposited Gas tokens at any time by calling `withdraw()` function.
+</Tip>
+
+---
+
+## Step 4: Session Creation — CTX + Threshold Encryption
+
+This step showcases how off-chain **Threshold Encryption** and **CTX** work together to move a secret into the contract without it ever appearing in plaintext on-chain.
+
+**The Session Secret:**
+
+A fresh ephemeral key pair is generated as the session key. The session's public key is passed as plaintext (it is the shared session encryption key), while the private key is the secret — it must travel into the contract securely.
+
+**Off-Chain (TypeScript) — Encrypting the Session Secret with TE:**
+
+```typescript
+import { BITE } from "@skalenetwork/bite";
+
+const sessionWallet = ethers.Wallet.createRandom();
+const sessionPublicKey = privateKeyToPublicKey(sessionWallet.privateKey);
+
+// Encrypt the session private key via BITE Threshold Encryption.
+// Only the contract (CONTRACT_ADDRESS) can trigger its decryption via CTX.
+// The endpoint is only used to obtain the common public Key for encryption
+const bite = new BITE(env.BITE_ENDPOINT);
+const encryptedSessionKey = await bite.encryptMessageForCTX(
+    sessionWallet.privateKey,
+    env.CONTRACT_ADDRESS,
+);
+
+// Submit the CTX — the plaintext session key never appears in the tx
+await contract.createSession(
+    w1.address,
+    w2.address,
+    sessionPublicKey,              // public half — safe to pass as plaintext
+    ethers.getBytes(encryptedSessionKey),  // TE ciphertext of the private half
+    { gas: 2_000_000 },
+);
+```
+
+**On-Chain — Submitting the CTX:**
+
+```solidity
+function createSession(
+    address user1,
+    address user2,
+    PublicKey memory sessionKey,
+    bytes memory encryptedSessionKey
+) external payable {
+    require(msg.sender == user1 || msg.sender == user2, AccessDenied());
+    require(_isUserRegistered(user1), UserNotRegistered(user1));
+    require(_isUserRegistered(user2), UserNotRegistered(user2));
+    require(!_sessionExists(_generateSessionId(user1, user2)),
+        SessionAlreadyExistsForUsers(user1, user2));
+
+    bytes[] memory encryptedArgs = new bytes[](1);
+    bytes[] memory plaintextArgs = new bytes[](3);
+
+    encryptedArgs[0] = encryptedSessionKey;  // TE ciphertext — BITE will decrypt this
+
+    plaintextArgs[0] = abi.encode(user1);
+    plaintextArgs[1] = abi.encode(user2);
+    plaintextArgs[2] = abi.encode(sessionKey);   // session public key
+
+    _createCTX(encryptedArgs, plaintextArgs, sessionCreationGas);
+}
+```
+
+**What happens:**
+1. `encryptedSessionKey` is the TE ciphertext of the session private key
+2. BITE network holds threshold key shares — no single node sees the plaintext
+3. The CTX is queued; in the next block BITE decrypts it and calls `onDecrypt`
+
+---
+
+## Step 5: Session Callback — On-Chain ECIES Re-Encryption
+
+This step showcases **on-chain ECIES encryption**. When BITE calls `onDecrypt`, the decrypted session secret is immediately re-encrypted for each participant using their long-term public key — all inside the trusted callback.
+
+```solidity
+function onDecrypt(
+    bytes[] memory encryptedArgs,
+    bytes[] memory plaintextArgs
+) external override {
+    require(_accessList[msg.sender], AccessDenied());
+    _accessList[msg.sender] = false;
+
+    // Dispatch by argument shape
+    if (encryptedArgs.length == 1 && plaintextArgs.length == 4) {
+        _handleSessionCreation(encryptedArgs, plaintextArgs);
+        return;
+    }
+    if (encryptedArgs.length == 1 && plaintextArgs.length == 2) {
+        _handleMessageSending(encryptedArgs, plaintextArgs);
+        return;
+    }
+    revert CallbackNotRecognized();
+}
+
+function _handleSessionCreation(
+    bytes[] memory decryptedArgs,
+    bytes[] memory plaintextArgs
+) private {
+    address user1 = abi.decode(plaintextArgs[0], (address));
+    address user2 = abi.decode(plaintextArgs[1], (address));
+    PublicKey memory publicSessionKey = abi.decode(plaintextArgs[2], (PublicKey));
+    bytes memory decryptedSessionKey = decryptedArgs[0]; // BITE-decrypted plaintext
+
+    // Re-encrypt the session secret for user1 using their registered public key
+    bytes memory encryptedForUser1 = BITE.encryptECIES(
+        BITE.ENCRYPT_ECIES_ADDRESS,
+        decryptedSessionKey,
+        userPublicKeys[user1]
+    );
+
+    // Re-encrypt the same session secret for user2
+    bytes memory encryptedForUser2 = BITE.encryptECIES(
+        BITE.ENCRYPT_ECIES_ADDRESS,
+        decryptedSessionKey,
+        userPublicKeys[user2]
+    );
+
+    // Store the session — both users now have their own copy of the session secret
+    uint256 sessionId = _generateSessionId(user1, user2);
+    Session storage session = sessions[sessionId];
+    session.user1 = user1;
+    session.user2 = user2;
+    session.publicSessionKey = publicSessionKey;
+    session.encryptedSessionKeyForUser1 = encryptedForUser1;
+    session.encryptedSessionKeyForUser2 = encryptedForUser2;
+
+    emit SessionCreated(user1, user2);
+}
+```
+
+**The ECIES flow inside the callback:**
+
+```
+BITE decrypts: encryptedSessionKey  →  sessionPrivateKey (plaintext)
+                                              │
+                          ┌───────────────────┴────────────────────┐
+                          │                                        │
+              ECIES encrypt with user1.pubKey        ECIES encrypt with user2.pubKey
+                          │                                        │
+              encryptedSessionKeyForUser1        encryptedSessionKeyForUser2
+                    (stored on-chain)                   (stored on-chain)
+```
+
+<Note title="Key Security Property">
+The session private key is only ever plaintext inside the `onDecrypt` callback, which runs in BITE's trusted execution environment. It is never stored as plaintext — only as ECIES ciphertext personalized for each user.
+</Note>
+
+---
+
+## Step 6: Sending Messages — CTX + Threshold Encryption
+
+Each message follows the same CTX pattern as session creation. The plaintext is encrypted off-chain with TE and submitted as a CTX encrypted argument.
+
+**Off-Chain (TypeScript) — Encrypting the Message:**
+
+```typescript
+export const sendMessage = async (
+    fromUserId: 1 | 2,
+    plaintext: string,
+): Promise<string> => {
+    const fromWallet = getWalletForUser(fromUserId);
+    const toWallet   = getWalletForUser(fromUserId === 1 ? 2 : 1);
+    const contract   = getContract(fromWallet);
+
+    // Convert plaintext to hex bytes
+    const plaintextHex = ethers.hexlify(ethers.toUtf8Bytes(plaintext));
+
+    // Threshold-encrypt for CTX — only the contract can trigger decryption
+    const bite = new BITE(env.BITE_ENDPOINT);
+    const encryptedContent = await bite.encryptMessageForCTX(
+        plaintextHex,
+        env.CONTRACT_ADDRESS,
+    );
+
+    // Submit — message plaintext is never in the transaction
+    const tx = await contract.sendMessage(
+        toWallet.address,
+        ethers.getBytes(encryptedContent),
+        { gas: 1_000_000 },
+    );
+    return (await tx.wait()).hash;
+};
+```
+
+**On-Chain — Submitting the Message CTX:**
+
+```solidity
+function sendMessage(address to, bytes memory encryptedContent) external payable {
+    // Requires an active session between msg.sender and `to`
+    require(
+        _sessionExists(_generateSessionId(msg.sender, to)),
+        NoSessionForUsers(msg.sender, to)
+    );
+
+    bytes[] memory encryptedArgs = new bytes[](1);
+    bytes[] memory plaintextArgs = new bytes[](2);
+
+    encryptedArgs[0] = encryptedContent;   // TE ciphertext — BITE will decrypt
+
+    plaintextArgs[0] = abi.encode(msg.sender); // sender identity (public)
+    plaintextArgs[1] = abi.encode(to);          // recipient identity (public)
+
+    _createCTX(encryptedArgs, plaintextArgs, messageSendingGas);
+}
+```
+
+---
+
+## Step 7: Message Callback — On-Chain ECIES Storage
+
+When the message CTX resolves, BITE calls `onDecrypt` with the decrypted message bytes. The contract re-encrypts them under the **session public key** using ECIES and stores the ciphertext permanently.
+
+```solidity
+function _handleMessageSending(
+    bytes[] memory decryptedArgs,
+    bytes[] memory plaintextArgs
+) private {
+    address sender    = abi.decode(plaintextArgs[0], (address));
+    address recipient = abi.decode(plaintextArgs[1], (address));
+    bytes memory decryptedContent = decryptedArgs[0]; // BITE-decrypted plaintext
+
+    uint256 sessionId    = _generateSessionId(sender, recipient);
+    Session storage session = sessions[sessionId];
+
+    // Re-encrypt message under the session's public key
+    // abi.encode wraps the bytes so they can be decoded off-chain after ECIES decryption
+    bytes memory encryptedContent = BITE.encryptECIES(
+        BITE.ENCRYPT_ECIES_ADDRESS,
+        abi.encode(decryptedContent),
+        session.publicSessionKey
+    );
+
+    // Store — plaintext never written to state
+    uint256 messageId = messageIdCounter;
+    ++messageIdCounter;
+    messages[messageId] = Message({
+        timestamp:        block.timestamp,
+        sender:           sender,
+        sessionId:        sessionId,
+        encryptedContent: encryptedContent
+    });
+    session.messageIds.push(messageId);
+
+    emit MessageSent(sessionId, messageId);
+}
+```
+
+**Complete Message Flow:**
+
+```
+sendMessage(to, encryptedContent [TE])
+        │
+        ▼ CTX submitted
+BITE threshold-decrypts encryptedContent
+        │
+        ▼ onDecrypt callback
+_handleMessageSending(decryptedContent, [sender, recipient])
+        │
+        ▼ BITE.encryptECIES(decryptedContent, sessionKey.pub)
+messages[id].encryptedContent = ECIES ciphertext
+```
+
+---
+
+## Step 8: Off-Chain Decryption
+
+Participants retrieve their encrypted session key, ECIES-decrypt it with their own private key, then use the session private key to decrypt each stored message.
+
+**ECIES Decryption Helper (TypeScript):**
+
+```typescript
+import crypto from "node:crypto";
+
+// ECIES decrypt: secp256k1 ECDH + AES-256-CBC
+// Layout: [ 16 bytes IV ][ 33 bytes compressed ephemeral pubkey ][ ciphertext ]
+export const decrypt = (privateKey: string, encryptedHex: string): Buffer => {
+    const data = Buffer.from(encryptedHex.replace(/^0x/, ""), "hex");
+
+    const iv        = data.subarray(0,  16);
+    const ephPub    = data.subarray(16, 49);
+    const ciphertext = data.subarray(49);
+
+    const ecdh = crypto.createECDH("secp256k1");
+    ecdh.setPrivateKey(Buffer.from(privateKey.replace(/^0x/, ""), "hex"));
+
+    const sharedSecret = ecdh.computeSecret(ephPub);
+    const key = crypto.createHash("sha256").update(sharedSecret).digest();
+
+    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+    return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+};
+```
+
+**Step 1 — Retrieve and decrypt the session key:**
+
+```typescript
+export const getSessionKeyForUser = async (userId: 1 | 2): Promise<string> => {
+    const contract = getContract();
+    const addr1 = getWalletForUser(1).address;
+    const addr2 = getWalletForUser(2).address;
+
+    // Reproduce the contract's session ID generation formula
+    const [min, max] = addr1.toLowerCase() < addr2.toLowerCase()
+        ? [addr1, addr2] : [addr2, addr1];
+    const sessionId = BigInt(
+        ethers.keccak256(ethers.solidityPacked(["address", "address"], [min, max]))
+    );
+
+    // Fetch the ECIES ciphertext personalized for this user
+    const userAddr = getWalletForUser(userId).address;
+    const encryptedKey: string = await contract.getSessionKeyForUser(sessionId, userAddr);
+
+    // Decrypt with the user's own private key
+    const privateKey = userId === 1 ? env.USER1_PRIVATE_KEY : env.USER2_PRIVATE_KEY;
+    const decryptedBytes = decrypt(privateKey, encryptedKey);
+    return `0x${decryptedBytes.toString("hex")}`;  // session private key
+};
+```
+
+**Step 2 — Decrypt a stored message with the session key:**
+
+```typescript
+export const decryptMessage = (
+    encryptedContentHex: string,
+    sessionPrivateKeyHex: string,
+): string => {
+    // ECIES-decrypt using the session private key
+    const decryptedBytes = decrypt(sessionPrivateKeyHex, encryptedContentHex);
+
+    // Contract stored: abi.encode(decryptedContent) — unwrap the ABI layer
+    const decoded = ethers.AbiCoder.defaultAbiCoder().decode(
+        ["bytes"],
+        `0x${decryptedBytes.toString("hex")}`,
+    );
+    const innerHex = decoded[0] as string;
+    return ethers.toUtf8String(innerHex);
+};
+```
+
+**Full off-chain read path:**
+
+```
+getSessionKeyForUser(userId)
+  → contract.getSessionKeyForUser(sessionId, userAddr)   // fetch ECIES blob
+  → decrypt(userPrivateKey, encryptedKey)                 // ECIES → session private key
+
+decryptMessage(encryptedContent, sessionPrivateKey)
+  → decrypt(sessionPrivateKey, encryptedContent)          // ECIES → abi.encode(bytes)
+  → AbiCoder.decode(["bytes"], ...)                       // unwrap ABI
+  → ethers.toUtf8String(innerHex)                         // UTF-8 plaintext
+```
+
+---
+
+## Step 9: Demo UI Setup
+
+A minimal Next.js demo app lives in `demo/`. It provides a side-by-side chat interface for two server-managed demo accounts. No browser wallet is required — the server signs all transactions using private keys from `.env`.
+
+**Setup:**
+
+```bash
+cd demo
+cp .env.example .env
+# Edit .env with your values
+npm install
+```
+
+**Environment Variables:**
+
+| Variable | Description |
+|----------|-------------|
+| `RPC_URL` | JSON-RPC endpoint for the target SKALE chain |
+| `BITE_ENDPOINT` | BITE threshold encryption endpoint (usually the same as `RPC_URL`) |
+| `CONTRACT_ADDRESS` | Deployed `EncryptedMessenger` address |
+| `USER1_PRIVATE_KEY` | Private key for demo User 1 |
+| `USER2_PRIVATE_KEY` | Private key for demo User 2 |
+
+**Demo Project Structure:**
+
+```
+demo/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── register/    # POST — register a user on-chain
+│   │   │   ├── session/     # POST — create a session (CTX + TE)
+│   │   │   ├── send/        # POST — send a message (CTX + TE)
+│   │   │   ├── messages/    # GET  — fetch raw (encrypted) messages
+│   │   │   ├── session-key/ # GET  — ECIES-decrypt session key server-side
+│   │   │   ├── decrypt/     # POST — ECIES-decrypt a single message
+│   │   │   ├── deposit/     # POST — deposit callback gas
+│   │   │   ├── withdraw/    # POST — withdraw unused deposit
+│   │   │   ├── transfer/    # POST — transfer credits between users
+│   │   │   └── state/       # GET  — full dashboard state
+│   │   └── page.tsx         # Chat UI (side-by-side panes)
+│   └── lib/
+│       ├── contract.ts      # Ethers provider + typed contract
+│       ├── service.ts       # Service layer wrapping contract calls
+│       └── crypto.ts        # Off-chain ECIES helpers
+└── package.json
+```
+
+<Note title="Custodial Demo">
+This demo is **custodial by design** — the server holds both user private keys and signs transactions on their behalf. It is intended for local testing and demonstrations only, not production use.
+</Note>
+
+---
+
+## Step 10: Run the Application
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000`. The UI provides two side-by-side panes (User 1 / User 2), each with:
+
+1. **Deposit Credits** — Pre-fund callback gas so messages don't require attaching Gas Tokens each time
+2. **Register** — Publish your secp256k1 public key on-chain (enabled after depositing)
+3. **Create Session** — Trigger the CTX that bootstraps the shared session secret (enabled once both users are registered)
+4. **Chat Window** — Messages are shown as truncated ciphertext by default; click the unlock button to ECIES-decrypt inline
+5. **Send** — Type a message and send it via CTX
+
+After the session is created (one block for the CTX callback), messages can be sent. Each message is also resolved in the next block after `sendMessage` is called.
+
+---
+
+**Resources:**
+
+- **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
+- **bite-solidity Repository**: [GitHub Repository](https://github.com/skalenetwork/bite-solidity)
+- **BITE Protocol Introduction**: [Introduction](/concepts/bite-protocol/intro-bite-protocol)
+- **BITE Protocol Phases**: [BITE Phases](/concepts/bite-protocol/phases)
