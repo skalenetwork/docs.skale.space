@@ -1,11 +1,11 @@
 ---
 title: "Privacy"
-description: "How BITE Protocol brings confidential computing to SKALE"
+description: "How Programmable Privacy brings confidential computing to SKALE"
 ---
 
 ## Overview
 
-SKALE is designed for consumer-grade UX with zero gas fees and instant finality. BITE Protocol adds privacy—encrypted transactions and confidential state—without breaking EVM compatibility.
+SKALE is designed for consumer-grade UX with zero gas fees and instant finality. Programmable Privacy adds encryption—encrypted transactions and confidential state—without breaking EVM compatibility.
 
 ## Why Privacy Matters
 
@@ -16,9 +16,9 @@ Public ledgers expose amounts, participants, and intent. This is incompatible wi
 - **Enterprise** - Business-sensitive data visible to all competitors
 - **Gaming** - Moves and strategies visible to opponents in real-time
 
-## How BITE Solves Privacy
+## How SKALE Solves Privacy
 
-BITE (Blockchain Integrated Threshold Encryption) delivers:
+SKALE's Programmable Privacy suite delivers:
 
 - **Confidential transactions** - Encrypt destination and calldata during mempool and consensus (visible after execution)
 - **Trustless execution** - Threshold encryption secures data without trusted middlemen
@@ -82,14 +82,14 @@ const encryptedInput = await bite.encryptMessage(ethers.toUtf8Bytes(JSON.stringi
 
 ## Implementation
 
-- **BITE Protocol** - Threshold encryption and commit-then-reveal flows
+- **Programmable Privacy** - Threshold encryption and commit-then-reveal flows
 - **Trusted Execution Environments (TEEs)** - Hardware-backed confidentiality for advanced use cases
 - **Threshold cryptography** - BLS signatures and distributed key generation
 - **Secure messaging** - Confidential communication across chains
 
 ## Related Topics
 
-- [BITE Protocol](/concepts/bite-protocol) - Learn about the protocol enabling privacy
-- [Encrypted Transactions](/concepts/bite-protocol/encrypted-transactions) - Phase 1: confidential transactions
-- [Conditional Transactions](/concepts/bite-protocol/conditional-transactions) - Phase 2: on-demand decryption
+- [Programmable Privacy](/concepts/programmable-privacy/intro) - Learn about the privacy features on SKALE
+- [Encrypted Transactions](/concepts/programmable-privacy/encrypted-transactions) - Confidential transactions
+- [Conditional Transactions](/concepts/programmable-privacy/conditional-transactions) - On-demand decryption
 - [Trusted Execution Environments](/concepts/skale-chain/tees) - Hardware-based security

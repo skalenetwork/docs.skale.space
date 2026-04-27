@@ -1,0 +1,77 @@
+---
+title: "Programmable Privacy"
+description: "Threshold encryption, confidential state, and private transactions on SKALE"
+---
+
+## What Is Programmable Privacy?
+
+SKALE's Programmable Privacy suite adds encryption to blockchain transactions and state while keeping full EVM compatibility. Built on threshold encryption, it enables MEV-resistant transactions, confidential smart contracts, and encrypted token balances — all without trusted third parties.
+
+## Why Programmable Privacy?
+
+Public blockchains expose everything — transaction amounts, contract calls, user intent. This creates problems:
+
+- **MEV** — Bots see your transactions before they're confirmed and front-run them
+- **Privacy** — Sensitive business and personal data is visible to everyone
+- **Competition** — Competitors can monitor your contract interactions
+
+Programmable Privacy solves these problems at the protocol layer without breaking EVM compatibility.
+
+## Features
+
+| Feature | Status | Chain Availability |
+|---------|--------|-------------------|
+| [Encrypted Transactions](/concepts/programmable-privacy/encrypted-transactions) | Available | SKALE Base, SKALE Base Sepolia |
+| [Conditional Transactions](/concepts/programmable-privacy/conditional-transactions) | Available | SKALE Base, SKALE Base Sepolia |
+| [Re-encryption](/concepts/programmable-privacy/re-encryption) | Beta | SKALE Base Sepolia |
+| [Confidential Tokens](/concepts/programmable-privacy/confidential-tokens) | Experimental | SKALE Base Sepolia |
+
+## How It Works
+
+Programmable Privacy extends SKALE with threshold encryption built into consensus:
+
+1. **Encrypt** — Your wallet or contract encrypts data using SKALE's threshold public key
+2. **Submit** — Encrypted data is sent to a precompile or smart contract
+3. **Finalize** — Consensus finalizes the encrypted data without seeing contents
+4. **Decrypt** — After finality, the validator committee runs threshold decryption
+5. **Execute** — Decrypted data executes normally in the EVM
+
+This is **commit-then-reveal** at the protocol level — inclusion happens before anyone can read the data.
+
+## Key Properties
+
+### MEV Resistance
+
+By encrypting transaction fields, Programmable Privacy removes the information MEV bots need:
+
+- No front-running (intent hidden until finality)
+- No sandwich attacks (bots can't see swaps)
+- No censorship (validators can't filter by content)
+
+### Threshold Decryption
+
+No single node can decrypt data. The validator committee jointly decrypts using threshold BLS — a minimum number of validators must collaborate. Keys rotate each epoch using onchain DKG.
+
+### Zero Trust
+
+You don't need to trust any single party. The cryptography ensures:
+
+- No early decryption (requires threshold of validators)
+- No selective decryption (all or nothing per epoch)
+- No single point of failure (distributed key generation)
+
+## EVM Compatible
+
+Programmable Privacy works with existing tooling:
+
+- MetaMask, WalletConnect, and other wallets
+- Foundry, Hardhat, and other development frameworks
+- Ethers.js, Viem, and other web3 libraries
+- Existing Solidity contracts (no changes needed for encrypted transactions)
+
+## Learn More
+
+- [Encrypted Transactions](/concepts/programmable-privacy/encrypted-transactions) — Hide transaction payloads during mempool and consensus
+- [Conditional Transactions](/concepts/programmable-privacy/conditional-transactions) — Smart contracts that request decryption on-demand
+- [Re-encryption](/concepts/programmable-privacy/re-encryption) — Encrypt data for specific viewers or private onchain state
+- [Confidential Tokens](/concepts/programmable-privacy/confidential-tokens) — ERC20 tokens with encrypted balances

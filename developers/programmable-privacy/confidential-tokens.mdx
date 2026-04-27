@@ -1,0 +1,89 @@
+---
+title: "Confidential Tokens"
+description: "Developer guide for building ERC20 tokens with encrypted balances on SKALE"
+---
+
+<Note>
+**Experimental (testnet only) on SKALE Base Sepolia** — Confidential Tokens are in early development. API may change significantly. Not yet available on mainnet.
+</Note>
+
+## Overview
+
+Confidential Tokens are ERC20 tokens where balances are encrypted onchain using a dual-encryption model. No plaintext balance is ever stored. The network can verify and process transfers without seeing amounts, and token holders can read their balances privately off-chain.
+
+## Dual-Encryption Model
+
+| Layer | Key | Purpose | Who Can Decrypt |
+|-------|-----|---------|-----------------|
+| TE (Threshold Encryption) | Network BLS key | On-chain logic (transfers, sufficiency checks) | Consensus via CTX callback |
+| ECIES | Recipient's secp256k1 key | Off-chain balance viewing | Token holder's private key |
+
+Both layers encrypt every balance update. The TE layer allows the network to verify and process transfers. The ECIES layer allows the token holder to read their balance privately off-chain.
+
+## Architecture
+
+A confidential token transfer works like this:
+
+```
+transfer(from, to, amount)
+  → TE-encrypt (from_balance, to_balance, amount)
+  → SubmitCTX(0x1B, encryptedArgs, [TransferInfo plaintext])
+    → Consensus decrypts
+      → onDecrypt() callback
+        → Validate sufficiency
+        → _setBalance():
+            → EncryptTE(0x1D, new_balance) → _thresholdBalances
+            → EncryptECIES(0x1C, new_balance, viewerPubKey) → _userBalances
+```
+
+## Key Contracts
+
+| Contract | Purpose |
+|----------|---------|
+| `ConfidentialToken` | Core confidential ERC20 implementation |
+| `ConfidentialWrapper` | Wraps an existing ERC20 into a confidential token |
+| `MintableConfidentialToken` | ConfidentialToken with restricted mint functionality |
+| `ConfidentialEIP3009` | EIP-3009 with encrypted value parameters |
+
+## Installation
+
+```bash
+forge install skalenetwork/confidential-token
+```
+
+## Roles
+
+| Role | Can Do | Can See Balance |
+|------|--------|-----------------|
+| Holder | Transfer, approve | Only via registered viewer key |
+| Viewer | Decrypt ECIES balance off-chain | Yes (if granted access) |
+| Anyone | View encrypted ciphertext onchain | Encrypted only |
+
+A holder registers a viewer public key via `setViewerPublicKey()`. The holder can be their own viewer.
+
+## Key Behaviors
+
+### Staleness Detection
+
+If another CTX modified a balance between submission and execution, `onDecrypt` detects it by comparing `_lastChanged` vs `submittedBlockNumber` and resubmits with fresh encrypted balances. This ensures consistency without requiring locks.
+
+### Callback Funding
+
+The contract holds ETH/SFUEL for CTX callback gas. Each CTX submission transfers gas to the callback sender.
+
+### Zero Balances
+
+Even zero balances are TE-encrypted (not empty bytes) to prevent information leakage via ciphertext length analysis.
+
+## Getting Started
+
+For a conceptual overview of how confidential tokens work, see [Confidential Tokens](/concepts/programmable-privacy/confidential-tokens).
+
+For the re-encryption precompiles that power confidential tokens, see [Re-encryption](/developers/programmable-privacy/re-encryption).
+
+## Resources
+
+- **GitHub**: [github.com/skalenetwork/confidential-token](https://github.com/skalenetwork/confidential-token)
+- **Re-encryption**: [Developer Guide](/developers/programmable-privacy/re-encryption)
+- **Conditional Transactions**: [Developer Guide](/developers/programmable-privacy/conditional-transactions)
+- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)

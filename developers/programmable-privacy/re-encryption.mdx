@@ -1,0 +1,216 @@
+---
+title: "Re-encryption"
+description: "Developer guide for EncryptTE and EncryptECIES precompiles on SKALE"
+---
+
+<Note>
+**Beta on SKALE Base Sepolia** — Re-encryption precompiles are available on SKALE Base Sepolia for testing and development.
+</Note>
+
+## Overview
+
+Re-encryption provides two precompiled contracts that allow Solidity code to encrypt data onchain:
+
+- **EncryptTE** (`0x1D`) — Encrypt with the network's BLS threshold key
+- **EncryptECIES** (`0x1C`) — Encrypt for a specific viewer's secp256k1 public key
+
+These enable private onchain state, selective data sharing, and are the building blocks for confidential tokens.
+
+## Precompile Addresses
+
+| Precompile | Address | Call Type | Purpose |
+|---|---|---|---|
+| EncryptTE | `0x000000000000000000000000000000000000001D` | `staticcall` | Network BLS threshold key encryption |
+| EncryptECIES | `0x000000000000000000000000000000000000001C` | `staticcall` | Viewer secp256k1 key encryption |
+
+## EncryptTE — Network Threshold Key
+
+Use EncryptTE to encrypt data that only the consensus committee can decrypt via CTX. Ideal for private onchain state.
+
+```solidity
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+
+contract PrivateState {
+    mapping(uint256 => bytes) public encryptedValues;
+
+    function setValue(uint256 id, uint256 value) external {
+        (bytes memory encrypted, ) = BITE.encryptTE(
+            0x000000000000000000000000000000000000001D,
+            abi.encode(value)
+        );
+        encryptedValues[id] = encrypted;
+    }
+}
+```
+
+## EncryptECIES — Viewer Key
+
+Use EncryptECIES to encrypt data for a specific viewer. Only the holder of the corresponding private key can decrypt offline. Ideal for data sharing.
+
+```solidity
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+
+contract ViewerStorage {
+    struct PublicKey {
+        bytes32 x;
+        bytes32 y;
+    }
+
+    mapping(address => PublicKey) public viewerKeys;
+    mapping(uint256 => bytes) public encryptedRecords;
+
+    function registerViewer(PublicKey calldata pubKey) external {
+        viewerKeys[msg.sender] = pubKey;
+    }
+
+    function storeForViewer(uint256 id, uint256 value, address viewer) external {
+        PublicKey memory pubKey = viewerKeys[viewer];
+        (bytes memory encrypted, ) = BITE.encryptECIES(
+            0x000000000000000000000000000000000000001C,
+            abi.encode(value),
+            pubKey
+        );
+        encryptedRecords[id] = encrypted;
+    }
+}
+```
+
+### PublicKey Struct
+
+The public key is an uncompressed secp256k1 point (without the `0x04` prefix):
+
+```solidity
+struct PublicKey {
+    bytes32 x;
+    bytes32 y;
+}
+```
+
+The viewer generates a keypair off-chain and submits the public key onchain.
+
+## Common Patterns
+
+### Private Onchain State
+
+Store values TE-encrypted, then decrypt via CTX when processing is needed:
+
+```solidity
+contract ConfidentialVault {
+    bytes public encryptedBalance;
+
+    function deposit(uint256 amount) external {
+        // Encrypt the new balance with the network key
+        (bytes memory encrypted, ) = BITE.encryptTE(
+            0x000000000000000000000000000000000000001D,
+            abi.encode(amount)
+        );
+        encryptedBalance = encrypted;
+    }
+
+    // Use CTX to decrypt and process
+    function processBalance() external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encryptedBalance;
+
+        bytes[] memory plaintextArgs = new bytes[](0);
+
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            2500000,
+            encryptedArgs,
+            plaintextArgs
+        );
+        payable(ctxSender).transfer(msg.value);
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata
+    ) external override {
+        // Process decrypted balance
+        uint256 balance = abi.decode(decryptedArgs[0], (uint256));
+        // ... business logic
+    }
+}
+```
+
+### Dual Encryption (TE + ECIES)
+
+Use both layers for maximum functionality — TE for on-chain processing and ECIES for private viewing:
+
+```solidity
+contract DualEncryptedStorage {
+    struct PublicKey {
+        bytes32 x;
+        bytes32 y;
+    }
+
+    mapping(uint256 => bytes) public thresholdEncrypted; // For on-chain processing
+    mapping(uint256 => bytes) public viewerEncrypted;    // For off-chain viewing
+
+    function store(uint256 id, uint256 value, PublicKey memory viewerKey) external {
+        // TE encryption for consensus processing
+        (bytes memory teEncrypted, ) = BITE.encryptTE(
+            0x000000000000000000000000000000000000001D,
+            abi.encode(value)
+        );
+        thresholdEncrypted[id] = teEncrypted;
+
+        // ECIES encryption for viewer access
+        (bytes memory eciesEncrypted, ) = BITE.encryptECIES(
+            0x000000000000000000000000000000000000001C,
+            abi.encode(value),
+            viewerKey
+        );
+        viewerEncrypted[id] = eciesEncrypted;
+    }
+}
+```
+
+## Client-Side ECIES Decryption
+
+ECIES ciphertext format: `IV(16 bytes) || ephemeralPubKey(33 bytes) || ciphertext`
+
+Decrypt off-chain:
+
+```typescript
+import { createECDH, createCipheriv, createDecipheriv } from 'crypto';
+
+function decryptECIES(privateKey: Buffer, ciphertext: Buffer): Buffer {
+    const iv = ciphertext.subarray(0, 16);
+    const ephemeralPubKey = ciphertext.subarray(16, 49);
+    const encrypted = ciphertext.subarray(49);
+
+    // ECDH shared secret
+    const ecdh = createECDH('secp256k1');
+    ecdh.setPrivateKey(privateKey);
+    const sharedSecret = ecdh.computeSecret(ephemeralPubKey);
+
+    // Derive AES key
+    const aesKey = createHash('sha256').update(sharedSecret).digest();
+
+    // Decrypt
+    const decipher = createDecipheriv('aes-256-cbc', aesKey, iv);
+    return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+}
+```
+
+## Error Codes
+
+| Code | Error | Description |
+|------|-------|-------------|
+| 1 | InputTooLarge | Input data exceeds maximum size |
+| 2 | InputTooShort | Input data is too short |
+| 3 | InputNot32ByteAligned | Input is not 32-byte aligned |
+| 4 | InvalidDataOffset | Data offset is invalid |
+| 5 | DataLengthMismatch | Data length doesn't match header |
+| 6 | TrailingPaddingNotZeros | Padding bytes are not zero |
+| 7 | InvalidPublicKey | (ECIES only) Public key is invalid |
+| 8 | EncryptionFailed | (ECIES only) Encryption operation failed |
+
+## Resources
+
+- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)
+- **Encrypted Transactions**: [Developer Guide](/developers/programmable-privacy/encrypted-transactions)
+- **Conditional Transactions**: [Developer Guide](/developers/programmable-privacy/conditional-transactions)
+- **Confidential Tokens**: [Developer Guide](/developers/programmable-privacy/confidential-tokens)

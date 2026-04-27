@@ -1,0 +1,126 @@
+---
+title: "Re-encryption"
+description: "Encrypt data for specific viewers or private onchain state using threshold and ECIES encryption"
+---
+
+<Note>
+**Beta on SKALE Base Sepolia** — Re-encryption precompiles are available on SKALE Base Sepolia for testing and development.
+</Note>
+
+## What Is Re-encryption?
+
+Re-encryption enables smart contracts to encrypt data onchain using either the network's threshold encryption key or a specific viewer's public key. This allows private onchain state and selective data sharing without exposing plaintext to anyone — including validators.
+
+## Precompiles
+
+| Precompile | Address | Call Type | Purpose |
+|---|---|---|---|
+| EncryptTE | `0x1D` | `staticcall` | Encrypt with network BLS threshold key |
+| EncryptECIES | `0x1C` | `staticcall` | Encrypt for a specific viewer's secp256k1 public key |
+
+## EncryptTE — Network Threshold Key
+
+EncryptTE encrypts data using the network's BLS threshold key. Only the consensus committee (2t+1 of 3t+1 validators) can decrypt via a Conditional Transaction callback. Use this for private onchain state that needs validator-driven processing.
+
+```solidity
+(bytes memory encrypted, ) = BITE.encryptTE(
+    0x000000000000000000000000000000000000001D,
+    abi.encode(value)
+);
+```
+
+## EncryptECIES — Viewer Key
+
+EncryptECIES encrypts data for a specific viewer's secp256k1 public key. Only the holder of the corresponding private key can decrypt offline. Use this for data sharing where a specific party needs access.
+
+```solidity
+(bytes memory encrypted, ) = BITE.encryptECIES(
+    0x000000000000000000000000000000000000001C,
+    abi.encode(value),
+    PublicKey({ x: pubKeyX, y: pubKeyY })
+);
+```
+
+### PublicKey Struct
+
+```solidity
+struct PublicKey {
+    bytes32 x;
+    bytes32 y;
+}
+```
+
+The public key is an uncompressed secp256k1 point (without the `0x04` prefix). The viewer generates a keypair off-chain and submits the public key onchain.
+
+## Encryption Patterns
+
+### Pattern 1: Private Onchain State (TE)
+
+Store values TE-encrypted. Validators can decrypt via CTX for processing. Data can be updated over time.
+
+```
+setValue(value) → EncryptTE(0x1D, abi.encode(value)) → store
+revealValue() → SubmitCTX(0x1B, storedCiphertext) → onDecrypt(plaintext)
+```
+
+Use when: You need validators to process encrypted state (e.g., encrypted balances, confidential game state).
+
+### Pattern 2: Viewer-Key Storage (ECIES)
+
+Store values ECIES-encrypted for a specific viewer key. Cannot be decrypted or manipulated by validators.
+
+```
+storeRecord(id, value, viewerKey) → EncryptECIES(0x1C, value, viewerKey) → store
+viewer → getRecord(id) → decrypt off-chain with private key
+```
+
+Use when: You need a specific party to view data without any validator involvement (e.g., medical records, personal data).
+
+### Pattern 3: Both (TE + ECIES)
+
+Use TE for validator processing and ECIES for viewer access. Best for scenarios needing both consensus-driven state transitions and private viewing.
+
+```
+store(id, value, viewerKey) → EncryptTE + EncryptECIES → store both
+viewer → getEncrypted(id) → decrypt ECIES off-chain
+process → SubmitCTX(0x1B, teCiphertext) → onDecrypt(plaintext) → update
+```
+
+Use when: You need both on-chain processing and private viewing (e.g., confidential tokens, regulated data).
+
+## Client-Side ECIES Decryption
+
+ECIES ciphertext format: `IV(16 bytes) || ephemeralPubKey(33 bytes) || ciphertext`
+
+```
+ECDH(privateKey, ephemeralPubKey) → sharedSecret
+SHA-256(sharedSecret) → AES key
+AES-256-CBC(AES key, IV, ciphertext) → plaintext
+```
+
+## Error Codes
+
+| Code | Error |
+|------|-------|
+| 1 | InputTooLarge |
+| 2 | InputTooShort |
+| 3 | InputNot32ByteAligned |
+| 4 | InvalidDataOffset |
+| 5 | DataLengthMismatch |
+| 6 | TrailingPaddingNotZeros |
+| 7 | InvalidPublicKey (ECIES only) |
+| 8 | EncryptionFailed (ECIES only) |
+
+## Use Cases
+
+- **Private onchain state** — Store encrypted values that only consensus can process
+- **Data sharing** — Encrypt data for specific parties without trusted intermediaries
+- **Confidential tokens** — Dual encryption for both balance processing and viewing
+- **Encrypted storage** — Off-chain readable data with on-chain verification
+
+## Learn More
+
+- [Encrypted Transactions](/concepts/programmable-privacy/encrypted-transactions) — Hide transaction payloads during mempool and consensus
+- [Conditional Transactions](/concepts/programmable-privacy/conditional-transactions) — Request decryption from within smart contracts
+- [Confidential Tokens](/concepts/programmable-privacy/confidential-tokens) — ERC20 tokens with encrypted balances
+- [Programmable Privacy Overview](/concepts/programmable-privacy/intro) — Full overview

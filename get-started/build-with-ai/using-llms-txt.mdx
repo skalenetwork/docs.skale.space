@@ -1,0 +1,79 @@
+---
+title: "Using LLMs.txt"
+description: "How SKALE exposes documentation for AI consumption via llms.txt"
+---
+
+## Overview
+
+SKALE provides documentation in AI-consumable formats so that AI assistants, agents, and tools can access up-to-date information about the SKALE Network without scraping web pages.
+
+## What Is llms.txt?
+
+[llms.txt](https://llmstxt.org/) is a proposed standard for providing documentation to large language models. It follows a structured format that makes it easy for AI tools to:
+
+- Discover available documentation
+- Retrieve relevant sections on-demand
+- Stay up to date with the latest changes
+
+## SKALE's llms.txt
+
+SKALE exposes documentation at:
+
+```
+https://docs.skale.space/llms.txt
+```
+
+This file contains:
+
+- **SKALE Network overview** — Architecture, chain types, gas model
+- **Programmable Privacy** — Encrypted transactions, CTX, re-encryption, confidential tokens
+- **Developer guides** — Smart contract deployment, SDK usage, bridging
+- **Cookbook recipes** — Step-by-step tutorials for common tasks
+- **API references** — TypeScript SDK, Solidity helpers, JSON-RPC methods
+
+## How to Use with AI Tools
+
+### With Claude
+
+Reference the llms.txt URL in your prompt:
+
+```
+Check https://docs.skale.space/llms.txt for SKALE documentation.
+Help me deploy an ERC20 token to SKALE Base.
+```
+
+### With Cursor / Windsurf
+
+Add the llms.txt URL to your project's documentation sources in settings.
+
+### With the SKALE MCP Server
+
+The MCP server automatically uses SKALE's llms.txt for context when answering questions about the network. See [SKALE MCP Server](/get-started/build-with-ai/mcp-server) for setup instructions.
+
+### With Custom Agents
+
+```typescript
+// Fetch SKALE documentation for your AI agent
+const response = await fetch('https://docs.skale.space/llms.txt');
+const docs = await response.text();
+
+// Use as context for your agent
+const prompt = `Based on this SKALE documentation:\n${docs}\n\nHelp me encrypt a transaction.`;
+```
+
+## What's Included
+
+| Section | Content |
+|---------|---------|
+| Network Overview | Architecture, consensus, chain types |
+| Programmable Privacy | Encryption, CTX, re-encryption, confidential tokens |
+| Developer Guides | Deployment, SDK usage, bridging |
+| Cookbook | Step-by-step tutorials |
+| API Reference | SDK methods, Solidity helpers, precompiles |
+| Chain Info | RPC endpoints, chain IDs, block explorers |
+
+## Resources
+
+- [Best Prompts for SKALE](/get-started/build-with-ai/best-prompts) — Curated prompts for building with AI
+- [SKALE MCP Server](/get-started/build-with-ai/mcp-server) — Direct AI agent integration
+- [SKALE Skills](/get-started/build-with-ai/using-skale-skills) — Installable agent skills

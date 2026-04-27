@@ -18,8 +18,8 @@ The MPP SDK provides multiple payment strategies:
 
 - **Standard transfers** – Simple token transfers on SKALE Base
 - **Gasless payments** – Users pay without holding gas tokens (EIP-3009/EIP-2612)
-- **Encrypted amounts** – Hide transaction amounts using BITE encryption
-- **Confidential tokens** – Native privacy with eUSDC on BITE chains
+- **Encrypted amounts** – Hide transaction amounts using threshold encryption
+- **Confidential tokens** – Native privacy with eUSDC on chains with Programmable Privacy
 
 ---
 
@@ -103,9 +103,9 @@ await processPayment('5000000', true) // Gasless
 
 ---
 
-## Encrypted Payments (BITE Phase I)
+## Encrypted Payments
 
-Hide transaction amounts onchain using BITE encryption:
+Hide transaction amounts onchain using threshold encryption:
 
 ```typescript
 import { mpp } from '@skalenetwork/mpp/client'
@@ -162,9 +162,9 @@ async function processPrivatePayment(amount: string) {
 
 ---
 
-## Confidential Token Payments (BITE Phase II)
+## Confidential Token Payments
 
-Use native confidential tokens (eUSDC) on BITE Sandbox for full privacy:
+Use native confidential tokens (eUSDC) on the BITE Sandbox for full privacy:
 
 ```typescript
 import { mpp } from '@skalenetwork/mpp/client'
@@ -284,7 +284,7 @@ async function verifyPayment(txHash: string, expectedAmount: string) {
     throw new Error('Transaction failed')
   }
   
-  // For encrypted transactions, use BITE SDK to decrypt
+  // For encrypted transactions, use the Privacy SDK to decrypt
   // For standard transactions, verify logs
   console.log('Payment verified:', receipt)
   return true
@@ -348,7 +348,7 @@ try {
     console.error('Gasless not available for this token')
   } else if (error.message.includes('BITE')) {
     // Chain doesn't support encryption
-    console.error('BITE encryption not available on this chain')
+    console.error('Encrypted transactions not available on this chain')
   }
 }
 ```
@@ -362,7 +362,7 @@ try {
 - Standard: Fastest, lowest overhead
 - Gasless: Best UX for new users
 - Encrypted: Privacy for sensitive amounts
-- Confidential: Maximum privacy (BITE chains only)
+- Confidential: Maximum privacy (chains with Programmable Privacy only)
 </Note>
 
 <Warning>

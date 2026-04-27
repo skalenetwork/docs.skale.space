@@ -1,14 +1,14 @@
 ---
 title: "Confidential Payments"
-description: "Accept private payments using confidential tokens (eUSDC) on BITE chains"
+description: "Accept private payments using confidential tokens (eUSDC) on SKALE chains with Programmable Privacy"
 ---
 
-Accept fully confidential payments using the MPP SDK on BITE-enabled SKALE chains. Confidential tokens (eUSDC) provide native privacy—hiding sender, receiver, and amount onchain.
+Accept fully confidential payments using the MPP SDK on SKALE chains with Programmable Privacy. Confidential tokens (eUSDC) provide native privacy—hiding sender, receiver, and amount onchain.
 
 ## Prerequisites
 
 - Node.js, Bun, or pnpm installed
-- BITE-enabled SKALE chain access (BITE Sandbox)
+- SKALE chain with Programmable Privacy access (BITE Sandbox)
 - eUSDC tokens for testing
 - Understanding of confidential tokens vs standard tokens
 
@@ -17,9 +17,9 @@ Accept fully confidential payments using the MPP SDK on BITE-enabled SKALE chain
 Confidential token features:
 
 - **Native privacy** – Amounts hidden by default at the token level
-- **Optional encryption** – Add BITE encryption for extra security
+- **Optional encryption** – Add threshold encryption for extra security
 - **Gasless support** – EIP-3009 for gas-free UX
-- **BITE chains only** – Requires BITE-enabled chain
+- **Chains with Programmable Privacy only** – Requires a privacy-enabled chain
 
 ---
 
@@ -123,7 +123,7 @@ const fullPrivacy = mpp.charge({
   currency: 'eUSDC',
   extensions: {
     skale: { 
-      encrypted: true,      // BITE encryption
+      encrypted: true,      // Threshold encryption
       confidentialToken: true // Native token privacy
     },
     gasless: 'eip3009'        // No gas needed
@@ -218,9 +218,9 @@ async function verifyConfidentialPayment(txHash: string) {
 
 ---
 
-## Testing on BITE Sandbox
+## Testing on the BITE Sandbox
 
-BITE Sandbox is the testnet for confidential tokens:
+The BITE Sandbox is the testnet for confidential tokens:
 
 ```bash
 SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
@@ -266,7 +266,7 @@ try {
   const hash = await processConfidentialPayment('1000000')
 } catch (error) {
   if (error.message.includes('BITE')) {
-    console.error('Not on BITE-enabled chain')
+    console.error('Not on a chain with Programmable Privacy')
   } else if (error.message.includes('confidential')) {
     console.error('Token not configured for confidentiality')
   } else if (error.message.includes('eUSDC')) {
@@ -283,16 +283,16 @@ try {
 **When to use confidential tokens:**
 - Maximum privacy requirements
 - Sensitive transaction amounts
-- BITE-enabled chains available
+- Chains with Programmable Privacy available
 - Users comfortable with eUSDC
 </Note>
 
 <Warning>
 **Important considerations:**
-- Confidential tokens only work on BITE chains
+- Confidential tokens only work on chains with Programmable Privacy
 - eUSDC is different from USDC.e (different addresses)
-- Always test on BITE Sandbox first
-- Verify chain supports BITE before deploying
+- Always test on the BITE Sandbox first
+- Verify chain supports Programmable Privacy before deploying
 </Warning>
 
 ---
@@ -301,6 +301,6 @@ try {
 
 - [MPP SDK Reference](/developers/sdks/skalenetwork-mpp-sdk)
 - [Gasless Payments](/cookbook/mpp/gasless-payments) – For USDC.e
-- [BITE Protocol](/concepts/bite-protocol/intro-bite-protocol)
+- [Programmable Privacy](/concepts/programmable-privacy/intro)
 - [GitHub](https://github.com/skalenetwork/mpp-sdk)
 - [Testnet Faucet](https://sfuelstation.com)

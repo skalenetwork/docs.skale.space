@@ -28,7 +28,6 @@
             "group": "Quick Start",
             "pages": [
               "get-started/quick-start/skale-on-base",
-              "get-started/quick-start/bite-sandbox",
               "get-started/quick-start/skale-on-ethereum",
               "get-started/quick-start/go-live",
               "get-started/quick-start/get-testnet-tokens"
@@ -51,6 +50,15 @@
             ]
           },
           {
+            "group": "Build with AI",
+            "pages": [
+              "get-started/build-with-ai/mcp-server",
+              "get-started/build-with-ai/best-prompts",
+              "get-started/build-with-ai/using-llms-txt",
+              "get-started/build-with-ai/using-skale-skills"
+            ]
+          },
+          {
             "group": "Resources",
             "pages": [
               "get-started/resources/official-links",
@@ -63,18 +71,19 @@
         "tab": "Concepts",
         "pages": [
           {
-            "group": "SKALE",
+            "group": "Programmable Privacy",
             "pages": [
-              "concepts/skale/skale-expand"
+              "concepts/programmable-privacy/intro",
+              "concepts/programmable-privacy/encrypted-transactions",
+              "concepts/programmable-privacy/conditional-transactions",
+              "concepts/programmable-privacy/re-encryption",
+              "concepts/programmable-privacy/confidential-tokens"
             ]
           },
           {
-            "group": "BITE Protocol",
+            "group": "SKALE",
             "pages": [
-              "concepts/bite-protocol/intro-bite-protocol",
-              "concepts/bite-protocol/phases",
-              "concepts/bite-protocol/encrypted-transactions",
-              "concepts/bite-protocol/conditional-transactions"
+              "concepts/skale/skale-expand"
             ]
           },
           {
@@ -172,9 +181,21 @@
             ]
           },
           {
+            "group": "Programmable Privacy",
+            "pages": [
+              "developers/programmable-privacy/encrypted-transactions",
+              "developers/programmable-privacy/conditional-transactions",
+              "developers/programmable-privacy/re-encryption",
+              "developers/programmable-privacy/confidential-tokens",
+              "developers/programmable-privacy/api-and-faqs"
+            ]
+          },
+          {
             "group": "SDKs",
             "pages": [
-              "developers/sdks/skalenetwork-mpp-sdk"
+              "developers/sdks/skalenetwork-mpp-sdk",
+              "developers/sdks/skalenetwork-cli",
+              "developers/sdks/skalenetwork-bite"
             ]
           },
           {
@@ -216,21 +237,6 @@
                   "developers/skale-bridge/messaging-layer/using-custom-contracts"
                 ]
               }
-            ]
-          },
-          {
-            "group": "SDKs",
-            "pages": [
-              "developers/sdks/skalenetwork-cli",
-              "developers/sdks/skalenetwork-bite"
-            ]
-          },
-          {
-            "group": "BITE Protocol",
-            "pages": [
-              "developers/bite-protocol/encrypted-transactions",
-              "developers/bite-protocol/conditional-transactions",
-              "developers/bite-protocol/bite-api-and-faqs"
             ]
           },
           {
@@ -1999,6 +2005,46 @@
     {
       "source": "/get-started/hackathon/info",
       "destination": "/get-started/quick-start/bite-sandbox"
+    },
+    {
+      "source": "/get-started/quick-start/bite-sandbox",
+      "destination": "/concepts/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/bite-protocol/intro-bite-protocol",
+      "destination": "/concepts/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/bite-protocol/phases",
+      "destination": "/concepts/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/bite-protocol/encrypted-transactions",
+      "destination": "/concepts/programmable-privacy/encrypted-transactions"
+    },
+    {
+      "source": "/concepts/bite-protocol/conditional-transactions",
+      "destination": "/concepts/programmable-privacy/conditional-transactions"
+    },
+    {
+      "source": "/developers/bite-protocol/encrypted-transactions",
+      "destination": "/developers/programmable-privacy/encrypted-transactions"
+    },
+    {
+      "source": "/developers/bite-protocol/conditional-transactions",
+      "destination": "/developers/programmable-privacy/conditional-transactions"
+    },
+    {
+      "source": "/developers/bite-protocol/bite-api-and-faqs",
+      "destination": "/developers/programmable-privacy/api-and-faqs"
+    },
+    {
+      "source": "/developers/bite-protocol/typescript-sdk",
+      "destination": "/developers/sdks/skalenetwork-bite"
+    },
+    {
+      "source": "/developers/bite-protocol/how-bite-works",
+      "destination": "/concepts/programmable-privacy/intro"
     }
   ]
 }
