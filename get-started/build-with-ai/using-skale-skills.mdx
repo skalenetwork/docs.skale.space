@@ -1,0 +1,107 @@
+---
+title: "Using SKALE Skills"
+description: "Overview of installable SKALE agent skills for programmable privacy, bridging, CLI, and x402 payments"
+---
+
+## Overview
+
+SKALE Skills are installable knowledge packages that give AI agents specialized capabilities for building on SKALE. They provide expert-level instructions, code examples, and reference materials that agents can use without searching documentation.
+
+## Available Skills
+
+### Programmable Privacy
+
+**Skill:** `programmable-privacy`
+
+Encrypted transactions, conditional transactions (CTX), re-encryption, and confidential tokens on SKALE. Covers precompiles, Solidity helpers, and TypeScript SDK usage.
+
+**Best for:** Privacy dApps, confidential voting, sealed-bid auctions, encrypted state, data sharing
+
+**What's included:**
+- Precompile reference (EncryptTE, EncryptECIES, SubmitCTX)
+- Solidity helper patterns and examples
+- TypeScript SDK usage rules
+- Foundry configuration guidance
+
+### IMA Bridging on SKALE
+
+**Skill:** `ima-bridging-on-skale`
+
+Programmatic IMA (Interchain Messaging Agent) bridging for SKALE chains. Send and receive messages between SKALE chains and Ethereum.
+
+**Best for:** Cross-chain token transfers, bridging ETH/ERC20/ERC721/ERC1155, custom messaging
+
+### SKALE CLI
+
+**Skill:** `skale-cli`
+
+Operational command playbooks for SKALE CLI usage. Exact command syntax, target selection, parameter formatting, and error handling.
+
+**Best for:** Chain management, node operations, validator commands, network administration
+
+### x402 on SKALE
+
+**Skill:** `x402-on-skale`
+
+Build AI agents with x402 payments on SKALE. Covers facilitator setup, payment middleware, and agent client for monetized AI services.
+
+**Best for:** Agent-to-agent payments, API monetization, x402 integration
+
+### About SKALE
+
+**Skill:** `about-skale`
+
+Learn about SKALE Network — what it is, chain types, and gas models. Useful for understanding SKALE architecture.
+
+**Best for:** General SKALE knowledge, architecture decisions, chain selection
+
+## Installation
+
+Skills are installed per-project using your agent's skill installation command:
+
+```bash
+# Example: install the programmable privacy skill
+pi skill install programmable-privacy
+
+# Install multiple skills
+pi skill install programmable-privacy x402-on-skale ima-bridging-on-skale
+```
+
+## How Skills Work
+
+1. **Install** — Add the skill to your project
+2. **Auto-load** — Your agent loads the skill when it detects relevant tasks
+3. **Reference** — The skill provides rules, examples, and reference materials
+4. **Execute** — Your agent uses the skill's knowledge to complete tasks
+
+## Skill Structure
+
+Each skill contains:
+
+| Component | Description |
+|-----------|-------------|
+| `SKILL.md` | Main skill description and trigger conditions |
+| `rules/` | Behavioral rules and constraints |
+| `references/` | Technical reference documentation |
+| `examples/` | Code examples and patterns |
+| `assets/` | Supporting files and templates |
+
+## Example: Using Programmable Privacy
+
+Once installed, your agent can handle tasks like:
+
+```
+"Build a sealed-bid auction contract using CTX on SKALE Base Sepolia"
+```
+
+The agent will:
+1. Load the programmable-privacy skill
+2. Reference the CTX rules and precompile documentation
+3. Generate a Solidity contract following the skill's patterns
+4. Include proper compiler settings (Solidity >= 0.8.27, EVM version istanbul)
+
+## Resources
+
+- [SKALE MCP Server](/get-started/build-with-ai/mcp-server) — Direct AI agent integration via MCP
+- [Using LLMs.txt](/get-started/build-with-ai/using-llms-txt) — AI-accessible documentation
+- [Best Prompts for SKALE](/get-started/build-with-ai/best-prompts) — Curated prompts

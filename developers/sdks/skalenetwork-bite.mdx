@@ -1,6 +1,6 @@
 ---
-title: "Privacy (BITE) SDK"
-description: "Privacy SDK enabling developers to consume native primary primiatives through SKALE's BITE Protocol"
+title: "Privacy SDK"
+description: "Privacy SDK enabling developers to consume native privacy primitives through SKALE's Programmable Privacy"
 ---
 
 <Note>
@@ -10,7 +10,7 @@ If you run into an issue, reach out in [Discord](https://discord.gg/skale) or op
 
 ## Using the SDK
 
-The BITE JavaScript SDK lets applications and wallets encrypt EVM transactions. It adds threshold encryption to SKALE so developers can build private and confidential applications on the network.
+The Privacy SDK lets applications and wallets encrypt EVM transactions. It adds threshold encryption to SKALE so developers can build private and confidential applications on the network.
 
 ### Installation
 
@@ -29,7 +29,7 @@ bun add @skalenetwork/bite
 ```
 
 <Note>
-The SDK works with any BITE-enabled SKALE chain. Right now, BITE is available on [SKALE Base Mainnet and Testnet](/get-started/quick-start/skale-on-base) only.
+The SDK works with any SKALE chain with Programmable Privacy. Currently, it is available on [SKALE Base Mainnet and Testnet](/get-started/quick-start/skale-on-base) only.
 </Note>
 
 ### Quick Start
@@ -40,7 +40,7 @@ import { BITE } from '@skalenetwork/bite';
 const providerUrl = 'https://your-fair-rpc';
 const bite = new BITE(providerUrl);
 
-// Minimal tx object: encrypts `to` and `data` and rewrites `to` to BITE magic address
+// Minimal tx object: encrypts `to` and `data` and rewrites `to` to the magic address
 const tx = {
   to: '0x1234567890abcdef1234567890abcdef12345678',
   data: '0x1234abcd',
@@ -59,10 +59,10 @@ const result = await bite.getDecryptedTransactionData('<txHash>');
 
 ### `new BITE(endpoint)`
 
-Creates a BITE instance for a specific BITE JSON-RPC endpoint.
+Creates a BITE instance for a specific JSON-RPC endpoint.
 
 **Parameters:**
-- `endpoint: string` - BITE JSON-RPC endpoint
+- `endpoint: string` - JSON-RPC endpoint
 
 **Example:**
 ```typescript
@@ -152,7 +152,7 @@ console.log('Original data:', decryptedData.data);
 ```
 
 <Note>
-This method works only for BITE transactions that have already been processed and decrypted by the network. If the transaction does not exist, or if decrypted data is unavailable, the call throws an error.
+This method works only for encrypted transactions that have already been processed and decrypted by the network. If the transaction does not exist, or if decrypted data is unavailable, the call throws an error.
 </Note>
 
 ### `bite.getCommitteesInfo()`

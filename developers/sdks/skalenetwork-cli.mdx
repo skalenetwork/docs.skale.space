@@ -4,7 +4,7 @@ description: "Command-line interface for interacting with the SKALE Network - bu
 ---
 
 <Note>
-SKALE CLI is a command-line tool for reading chain data, preparing transactions, checking balances, and working with BITE. Every command can return structured JSON for scripting and agent workflows.
+SKALE CLI is a command-line tool for reading chain data, preparing transactions, checking balances, and working with Programmable Privacy features. Every command can return structured JSON for scripting and agent workflows.
 </Note>
 
 ## Installation
@@ -172,9 +172,9 @@ skale manager mtm-status --chain skale-base
 skale manager fcd-status --chain skale-base
 ```
 
-### BITE Encryption (`bite`)
+### Encrypted Transactions (`bite`)
 
-Use these commands to encrypt transactions and messages with BITE. They are available on `skale-base`, `skale-base-sepolia`, and `skale-bite-sandbox`.
+Use these commands to encrypt transactions and messages with Programmable Privacy. They are available on `skale-base`, `skale-base-sepolia`, and `skale-bite-sandbox`.
 
 ```bash
 # Encrypt a transaction
@@ -186,7 +186,7 @@ skale bite decrypt-tx --chain skale-base --txhash 0x...
 # Encrypt a message
 skale bite encrypt-msg --chain skale-base --message "Hello World"
 
-# Get BITE protocol info
+# Get Programmable Privacy info
 skale bite info --chain skale-base
 ```
 

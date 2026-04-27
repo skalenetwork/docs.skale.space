@@ -1,14 +1,14 @@
 ---
 title: "Encrypted Transactions"
-description: "Complete step-by-step guide to implementing private blockchain transactions using BITE threshold encryption"
+description: "Complete step-by-step guide to implementing private blockchain transactions using threshold encryption"
 ---
 
-## Sending Encrypted Transactions with BITE
+## Sending Encrypted Transactions with Programmable Privacy
 
-This comprehensive tutorial walks you through building a complete encrypted transaction system using BITE (Blockchain Integrated Threshold Encryption). You'll learn how to create private transfers that remain encrypted until consensus finality, preventing MEV attacks while maintaining blockchain transparency.
+This comprehensive tutorial walks you through building a complete encrypted transaction system using SKALE's Programmable Privacy. You'll learn how to create private transfers that remain encrypted until consensus finality, preventing MEV attacks while maintaining blockchain transparency.
 
 <Note title="Before You Start">
-This tutorial requires access to a BITE-enabled SKALE chain. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+This tutorial requires access to a privacy-enabled SKALE chain. Check [Programmable Privacy](/concepts/programmable-privacy/intro) for current feature availability.
 </Note>
 
 ## What You'll Build
@@ -24,13 +24,13 @@ A full-featured encrypted transfer application that:
 
 - Node.js 16+ and npm/yarn
 - MetaMask browser extension
-- Access to a BITE-enabled SKALE chain
+- Access to a privacy-enabled SKALE chain
 - Basic knowledge of JavaScript and smart contracts
 
-<Note title= "Setup BITE SDK">
-## Step 0: Setup BITE SDK
+<Note title= "Setup Privacy SDK">
+## Step 0: Setup Privacy SDK
 
-If you haven't already, install the BITE TypeScript SDK:
+If you haven't already, install the Privacy SDK:
 
 ```bash
 npm i @skalenetwork/bite ethers dotenv
@@ -83,7 +83,7 @@ contract SimpleTransferDemo {
 ### Deploy the Contract
 
 <Note title="Deployment Options">
-Use Foundry or Hardhat to deploy the contract to your BITE-enabled SKALE chain. See [ERC20 Deployment Guide](/cookbook/smart-contracts/deploy-erc20-token) for detailed deployment instructions.
+Use Foundry or Hardhat to deploy the contract to your privacy-enabled SKALE chain. See [ERC20 Deployment Guide](/cookbook/smart-contracts/deploy-erc20-token) for detailed deployment instructions.
 </Note>
 
 ## Step 2: Project Setup
@@ -115,13 +115,13 @@ Create `.env` file with your configuration:
 
 ```bash
 VITE_EXPLORER_URL=https://explorer.skale.network/
-VITE_SCHAIN_ENDPOINT=https://your-bite-chain.skale.network/
+VITE_SCHAIN_ENDPOINT=https://your-privacy-chain.skale.network/
 VITE_TRANSFER_CONTRACT=0xYourDeployedContractAddress
 ```
 
 **Environment Variables:**
 - `VITE_EXPLORER_URL`: Block explorer for transaction links
-- `VITE_SCHAIN_ENDPOINT`: BITE-enabled SKALE chain RPC
+- `VITE_SCHAIN_ENDPOINT`: Privacy-enabled SKALE chain RPC
 - `VITE_TRANSFER_CONTRACT`: Address of deployed transfer contract
 
 ### Update package.json
@@ -150,7 +150,7 @@ VITE_TRANSFER_CONTRACT=0xYourDeployedContractAddress
 
 Let's build the main application logic.
 
-### Initialize BITE
+### Initialize the Privacy SDK
 
 Create `src/main.js`:
 
@@ -163,7 +163,7 @@ const SCHAIN_ENDPOINT = import.meta.env.VITE_SCHAIN_ENDPOINT;
 const TRANSFER_CONTRACT_ADDRESS = import.meta.env.VITE_TRANSFER_CONTRACT;
 const EXPLORER_URL = import.meta.env.VITE_EXPLORER_URL;
 
-// Initialize BITE
+// Initialize Privacy SDK
 const bite = new BITE(SCHAIN_ENDPOINT);
 
 // Contract ABI for our transfer function
@@ -249,10 +249,10 @@ async function sendEncryptedTransfer(recipient, amount) {
             to: TRANSFER_CONTRACT_ADDRESS,
             value: '0x0',
             data: encodedData,
-            gasLimit: 300000, // Important: set manually for BITE transactions
+            gasLimit: 300000, // Important: set manually for encrypted transactions
         };
 
-        // Encrypt transaction data using BITE
+        // Encrypt transaction data using threshold encryption
         const encryptedParams = await bite.encryptTransaction(txParams);
         console.log('Encrypted transaction:', encryptedParams);
         
@@ -340,13 +340,13 @@ Create `index.html`:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BITE Encrypted Transfers</title>
+    <title>Encrypted Transfers</title>
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>BITE Encrypted Transfers</h1>
+            <h1>Encrypted Transfers</h1>
             <p>Private blockchain transactions with threshold encryption</p>
         </header>
 
@@ -722,7 +722,7 @@ npm run dev
 5. **View Results**: Check completed transfers section
 
 <Tip>
-Make sure your MetaMask is connected to the correct BITE-enabled SKALE network with sufficient sFUEL for transaction fees.
+Make sure your MetaMask is connected to the correct privacy-enabled SKALE network with sufficient sFUEL for transaction fees.
 </Tip>
 
 ## Step 6: Advanced Features
@@ -791,7 +791,7 @@ async function fetchPendingTransactions() {
         
         // Update UI with new pending transactions
         pendingTxs.forEach(tx => {
-            if (tx.to === '0x0000000000000000000000000000000000000001') { // BITE magic address
+            if (tx.to === '0x0000000000000000000000000000000000000001') { // Programmable Privacy magic address
                 addPendingTransaction(tx.hash, 'Encrypted', 'Unknown until finality');
             }
         });
@@ -875,18 +875,18 @@ async function sendEncryptedTransferWithRetry(recipient, amount, maxRetries = 3)
 **Solutions:**
 1. Wait longer for consensus finality
 2. Check if committee rotation is in progress
-3. Verify transaction was sent via BITE protocol
+3. Verify transaction was sent via threshold encryption
 
 #### "Gas limit too low"
 **Solutions:**
 1. Increase gas limit to 300,000 or higher
-2. Always set gasLimit manually for BITE transactions
+2. Always set gasLimit manually for encrypted transactions
 
 #### "Connection failed"
 **Solutions:**
 1. Verify SKALE chain endpoint URL is correct
 2. Check network connectivity
-3. Ensure chain supports BITE protocol
+3. Ensure chain supports Programmable Privacy
 
 #### "Balance not updating"
 **Solutions:**
@@ -903,12 +903,12 @@ const DEBUG = true; // Set to false in production
 
 function debug(message, data = null) {
     if (DEBUG) {
-        console.log(`[BITE DEBUG] ${message}`, data);
+        console.log(`[Privacy SDK DEBUG] ${message}`, data);
     }
 }
 
 // Usage examples
-debug('Initializing BITE with endpoint:', SCHAIN_ENDPOINT);
+debug('Initializing Privacy SDK with endpoint:', SCHAIN_ENDPOINT);
 debug('Transaction parameters:', txParams);
 debug('Encrypted transaction:', encryptedParams);
 debug('Decrypted data:', decryptedData);
@@ -916,7 +916,7 @@ debug('Decrypted data:', decryptedData);
 
 ## Next Steps
 
-Congratulations! You've built a complete encrypted transaction system with BITE. Here are ways to enhance it:
+Congratulations! You've built a complete encrypted transaction system with Programmable Privacy. Here are ways to enhance it:
 
 ### Additional Features
 - **Batch transfers**: Encrypt multiple transfers in one transaction
@@ -941,15 +941,14 @@ Congratulations! You've built a complete encrypted transaction system with BITE.
 ## Resources
 
 - **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
-- **API Documentation**: [BITE API & FAQs](/developers/bite-protocol/bite-api-and-faqs)
-- **TypeScript SDK Guide**: [TypeScript SDK](/developers/bite-protocol/typescript-sdk)
-- **BITE Protocol**: [Introduction](/concepts/bite-protocol/intro-bite-protocol)
-- **MEV Protection**: [MEV Deep Dive](/concepts/bite-protocol/mev-deep-dive)
+- **API Documentation**: [API & FAQs](/developers/programmable-privacy/api-and-faqs)
+- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)
+- **MEV Protection**: [Encrypted Transactions](/concepts/programmable-privacy/encrypted-transactions)
 
 ## Related Topics
 
-- [BITE Protocol Introduction](/concepts/bite-protocol/intro-bite-protocol)
-- [TypeScript SDK](/developers/bite-protocol/typescript-sdk)
-- [BITE API & FAQs](/developers/bite-protocol/bite-api-and-faqs)
+- [Programmable Privacy Introduction](/concepts/programmable-privacy/intro)
+- [Privacy SDK](/developers/sdks/skalenetwork-bite)
+- [API & FAQs](/developers/programmable-privacy/api-and-faqs)
 - [Threshold Schemes](/concepts/threshold-schemes)
 - [DKG with BLS](/concepts/dkg-with-bls)

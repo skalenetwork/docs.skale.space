@@ -19,7 +19,7 @@ The MPP SDK enables developers to integrate private, gasless payments into their
 
 - **Standard transfers** on SKALE Base
 - **Gasless payments** via EIP-3009 and EIP-2612 permits
-- **BITE encryption** for confidential transaction amounts
+- **Encrypted transaction amounts** via threshold encryption
 - **Confidential tokens** for native privacy
 
 ## Installation
@@ -58,7 +58,7 @@ const gaslessMethod = mpp.charge({
   extensions: { gasless: 'eip3009' }
 })
 
-// BITE encryption for confidential transaction amounts
+// Encrypted transaction amounts via threshold encryption
 const encryptedMethod = mpp.charge({
   chain: 'skale-base',
   currency: 'USDC.e',
@@ -138,7 +138,7 @@ extensions: { gasless: true }       // Auto-detect EIP-3009
 Gasless payments allow users to pay without holding the native gas token (sFUEL/ETH). The transaction fees are deducted from the token being transferred.
 </Note>
 
-#### BITE Encryption
+#### Encrypted Transaction Amounts
 
 Encrypt transaction amounts onchain:
 
@@ -147,7 +147,7 @@ extensions: { skale: { encrypted: true } }
 ```
 
 <Note>
-BITE encryption uses threshold encryption to hide transaction amounts while maintaining verifiability. Requires a BITE-enabled SKALE chain.
+Encrypted transaction amounts use threshold encryption to hide transaction amounts while maintaining verifiability. Requires a SKALE chain with Programmable Privacy.
 </Note>
 
 #### Confidential Tokens
@@ -212,7 +212,7 @@ const method = mpp.charge({
 ```
 
 <Warning>
-Custom chain configurations support **standard ERC-20 transfers** and **EIP-3009 gasless payments** only. BITE encryption and confidential tokens require built-in chain configurations with specific contract addresses and cannot be used with custom chains.
+Custom chain configurations support **standard ERC-20 transfers** and **EIP-3009 gasless payments** only. Encrypted transaction amounts and confidential tokens require built-in chain configurations with specific contract addresses and cannot be used with custom chains.
 </Warning>
 
 ## Best Practices

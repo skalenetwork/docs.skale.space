@@ -1,11 +1,11 @@
 ---
 title: "Conditional Transactions"
-description: "Complete step-by-step guide to implementing a private Rock-Paper-Scissors game using BITE Conditional Transactions"
+description: "Complete step-by-step guide to implementing a private Rock-Paper-Scissors game using Conditional Transactions (CTX)"
 ---
 
 ## Rock-Paper-Scissors with Conditional Transactions
 
-This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses BITE's Conditional Transaction (CTX) feature to keep player moves encrypted until both players have committed. The game automatically decrypts moves onchain and determines the winner without any manual reveal phase.
+This comprehensive tutorial walks you through building a **Rock-Paper-Scissors game** that uses Conditional Transactions (CTX) to keep player moves encrypted until both players have committed. The game automatically decrypts moves onchain and determines the winner without any manual reveal phase.
 
 <Tip title="Why CTX for RPS?">
 In a traditional Rock-Paper-Scissors game, if Player 1 submits their move first, Player 2 could see it and counter. Using CTX, both moves remain encrypted until both players commit. The network then automatically decrypts them in the next block, ensuring a fair game.
@@ -13,20 +13,20 @@ In a traditional Rock-Paper-Scissors game, if Player 1 submits their move first,
 
 ## How the Game Works
 
-The game implements a **commit-reveal pattern with automatic decryption** using BITE CTX:
+The game implements a **commit-reveal pattern with automatic decryption** using CTX:
 
 **Game Flow:**
 
 | Phase | Description | Key Action |
 |--------|-------------|------------|
-| **1. Create** | Player 1 creates a game with encrypted move and wager | Move encrypted via BITE SDK, stored onchain |
+| **1. Create** | Player 1 creates a game with encrypted move and wager | Move encrypted via Privacy SDK, stored onchain |
 | **2. Join** | Player 2 joins with encrypted move and CTX gas payment | CTX automatically submitted for decryption |
 | **3. Decrypt** | Network decrypts both moves in next block | `onDecrypt` callback triggered automatically |
 | **4. Resolve** | Contract determines winner and distributes funds | Winner gets 2x wager, draw = refunds |
 
 
 <Note title="Before You Start">
-This tutorial requires access to a CTX-enabled SKALE chain. The demo is configured for **BITE V2 Sandbox 2**. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+This tutorial requires access to a CTX-enabled SKALE chain. The demo is configured for the BITE V2 Sandbox 2. Check [Programmable Privacy](/concepts/programmable-privacy/intro) for current feature availability.
 </Note>
 
 **Prerequisites:**
@@ -115,7 +115,7 @@ rock-paper-scissors/
 │   ├── src/
 │   │   ├── RockPaperScissors.sol    # Main game contract
 │   │   └── encryption/
-│   │       ├── Precompiled.sol        # BITE V2 precompile library
+│   │       ├── Precompiled.sol        # Programmable Privacy precompile library
 │   │       └── types.sol             # Type definitions
 │   └── test/                       # Foundry tests
 ├── frontend/              # React + Vite frontend
@@ -155,9 +155,9 @@ struct Game {
 }
 ```
 
-**BITE Precompile Addresses:**
+**Programmable Privacy Precompile Addresses:**
 
-The contract imports `Precompiled.sol` to interact with BITE's precompiled contracts:
+The contract imports `Precompiled.sol` to interact with the Programmable Privacy precompiled contracts:
 
 ```solidity
 import "./encryption/Precompiled.sol";
@@ -165,7 +165,7 @@ import "./encryption/Precompiled.sol";
 contract RockPaperScissors is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    // BITE Precompile addresses
+    // Programmable Privacy precompile addresses
     address public constant SUBMIT_CTX = 0x000000000000000000000000000000000000001B;
     address public constant ENCRYPT_TE = 0x000000000000000000000000000000000000001c;
 
@@ -295,7 +295,7 @@ function onDecrypt(bytes[] calldata decryptedArguments, bytes[] calldata plainte
     require(game.player1 != address(0), "Game not found");
     require(game.state == GameState.Joined, "Invalid state");
 
-    // Decrypt moves from BITE
+    // Decrypt moves via threshold decryption
     game.move1 = uint8(bytes1(decryptedArguments[0]));
     game.move2 = uint8(bytes1(decryptedArguments[1]));
 
@@ -394,12 +394,12 @@ frontend/
 
 The `CreateGame.tsx` component handles game creation. Here are the key parts:
 
-**BITE SDK Initialization:**
+**Privacy SDK Initialization:**
 
 ```tsx
 import { BITE } from '@skalenetwork/bite'
 
-// Encrypt move using BITE
+// Encrypt move using Privacy SDK
 const encryptMove = async (move: Move): Promise<string> => {
   // Convert move number to hex (1 -> "01", 2 -> "02", 3 -> "03")
   const moveHex = move.toString(16).padStart(2, '0')
@@ -412,7 +412,7 @@ const encryptMove = async (move: Move): Promise<string> => {
 
 **Encryption Flow:**
 1. Move value (1-3) is converted to hex: `move.toString(16).padStart(2, '0')`
-2. BITE SDK encrypts the hex string using threshold encryption
+2. Privacy SDK encrypts the hex string using threshold encryption
 3. Encrypted bytes are returned as a hex string for contract submission
 
 **Creating the Game:**
@@ -468,7 +468,7 @@ const handleCreateGame = async () => {
 **Flow Summary:**
 1. Check if token approval is needed (allowance vs wager amount)
 2. If needed, approve the contract to spend tokens
-3. **Encrypt the move** using BITE SDK
+3. **Encrypt the move** using the Privacy SDK
 4. Call `createGame` with encrypted move, wager amount, and token address
 
 ---
@@ -567,6 +567,6 @@ Open your browser to `http://localhost:5173` and:
 
 **Resources:**
 
-- **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
+- **Privacy SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
 - **Demo Repository**: [TheGreatAxios/ctxs](https://github.com/TheGreatAxios/ctxs/tree/thegreataxios/rps)
-- **BITE Protocol**: [Introduction](/concepts/bite-protocol/intro-bite-protocol)
+- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)

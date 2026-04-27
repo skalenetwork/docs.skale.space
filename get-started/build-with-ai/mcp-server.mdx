@@ -1,0 +1,111 @@
+---
+title: "SKALE MCP Server"
+description: "Use SKALE's Model Context Protocol server for AI agent integration"
+---
+
+## Overview
+
+The SKALE MCP (Model Context Protocol) Server enables AI agents to interact with SKALE Network directly. It provides a standardized interface for AI assistants and agents to perform blockchain operations including privacy features, bridging, and deployment.
+
+## What Is MCP?
+
+The Model Context Protocol (MCP) is an open standard that enables AI models to interact with external tools and data sources. By providing an MCP server, SKALE allows any MCP-compatible AI tool to:
+
+- Query chain information and status
+- Send encrypted transactions
+- Bridge assets between chains
+- Deploy and interact with smart contracts
+- Manage SKALE-specific features like programmable privacy
+
+## Installation
+
+### Using with Claude Desktop
+
+Add the SKALE MCP server to your Claude Desktop configuration:
+
+```json
+{
+  "mcpServers": {
+    "skale": {
+      "command": "npx",
+      "args": ["-y", "@skalenetwork/mcp-server"],
+      "env": {
+        "SKALE_RPC": "https://base-mainnet.skalenodes.com/v1/elated-tan-skat"
+      }
+    }
+  }
+}
+```
+
+### Using with Other MCP Clients
+
+```bash
+# Install globally
+npm install -g @skalenetwork/mcp-server
+
+# Run directly
+npx @skalenetwork/mcp-server
+```
+
+## Available Tools
+
+The SKALE MCP server exposes the following tool categories:
+
+### Privacy Tools
+
+| Tool | Description |
+|------|-------------|
+| `encrypt_transaction` | Encrypt a transaction using threshold encryption |
+| `encrypt_message` | Encrypt raw data for onchain storage |
+| `get_decrypted_data` | Retrieve decrypted transaction data after finality |
+
+### Bridging Tools
+
+| Tool | Description |
+|------|-------------|
+| `bridge_erc20` | Bridge ERC20 tokens between Ethereum and SKALE |
+| `bridge_erc721` | Bridge NFTs between chains |
+| `bridge_eth` | Bridge ETH between Ethereum and SKALE |
+
+### Deployment Tools
+
+| Tool | Description |
+|------|-------------|
+| `deploy_contract` | Deploy a smart contract to a SKALE chain |
+| `verify_contract` | Verify a deployed contract on the block explorer |
+
+### Chain Information Tools
+
+| Tool | Description |
+|------|-------------|
+| `get_chain_info` | Get current chain configuration and status |
+| `get_balance` | Check native token or ERC20 balance |
+| `get_transaction` | Get transaction details and status |
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SKALE_RPC` | Yes | JSON-RPC endpoint for the target SKALE chain |
+| `PRIVATE_KEY` | No | Private key for signing transactions (only needed for write operations) |
+
+### Chain Endpoints
+
+| Chain | RPC URL |
+|-------|---------|
+| SKALE Base Mainnet | `https://base-mainnet.skalenodes.com/v1/elated-tan-skat` |
+| SKALE Base Sepolia | `https://base-sepolia-testnet.skalenodes.com/v1/juicy-low-sgu` |
+
+## Security Considerations
+
+<Warning>
+Never expose your private key in prompts or logs. The MCP server handles key management securely and only uses it for signing transactions.
+</Warning>
+
+## Resources
+
+- [Best Prompts for SKALE](/get-started/build-with-ai/best-prompts) — Curated prompts for building on SKALE with AI
+- [Using LLMs.txt](/get-started/build-with-ai/using-llms-txt) — How SKALE exposes documentation for AI consumption
+- [SKALE Skills](/get-started/build-with-ai/using-skale-skills) — Installable agent skills for SKALE development
