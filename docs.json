@@ -576,7 +576,7 @@
     },
     {
       "source": "/building-applications/gas-fees",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/building-applications/pick-a-chain",
@@ -736,7 +736,7 @@
     },
     {
       "source": "/introduction/skale-chain-fuel",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/introduction/skale-chain-types",
@@ -748,7 +748,7 @@
     },
     {
       "source": "/introduction/zero-gas-fees",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/introduction/faq",
@@ -776,31 +776,31 @@
     },
     {
       "source": "/develop/sfuel/distribution/api-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/distribution/proof-of-work-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/etherbase",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/gas-vs-sfuel",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/pow-vs-sfuel",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/proof-of-work",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/sfuel-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/develop/sfuel/sfuel-station",
@@ -956,19 +956,19 @@
     },
     {
       "source": "/builders/app-developers/sfuel-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/builders/app-developers/sfuel-distribution/api-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/builders/app-developers/sfuel-distribution/contract-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/builders/app-developers/sfuel-distribution/pow-distribution",
-      "destination": "/concepts/gas-fees/zero-gas-fees"
+      "destination": "/developers/resources/gas-fees"
     },
     {
       "source": "/builders/app-developers/sfuel-station",
@@ -2169,6 +2169,78 @@
     {
       "source": "/developers/integrate-skale/json-rpc-api",
       "destination": "/developers/resources/json-rpc-api"
+    },
+    {
+      "source": "/concepts/architecture/overview",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/architecture/consensus-mechanism",
+      "destination": "/skale-chain/consensus"
+    },
+    {
+      "source": "/concepts/architecture/network-structure",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/architecture/security-model",
+      "destination": "/skale-chain/consensus"
+    },
+    {
+      "source": "/concepts/gas-fees/zero-gas-fees",
+      "destination": "/developers/resources/gas-fees"
+    },
+    {
+      "source": "/concepts/gas-fees/optional-gas-fees",
+      "destination": "/developers/resources/gas-fees"
+    },
+    {
+      "source": "/concepts/gas-fees/gasless-transactions",
+      "destination": "/developers/resources/gas-fees"
+    },
+    {
+      "source": "/concepts/skale-network/skale-network-101",
+      "destination": "/get-started/skale"
+    },
+    {
+      "source": "/concepts/skale-network/containerized-nodes",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/skale-network/delegated-proof-of-stake",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/concepts/skale-network/horizontal-scalability",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/skale-network/pooled-security-model",
+      "destination": "/validators/supernode-overview"
+    },
+    {
+      "source": "/concepts/skale-network/skale-manager",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/skale-network/virtualized-blockchains",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/skale-network/gas-fees/zero-gas-fees",
+      "destination": "/developers/resources/gas-fees"
+    },
+    {
+      "source": "/concepts/skale-network/gas-fees/optional-gas-fees",
+      "destination": "/developers/resources/gas-fees"
+    },
+    {
+      "source": "/concepts/skale-network/gas-fees/gasless-transactions",
+      "destination": "/developers/resources/gas-fees"
+    },
+    {
+      "source": "/concepts/schain-types",
+      "destination": "/chain-types/appchain"
     }
   ]
 }
