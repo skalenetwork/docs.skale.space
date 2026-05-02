@@ -75,12 +75,13 @@ libs = ["lib"]
 
 # SKALE Chain Configuration
 [rpc_endpoints]
-skale_testnet = "https://testnet.skalenodes.com/v1/juicy-low-small-testnet"
-skale_mainnet = "https://mainnet.skalenodes.com/v1/elated-tan-skat"
+skale_testnet = "https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha"
+skale_mainnet = "https://skale-base.skalenodes.com/v1/base"
 # Add your custom SKALE Chain endpoint here
 
 [etherscan]
-skale_testnet = { key = "", url = "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api" }
+skale_testnet = { key = "", url = "https://base-sepolia-testnet-explorer.skalenodes.com/api" }
+skale_mainnet = { key = "", url = "https://skale-base-explorer.skalenodes.com/api" }
 ```
 
 <Note>
@@ -162,17 +163,8 @@ When deploying to SKALE, remember to:
        <CONTRACT_ADDRESS> \
        src/MyContract.sol:MyContract \
        --verifier blockscout \
-       --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+       --verifier-url https://base-sepolia-testnet-explorer.skalenodes.com/api
    ```
-
-## Next Steps
-
-Now that Foundry is set up, you can:
-
-- [Deploy an ERC-20 Token](/cookbook/smart-contracts/deploy-erc20-token)
-- [Deploy an ERC-721 Token](/cookbook/smart-contracts/deploy-erc721-token)
-- [Deploy an ERC-1155 Token](/cookbook/smart-contracts/deploy-erc1155-token)
-- [Solidity Quickstart](/developers/solidity-quickstart)
 
 ## Related Topics
 

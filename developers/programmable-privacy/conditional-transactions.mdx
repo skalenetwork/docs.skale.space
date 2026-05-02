@@ -1,0 +1,339 @@
+---
+title: "Conditional Transactions"
+description: "Contracts that decrypt on demand. Set conditions, validators decrypt, callbacks fire — automated privacy with no reveal phase"
+---
+
+<Note>
+**Available on SKALE Base and SKALE Base Sepolia** — Conditional Transactions are available on mainnet and testnet. Contact the SKALE team at [https://discord.gg/skale](https://discord.gg/skale) for access and feedback.
+</Note>
+
+## Why Conditional Transactions?
+
+Encrypted Transactions decrypt everything at finality — useful for single-shot protection, but limited when you need persistent private state. Conditional Transactions (CTX) solve this by letting smart contracts **decide when and what to decrypt**, based on arbitrary Solidity conditions. Each decryption request queues a callback via an ephemeral wallet in a later block, enabling multi-step autonomous workflows where data is only revealed when conditions are met.
+
+## What Are Conditional Transactions?
+
+Conditional Transactions (CTX) let smart contracts **conditionally trigger decryption of encrypted data** and receive the results in a callback. Unlike Encrypted Transactions (which decrypt automatically at finality), CTX decryption only happens when a contract explicitly requests it — and the decrypted data is delivered as a transaction from an ephemeral wallet in a later block.
+
+The flow is:
+
+1. **Condition in Solidity** — Your contract evaluates some condition (e.g., "has the deadline passed?")
+2. **submitCTX** — If the condition is met, your contract calls `submitCTX` with encrypted arguments
+3. **Validators queue** — The network queues a callback transaction via an **ephemeral wallet** (a unique address generated per call)
+4. **Callback in block N+1** — The queued transaction executes, delivering decrypted data to your contract's `onDecrypt` function
+
+The "conditional" part is that decryption and callback execution only happen if and when your contract's Solidity logic calls `submitCTX`.
+
+## Quick Example
+
+```solidity
+function revealSecret(bytes calldata encrypted) external payable {
+    bytes[] memory encryptedArgs = new bytes[](1);
+    encryptedArgs[0] = encrypted;
+
+    address payable ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        msg.value / tx.gasprice,
+        encryptedArgs,
+        new bytes[](0)
+    );
+
+    _canCallOnDecrypt[ctxSender] = true;
+    payable(ctxSender).sendValue(msg.value);
+}
+
+function onDecrypt(
+    bytes[] calldata decryptedArgs,
+    bytes[] calldata
+) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;
+    // Use decryptedArgs[0] in your logic
+}
+```
+
+## How It Works in Detail
+
+```
+Block N:             Contract calls submitCTX(precompile, gas, encryptedArgs, plaintextArgs)
+                     → returns address of new ephemeral wallet
+                     ↓
+Between blocks:      Validators queue callback via that ephemeral wallet
+                     ↓
+Block N+1 (or later): Ephemeral wallet calls onDecrypt(decryptedArgs, plaintextArgs)
+                      → Validator committee decrypts encryptedArgs during execution
+                      → Decrypted data is passed to your callback
+```
+
+### submitCTX — The Condition Trigger
+
+```solidity
+address payable ctxSender = BITE.submitCTX(
+    BITE.SUBMIT_CTX_ADDRESS,   // precompile address
+    gas,                        // gas allocated for callback
+    encryptedArgs,              // bytes[] of encrypted data to decrypt
+    plaintextArgs               // bytes[] of plaintext data passed through
+);
+```
+
+Returns the address of the ephemeral wallet that will execute the callback. **Each call generates a unique address.**
+
+### onDecrypt — The Callback
+
+```solidity
+function onDecrypt(
+    bytes[] calldata decryptedArgs,  // decrypted versions of encryptedArgs
+    bytes[] calldata plaintextArgs   // plaintextArgs passed through from submitCTX
+) external override { ... }
+```
+
+`onDecrypt` is called by the ephemeral wallet. The validator committee decrypts `encryptedArgs` during execution and passes them as `decryptedArgs`.
+
+## ⚠️ Security: Protect onDecrypt
+
+Because `onDecrypt` is a public callback, **anyone could call it directly** if you don't restrict access. Each `submitCTX` call generates a **new, unique ephemeral wallet** — so you must track which addresses are authorized:
+
+```solidity
+mapping(address => bool) private _canCallOnDecrypt;
+
+function grantAccess(...) external payable {
+    address payable ctxSender = BITE.submitCTX(/* ... */);
+    _canCallOnDecrypt[ctxSender] = true;  // Authorize this specific wallet
+    ctxSender.sendValue(msg.value);
+}
+
+function onDecrypt(
+    bytes[] calldata decryptedArgs,
+    bytes[] calldata plaintextArgs
+) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;  // One-time use
+    // ... process decrypted data ...
+}
+```
+
+Without this check, an attacker could call `onDecrypt` with arbitrary arguments or replay old callbacks.
+
+## Complete Example
+
+The following contract lets an owner store an encrypted value and grant viewers access via re-encryption. Each viewer gets a unique CTX callback:
+
+```solidity
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity ^0.8.24;
+
+import { BITE, PublicKey }
+    from "@skalenetwork/bite-solidity/contracts/BITE.sol";
+import { IBiteSupplicant }
+    from "@skalenetwork/bite-solidity/contracts/interfaces/IBiteSupplicant.sol";
+import { Ownable }
+    from "@openzeppelin/contracts/access/Ownable.sol";
+
+contract EncryptedValueRegistry is IBiteSupplicant, Ownable {
+    uint256 public constant MIN_CALLBACK_GAS = 300_000;
+
+    bytes private encryptedValue;
+    mapping(address => bytes) private _accessList;
+    mapping(address => bool) private _canCallOnDecrypt;
+
+    constructor() Ownable(msg.sender) {}
+
+    function setValue(uint256 _value) external onlyOwner {
+        encryptedValue = BITE.encryptTE(
+            BITE.ENCRYPT_TE_ADDRESS,
+            abi.encode(_value)
+        );
+    }
+
+    function grantAccess(
+        PublicKey calldata publicKey
+    ) external payable onlyOwner {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encryptedValue;
+
+        bytes[] memory plaintextArgs = new bytes[](1);
+        plaintextArgs[0] = abi.encode(publicKey);
+
+        uint256 allowedGas = msg.value / tx.gasprice;
+        require(
+            allowedGas > MIN_CALLBACK_GAS,
+            "Not enough ETH for callback gas"
+        );
+
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            allowedGas,
+            encryptedArgs,
+            plaintextArgs
+        );
+
+        _canCallOnDecrypt[ctxSender] = true;
+        ctxSender.sendValue(msg.value);
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata plaintextArgs
+    ) external override {
+        require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+        _canCallOnDecrypt[msg.sender] = false;
+
+        uint256 decryptedValue = abi.decode(
+            decryptedArgs[0], (uint256)
+        );
+        PublicKey memory ownerPublicKey = abi.decode(
+            plaintextArgs[0], (PublicKey)
+        );
+
+        bytes memory reEncrypted = BITE.encryptECIES(
+            BITE.ENCRYPT_ECIES_ADDRESS,
+            abi.encode(decryptedValue),
+            ownerPublicKey
+        );
+
+        _accessList[pubKeyToAddress(ownerPublicKey)] = reEncrypted;
+    }
+
+    function getEncryptedValue()
+        external view returns (bytes memory)
+    {
+        return _accessList[msg.sender];
+    }
+
+    function pubKeyToAddress(
+        PublicKey memory publicKey
+    ) private pure returns (address) {
+        bytes32 hash = keccak256(
+            abi.encodePacked(publicKey.x, publicKey.y)
+        );
+        return address(uint160(uint256(hash)));
+    }
+}
+```
+
+## CTX Chaining
+
+`onDecrypt` can call `submitCTX` again, creating chains of conditional decryption across multiple blocks — each step uses a new ephemeral wallet:
+
+```
+Block N:  Condition met → submitCTX(A) → wallet_A authorized
+Block N+1: wallet_A calls onDecrypt(A) → process → condition B met → submitCTX(B) → wallet_B authorized
+Block N+2: wallet_B calls onDecrypt(B) → execute → submitCTX(C) → wallet_C authorized
+Block N+3: wallet_C calls onDecrypt(C) → settle
+```
+
+Each step is a separate block. Each `submitCTX` generates a unique ephemeral wallet. The chain terminates when a callback doesn't call `submitCTX`.
+
+### Chaining Example
+
+```solidity
+contract TradingChain is IBiteSupplicant {
+    mapping(address => bool) private _canCallOnDecrypt;
+
+    bytes private encryptedPrice;
+    bytes private encryptedTradeParams;
+
+    function startEvaluation() external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encryptedPrice;
+
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            new bytes[](0)
+        );
+
+        _canCallOnDecrypt[ctxSender] = true;
+        payable(ctxSender).sendValue(msg.value);
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata
+    ) external override {
+        require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+        _canCallOnDecrypt[msg.sender] = false;
+
+        uint256 price = abi.decode(decryptedArgs[0], (uint256));
+
+        if (price < targetPrice) {
+            bytes[] memory nextArgs = new bytes[](1);
+            nextArgs[0] = encryptedTradeParams;
+
+            address payable ctxSender = BITE.submitCTX(
+                BITE.SUBMIT_CTX_ADDRESS,
+                gasleft(),
+                nextArgs,
+                new bytes[](0)
+            );
+
+            _canCallOnDecrypt[ctxSender] = true;
+        }
+    }
+}
+```
+
+## Use Cases
+
+### Confidential Auctions
+
+Bidders submit encrypted bids. A condition checks whether the deadline has passed before triggering decryption:
+
+```solidity
+function resolveAuction() external {
+    require(block.timestamp >= auctionEnd, "Auction still active");
+    address payable ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        encryptedBids,
+        new bytes[](0)
+    );
+    _canCallOnDecrypt[ctxSender] = true;
+}
+
+function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;
+    // Find highest bid and award item (losing bids stay secret)
+}
+```
+
+### Private Voting with Cascading Outcomes
+
+Votes stay encrypted until tally time. The tally outcome determines whether another CTX fires:
+
+```solidity
+function tallyVotes() external {
+    require(block.timestamp >= votingEnd, "Voting still active");
+    address payable ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        encryptedVotes,
+        new bytes[](0)
+    );
+    _canCallOnDecrypt[ctxSender] = true;
+}
+
+function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;
+
+    uint256 forVotes = tally(decryptedArgs);
+
+    if (forVotes > quorum) {
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            gasleft(),
+            encryptedExecutionParams,
+            new bytes[](0)
+        );
+        _canCallOnDecrypt[ctxSender] = true;
+    }
+}
+```
+
+## Getting Started
+
+- [API Reference](/developers/programmable-privacy/intro) — Solidity helpers and `submitCTX` docs
+- [Conditional Transactions Cookbook](/cookbook/privacy/conditional-transactions) — Step-by-step tutorials

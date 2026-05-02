@@ -1,0 +1,78 @@
+---
+title: "Introduction"
+description: "Smart contracts with secrets. Control who sees what and when — all in Solidity, no trusted third parties"
+---
+
+## What Is Programmable Privacy?
+
+SKALE's Programmable Privacy suite brings **composable onchain confidentiality** to smart contracts. Built on threshold encryption and integrated at the protocol layer, it lets contracts define _who_ can see _what_ and _when_ — all while staying fully EVM compatible.
+
+Unlike simple encryption schemes that act as an all-or-nothing blanket, Programmable Privacy is **composable**: decryption rules, access controls, and confidentiality policies are expressed in Solidity, enabling private state, selective disclosure, conditional execution, and confidential token logic.
+
+## Why Programmable Privacy?
+
+Public blockchains expose everything — transaction amounts, contract calls, user intent. This creates problems for real-world applications:
+
+- **Confidentiality** — Payroll, supply chain, lending, and gaming all handle data that shouldn't be public
+- **Competition** — Competitors can monitor contract interactions, extract positions, and front-run strategies
+- **Compliance** — Regulated use cases (e.g., securities, identity) require controlled disclosure, not full transparency
+- **User experience** — Public balances and transaction histories deter adoption for consumer and enterprise use
+
+Programmable Privacy solves these at the protocol layer — no trusted third parties, no L2s with sequencer backdoors, no breaking EVM compatibility.
+
+## Features
+
+| Feature | Status | Chain Availability |
+|---------|--------|-------------------|
+| [Encrypted Transactions](/developers/programmable-privacy/encrypted-transactions) | Available | SKALE Base, SKALE Base Sepolia |
+| [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) | Available | SKALE Base, SKALE Base Sepolia |
+| [Re-encryption](/developers/programmable-privacy/re-encryption) | Beta | SKALE Base Sepolia |
+| [Confidential Tokens](/developers/programmable-privacy/confidential-tokens) | Beta | SKALE Base Sepolia |
+
+> **Note:** All Programmable Privacy features are currently available on testnet (SKALE Base Sepolia). Mainnet deployment is coming soon. For mainnet access or questions, reach out to the SKALE team on [Discord](https://discord.gg/skale).
+
+## How It Works
+
+Programmable Privacy extends SKALE with threshold encryption built into consensus:
+
+1. **Encrypt** — Your wallet or contract encrypts data using SKALE's threshold public key
+2. **Submit** — Encrypted data is sent to a precompile or smart contract
+3. **Finalize** — Consensus finalizes the encrypted data without seeing contents
+4. **Decrypt** — After finality, the validator committee runs threshold decryption
+5. **Execute** — Decrypted data executes normally in the EVM
+
+This is **commit-then-reveal** at the protocol level — inclusion happens before anyone can read the data.
+
+## Key Properties
+
+### Threshold Decryption
+
+No single node can decrypt data. The validator committee jointly decrypts using threshold BLS — a minimum number of validators must collaborate. Keys rotate each epoch using onchain DKG.
+
+### Zero Trust
+
+You don't need to trust any single party. The cryptography ensures:
+
+- **No early decryption** — Requires threshold of validators
+- **No selective decryption** — All or nothing per epoch
+- **No single point of failure** — Distributed key generation
+
+### EVM Compatible
+
+Programmable Privacy works with existing tooling:
+
+- MetaMask, WalletConnect, and other wallets
+- Foundry, Hardhat, and other development frameworks
+- Ethers.js, Viem, and other web3 libraries
+- Existing Solidity contracts (no changes needed for encrypted transactions)
+
+### MEV Resistance (Secondary Benefit)
+
+Encrypting transaction fields also removes the information MEV bots need to front-run or sandwich users — intent is hidden until finality, and validators can't filter by content. This is a useful side effect of protocol-level encryption, not the primary design goal.
+
+## Learn More
+
+- [Encrypted Transactions](/developers/programmable-privacy/encrypted-transactions) — Hide transaction payloads during mempool and consensus
+- [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) — Smart contracts that request decryption on-demand
+- [Re-encryption](/developers/programmable-privacy/re-encryption) — Encrypt data for specific viewers or private onchain state
+- [Confidential Tokens](/developers/programmable-privacy/confidential-tokens) — ERC20 tokens with encrypted balances

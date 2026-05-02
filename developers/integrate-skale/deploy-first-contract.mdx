@@ -1,0 +1,131 @@
+---
+title: Deploy Your First Contract
+description: Deploy your first Solidity smart contract on SKALE Base
+---
+
+Now that you're connected and have CREDITS to cover compute costs, let's deploy your first smart contract on **SKALE Base Mainnet**.
+
+This guide uses **Foundry** — a fast, portable toolkit for Ethereum development. If you prefer Hardhat, see the [Setup Hardhat](/cookbook/deployment/setup-hardhat) guide.
+
+<Note>
+Every transaction in this guide deducts from your CREDIT balance — no gas token needed. Make sure you have CREDITS before starting. See [Buy CREDITS](/developers/integrate-skale/buy-credits).
+</Note>
+
+## Prerequisites
+
+- [Foundry installed](https://book.getfoundry.sh/getting-started/installation) (`foundryup`)
+- CREDITS in your wallet on SKALE Base Mainnet (see [Buy CREDITS](/developers/integrate-skale/buy-credits))
+- SKALE Base Mainnet RPC URL: `https://skale-base.skalenodes.com/v1/base`
+  (see [Connect to SKALE](/developers/integrate-skale/connect-to-skale))
+
+## Step 1: Set Up a Foundry Project
+
+```shell
+forge init my-skale-contract
+cd my-skale-contract
+```
+
+Project structure:
+
+```
+my-skale-contract/
+├── src/          # Smart contracts
+├── script/       # Deployment scripts
+├── test/         # Test files
+├── lib/          # Dependencies
+├── foundry.toml  # Configuration
+└── remappings.txt
+```
+
+Install OpenZeppelin contracts:
+
+```shell
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+## Step 2: Configure foundry.toml
+
+Update `foundry.toml` to point at SKALE Base Mainnet:
+
+```toml
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+[rpc_endpoints]
+skale_mainnet = "https://skale-base.skalenodes.com/v1/base"
+```
+
+## Step 3: Create Your Contract
+
+Create an ERC-721 (NFT) contract in `src/MyNFT.sol`:
+
+```shell
+touch src/MyNFT.sol
+```
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
+contract MyNFT is ERC721 {
+    uint256 private _nextTokenId;
+
+    constructor() ERC721("MyNFT", "MNFT") {}
+
+    function mint(address to) public {
+        uint256 tokenId = _nextTokenId;
+        _safeMint(to, tokenId);
+        _nextTokenId++;
+    }
+
+    function getNextTokenId() public view returns (uint256) {
+        return _nextTokenId;
+    }
+}
+```
+
+## Step 4: Compile
+
+```shell
+forge build
+```
+
+## Step 5: Deploy to Mainnet
+
+Deploy your contract to SKALE Base Mainnet:
+
+```shell
+forge create src/MyNFT.sol:MyNFT \
+    --interactive \
+    --rpc-url skale_mainnet \
+    --legacy
+```
+
+Or use an encrypted keystore:
+
+```shell
+forge create src/MyNFT.sol:MyNFT \
+    --account skale-deployer \
+    --rpc-url skale_mainnet \
+    --broadcast \
+    --legacy
+```
+
+<Note>
+SKALE Chains require the `--legacy` flag. If you don't have a keystore, `--interactive` prompts for your private key. The deployment will deduct CREDITS from your wallet to cover compute.
+</Note>
+
+<Note>
+**Done.** Your contract is live on SKALE Base Mainnet. Next, [verify your contract](/cookbook/smart-contracts/verify-smart-contracts) or [deploy an ERC-20 token](/cookbook/smart-contracts/deploy-erc20-token).
+</Note>
+
+## Related Topics
+
+- [Setup Foundry](/cookbook/deployment/setup-foundry) — full Foundry configuration guide
+- [Setup Hardhat](/cookbook/deployment/setup-hardhat) — Hardhat alternative
+- [Verify Smart Contracts](/cookbook/smart-contracts/verify-smart-contracts)
+- [Explore Programmable Privacy](/developers/programmable-privacy/intro)
