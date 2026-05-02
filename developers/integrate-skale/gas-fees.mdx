@@ -1,36 +1,70 @@
 ---
-title: Gas Fees
-description: Explore Zero Gas Fees, Compute Credits, Gas Chains, and Gasless Transactions on SKALE
+title: "Gas Fees"
+description: "Zero gas fees, compute credits, and gasless transactions — how SKALE eliminates gas costs for users"
 ---
 
-Since Day 1, one of SKALE's most innovative features has been zero gas fees. Over the years, the developer ecosystem has continued to evolve and we now have a number of incredible technical options when it comes to having (or not) gas fees. This page breaks down the various options and trade offs for businesses and developers looking to adopt SKALE.
+SKALE offers several models for handling gas, all designed to eliminate friction for end users. Which model fits depends on your chain type and deployment.
 
-## Zero Gas Fees with sFUEL
+## The Models
 
-The original implementation of zero gas fees -- activley in use across many SKALE Chains on Ethereum -- is a unique gas structure where there is a gas token for compatibility but it by default has no value (i.e valueless gas). sFUEL allows the SKALE Chain to maintain 100% EVM compatiblity with popular tools and wallets while making it simple to scale usage for high performance applications.
+### Zero Gas Fees (sFUEL)
 
-sFUEL is technically equivalent to ETH on Ethereum but is pre-minted with a massive surplus and is constantly recycled back into a contract allowing redistribution. This is by design ensuring that the supply of sFUEL for the chain operators should never run out.
+The original model — every SKALE Chain has a native gas token (sFUEL) that has **no monetary value**. It exists for EVM compatibility so wallets, tools, and SDKs work out of the box. sFUEL is pre-minted in massive surplus and recycled onchain — it never runs out.
+
+```
+User sends tx → consumes sFUEL (valueless) → tx executes
+              → sFUEL recycled back to distribution pool
+```
 
 <Note>
-Developers and users can acquire sFUEL on the SKALE Hubs from https://sfuelstation.com
+Developers and users can acquire sFUEL at https://sfuelstation.com
 </Note>
 
-# Zero Gas Fees with Compute Credits
+### Compute Credits (Credit Chains)
 
-A new model put into place as part of SKALE Expand, compute credits are philisophically designed to help simplify the cost of compute for developers in a blockchain. Technically, compute credits are very similar to sFUEL, however with some small nuances: 
+For SKALE Expand deployments, compute credits replace sFUEL with a directly purchasable resource. The chain owner **buys credits** in a simple subscription, and users transact for free — no tokens, no sFUEL, no friction.
 
-1. Compute credits are directly purchasable, while sFUEL is not
-2. The cost of compute credits can be dynamic over time, however aims to be as stable as possible to represent the flat cost of compute
-3. The ability to acquire compute credits as needed allows for more open-ecosystems
+**How buying credits works:**
 
-## Gasless Transactions with Proof-of-Work
+1. Go to **[https://portal.skale.space/chains](https://portal.skale.space/chains)**
+2. Select your chain → **Manage** → **Connect Wallet**
+3. Choose months to prepay (up to 24)
+4. Bridge SKL and confirm payment
 
-Gasless transactions utilize the proof-of-work scheme -- an algorithm designed to find a magic number to satisfy some equation -- which can then be used to send transactions without having any sFUEL in the wallet.
+```
+Chain owner buys credits → credits deposited in chain pool
+                        → users send tx → compute deducted from pool
+                        → users never pay or hold tokens
+```
+
+### Gasless Transactions (Proof-of-Work)
+
+Gasless transactions let users send transactions with **zero sFUEL and zero credits**. A Proof-of-Work algorithm generates a magic number that validates the transaction instead of any gas payment. Best for maximally decentralized onboarding.
+
+```
+Client computes PoW → generates magic number
+                     → sends tx with magic number as gasPrice
+                     → validator verifies work → tx executes
+```
 
 <Note>
 Proof-of-Work is disabled by default on credit chains.
 </Note>
 
-## Gas Chains
+### Gas Chains
 
-A gas chain is simple and acts similarly to a Layer 2 in setup. The team launching the chain can chose a token available on the network the sChain is being launched from i.e Ethereum or Base and have that token -- SKL, ETH, WBTC, custom ERC-20, etc -- be chosen as the gas token on the SKALE Chain. During setup, the gas asset on the sChain then has a dynamic supply based on the bridged in asset.
+A gas chain uses a real token (SKL, ETH, USDC, or any ERC-20) as the gas token. Users pay per-transaction in that token, similar to an L2. Available on SKALE Expand deployments.
+
+## Which Model to Use
+
+| Model | Who Pays | User Needs Tokens? | Best For |
+|-------|----------|-------------------|----------|
+| Zero Gas Fees (sFUEL) | Nobody | sFUEL (free) | SKALE on Ethereum chains |
+| Compute Credits | Chain owner | Nothing | Consumer apps, games |
+| Gasless (PoW) | Nobody | Nothing | Frictionless onboarding |
+| Gas Chain | Users | Gas token | DeFi, financial apps |
+
+## Related Topics
+
+- [Credit Chain](/chain-types/credit-chain) — How credit chains work
+- [Pricing and Payments](/developers/run-a-skale-chain/pricing-and-payments) — Subscription costs

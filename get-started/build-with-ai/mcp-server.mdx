@@ -1,111 +1,102 @@
 ---
-title: "SKALE MCP Server"
-description: "Use SKALE's Model Context Protocol server for AI agent integration"
+title: "MCP Server"
+description: "Connect AI agents to SKALE documentation via the Model Context Protocol"
 ---
 
 ## Overview
 
-The SKALE MCP (Model Context Protocol) Server enables AI agents to interact with SKALE Network directly. It provides a standardized interface for AI assistants and agents to perform blockchain operations including privacy features, bridging, and deployment.
+The SKALE Documentation MCP server gives AI assistants and agents the ability to search and read SKALE documentation directly. It's available at:
+
+```
+https://docs.skale.space/mcp
+```
+
+No installation, npm packages, environment variables, or private keys needed. Just add the URL to any MCP-compatible client.
 
 ## What Is MCP?
 
-The Model Context Protocol (MCP) is an open standard that enables AI models to interact with external tools and data sources. By providing an MCP server, SKALE allows any MCP-compatible AI tool to:
+The Model Context Protocol (MCP) is an open standard that enables AI models to interact with external tools and data sources. The SKALE Docs MCP server exposes two tools:
 
-- Query chain information and status
-- Send encrypted transactions
-- Bridge assets between chains
-- Deploy and interact with smart contracts
-- Manage SKALE-specific features like programmable privacy
+- **Search** — Search across all SKALE documentation to find relevant pages
+- **Query docs filesystem** — Read full page content, browse the doc structure, and extract specific sections
 
-## Installation
+AI agents connected to this server can answer questions about SKALE with up-to-date documentation, without relying on training data or web search.
 
-### Using with Claude Desktop
+## Connecting
 
-Add the SKALE MCP server to your Claude Desktop configuration:
+### Claude Desktop (claude.ai)
+
+1. Go to **Settings → Connectors**
+2. Select **Add custom connector**
+3. Enter:
+   - Name: `SKALE Docs`
+   - URL: `https://docs.skale.space/mcp`
+4. Select **Add**
+
+### Claude Code
+
+```bash
+claude mcp add --transport http "SKALE Docs" https://docs.skale.space/mcp
+```
+
+Verify the connection:
+
+```bash
+claude mcp list
+```
+
+### Cursor
+
+1. Open **Cursor Settings → MCP** (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → "Open MCP settings")
+2. Add a new MCP server:
 
 ```json
 {
   "mcpServers": {
-    "skale": {
-      "command": "npx",
-      "args": ["-y", "@skalenetwork/mcp-server"],
-      "env": {
-        "SKALE_RPC": "https://base-mainnet.skalenodes.com/v1/elated-tan-skat"
-      }
+    "SKALE Docs": {
+      "url": "https://docs.skale.space/mcp"
     }
   }
 }
 ```
 
-### Using with Other MCP Clients
+### VS Code
 
-```bash
-# Install globally
-npm install -g @skalenetwork/mcp-server
+Create or edit `.vscode/mcp.json` in your project:
 
-# Run directly
-npx @skalenetwork/mcp-server
+```json
+{
+  "servers": {
+    "SKALE Docs": {
+      "type": "http",
+      "url": "https://docs.skale.space/mcp"
+    }
+  }
+}
 ```
 
-## Available Tools
+### GitHub Copilot
 
-The SKALE MCP server exposes the following tool categories:
+GitHub Copilot can also connect to MCP servers. Add the server in your client settings or [Copilot extensions configuration](https://docs.github.com/en/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot).
 
-### Privacy Tools
+### Other MCP Clients
 
-| Tool | Description |
-|------|-------------|
-| `encrypt_transaction` | Encrypt a transaction using threshold encryption |
-| `encrypt_message` | Encrypt raw data for onchain storage |
-| `get_decrypted_data` | Retrieve decrypted transaction data after finality |
+Any MCP-compatible client can connect by adding a server with `url` set to `https://docs.skale.space/mcp`. See the client's documentation for the exact configuration format.
 
-### Bridging Tools
+## What the MCP Server Provides
 
-| Tool | Description |
-|------|-------------|
-| `bridge_erc20` | Bridge ERC20 tokens between Ethereum and SKALE |
-| `bridge_erc721` | Bridge NFTs between chains |
-| `bridge_eth` | Bridge ETH between Ethereum and SKALE |
+The MCP server indexes all public pages listed in the documentation navigation. When an AI agent connects, it can:
 
-### Deployment Tools
+- Answer questions about SKALE concepts, APIs, and SDKs
+- Find relevant cookbook recipes and tutorials
+- Provide accurate code examples from the docs
+- Reference chain information and configuration details
 
-| Tool | Description |
-|------|-------------|
-| `deploy_contract` | Deploy a smart contract to a SKALE chain |
-| `verify_contract` | Verify a deployed contract on the block explorer |
+## MCP Resources: Skill Files
 
-### Chain Information Tools
+The MCP server also exposes [SKALE Skills](/get-started/build-with-ai/using-skale-skills) as MCP resources. Agents connected to the server can discover and access skill files without installing them separately. Skills provide step-by-step instructions for building on SKALE — from setting up a chain to using programmable privacy.
 
-| Tool | Description |
-|------|-------------|
-| `get_chain_info` | Get current chain configuration and status |
-| `get_balance` | Check native token or ERC20 balance |
-| `get_transaction` | Get transaction details and status |
+import AiIntegrationComparison from "../../_snippets/_ai-integrations.mdx"
 
-## Configuration
+<AiIntegrationComparison />
 
-### Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `SKALE_RPC` | Yes | JSON-RPC endpoint for the target SKALE chain |
-| `PRIVATE_KEY` | No | Private key for signing transactions (only needed for write operations) |
-
-### Chain Endpoints
-
-| Chain | RPC URL |
-|-------|---------|
-| SKALE Base Mainnet | `https://base-mainnet.skalenodes.com/v1/elated-tan-skat` |
-| SKALE Base Sepolia | `https://base-sepolia-testnet.skalenodes.com/v1/juicy-low-sgu` |
-
-## Security Considerations
-
-<Warning>
-Never expose your private key in prompts or logs. The MCP server handles key management securely and only uses it for signing transactions.
-</Warning>
-
-## Resources
-
-- [Best Prompts for SKALE](/get-started/build-with-ai/best-prompts) — Curated prompts for building on SKALE with AI
-- [Using LLMs.txt](/get-started/build-with-ai/using-llms-txt) — How SKALE exposes documentation for AI consumption
-- [SKALE Skills](/get-started/build-with-ai/using-skale-skills) — Installable agent skills for SKALE development

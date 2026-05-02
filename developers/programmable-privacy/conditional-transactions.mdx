@@ -1,219 +1,339 @@
 ---
 title: "Conditional Transactions"
-description: "Developer guide for building smart contracts with on-demand decryption using CTX on SKALE"
+description: "Contracts that decrypt on demand. Set conditions, validators decrypt, callbacks fire — automated privacy with no reveal phase"
 ---
 
-Conditional Transactions (CTX) enable smart contracts to store encrypted data and request decryption directly from within Solidity and the EVM. While Encrypted Transactions focus on encrypting transaction payloads for privacy, Conditional Transactions are transactions initiated by smart contracts in one block and executed in the next block with decrypted data.
-
 <Note>
-This example uses the BITE V2 Sandbox 2. Contact the SKALE Team at [https://discord.gg/skale](https://discord.gg/skale) for access.
+**Available on SKALE Base and SKALE Base Sepolia** — Conditional Transactions are available on mainnet and testnet. Contact the SKALE team at [https://discord.gg/skale](https://discord.gg/skale) for access and feedback.
 </Note>
 
-## How CTX Works
+## Why Conditional Transactions?
 
-1. **Encrypt off-chain:** Use `bite.encryptMessage()` to encrypt data
-2. **Submit to contract:** Send encrypted data to a smart contract
-3. **Request decryption:** Contract calls `BITE.submitCTX()` to create a Conditional Transaction
-4. **Next block:** SKALE consensus decrypts and calls `onDecrypt()` callback with decrypted values
+Encrypted Transactions decrypt everything at finality — useful for single-shot protection, but limited when you need persistent private state. Conditional Transactions (CTX) solve this by letting smart contracts **decide when and what to decrypt**, based on arbitrary Solidity conditions. Each decryption request queues a callback via an ephemeral wallet in a later block, enabling multi-step autonomous workflows where data is only revealed when conditions are met.
 
-## Prerequisites
+## What Are Conditional Transactions?
 
-- Node.js 18+ and bun or npm
-- `@skalenetwork/bite` TypeScript SDK
-- `@skalenetwork/bite-solidity` Solidity helpers
-- Access to BITE V2 Sandbox 2
+Conditional Transactions (CTX) let smart contracts **conditionally trigger decryption of encrypted data** and receive the results in a callback. Unlike Encrypted Transactions (which decrypt automatically at finality), CTX decryption only happens when a contract explicitly requests it — and the decrypted data is delivered as a transaction from an ephemeral wallet in a later block.
 
-<Warning>
-**Compiler Requirements**
-- Solidity version: **>= 0.8.27**
-- EVM version: **istanbul** or lower (via `pragma` or compiler settings)
-</Warning>
+The flow is:
 
-## Project Setup
+1. **Condition in Solidity** — Your contract evaluates some condition (e.g., "has the deadline passed?")
+2. **submitCTX** — If the condition is met, your contract calls `submitCTX` with encrypted arguments
+3. **Validators queue** — The network queues a callback transaction via an **ephemeral wallet** (a unique address generated per call)
+4. **Callback in block N+1** — The queued transaction executes, delivering decrypted data to your contract's `onDecrypt` function
 
-<Tabs>
-  <Tab title="Hardhat">
-  ```bash
-  mkdir ctx-example && cd ctx-example
-  npm init -y
-  npm i --save-dev hardhat
-  npx hardhat init
+The "conditional" part is that decryption and callback execution only happen if and when your contract's Solidity logic calls `submitCTX`.
 
-  # Install BITE dependencies
-  npm i @skalenetwork/bite @skalenetwork/bite-solidity @openzeppelin/contracts
-  ```
-  </Tab>
-
-  <Tab title="Foundry">
-  ```bash
-  mkdir ctx-example && cd ctx-example
-  forge init
-
-  # Install BITE dependencies
-  forge install skalenetwork/bite-solidity openzeppelin/openzeppelin-contracts
-
-  # Add to remappings.txt
-  echo "@skalenetwork/bite-solidity/=lib/bite-solidity/contracts" >> remappings.txt
-  echo "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts" >> remappings.txt
-  ```
-  </Tab>
-</Tabs>
-
-## Smart Contract
-
-Create `SimpleSecret.sol`:
+## Quick Example
 
 ```solidity
-pragma solidity >=0.8.27;
+function revealSecret(bytes calldata encrypted) external payable {
+    bytes[] memory encryptedArgs = new bytes[](1);
+    encryptedArgs[0] = encrypted;
 
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
-import { IBiteSupplicant } from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+    address payable ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        msg.value / tx.gasprice,
+        encryptedArgs,
+        new bytes[](0)
+    );
 
-contract SimpleSecret is IBiteSupplicant {
-    using Address for address payable;
+    _canCallOnDecrypt[ctxSender] = true;
+    payable(ctxSender).sendValue(msg.value);
+}
 
-    bytes public decryptedMessage;
-    address public ctxSender;
+function onDecrypt(
+    bytes[] calldata decryptedArgs,
+    bytes[] calldata
+) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;
+    // Use decryptedArgs[0] in your logic
+}
+```
 
-    uint256 public constant CTX_GAS_LIMIT = 2500000; 
-    uint256 public constant CTX_GAS_PAYMENT = 0.06 ether;
+## How It Works in Detail
 
-    error AccessViolation();
+```
+Block N:             Contract calls submitCTX(precompile, gas, encryptedArgs, plaintextArgs)
+                     → returns address of new ephemeral wallet
+                     ↓
+Between blocks:      Validators queue callback via that ephemeral wallet
+                     ↓
+Block N+1 (or later): Ephemeral wallet calls onDecrypt(decryptedArgs, plaintextArgs)
+                      → Validator committee decrypts encryptedArgs during execution
+                      → Decrypted data is passed to your callback
+```
 
-    // Submit encrypted secret for decryption
-    function revealSecret(bytes calldata encrypted) external payable {
-        require(msg.value == CTX_GAS_PAYMENT, "Invalid CTX gas payment");
+### submitCTX — The Condition Trigger
 
+```solidity
+address payable ctxSender = BITE.submitCTX(
+    BITE.SUBMIT_CTX_ADDRESS,   // precompile address
+    gas,                        // gas allocated for callback
+    encryptedArgs,              // bytes[] of encrypted data to decrypt
+    plaintextArgs               // bytes[] of plaintext data passed through
+);
+```
+
+Returns the address of the ephemeral wallet that will execute the callback. **Each call generates a unique address.**
+
+### onDecrypt — The Callback
+
+```solidity
+function onDecrypt(
+    bytes[] calldata decryptedArgs,  // decrypted versions of encryptedArgs
+    bytes[] calldata plaintextArgs   // plaintextArgs passed through from submitCTX
+) external override { ... }
+```
+
+`onDecrypt` is called by the ephemeral wallet. The validator committee decrypts `encryptedArgs` during execution and passes them as `decryptedArgs`.
+
+## ⚠️ Security: Protect onDecrypt
+
+Because `onDecrypt` is a public callback, **anyone could call it directly** if you don't restrict access. Each `submitCTX` call generates a **new, unique ephemeral wallet** — so you must track which addresses are authorized:
+
+```solidity
+mapping(address => bool) private _canCallOnDecrypt;
+
+function grantAccess(...) external payable {
+    address payable ctxSender = BITE.submitCTX(/* ... */);
+    _canCallOnDecrypt[ctxSender] = true;  // Authorize this specific wallet
+    ctxSender.sendValue(msg.value);
+}
+
+function onDecrypt(
+    bytes[] calldata decryptedArgs,
+    bytes[] calldata plaintextArgs
+) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;  // One-time use
+    // ... process decrypted data ...
+}
+```
+
+Without this check, an attacker could call `onDecrypt` with arbitrary arguments or replay old callbacks.
+
+## Complete Example
+
+The following contract lets an owner store an encrypted value and grant viewers access via re-encryption. Each viewer gets a unique CTX callback:
+
+```solidity
+// SPDX-License-Identifier: AGPL-3.0-only
+pragma solidity ^0.8.24;
+
+import { BITE, PublicKey }
+    from "@skalenetwork/bite-solidity/contracts/BITE.sol";
+import { IBiteSupplicant }
+    from "@skalenetwork/bite-solidity/contracts/interfaces/IBiteSupplicant.sol";
+import { Ownable }
+    from "@openzeppelin/contracts/access/Ownable.sol";
+
+contract EncryptedValueRegistry is IBiteSupplicant, Ownable {
+    uint256 public constant MIN_CALLBACK_GAS = 300_000;
+
+    bytes private encryptedValue;
+    mapping(address => bytes) private _accessList;
+    mapping(address => bool) private _canCallOnDecrypt;
+
+    constructor() Ownable(msg.sender) {}
+
+    function setValue(uint256 _value) external onlyOwner {
+        encryptedValue = BITE.encryptTE(
+            BITE.ENCRYPT_TE_ADDRESS,
+            abi.encode(_value)
+        );
+    }
+
+    function grantAccess(
+        PublicKey calldata publicKey
+    ) external payable onlyOwner {
         bytes[] memory encryptedArgs = new bytes[](1);
-        encryptedArgs[0] = encrypted;
+        encryptedArgs[0] = encryptedValue;
 
-        bytes[] memory plaintextArgs = new bytes[](0);
+        bytes[] memory plaintextArgs = new bytes[](1);
+        plaintextArgs[0] = abi.encode(publicKey);
 
-        // Submit CTX - returns address that will call onDecrypt
+        uint256 allowedGas = msg.value / tx.gasprice;
+        require(
+            allowedGas > MIN_CALLBACK_GAS,
+            "Not enough ETH for callback gas"
+        );
+
         address payable ctxSender = BITE.submitCTX(
             BITE.SUBMIT_CTX_ADDRESS,
-            CTX_GAS_LIMIT,
+            allowedGas,
             encryptedArgs,
             plaintextArgs
         );
 
-        // Refund any unused ETH
+        _canCallOnDecrypt[ctxSender] = true;
+        ctxSender.sendValue(msg.value);
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata plaintextArgs
+    ) external override {
+        require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+        _canCallOnDecrypt[msg.sender] = false;
+
+        uint256 decryptedValue = abi.decode(
+            decryptedArgs[0], (uint256)
+        );
+        PublicKey memory ownerPublicKey = abi.decode(
+            plaintextArgs[0], (PublicKey)
+        );
+
+        bytes memory reEncrypted = BITE.encryptECIES(
+            BITE.ENCRYPT_ECIES_ADDRESS,
+            abi.encode(decryptedValue),
+            ownerPublicKey
+        );
+
+        _accessList[pubKeyToAddress(ownerPublicKey)] = reEncrypted;
+    }
+
+    function getEncryptedValue()
+        external view returns (bytes memory)
+    {
+        return _accessList[msg.sender];
+    }
+
+    function pubKeyToAddress(
+        PublicKey memory publicKey
+    ) private pure returns (address) {
+        bytes32 hash = keccak256(
+            abi.encodePacked(publicKey.x, publicKey.y)
+        );
+        return address(uint160(uint256(hash)));
+    }
+}
+```
+
+## CTX Chaining
+
+`onDecrypt` can call `submitCTX` again, creating chains of conditional decryption across multiple blocks — each step uses a new ephemeral wallet:
+
+```
+Block N:  Condition met → submitCTX(A) → wallet_A authorized
+Block N+1: wallet_A calls onDecrypt(A) → process → condition B met → submitCTX(B) → wallet_B authorized
+Block N+2: wallet_B calls onDecrypt(B) → execute → submitCTX(C) → wallet_C authorized
+Block N+3: wallet_C calls onDecrypt(C) → settle
+```
+
+Each step is a separate block. Each `submitCTX` generates a unique ephemeral wallet. The chain terminates when a callback doesn't call `submitCTX`.
+
+### Chaining Example
+
+```solidity
+contract TradingChain is IBiteSupplicant {
+    mapping(address => bool) private _canCallOnDecrypt;
+
+    bytes private encryptedPrice;
+    bytes private encryptedTradeParams;
+
+    function startEvaluation() external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encryptedPrice;
+
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            new bytes[](0)
+        );
+
+        _canCallOnDecrypt[ctxSender] = true;
         payable(ctxSender).sendValue(msg.value);
     }
 
-    // Called by SKALE consensus in next block with decrypted data
     function onDecrypt(
         bytes[] calldata decryptedArgs,
-        bytes[] calldata /* plaintextArgs */
+        bytes[] calldata
     ) external override {
-        decryptedMessage = decryptedArgs[0];
-    }
+        require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+        _canCallOnDecrypt[msg.sender] = false;
 
-    function getSecret() external view returns (bytes memory) {
-        return decryptedMessage;
+        uint256 price = abi.decode(decryptedArgs[0], (uint256));
+
+        if (price < targetPrice) {
+            bytes[] memory nextArgs = new bytes[](1);
+            nextArgs[0] = encryptedTradeParams;
+
+            address payable ctxSender = BITE.submitCTX(
+                BITE.SUBMIT_CTX_ADDRESS,
+                gasleft(),
+                nextArgs,
+                new bytes[](0)
+            );
+
+            _canCallOnDecrypt[ctxSender] = true;
+        }
     }
-    receive() external payable {}
-    fallback() external payable {}
 }
 ```
 
-### Key Points
+## Use Cases
 
-- `IBiteSupplicant` requires implementing `onDecrypt()` callback
-- `BITE.submitCTX()` creates the Conditional Transaction
-- `BITE.SUBMIT_CTX_ADDRESS` is the predeployed CTX handler
-- `ctxSender` stores the address that will call back - used for security
+### Confidential Auctions
 
-## Test Script
+Bidders submit encrypted bids. A condition checks whether the deadline has passed before triggering decryption:
 
-Create `run-simple.ts`:
-
-```typescript
-import { BITE } from "@skalenetwork/bite";
-import { Contract, JsonRpcProvider, Wallet, ContractFactory } from "ethers";
-import SimpleSecretJson from "./out/SimpleSecret.sol/SimpleSecret.json";
-
-const providerUrl = "https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2";
-const INSECURE_ETH_PRIVATE_KEY = "0x..."; // Replace with your private key
-
-async function main() {
-    const provider = new JsonRpcProvider(providerUrl);
-    const signer = new Wallet(INSECURE_ETH_PRIVATE_KEY, provider);
-    const bite = new BITE(providerUrl);
-    const CTX_GAS_PAYMENT = BigInt(60000000000000000)
-
-    // Deploy contract
-    console.log("Deploying SimpleSecret...");
-    const factory = new ContractFactory(
-        SimpleSecretJson.abi,
-        SimpleSecretJson.bytecode,
-        signer
+```solidity
+function resolveAuction() external {
+    require(block.timestamp >= auctionEnd, "Auction still active");
+    address payable ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        encryptedBids,
+        new bytes[](0)
     );
-    const contract = await factory.deploy();
-    await contract.waitForDeployment();
-    const address = await contract.getAddress();
-    console.log(`Contract: ${address}\n`);
-
-    // Encrypt a secret message
-    const secret = "0x" + Buffer.from("Hello BITE!").toString("hex");
-    console.log(`Encrypting: "${secret}"`);
-    const encrypted = await bite.encryptMessage(secret);
-    console.log(`Encrypted: ${encrypted}\n`);
-
-    // Submit encrypted secret to contract
-    console.log("Submitting encrypted secret...");
-    const tx = await contract.revealSecret(encrypted, { 
-        gasLimit: 500000,
-        value: CTX_GAS_PAYMENT 
-    });
-    await tx.wait();
-    console.log("Submitted! Waiting for next block...\n");
-
-    // Wait for next block (onDecrypt executes)
-    const currentBlock = await provider.getBlockNumber();
-    let nextBlock = currentBlock;
-    while (nextBlock <= currentBlock) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        nextBlock = await provider.getBlockNumber();
-    }
-
-    // Check decrypted result
-    const result = await contract.getSecret();
-    const decoded = Buffer.from(result.slice(2), "hex").toString();
-    console.log(`Decrypted secret: "${decoded}"`);
+    _canCallOnDecrypt[ctxSender] = true;
 }
 
-main().catch(console.error);
+function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;
+    // Find highest bid and award item (losing bids stay secret)
+}
 ```
 
-## Running
+### Private Voting with Cascading Outcomes
 
-<Tabs>
-  <Tab title="Hardhat">
-  ```bash
-  # Build contract
-  npx hardhat compile
+Votes stay encrypted until tally time. The tally outcome determines whether another CTX fires:
 
-  # Run script
-  bun run run-simple.ts
-  ```
-  </Tab>
-  <Tab title="Foundry">
-  ```bash
-  # Build contract
-  forge build
+```solidity
+function tallyVotes() external {
+    require(block.timestamp >= votingEnd, "Voting still active");
+    address payable ctxSender = BITE.submitCTX(
+        BITE.SUBMIT_CTX_ADDRESS,
+        0,
+        encryptedVotes,
+        new bytes[](0)
+    );
+    _canCallOnDecrypt[ctxSender] = true;
+}
 
-  # Run script
-  bun run run-simple.ts
-  ```
-  </Tab>
-</Tabs>
+function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
+    require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+    _canCallOnDecrypt[msg.sender] = false;
 
-## Resources
+    uint256 forVotes = tally(decryptedArgs);
 
-- **API Reference**: [API & FAQs](/developers/programmable-privacy/api-and-faqs)
-- **Repository**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
-- **Solidity Helpers**: [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
-- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)
-- **Tutorial**: [Conditional Transactions Demo](/cookbook/privacy/conditional-transactions)
+    if (forVotes > quorum) {
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            gasleft(),
+            encryptedExecutionParams,
+            new bytes[](0)
+        );
+        _canCallOnDecrypt[ctxSender] = true;
+    }
+}
+```
+
+## Getting Started
+
+- [API Reference](/developers/programmable-privacy/intro) — Solidity helpers and `submitCTX` docs
+- [Conditional Transactions Cookbook](/cookbook/privacy/conditional-transactions) — Step-by-step tutorials

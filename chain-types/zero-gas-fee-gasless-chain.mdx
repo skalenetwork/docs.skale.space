@@ -1,0 +1,56 @@
+---
+title: "Zero Gas Fee / Gasless Chain"
+description: "Two models for eliminating user gas costs — zero gas fees with sFUEL and gasless transactions with Proof-of-Work"
+---
+
+## Zero Gas Fees
+
+All SKALE Chains operate with **zero gas fees** by default. The native gas token (sFUEL) has no monetary value and cannot be traded. It exists purely for EVM compatibility — wallets and tools see a gas token, but users never pay real money for transactions.
+
+### Key Points
+
+- **No monetary value** — sFUEL cannot be purchased or sold
+- **EVM compatible** — Works with MetaMask, Ethers.js, Foundry, etc.
+- **Spam prevention** — Computational requirements still prevent abuse
+- **Free forever** — Zero gas fees are permanent on all SKALE Chains
+
+## Gasless Transactions (Proof-of-Work)
+
+Gasless transactions take zero fees a step further: users don't even need sFUEL in their wallet. A Proof-of-Work algorithm generates a "magic number" that validates the transaction instead of a gas payment.
+
+### How It Works
+
+1. Client generates a random 256-bit magic number using PoW
+2. The magic number is used as the `gasPrice` in the transaction
+3. Validators verify the computational work was performed
+4. No sFUEL balance required in the user's wallet
+
+### When to Use
+
+| Approach | Requires sFUEL | Best for |
+|----------|---------------|----------|
+| Zero Gas Fees | Yes (free) | Most applications |
+| Gasless (PoW) | No | True decentralization, invisible UX |
+
+<Note>
+Proof-of-Work is disabled by default on credit chains.
+</Note>
+
+## Gas Chains
+
+A gas chain uses a real token (SKL, ETH, USDC, etc.) as the gas token. This works like a traditional L2 — users pay per-transaction in the chosen token. Gas chains are available on SKALE Expand deployments.
+
+## Comparison
+
+| Feature | Zero Gas Fees | Gasless (PoW) | Gas Chain |
+|---------|--------------|---------------|-----------|
+| User pays? | No | No | Yes |
+| Requires token? | sFUEL (free) | Nothing | Gas token |
+| EVM compatible? | Yes | Yes | Yes |
+| Best for | Most apps | Consumer UX | DeFi, financial |
+
+## Related Topics
+
+- [Credit Chain](/chain-types/credit-chain) — Prepaid credit model
+- [Gas Fees](/developers/integrate-skale/gas-fees) — Full gas fee guide
+- [sFUEL Distribution](/developers/run-a-skale-chain/managing-sfuel-distribution)

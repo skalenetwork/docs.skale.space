@@ -1,0 +1,56 @@
+---
+title: "Credit Chain"
+description: "SKALE Chain model where compute is prepaid via credits — users transact for free, chain owners buy credits"
+---
+
+## What Is a Credit Chain?
+
+A credit chain is a SKALE Chain where compute resources are prepaid through **compute credits**. The chain owner purchases credits in a simple subscription, and end users transact with **zero gas fees** — they never need to hold or spend tokens.
+
+This is the recommended model for most applications: predictable costs for you, friction-free experience for your users.
+
+## How It Works
+
+```
+Chain owner buys credits (monthly subscription)
+  → Credits are deposited into the chain's credit pool
+    → Users send transactions freely
+      → Compute is deducted from the pool, not from users
+```
+
+## Buying Credits
+
+Credits are purchased on the [SKALE Portal](https://portal.skale.space/chains):
+
+1. Go to **https://portal.skale.space/chains**
+2. Select your chain
+3. Click **Manage**
+4. Connect your wallet
+5. Choose the number of months to prepay
+6. Bridge SKL tokens if needed and confirm
+
+<Note>
+Payments are due on the 1st of each month. Prepay up to 24 months to lock in current pricing.
+</Note>
+
+## Key Characteristics
+
+- **Users pay nothing** — all gas costs are covered by the chain's credit pool
+- **Predictable costs** — flat monthly subscription, no per-transaction fees
+- **Frictionless onboarding** — users don't need tokens, KYC, or sFUEL
+- **Credit tracking** — compute usage is deducted from the pool transparently
+
+## Comparison
+
+| Feature | Credit Chain | Appchain | Gas Chain |
+|---------|-------------|----------|-----------|
+| Who pays | Chain owner | Chain owner | Users |
+| User needs tokens? | No | No | Yes (gas token) |
+| Cost model | Subscription | Subscription | Per-transaction |
+| Best for | Consumer dApps, games | Enterprise, B2B | DeFi, financial apps |
+
+## Related Topics
+
+- [Zero Gas Fees](/developers/integrate-skale/gas-fees) — SKALE's gas fee model
+- [Appchain](/chain-types/appchain) — Dedicated appchains
+- [Pricing and Payments](/developers/run-a-skale-chain/pricing-and-payments) — Subscription costs

@@ -1,15 +1,56 @@
 ---
 title: "Confidential Tokens"
-description: "Developer guide for building ERC20 tokens with encrypted balances on SKALE"
+description: "Private programmable money. Encrypted balances, compliant transfers, holder-only viewing — ERC20s that keep secrets"
 ---
 
 <Note>
-**Experimental (testnet only) on SKALE Base Sepolia** — Confidential Tokens are in early development. API may change significantly. Not yet available on mainnet.
+**Beta on SKALE Base Sepolia** — Confidential Tokens are available for testing and development on testnet. Mainnet deployment coming soon. API is stable but may see refinements.
 </Note>
 
-## Overview
+## Why Confidential Tokens?
 
-Confidential Tokens are ERC20 tokens where balances are encrypted onchain using a dual-encryption model. No plaintext balance is ever stored. The network can verify and process transfers without seeing amounts, and token holders can read their balances privately off-chain.
+Standard ERC20 tokens store balances as plaintext onchain — anyone can see who holds what. For payroll, lending, gaming, or any application where financial privacy matters, this is a non-starter. Confidential Tokens solve this by encrypting every balance using a dual-layer model: threshold encryption for onchain processing (transfers, sufficiency checks) and ECIES encryption for private off-chain viewing.
+
+## What Are Confidential Tokens?
+
+Confidential Tokens are ERC20 tokens where balances are encrypted onchain. No plaintext balance is ever stored. They use a dual-encryption model — threshold encryption for on-chain logic and ECIES encryption for off-chain viewing.
+
+## Quick Start
+
+<Tabs>
+  <Tab title="Foundry">
+  ```bash
+  forge install skalenetwork/confidential-token
+  ```
+
+  ```solidity
+  import "@skalenetwork/confidential-token/ConfidentialToken.sol";
+
+  // Balances are encrypted automatically — no manual encryption needed
+  // Transfers use CTX under the hood for secure processing
+  confidentialToken.transfer(recipient, amount);
+
+  // Balance is readable only by the holder via their viewer key
+  uint256 balance = confidentialToken.balanceOf(msg.sender);
+  ```
+  </Tab>
+
+  <Tab title="Hardhat">
+  ```bash
+  npm install @skalenetwork/confidential-token
+  ```
+
+  ```typescript
+  import { ConfidentialToken } from "@skalenetwork/confidential-token";
+
+  // Balances are encrypted automatically — no manual encryption needed
+  await confidentialToken.transfer(recipient, amount);
+
+  // Balance is readable only by the holder via their viewer key
+  const balance = await confidentialToken.balanceOf(sender);
+  ```
+  </Tab>
+</Tabs>
 
 ## Dual-Encryption Model
 
@@ -18,7 +59,7 @@ Confidential Tokens are ERC20 tokens where balances are encrypted onchain using 
 | TE (Threshold Encryption) | Network BLS key | On-chain logic (transfers, sufficiency checks) | Consensus via CTX callback |
 | ECIES | Recipient's secp256k1 key | Off-chain balance viewing | Token holder's private key |
 
-Both layers encrypt every balance update. The TE layer allows the network to verify and process transfers. The ECIES layer allows the token holder to read their balance privately off-chain.
+Both layers encrypt every balance. The TE layer allows the network to verify and process transfers without seeing amounts. The ECIES layer allows the token holder to read their balance privately off-chain.
 
 ## Architecture
 
@@ -40,16 +81,10 @@ transfer(from, to, amount)
 
 | Contract | Purpose |
 |----------|---------|
-| `ConfidentialToken` | Core confidential ERC20 implementation |
+| `ConfidentialToken` | Core confidential ERC20 |
 | `ConfidentialWrapper` | Wraps an existing ERC20 into a confidential token |
-| `MintableConfidentialToken` | ConfidentialToken with restricted mint functionality |
+| `MintableConfidentialToken` | ConfidentialToken + restricted mint |
 | `ConfidentialEIP3009` | EIP-3009 with encrypted value parameters |
-
-## Installation
-
-```bash
-forge install skalenetwork/confidential-token
-```
 
 ## Roles
 
@@ -63,27 +98,11 @@ A holder registers a viewer public key via `setViewerPublicKey()`. The holder ca
 
 ## Key Behaviors
 
-### Staleness Detection
+- **Staleness detection** — If another CTX modified a balance between submission and execution, `onDecrypt` detects it (compares `_lastChanged` vs `submittedBlockNumber`) and resubmits with fresh encrypted balances.
+- **Callback funding** — Contract holds ETH/SFUEL for CTX callback gas. Each CTX submission transfers gas to the callback sender.
+- **Zero balances** — Also TE-encrypted (not empty bytes) to prevent information leakage via ciphertext length.
 
-If another CTX modified a balance between submission and execution, `onDecrypt` detects it by comparing `_lastChanged` vs `submittedBlockNumber` and resubmits with fresh encrypted balances. This ensures consistency without requiring locks.
+## Learn More
 
-### Callback Funding
-
-The contract holds ETH/SFUEL for CTX callback gas. Each CTX submission transfers gas to the callback sender.
-
-### Zero Balances
-
-Even zero balances are TE-encrypted (not empty bytes) to prevent information leakage via ciphertext length analysis.
-
-## Getting Started
-
-For a conceptual overview of how confidential tokens work, see [Confidential Tokens](/concepts/programmable-privacy/confidential-tokens).
-
-For the re-encryption precompiles that power confidential tokens, see [Re-encryption](/developers/programmable-privacy/re-encryption).
-
-## Resources
-
-- **GitHub**: [github.com/skalenetwork/confidential-token](https://github.com/skalenetwork/confidential-token)
-- **Re-encryption**: [Developer Guide](/developers/programmable-privacy/re-encryption)
-- **Conditional Transactions**: [Developer Guide](/developers/programmable-privacy/conditional-transactions)
-- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)
+- [Re-encryption](/developers/programmable-privacy/re-encryption) — The encryption precompiles that power confidential tokens
+- [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) — How CTX enables on-chain processing of encrypted data

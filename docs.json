@@ -21,7 +21,8 @@
           {
             "group": "Introduction",
             "pages": [
-              "get-started/skale"
+              "get-started/skale",
+              "get-started/skale-expand"
             ]
           },
           {
@@ -68,41 +69,184 @@
         ]
       },
       {
-        "tab": "Concepts",
+        "tab": "Cookbook",
         "pages": [
+          {
+            "group": "Deployment",
+            "pages": [
+              "cookbook/deployment/setup-foundry",
+              "cookbook/deployment/setup-hardhat"
+            ]
+          },
+          {
+            "group": "Smart Contracts",
+            "pages": [
+              "cookbook/smart-contracts/deploy-erc20-token",
+              "cookbook/smart-contracts/deploy-erc721-token",
+              "cookbook/smart-contracts/deploy-erc1155-token",
+              "cookbook/smart-contracts/verify-smart-contracts"
+            ]
+          },
+          {
+            "group": "Privacy",
+            "pages": [
+              "cookbook/privacy/encrypted-transactions",
+              "cookbook/privacy/conditional-transactions"
+            ]
+          },
+          {
+            "group": "x402",
+            "pages": [
+              "cookbook/x402/facilitator",
+              "cookbook/x402/accepting-payments",
+              "cookbook/x402/buying"
+            ]
+          },
+          {
+            "group": "MPP",
+            "pages": [
+              "cookbook/mpp/accepting-payments",
+              "cookbook/mpp/gasless-payments",
+              "cookbook/mpp/confidential-payments"
+            ]
+          },
+          {
+            "group": "Facilitators",
+            "pages": [
+              "cookbook/facilitators/using-autoincentive",
+              "cookbook/facilitators/using-corbits",
+              "cookbook/facilitators/using-kobaru",
+              "cookbook/facilitators/using-payai",
+              "cookbook/facilitators/using-primer",
+              "cookbook/facilitators/using-relai",
+              "cookbook/facilitators/using-x402x",
+              "cookbook/facilitators/using-ultravioleta"
+            ]
+          },
+          {
+            "group": "AI Agents",
+            "pages": [
+              "cookbook/agents/build-an-agent",
+              "cookbook/agents/open-wallet-skale-cli"
+            ]
+          },
+          {
+            "group": "Native Features",
+            "pages": [
+              "cookbook/native-features/rng-get-random-number",
+              "cookbook/native-features/send-gasless-transaction"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Developers",
+        "pages": [
+          {
+            "group": "Integrate SKALE",
+            "pages": [
+              "developers/integrate-skale/connect-to-skale",
+              "developers/integrate-skale/json-rpc-api",
+              "developers/integrate-skale/evm-differences",
+              "developers/integrate-skale/gas-fees"
+            ]
+          },
           {
             "group": "Programmable Privacy",
             "pages": [
-              "concepts/programmable-privacy/intro",
-              "concepts/programmable-privacy/encrypted-transactions",
-              "concepts/programmable-privacy/conditional-transactions",
-              "concepts/programmable-privacy/re-encryption",
-              "concepts/programmable-privacy/confidential-tokens"
+              "developers/programmable-privacy/intro",
+              "developers/programmable-privacy/encrypted-transactions",
+              "developers/programmable-privacy/conditional-transactions",
+              "developers/programmable-privacy/re-encryption",
+              "developers/programmable-privacy/confidential-tokens"
             ]
           },
           {
-            "group": "SKALE",
+            "group": "SDKs",
             "pages": [
-              "concepts/skale/skale-expand"
+              "developers/sdks/skalenetwork-mpp-sdk",
+              "developers/sdks/skalenetwork-cli",
+              "developers/sdks/skalenetwork-bite",
+              "developers/sdks/skalenetwork-bite-solidity"
             ]
           },
           {
-            "group": "SKALE Chain",
+            "group": "SKALE Bridge",
             "pages": [
-              "concepts/skale-chain/introduction",
-              "concepts/skale-chain/block-rotation",
-              "concepts/skale-chain/consensus",
-              "concepts/skale-chain/ddos-protection",
-              "concepts/skale-chain/precompiled-contracts",
-              "concepts/skale-chain/snapshots"
+              "developers/skale-bridge/overview",
+              {
+                "group": "Ethereum Bridge",
+                "pages": [
+                  "developers/skale-bridge/ethereum/bridge-eth",
+                  "developers/skale-bridge/ethereum/bridge-erc20",
+                  "developers/skale-bridge/ethereum/bridge-erc721",
+                  "developers/skale-bridge/ethereum/bridge-erc1155"
+                ]
+              },
+              {
+                "group": "SKALE to SKALE Bridge",
+                "pages": [
+                  "developers/skale-bridge/skale/connect-schains",
+                  "developers/skale-bridge/skale/bridge-erc20",
+                  "developers/skale-bridge/skale/bridge-erc721",
+                  "developers/skale-bridge/skale/bridge-erc1155"
+                ]
+              },
+              {
+                "group": "Messaging Layer",
+                "pages": [
+                  "developers/skale-bridge/messaging-layer/message-proxy",
+                  "developers/skale-bridge/messaging-layer/create-custom-contracts",
+                  "developers/skale-bridge/messaging-layer/connect-custom-contracts",
+                  "developers/skale-bridge/messaging-layer/using-custom-contracts"
+                ]
+              }
             ]
           },
           {
             "group": "Cryptography",
             "pages": [
-              "concepts/elliptic-curve-cryptography",
-              "concepts/threshold-schemes",
-              "concepts/dkg-with-bls"
+              "developers/elliptic-curve-cryptography",
+              "developers/threshold-schemes",
+              "developers/dkg-with-bls"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SKALE Chain",
+        "pages": [
+          {
+            "group": "SKALE Chain",
+            "pages": [
+              "skale-chain/introduction",
+              "skale-chain/block-rotation",
+              "skale-chain/consensus",
+              "skale-chain/ddos-protection",
+              "skale-chain/precompiled-contracts",
+              "skale-chain/snapshots"
+            ]
+          },
+          {
+            "group": "Chain Types",
+            "pages": [
+              "chain-types/appchain",
+              "chain-types/credit-chain",
+              "chain-types/zero-gas-fee-gasless-chain"
+            ]
+          },
+          {
+            "group": "Run a SKALE Chain",
+            "pages": [
+              "developers/run-a-skale-chain/intro-to-schains",
+              "developers/run-a-skale-chain/schain-ownership",
+              "developers/run-a-skale-chain/customize-schain",
+              "developers/run-a-skale-chain/setup-requirements",
+              "developers/run-a-skale-chain/pricing-and-payments",
+              "developers/run-a-skale-chain/access-control",
+              "developers/run-a-skale-chain/managing-sfuel-distribution",
+              "developers/run-a-skale-chain/using-safe",
+              "developers/run-a-skale-chain/using-multisig-wallet-cli"
             ]
           }
         ]
@@ -164,164 +308,6 @@
             "pages": [
               "validators/watchdog/overview",
               "validators/watchdog/apis"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Developers",
-        "pages": [
-          {
-            "group": "Integrate SKALE",
-            "pages": [
-              "developers/integrate-skale/connect-to-skale",
-              "developers/integrate-skale/json-rpc-api",
-              "developers/integrate-skale/evm-differences",
-              "developers/integrate-skale/gas-fees"
-            ]
-          },
-          {
-            "group": "Programmable Privacy",
-            "pages": [
-              "developers/programmable-privacy/encrypted-transactions",
-              "developers/programmable-privacy/conditional-transactions",
-              "developers/programmable-privacy/re-encryption",
-              "developers/programmable-privacy/confidential-tokens",
-              "developers/programmable-privacy/api-and-faqs"
-            ]
-          },
-          {
-            "group": "SDKs",
-            "pages": [
-              "developers/sdks/skalenetwork-mpp-sdk",
-              "developers/sdks/skalenetwork-cli",
-              "developers/sdks/skalenetwork-bite"
-            ]
-          },
-          {
-            "group": "Chain Types",
-            "pages": [
-              "developers/chain-types/appchain",
-              "developers/chain-types/credit-chain",
-              "developers/chain-types/zero-gas-fee-gasless-chain"
-            ]
-          },
-          {
-            "group": "SKALE Bridge",
-            "pages": [
-              "developers/skale-bridge/overview",
-              {
-                "group": "Ethereum Bridge",
-                "pages": [
-                  "developers/skale-bridge/ethereum/bridge-eth",
-                  "developers/skale-bridge/ethereum/bridge-erc20",
-                  "developers/skale-bridge/ethereum/bridge-erc721",
-                  "developers/skale-bridge/ethereum/bridge-erc1155"
-                ]
-              },
-              {
-                "group": "SKALE to SKALE Bridge",
-                "pages": [
-                  "developers/skale-bridge/skale/connect-schains",
-                  "developers/skale-bridge/skale/bridge-erc20",
-                  "developers/skale-bridge/skale/bridge-erc721",
-                  "developers/skale-bridge/skale/bridge-erc1155"
-                ]
-              },
-              {
-                "group": "Messaging Layer",
-                "pages": [
-                  "developers/skale-bridge/messaging-layer/message-proxy",
-                  "developers/skale-bridge/messaging-layer/create-custom-contracts",
-                  "developers/skale-bridge/messaging-layer/connect-custom-contracts",
-                  "developers/skale-bridge/messaging-layer/using-custom-contracts"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Run a SKALE Chain",
-            "pages": [
-              "developers/run-a-skale-chain/intro-to-schains",
-              "developers/run-a-skale-chain/schain-ownership",
-              "developers/run-a-skale-chain/customize-schain",
-              "developers/run-a-skale-chain/setup-requirements",
-              "developers/run-a-skale-chain/pricing-and-payments",
-              "developers/run-a-skale-chain/access-control",
-              "developers/run-a-skale-chain/managing-sfuel-distribution",
-              "developers/run-a-skale-chain/using-safe",
-              "developers/run-a-skale-chain/using-multisig-wallet-cli"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Cookbook",
-        "pages": [
-          {
-            "group": "Deployment",
-            "pages": [
-              "cookbook/deployment/setup-foundry",
-              "cookbook/deployment/setup-hardhat"
-            ]
-          },
-          {
-            "group": "Smart Contracts",
-            "pages": [
-              "cookbook/smart-contracts/deploy-erc20-token",
-              "cookbook/smart-contracts/deploy-erc721-token",
-              "cookbook/smart-contracts/deploy-erc1155-token",
-              "cookbook/smart-contracts/verify-smart-contracts"
-            ]
-          },
-          {
-            "group": "Privacy",
-            "pages": [
-              "cookbook/privacy/encrypted-transactions",
-              "cookbook/privacy/conditional-transactions"
-            ]
-          },
-          {
-            "group": "x402",
-            "pages": [
-              "cookbook/x402/facilitator",
-              "cookbook/x402/accepting-payments",
-              "cookbook/x402/buying"
-            ]
-          },
-          {
-            "group": "MPP",
-            "pages": [
-              "cookbook/mpp/accepting-payments",
-              "cookbook/mpp/gasless-payments",
-              "cookbook/mpp/confidential-payments"
-            ]
-          },
-          {
-            "group": "Facilitators",
-            "pages": [
-              "cookbook/facilitators/using-autoincentive",
-              "cookbook/facilitators/using-corbits",
-              "cookbook/facilitators/using-kobaru",
-	        	"cookbook/facilitators/using-payai",
-				"cookbook/facilitators/using-primer",
-              "cookbook/facilitators/using-relai",
-              "cookbook/facilitators/using-x402x",
-              "cookbook/facilitators/using-ultravioleta"
-            ]
-          },
-          {
-            "group": "AI Agents",
-            "pages": [
-              "cookbook/agents/build-an-agent",
-              "cookbook/agents/open-wallet-skale-cli"
-            ]
-          },
-          {
-            "group": "Native Features",
-            "pages": [
-              "cookbook/native-features/rng-get-random-number",
-              "cookbook/native-features/send-gasless-transaction"
             ]
           }
         ]
@@ -404,7 +390,7 @@
   "redirects": [
     {
       "source": "/concepts/bite-protocol/mev-deep-dive",
-      "destination": "/concepts/bite-protocol/encrypted-transactions"
+      "destination": "/developers/programmable-privacy/encrypted-transactions"
     },
     {
       "source": "/welcome/intro-to-skale",
@@ -436,27 +422,27 @@
     },
     {
       "source": "/how-skale-works/consensus",
-      "destination": "/concepts/skale-chain/consensus"
+      "destination": "/skale-chain/consensus"
     },
     {
       "source": "/how-skale-works/block-rotation",
-      "destination": "/concepts/skale-chain/block-rotation"
+      "destination": "/skale-chain/block-rotation"
     },
     {
       "source": "/how-skale-works/ddos-protection",
-      "destination": "/concepts/skale-chain/ddos-protection"
+      "destination": "/skale-chain/ddos-protection"
     },
     {
       "source": "/how-skale-works/dkg-with-bls",
-      "destination": "/concepts/dkg-with-bls"
+      "destination": "/developers/dkg-with-bls"
     },
     {
       "source": "/how-skale-works/elliptic-curve-cryptography",
-      "destination": "/concepts/elliptic-curve-cryptography"
+      "destination": "/developers/elliptic-curve-cryptography"
     },
     {
       "source": "/how-skale-works/precompiled-contracts",
-      "destination": "/concepts/skale-chain/precompiled-contracts"
+      "destination": "/skale-chain/precompiled-contracts"
     },
     {
       "source": "/how-skale-works/skl-token",
@@ -464,11 +450,11 @@
     },
     {
       "source": "/how-skale-works/snapshots",
-      "destination": "/concepts/skale-chain/snapshots"
+      "destination": "/skale-chain/snapshots"
     },
     {
       "source": "/how-skale-works/threshold-schemes",
-      "destination": "/concepts/threshold-schemes"
+      "destination": "/developers/threshold-schemes"
     },
     {
       "source": "/run-a-skale-node/overview",
@@ -736,7 +722,7 @@
     },
     {
       "source": "/introduction/skale-and-ethereum-security",
-      "destination": "/concepts/skale-chain/consensus"
+      "destination": "/skale-chain/consensus"
     },
     {
       "source": "/introduction/skale-chain-fuel",
@@ -748,7 +734,7 @@
     },
     {
       "source": "/introduction/skale-hybrid-layer",
-      "destination": "/concepts/skale-chain/consensus"
+      "destination": "/skale-chain/consensus"
     },
     {
       "source": "/introduction/zero-gas-fees",
@@ -864,7 +850,7 @@
     },
     {
       "source": "/learn/skale-chain-overview",
-      "destination": "/concepts/skale-chain/skale-chain-101"
+      "destination": "/skale-chain/introduction"
     },
     {
       "source": "/learn/hub-chain",
@@ -896,39 +882,39 @@
     },
     {
       "source": "/learn/advanced/block-rotation",
-      "destination": "/concepts/skale-chain/block-rotation"
+      "destination": "/skale-chain/block-rotation"
     },
     {
       "source": "/learn/advanced/consensus",
-      "destination": "/concepts/skale-chain/consensus"
+      "destination": "/skale-chain/consensus"
     },
     {
       "source": "/learn/advanced/consensus-deep-dive",
-      "destination": "/concepts/skale-chain/consensus"
+      "destination": "/skale-chain/consensus"
     },
     {
       "source": "/learn/advanced/ddos-protection",
-      "destination": "/concepts/skale-chain/ddos-protection"
+      "destination": "/skale-chain/ddos-protection"
     },
     {
       "source": "/learn/advanced/dkg-bls",
-      "destination": "/concepts/dkg-with-bls"
+      "destination": "/developers/dkg-with-bls"
     },
     {
       "source": "/learn/advanced/precompiled-contracts",
-      "destination": "/concepts/skale-chain/precompiled-contracts"
+      "destination": "/skale-chain/precompiled-contracts"
     },
     {
       "source": "/learn/advanced/snapshots",
-      "destination": "/concepts/skale-chain/snapshots"
+      "destination": "/skale-chain/snapshots"
     },
     {
       "source": "/learn/advanced/topics/elliptic-curve-cryptography",
-      "destination": "/concepts/elliptic-curve-cryptography"
+      "destination": "/developers/elliptic-curve-cryptography"
     },
     {
       "source": "/learn/advanced/topics/threshold-schemes",
-      "destination": "/concepts/threshold-schemes"
+      "destination": "/developers/threshold-schemes"
     },
     {
       "source": "/quick-start/",
@@ -1296,7 +1282,7 @@
     },
     {
       "source": "/skaled/3.16.x-beta",
-      "destination": "/concepts/skale-chain/consensus"
+      "destination": "/skale-chain/consensus"
     },
     {
       "source": "/building-applications/deploy-on-skale",
@@ -2007,26 +1993,6 @@
       "destination": "/get-started/quick-start/bite-sandbox"
     },
     {
-      "source": "/get-started/quick-start/bite-sandbox",
-      "destination": "/concepts/programmable-privacy/intro"
-    },
-    {
-      "source": "/concepts/bite-protocol/intro-bite-protocol",
-      "destination": "/concepts/programmable-privacy/intro"
-    },
-    {
-      "source": "/concepts/bite-protocol/phases",
-      "destination": "/concepts/programmable-privacy/intro"
-    },
-    {
-      "source": "/concepts/bite-protocol/encrypted-transactions",
-      "destination": "/concepts/programmable-privacy/encrypted-transactions"
-    },
-    {
-      "source": "/concepts/bite-protocol/conditional-transactions",
-      "destination": "/concepts/programmable-privacy/conditional-transactions"
-    },
-    {
       "source": "/developers/bite-protocol/encrypted-transactions",
       "destination": "/developers/programmable-privacy/encrypted-transactions"
     },
@@ -2036,15 +2002,159 @@
     },
     {
       "source": "/developers/bite-protocol/bite-api-and-faqs",
-      "destination": "/developers/programmable-privacy/api-and-faqs"
+      "destination": "/developers/programmable-privacy/intro"
     },
     {
       "source": "/developers/bite-protocol/typescript-sdk",
       "destination": "/developers/sdks/skalenetwork-bite"
     },
     {
+      "source": "/get-started/quick-start/bite-sandbox",
+      "destination": "/developers/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/bite-protocol/intro-bite-protocol",
+      "destination": "/developers/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/bite-protocol/phases",
+      "destination": "/developers/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/bite-protocol/encrypted-transactions",
+      "destination": "/developers/programmable-privacy/encrypted-transactions"
+    },
+    {
+      "source": "/concepts/bite-protocol/conditional-transactions",
+      "destination": "/developers/programmable-privacy/conditional-transactions"
+    },
+    {
       "source": "/developers/bite-protocol/how-bite-works",
-      "destination": "/concepts/programmable-privacy/intro"
+      "destination": "/developers/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/programmable-privacy/intro",
+      "destination": "/developers/programmable-privacy/intro"
+    },
+    {
+      "source": "/concepts/programmable-privacy/encrypted-transactions",
+      "destination": "/developers/programmable-privacy/encrypted-transactions"
+    },
+    {
+      "source": "/concepts/programmable-privacy/conditional-transactions",
+      "destination": "/developers/programmable-privacy/conditional-transactions"
+    },
+    {
+      "source": "/concepts/programmable-privacy/re-encryption",
+      "destination": "/developers/programmable-privacy/re-encryption"
+    },
+    {
+      "source": "/concepts/programmable-privacy/confidential-tokens",
+      "destination": "/developers/programmable-privacy/confidential-tokens"
+    },
+    {
+      "source": "/concepts/skale/skale-expand",
+      "destination": "/get-started/skale-expand"
+    },
+    {
+      "source": "/concepts/skale-chain/introduction",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/concepts/skale-chain/block-rotation",
+      "destination": "/skale-chain/block-rotation"
+    },
+    {
+      "source": "/concepts/skale-chain/consensus",
+      "destination": "/skale-chain/consensus"
+    },
+    {
+      "source": "/concepts/skale-chain/ddos-protection",
+      "destination": "/skale-chain/ddos-protection"
+    },
+    {
+      "source": "/concepts/skale-chain/precompiled-contracts",
+      "destination": "/skale-chain/precompiled-contracts"
+    },
+    {
+      "source": "/concepts/skale-chain/snapshots",
+      "destination": "/skale-chain/snapshots"
+    },
+    {
+      "source": "/concepts/skale-chain/instant-finality",
+      "destination": "/skale-chain/instant-finality"
+    },
+    {
+      "source": "/concepts/skale-chain/privacy",
+      "destination": "/skale-chain/privacy"
+    },
+    {
+      "source": "/concepts/skale-chain/tees",
+      "destination": "/skale-chain/tees"
+    },
+    {
+      "source": "/concepts/elliptic-curve-cryptography",
+      "destination": "/developers/elliptic-curve-cryptography"
+    },
+    {
+      "source": "/concepts/threshold-schemes",
+      "destination": "/developers/threshold-schemes"
+    },
+    {
+      "source": "/concepts/dkg-with-bls",
+      "destination": "/developers/dkg-with-bls"
+    },
+    {
+      "source": "/developers/skale-chain/introduction",
+      "destination": "/skale-chain/introduction"
+    },
+    {
+      "source": "/developers/skale-chain/block-rotation",
+      "destination": "/skale-chain/block-rotation"
+    },
+    {
+      "source": "/developers/skale-chain/consensus",
+      "destination": "/skale-chain/consensus"
+    },
+    {
+      "source": "/developers/skale-chain/ddos-protection",
+      "destination": "/skale-chain/ddos-protection"
+    },
+    {
+      "source": "/developers/skale-chain/precompiled-contracts",
+      "destination": "/skale-chain/precompiled-contracts"
+    },
+    {
+      "source": "/developers/skale-chain/snapshots",
+      "destination": "/skale-chain/snapshots"
+    },
+    {
+      "source": "/developers/skale-chain/instant-finality",
+      "destination": "/skale-chain/instant-finality"
+    },
+    {
+      "source": "/developers/skale-chain/privacy",
+      "destination": "/skale-chain/privacy"
+    },
+    {
+      "source": "/developers/skale-chain/tees",
+      "destination": "/skale-chain/tees"
+    },
+    {
+      "source": "/developers/programmable-privacy/api-and-faqs",
+      "destination": "/developers/programmable-privacy/intro"
+    },
+    {
+      "source": "/developers/chain-types/appchain",
+      "destination": "/chain-types/appchain"
+    },
+    {
+      "source": "/developers/chain-types/credit-chain",
+      "destination": "/chain-types/credit-chain"
+    },
+    {
+      "source": "/developers/chain-types/zero-gas-fee-gasless-chain",
+      "destination": "/chain-types/zero-gas-fee-gasless-chain"
     }
   ]
 }

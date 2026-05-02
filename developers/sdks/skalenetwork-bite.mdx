@@ -1,6 +1,6 @@
 ---
-title: "Privacy SDK"
-description: "Privacy SDK enabling developers to consume native privacy primitives through SKALE's Programmable Privacy"
+title: "BITE TypeScript SDK"
+description: "TypeScript SDK for encrypting transactions and messages using SKALE's Programmable Privacy — works in Node.js, Bun, and browser environments"
 ---
 
 <Note>
@@ -8,11 +8,9 @@ TypeScript transpiles to JavaScript, so the SDK works in both TypeScript and Jav
 If you run into an issue, reach out in [Discord](https://discord.gg/skale) or open an issue on [GitHub](https://github.com/skalenetwork/bite-ts).
 </Note>
 
-## Using the SDK
+The BITE TypeScript SDK (`@skalenetwork/bite`) lets applications and wallets encrypt EVM transactions using threshold encryption. It works with any SKALE chain that has Programmable Privacy enabled.
 
-The Privacy SDK lets applications and wallets encrypt EVM transactions. It adds threshold encryption to SKALE so developers can build private and confidential applications on the network.
-
-### Installation
+## Installation
 
 ```bash
 # npm
@@ -32,7 +30,7 @@ bun add @skalenetwork/bite
 The SDK works with any SKALE chain with Programmable Privacy. Currently, it is available on [SKALE Base Mainnet and Testnet](/get-started/quick-start/skale-on-base) only.
 </Note>
 
-### Quick Start
+## Quick Start
 
 ```typescript
 import { BITE } from '@skalenetwork/bite';
@@ -40,15 +38,15 @@ import { BITE } from '@skalenetwork/bite';
 const providerUrl = 'https://your-fair-rpc';
 const bite = new BITE(providerUrl);
 
-// Minimal tx object: encrypts `to` and `data` and rewrites `to` to the magic address
+// Encrypt a transaction
 const tx = {
   to: '0x1234567890abcdef1234567890abcdef12345678',
   data: '0x1234abcd',
 };
-
 const encryptedTx = await bite.encryptTransaction(tx);
-// send via your wallet / provider, e.g. 
-window.ethereum.request({ method: 'eth_sendTransaction', params: [encryptedTx] })
+
+// Send via your wallet/provider
+window.ethereum.request({ method: 'eth_sendTransaction', params: [encryptedTx] });
 
 // Later, fetch revealed original fields after block finality
 const result = await bite.getDecryptedTransactionData('<txHash>');
@@ -59,10 +57,10 @@ const result = await bite.getDecryptedTransactionData('<txHash>');
 
 ### `new BITE(endpoint)`
 
-Creates a BITE instance for a specific JSON-RPC endpoint.
+Creates a BITE instance configured with a JSON-RPC endpoint.
 
 **Parameters:**
-- `endpoint: string` - JSON-RPC endpoint
+- `endpoint: string` — JSON-RPC endpoint
 
 **Example:**
 ```typescript
@@ -71,78 +69,62 @@ const bite = new BITE('https://your-skale-chain.skale.network');
 
 ### `bite.encryptTransaction(tx)`
 
-Encrypts a transaction object with the BLS threshold encryption public key or keys from the configured BITE provider. The encrypted transaction uses the BITE magic address in the `to` field.
+Encrypts a transaction using BLS threshold encryption. The encrypted transaction will have its `to` field set to the magic address.
 
 **Parameters:**
-- `tx: { to: string; data: string; /* optional gas and other fields */ }` – Standard hex strings
+- `tx: { to: string; data: string; gasLimit?: number }` — Standard hex strings
 
-**Returns:** `Promise<Transaction>` – Encrypted params safe to submit to `eth_sendTransaction`
-
-<Warning>
-When passing a transaction to `bite.ts`, set `gasLimit` manually. `estimateGas` does not return a reliable value for encrypted transactions. If `gasLimit` is omitted, `bite.ts` defaults it to **300000**.
-</Warning>
+**Returns:** `Promise<Transaction>` — Encrypted transaction safe to submit to `eth_sendTransaction`
 
 **Encryption Process:**
-1. RLP encodes the original `data` and `to` fields
-2. Encrypts the encoded data using AES with a randomly generated key
-3. Encrypts the AES key using BLS threshold encryption
-4. Creates the final payload in RLP format: `[EPOCH_ID, ENCRYPTED_BITE_DATA]`
+1. RLP encodes original `data` and `to` fields
+2. Encrypts encoded data using AES with randomly generated key
+3. Encrypts AES key using BLS threshold encryption
+4. Creates final payload: `[EPOCH_ID, ENCRYPTED_BITE_DATA]`
+
+**Committee Behavior:**
+- **Single Committee:** AES key encrypted with current BLS public key
+- **Dual Committee:** During rotation, AES key encrypted twice (current + next committee keys)
+
+<Warning>
+Set `gasLimit` manually. `estimateGas` does not return a reliable value for encrypted transactions. If `gasLimit` is omitted, defaults to **300000**.
+</Warning>
+
+### `BITE.encryptTransactionWithCommitteeInfo(tx, committees)`
+
+Static method that encrypts using provided committee info, avoiding internal RPC call.
+
+**Parameters:**
+- `tx: object` — Transaction with `data` and `to` fields
+- `committees: Array` — Committee info objects (from `getCommitteesInfo`)
+
+**Returns:**
+- `Promise<Transaction>` — Encrypted transaction
+
+**Use Case:** Offline/cached encryption when committee info is already known.
 
 ### `bite.encryptMessage(message)`
 
-Encrypts a raw hex-encoded message using BLS threshold encryption from the configured BITE provider.
+Encrypts a raw hex-encoded message using BLS threshold encryption.
 
 **Parameters:**
-- `message: string` – A hex string to encrypt (with or without `0x` prefix)
+- `message: string` — Hex string to encrypt (with or without `0x` prefix)
 
-**Returns:** `Promise<string>` – An encrypted hex string in RLP format with epoch and encryption data
+**Returns:** `Promise<string>` — Encrypted hex string in RLP format with epoch and encryption data
 
 **Example:**
 ```typescript
 const encryptedMessage = await bite.encryptMessage('0x48656c6c6f20576f726c64'); // "Hello World"
-console.log('Encrypted:', encryptedMessage);
 ```
-
-<Note>
-When using the SDK in the browser, you may need to polyfill `Buffer`. Install the `buffer` package and configure your bundler:
-
-```bash
-npm install buffer
-```
-
-For **Vite**, add to your `vite.config.ts`:
-```typescript
-import { defineConfig } from 'vite'
-
-export default defineConfig({
-  resolve: {
-    alias: {
-      buffer: 'buffer',
-    },
-  },
-})
-```
-
-For **Webpack 5**, add to your `webpack.config.js`:
-```javascript
-module.exports = {
-  resolve: {
-    fallback: {
-      buffer: require.resolve('buffer/'),
-    },
-  },
-}
-```
-</Note>
 
 ### `bite.getDecryptedTransactionData(transactionHash)`
 
-Retrieves decrypted transaction data from the configured BITE provider with the `bite_getDecryptedTransactionData` JSON-RPC method.
+Retrieves decrypted transaction data after consensus finality using `bite_getDecryptedTransactionData` JSON-RPC method.
 
 **Parameters:**
-- `transactionHash: string` – The transaction hash to decrypt
+- `transactionHash: string` — The transaction hash
 
-**Returns:** `Promise<object>` – JSON object with `data` and `to` keys containing the original decrypted fields
+**Returns:** `Promise<object>` — JSON with `data` and `to` keys containing original decrypted fields
 
 **Example:**
 ```typescript
@@ -157,72 +139,135 @@ This method works only for encrypted transactions that have already been process
 
 ### `bite.getCommitteesInfo()`
 
-Fetches committee information from the configured BITE provider with the `bite_getCommitteesInfo` JSON-RPC method.
+Fetches committee information using `bite_getCommitteesInfo` JSON-RPC method.
 
-**Returns:** `Promise<Array>` – An array of 1-2 JSON objects, each containing:
-- `commonBLSPublicKey`: A 256-character hex string (128-byte BLS public key)
-- `epochId`: An integer representing the epoch identifier
+**Returns:** `Promise<Array>` — Array of 1-2 committee objects:
+- `commonBLSPublicKey`: 256-char hex (128-byte BLS public key)
+- `epochId`: Integer epoch identifier
 
 **Array Contents:**
-- **1 element**: Normal operation with a single active committee
-- **2 elements**: Committee rotation window, usually covering the next 3 minutes
+- **1 element:** Normal operation (single active committee)
+- **2 elements:** Committee rotation period (scheduled for next 3 minutes)
 
 **Example:**
 ```typescript
 const committeesInfo = await bite.getCommitteesInfo();
 console.log('Current BLS Public Key:', committeesInfo[0].commonBLSPublicKey);
-console.log('Current Epoch ID:', committeesInfo[0].epochId);
 
 if (committeesInfo.length === 2) {
-    console.log('Rotation in progress - dual encryption active');
+    console.log('Rotation in progress — dual encryption active');
 }
 ```
 
+## Transaction Structure
 
+### Encrypted Transaction Format
+
+```typescript
+interface BiteTransaction {
+  to: string;      // Always set to the magic address
+  data: string;    // Encrypted payload containing [EPOCH_ID, ENCRYPTED_DATA]
+  from: string;    // Sender address (unchanged)
+  value: string;   // ETH value (unchanged)
+  gas: string;     // Gas limit (must be set manually)
+  gasPrice: string; // Gas price (unchanged)
+  nonce: number;   // Nonce (unchanged)
+}
+```
+
+### Encryption Payload Structure
+
+The encrypted `data` field contains RLP-encoded array:
+```
+[EPOCH_ID, ENCRYPTED_BITE_DATA]
+```
+
+- `EPOCH_ID` — Current committee epoch
+- `ENCRYPTED_BITE_DATA` — AES-encrypted payload with BLS-encrypted AES key
 
 ## Best Practices
 
 ### Gas Limit Management
 
 <Warning>
-Always set an explicit gas limit for encrypted transactions. Do not rely on `estimateGas()`, since it does not handle encrypted payloads correctly.
+Always set an explicit gas limit for encrypted transactions. Do not rely on `estimateGas()`.
 </Warning>
 
 ```typescript
-// Bad - will use default 300000 gas
-const encryptedTx = await bite.encryptTransaction(tx);
-
-// Good - set appropriate gas limit
+// Always set an appropriate gas limit
 const tx = {
     to: '0x...',
     data: '0x...',
-    gasLimit: 200000, // Set appropriate limit for your transaction
+    gasLimit: 200000,
 };
 const encryptedTx = await bite.encryptTransaction(tx);
 ```
 
+### Browser Polyfills
 
+When using the SDK in the browser, you may need to polyfill `Buffer`:
 
-### Monitoring Committee Changes
+```bash
+npm install buffer
+```
+
+**Vite** — add to `vite.config.ts`:
+```typescript
+import { defineConfig } from 'vite'
+export default defineConfig({
+  resolve: { alias: { buffer: 'buffer' } },
+})
+```
+
+**Webpack 5** — add to `webpack.config.js`:
+```javascript
+module.exports = {
+  resolve: { fallback: { buffer: require.resolve('buffer/') } },
+}
+```
+
+### Committee Rotation Monitoring
 
 ```typescript
+const INTERVAL_MS = 30000;
 
-const INTERVAL_MS = 30000; // 30 seconds
-
-// Check for upcoming committee rotations
 async function monitorCommitteeRotation() {
     const committees = await bite.getCommitteesInfo();
-    
     if (committees.length === 2) {
-        console.warn('Committee rotation in progress - dual encryption active');
-        // Implement rotation-specific logic if needed
+        console.warn('Committee rotation in progress');
     }
-    
-    // Schedule periodic checks
     setTimeout(monitorCommitteeRotation, INTERVAL_MS);
 }
 ```
 
-<Note>
-This is not required for one-off encrypted transactions. If you are building with conditional transactions, you can optionally monitor committee changes to handle expirations during committee rotation.
-</Note>
+## Common Use Cases
+
+### Private Token Transfers
+
+```typescript
+const transferData = iface.encodeFunctionData('transfer', [recipient, amount]);
+const tx = { to: tokenAddress, data: transferData, gasLimit: 200000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### Confidential Contract Interactions
+
+```typescript
+const callData = iface.encodeFunctionData('confidentialFunction', [secretParam]);
+const tx = { to: contractAddress, data: callData, gasLimit: 300000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### Cached Committee Encryption
+
+```typescript
+const committees = await bite.getCommitteesInfo();
+const tx1 = await BITE.encryptTransactionWithCommitteeInfo(transaction1, committees);
+const tx2 = await BITE.encryptTransactionWithCommitteeInfo(transaction2, committees);
+```
+
+## Resources
+
+- **GitHub**: [github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+- **BITE Solidity SDK**: [npm: @skalenetwork/bite-solidity](/developers/sdks/skalenetwork-bite-solidity)
+- **Programmable Privacy Intro**: [Overview](/developers/programmable-privacy/intro)

@@ -20,5 +20,3 @@ mint dev
 
 View your local preview at `http://localhost:3000`.
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)

@@ -1,58 +1,97 @@
 ---
 title: "Encrypted Transactions"
-description: "Developer guide for encrypting transaction payloads with threshold encryption on SKALE"
+description: "Transactions that vanish until finality. Encrypt to and data — MEV bots see nothing, only the chain knows"
 ---
 
-Encrypted transactions are the first privacy primitive in SKALE's Programmable Privacy suite. An encrypted transaction requires no changes to existing Solidity contracts and works with all EVM transactions. It encrypts the input `data` and `to` address of the transaction and requires a threshold decryption operation from the majority of the SKALE Chain validators to be decrypted and executed.
-
 <Note>
-Encrypted transactions add MEV protection and help protect your onchain strategies from bad actors.
+**Available on SKALE Base and SKALE Base Sepolia** — Encrypted Transactions are available on SKALE Base Mainnet and Testnet.
 </Note>
 
-## Integration Examples
+## Why Encrypted Transactions?
 
-```typescript MetaMask
+Public mempools leak your intent before your transaction executes. Bots monitor pending transactions and front-run, sandwich, or censor based on what they see. Encrypted Transactions solve this by hiding the `to` address and `data` fields during the mempool and consensus window — nothing is visible until after finality.
+
+## What Are Encrypted Transactions?
+
+Encrypted Transactions hide a transaction's `to` address and `data` fields during the mempool and consensus phases — before finality. Once decrypted and executed, details settle onchain normally like any other transaction.
+
+The protection window is deliberate: inclusion (commit) happens before anyone can read the contents (reveal). This **commit-then-reveal** model prevents information leakage during the critical pre-execution phase without permanently hiding onchain activity.
+
+## Quick Example
+
+```typescript
 import { BITE } from '@skalenetwork/bite';
 
-const bite = new BITE('https://your-skale-chain.skale.network');
+const bite = new BITE(rpcEndpoint);
 
-async function sendEncryptedTransaction(to, data) {
-    const tx = { to, data };
-    const encryptedTx = await bite.encryptTransaction(tx);
-    
-    const txHash = await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [encryptedTx],
-    });
-    
-    return txHash;
-}
+const swapData = iface.encodeFunctionData('swap', [
+  tokenIn, tokenOut, amountIn, minAmountOut
+]);
+const tx = { to: dexAddress, data: swapData, gasLimit: 300000 };
+
+const encryptedTx = await bite.encryptTransaction(tx);
+// Bots see only ciphertext — no way to front-run
 ```
 
-```typescript Ethers.js
-import { BITE } from '@skalenetwork/bite';
-import { ethers } from 'ethers';
+## How It Works
 
-const bite = new BITE('https://your-skale-chain.skale.network');
-const provider = new ethers.BrowserProvider(window.ethereum);
-const signer = await provider.getSigner();
+1. **Encrypt** — Wallet encrypts the transaction payload using SKALE's threshold public key
+2. **Submit** — Encrypted transaction is sent to the precompile (magic address)
+3. **Finalize** — Consensus finalizes the encrypted transaction without seeing contents
+4. **Decrypt** — After finality, the validator committee runs threshold decryption
+5. **Execute** — Decrypted transaction executes in the EVM
 
-async function sendEncryptedERC20Transfer(tokenAddress, to, amount) {
-    const iface = new ethers.Interface([
-        'function transfer(address to, uint256 amount)'
-    ]);
-    const data = iface.encodeFunctionData('transfer', [to, amount]);
-    
-    const tx = { to: tokenAddress, data };
-    const encryptedTx = await bite.encryptTransaction(tx);
-    
-    const txResponse = await signer.sendTransaction(encryptedTx);
-    return txResponse.hash;
-}
+Because inclusion happens before decryption, SKALE achieves commit-then-reveal semantics at the protocol layer.
+
+## MEV Resistance
+
+Encrypted Transactions are designed to prevent MEV at the source — by removing the information bots need during the window they exploit. Since `to` and `data` are ciphertext until after finality:
+
+- **No front-running** — Intent is hidden until execution, so bots can't insert themselves ahead of you
+- **No sandwich attacks** — Swap parameters are invisible, so bots can't bracket your trade
+- **No content-based censorship** — Validators see only ciphertext, so they can't pick which txs to include based on calldata
+
+Combined with SKALE's zero gas fees and instant finality, encrypted transactions eliminate the primary MEV vectors that plague other chains.
+
+## Use Cases
+
+Encrypted Transactions are a good fit for **single-shot protection** — hiding transaction details during the mempool and consensus window. The data becomes visible onchain after execution. For persistent private state, see [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) and [Confidential Tokens](/developers/programmable-privacy/confidential-tokens).
+
+### Anti-MEV Swaps and Trades
+
+Hide swap parameters during mempool so bots can't front-run or sandwich you:
+
+```typescript
+const swapData = iface.encodeFunctionData('swap', [
+  tokenIn, tokenOut, amountIn, minAmountOut
+]);
+const tx = { to: dexAddress, data: swapData, gasLimit: 300000 };
+const encryptedTx = await bite.encryptTransaction(tx);
 ```
 
-## Resources
+### Confidential Contract Interactions
 
-- **Repository**: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
-- **Programmable Privacy Overview**: [Introduction](/concepts/programmable-privacy/intro)
-- **Tutorial**: [Encrypted Transactions Cookbook](/cookbook/privacy/encrypted-transactions)
+Keep function calls and parameters private during submission:
+
+```typescript
+const callData = iface.encodeFunctionData('confidentialFunction', [secretParam]);
+const tx = { to: contractAddress, data: callData, gasLimit: 300000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### NFT Mint Privacy
+
+Hide mint metadata and recipient until the transaction lands:
+
+```typescript
+const mintData = iface.encodeFunctionData('mint', [recipient, tokenUri]);
+const tx = { to: nftAddress, data: mintData, gasLimit: 250000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+> **Need persistent privacy?** Encrypted Transactions protect data during transit, not at rest. For onchain state that stays confidential — encrypted balances, sealed bids, private voting — use [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) or [Confidential Tokens](/developers/programmable-privacy/confidential-tokens).
+
+## Getting Started
+
+- [API Reference](/developers/programmable-privacy/intro) — TypeScript SDK and JSON-RPC methods
+- [Encrypted Transactions Cookbook](/cookbook/privacy/encrypted-transactions) — Step-by-step tutorials
