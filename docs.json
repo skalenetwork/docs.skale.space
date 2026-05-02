@@ -94,7 +94,7 @@
             "pages": [
               "cookbook/privacy/encrypted-transactions",
               "cookbook/privacy/conditional-transactions",
-              "cookbook/privacy/encrypted-chat"
+              "cookbook/privacy/private-chat"
             ]
           },
           {

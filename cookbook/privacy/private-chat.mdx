@@ -1,43 +1,39 @@
 ---
-title: "Example: Encrypted Chat"
-description: "Step-by-step guide to building an encrypted onchain chat on SKALE with BITE encryption, re-encryption, and Conditional Transactions"
+title: "Private Chat"
+description: "Step-by-step guide to building a private onchain chat on SKALE where messages stay encrypted — no one can read them except the people you choose"
 ---
 
-## Encrypted Chat with BITE
+## Private Chat
 
-This cookbook gets you from clone to working demo for an **encrypted onchain chat** on SKALE. The app uses BITE encryption to hide message contents before they reach the chain, Conditional Transactions (CTX) to let the contract process protected data, and re-encryption so only the intended users can read chat data later.
+This cookbook builds a **private chat** on SKALE — no one can read your messages except the people in the conversation. Messages are encrypted before they ever reach the blockchain, and they stay encrypted onchain. Only the chat participants hold the keys to decrypt them.
 
-<Tip title="Why BITE for On-Chain Chat?">
-Many chat apps either store readable data onchain or trust an offchain server to manage encryption. In this example, messages stay encrypted in transit, the contract handles protected callbacks through BITE, and the data is locked again for the right users without needing a custom relay server.
+<Tip title="Why On-Chain Privacy?">
+Normal chat apps either store messages in plain sight on the blockchain or hand encryption over to a server you have to trust. This example keeps messages locked end-to-end. No servers, no trusted third parties — just cryptography built into the chain itself.
 </Tip>
 
 ## How it Works
 
-The example uses three simple building blocks:
-
-| Phase | Description | Key Action |
-|-------|-------------|------------|
-| **1. Register** | Each user saves a long-term public key onchain and can optionally pre-fund callback gas. | Save each user's public key and optional callback balance. |
-| **2. Create Session (BITE encryption + CTX)** | The app creates a fresh session key offchain, encrypts the secret part with the BITE SDK, then sends it into the contract through CTX. | Submit the encrypted session secret. |
-| **2.1. Session Callback (Re-encryption)** | BITE calls `onDecrypt` with the session secret, and the contract immediately locks that secret separately for each participant. | Re-encrypt the session secret for each user. |
-| **3. Send Message (BITE encryption + CTX)** | The sender encrypts the message before submission, and the contract receives it through CTX. | Submit encrypted message content. |
-| **3.1. Message Callback (Re-encryption)** | BITE calls `onDecrypt` with the message, and the contract locks it again with the session key before storing it. | Re-encrypt the message for the chat session and store it. |
-| **4. Read + Decrypt Off-Chain** | Each participant fetches their encrypted session key, unlocks it locally, then uses that session key to unlock stored messages. | Decrypt session key first, then decrypt messages. |
+| Step | What Happens |
+|------|-------------|
+| **1. Register** | Each person creates an account and deposits a little gas so their messages get processed. |
+| **2. Start a Chat** | The app creates a private room and locks the key so only the two participants can open it later. |
+| **3. Send a Message** | You type a message, the app locks it automatically, and sends it to the blockchain. |
+| **4. Read Messages** | Each person unlocks the room key with their own private key, then uses it to read the chat history. |
 
 <Note title="Before You Start">
-This tutorial requires access to a CTX-enabled SKALE chain. The demo is configured for **SKALE on Base Testnet**. Check [BITE Protocol Phases](/concepts/bite-protocol/phases) for current availability.
+This tutorial needs a SKALE chain that supports private transactions. The demo runs on **SKALE on Base Testnet**. Check [Programmable Privacy Availability](/developers/programmable-privacy/intro) for which chains support this.
 </Note>
 
 **Prerequisites:**
 - Node.js 22+ and yarn/npm
-- Access to a CTX-enabled SKALE chain
-- Basic knowledge of Solidity and TypeScript
+- A SKALE chain with privacy support
+- Basic familiarity with Solidity and TypeScript
 
 ---
 
 ## Step 1: Clone the Project
 
-Clone the `bite-solidity` repository. It contains multiple examples that demonstrate different BITE features.
+Clone the `bite-solidity` repository. It contains multiple examples that demonstrate different programmable privacy features.
 
 ```bash
 # Clone the repository
@@ -66,12 +62,12 @@ yarn compile
 **Deploy the Contract:**
 
 <Note>
-**Fund Your Wallet:** This process consumes gas tokens.
+**Fund Your Wallet:** This process consumes gas tokens. Get free testnet ETH from the [SKALE Base Sepolia Faucet](https://base-sepolia-faucet.skale.space).
 </Note>
 
 ```bash
 # Set environment variables - Adjust your endpoint acordingly
-export ENDPOINT="https://base-sepolia-testnet.skalenodes.com/v1/base-testnets"
+export ENDPOINT="https://base-sepolia-testnet.skalenodes.com/v1/base-testnet"
 export PRIVATE_KEY="0x..."  # Your wallet private key
 
 # Deploy EncryptedMessenger and run smoke test
@@ -119,7 +115,7 @@ encrypted-chat/
 
 ## Step 2: Smart Contract Overview
 
-The contract is `EncryptedMessenger.sol`. It stores sessions and messages as ciphertext, and only handles plaintext inside the `onDecrypt` callback triggered by BITE.
+The contract is `EncryptedMessenger.sol`. It stores sessions and messages as ciphertext, and only handles plaintext inside the `onDecrypt` callback triggered by the protocol.
 
 <Tip title="One naming note">
 The helper in `bite-solidity` is called `encryptECIES()`. In this guide, we describe that step as **re-encryption** because that is the practical outcome: the contract receives protected data inside the callback, then locks it again for a specific user or session.
@@ -239,7 +235,7 @@ Users can withdraw their deposited Gas tokens at any time by calling `withdraw()
 
 ---
 
-## Step 4: Create a Session with BITE Encryption and CTX
+## Step 4: Create a Session with Encrypted Transactions and CTX
 
 This is where the chat creates a shared session key. The public half can be stored openly, but the private half is encrypted offchain and sent into the contract through CTX so it never appears as plaintext in a normal transaction.
 
@@ -305,13 +301,13 @@ function createSession(
 **What happens:**
 1. `encryptedSessionKey` contains the protected session private key
 2. No single validator can decrypt it alone
-3. In the next block, BITE resolves the CTX and calls `onDecrypt`
+3. In the next block, the protocol resolves the CTX and calls `onDecrypt`
 
 ---
 
 ## Step 5: Session Callback - Re-encrypt for Each User
 
-When BITE calls `onDecrypt`, the contract immediately re-encrypts the session secret for each participant using the public key they registered earlier.
+When the protocol calls `onDecrypt`, the contract immediately re-encrypts the session secret for each participant using the public key they registered earlier.
 
 ```solidity
 function onDecrypt(
@@ -372,7 +368,7 @@ function _handleSessionCreation(
 **Re-encryption flow inside the callback:**
 
 ```
-BITE decrypts: encryptedSessionKey  →  sessionPrivateKey (plaintext)
+Protocol decrypts: encryptedSessionKey  →  sessionPrivateKey (plaintext)
                                               │
                           ┌───────────────────┴────────────────────┐
                           │                                        │
@@ -388,7 +384,7 @@ The session private key is only ever plaintext inside the `onDecrypt` callback. 
 
 ---
 
-## Step 6: Send Messages with BITE Encryption
+## Step 6: Send Messages with Encrypted Transactions
 
 Each message follows the same pattern. The app encrypts the message before submission, then the contract receives it through CTX.
 
@@ -449,7 +445,7 @@ function sendMessage(address to, bytes memory encryptedContent) external payable
 
 ## Step 7: Message Callback - Re-encrypt and Store
 
-When the message CTX resolves, BITE calls `onDecrypt` with the decrypted message bytes. The contract then re-encrypts them with the session public key and stores the ciphertext.
+When the message CTX resolves, the protocol calls `onDecrypt` with the decrypted message bytes. The contract then re-encrypts them with the session public key and stores the ciphertext.
 
 ```solidity
 function _handleMessageSending(
@@ -492,7 +488,7 @@ function _handleMessageSending(
 sendMessage(to, encryptedContent [BITE encrypted])
         │
         ▼ CTX submitted
-BITE decrypts encryptedContent
+Protocol decrypts encryptedContent
         │
         ▼ onDecrypt callback
 _handleMessageSending(decryptedContent, [sender, recipient])
@@ -610,7 +606,7 @@ npm install
 | Variable | Description |
 |----------|-------------|
 | `RPC_URL` | JSON-RPC endpoint for the target SKALE chain |
-| `BITE_ENDPOINT` | BITE SDK endpoint used for encryption requests (usually the same as `RPC_URL`) |
+| `BITE_ENDPOINT` | Encryption service endpoint used for encryption requests (usually the same as `RPC_URL`) |
 | `CONTRACT_ADDRESS` | Deployed `EncryptedMessenger` address |
 | `USER1_PRIVATE_KEY` | Private key for demo User 1 |
 | `USER2_PRIVATE_KEY` | Private key for demo User 2 |
@@ -622,7 +618,7 @@ demo/
 ├── src/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── register/    # POST — register a user on-chain
+│   │   │   ├── register/    # POST — register a user onchain
 │   │   │   ├── session/     # POST — create a session (encrypt + CTX)
 │   │   │   ├── send/        # POST — send a message (encrypt + CTX)
 │   │   │   ├── messages/    # GET  — fetch raw (encrypted) messages
@@ -655,7 +651,7 @@ npm run dev
 Open `http://localhost:3000`. The UI provides two side-by-side panes (User 1 / User 2), each with:
 
 1. **Deposit Credits** — Pre-fund callback gas so messages don't require attaching Gas Tokens each time
-2. **Register** — Publish your secp256k1 public key on-chain (enabled after depositing)
+2. **Register** — Publish your secp256k1 public key onchain (enabled after depositing)
 3. **Create Session** — Trigger the CTX that bootstraps the shared session secret (enabled once both users are registered)
 4. **Chat Window** — Messages are shown as truncated ciphertext by default; click the unlock button to decrypt them inline
 5. **Send** — Type a message and send it via CTX
@@ -668,5 +664,5 @@ After the session is created (one block for the CTX callback), messages can be s
 
 - **BITE TypeScript SDK**: [GitHub Repository](https://github.com/skalenetwork/bite-ts)
 - **bite-solidity Repository**: [GitHub Repository](https://github.com/skalenetwork/bite-solidity)
-- **BITE Protocol Introduction**: [Introduction](/concepts/bite-protocol/intro-bite-protocol)
-- **Conditional Transactions**: [How CTX works](/concepts/bite-protocol/conditional-transactions)
+- **Programmable Privacy Introduction**: [Introduction](/developers/programmable-privacy/intro)
+- **Conditional Transactions**: [How CTX works](/developers/programmable-privacy/conditional-transactions)
