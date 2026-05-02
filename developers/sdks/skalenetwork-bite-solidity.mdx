@@ -1,0 +1,171 @@
+---
+title: "BITE Solidity SDK"
+description: "Solidity helpers for Conditional Transactions, re-encryption precompiles, and onchain decryption callbacks"
+---
+
+<Note>
+Compiler requirements: Solidity **>= 0.8.27**, EVM version **istanbul** or lower.
+</Note>
+
+The BITE Solidity SDK (`@skalenetwork/bite-solidity`) provides smart contract interfaces for creating Conditional Transactions (CTX), encrypting data onchain, and handling decryption callbacks.
+
+## Installation
+
+```bash
+# npm
+npm i @skalenetwork/bite-solidity
+
+# forge
+forge install skalenetwork/bite-solidity
+echo "@skalenetwork/bite-solidity/=lib/bite-solidity/" >> remappings.txt
+```
+
+## Imports
+
+```solidity
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant }
+    from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+```
+
+## `BITE.submitCTX()`
+
+Creates a Conditional Transaction that requests decryption of encrypted data. The decrypted result is delivered to your contract's `onDecrypt` callback in the next block.
+
+```solidity
+function submitCTX(
+    address precompileAddress,  // use BITE.SUBMIT_CTX_ADDRESS
+    uint256 gasLimit,           // gas allocated for the callback
+    bytes[] memory encryptedArgs,   // encrypted data to decrypt
+    bytes[] memory plaintextArgs    // plaintext data to pass through
+) external payable returns (address payable);
+```
+
+**Returns:** The address of the ephemeral wallet that will call `onDecrypt`. **Each call generates a unique address.**
+
+**Parameters:**
+- `precompileAddress`: Use `BITE.SUBMIT_CTX_ADDRESS` (`0x1B`)
+- `gasLimit`: Gas for callback (in gas units, use `msg.value / tx.gasprice`)
+- `encryptedArgs`: Array of encrypted byte arrays to decrypt
+- `plaintextArgs`: Array of unencrypted byte arrays passed through to callback
+
+### Example
+
+```solidity
+pragma solidity ^0.8.24;
+
+import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { IBiteSupplicant }
+    from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+
+contract MyContract is IBiteSupplicant {
+    using Address for address payable;
+
+    mapping(address => bool) private _canCallOnDecrypt;
+
+    function revealSecret(bytes calldata encrypted) external payable {
+        bytes[] memory encryptedArgs = new bytes[](1);
+        encryptedArgs[0] = encrypted;
+
+        address payable ctxSender = BITE.submitCTX(
+            BITE.SUBMIT_CTX_ADDRESS,
+            msg.value / tx.gasprice,
+            encryptedArgs,
+            new bytes[](0)
+        );
+
+        _canCallOnDecrypt[ctxSender] = true;
+        payable(ctxSender).sendValue(msg.value);
+    }
+
+    function onDecrypt(
+        bytes[] calldata decryptedArgs,
+        bytes[] calldata
+    ) external override {
+        require(_canCallOnDecrypt[msg.sender], "Unauthorized");
+        _canCallOnDecrypt[msg.sender] = false;
+        // Use decryptedArgs[0] in your logic
+    }
+}
+```
+
+## `IBiteSupplicant.onDecrypt()`
+
+Callback that your contract must implement. Called by SKALE consensus with decrypted data in the block after `submitCTX`.
+
+```solidity
+function onDecrypt(
+    bytes[] calldata decryptedArgs,  // decrypted versions of encryptedArgs
+    bytes[] calldata plaintextArgs   // plaintextArgs passed through
+) external;
+```
+
+**Security:** Always restrict access to only authorized ephemeral wallets using a `mapping(address => bool)` pattern. See [Security: Protect onDecrypt](/developers/programmable-privacy/conditional-transactions#-security-protect-ondecrypt).
+
+## `BITE.encryptTE()`
+
+Encrypts data using the network's BLS threshold key. Only the validator committee can decrypt (via CTX callback).
+
+```solidity
+function encryptTE(
+    address precompileAddress,  // use BITE.ENCRYPT_TE_ADDRESS (0x1D)
+    bytes memory data           // data to encrypt (32-byte aligned)
+) external returns (bytes memory encrypted, uint256 errorCode);
+```
+
+**Error Codes:**
+
+| Code | Error |
+|------|-------|
+| 1 | InputTooLarge |
+| 2 | InputTooShort |
+| 3 | InputNot32ByteAligned |
+| 4 | InvalidDataOffset |
+| 5 | DataLengthMismatch |
+| 6 | TrailingPaddingNotZeros |
+
+## `BITE.encryptECIES()`
+
+Encrypts data for a specific viewer's secp256k1 public key. Only the holder of the corresponding private key can decrypt off-chain.
+
+```solidity
+function encryptECIES(
+    address precompileAddress,  // use BITE.ENCRYPT_ECIES_ADDRESS (0x1C)
+    bytes memory data,          // data to encrypt
+    PublicKey memory publicKey  // viewer's public key (x, y)
+) external returns (bytes memory encrypted, uint256 errorCode);
+```
+
+**Error Codes:**
+
+| Code | Error |
+|------|-------|
+| 1-6 | Same as EncryptTE |
+| 7 | InvalidPublicKey |
+| 8 | EncryptionFailed |
+
+### PublicKey Struct
+
+```solidity
+struct PublicKey {
+    bytes32 x;
+    bytes32 y;
+}
+```
+
+The public key is an uncompressed secp256k1 point (without the `0x04` prefix).
+
+## Constants
+
+| Constant | Address | Description |
+|----------|---------|-------------|
+| `BITE.SUBMIT_CTX_ADDRESS` | `0x1B` | CTX precompile for requesting decryption |
+| `BITE.ENCRYPT_TE_ADDRESS` | `0x1D` | Threshold encryption precompile |
+| `BITE.ENCRYPT_ECIES_ADDRESS` | `0x1C` | ECIES encryption precompile |
+
+## Resources
+
+- **GitHub**: [github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity)
+- **BITE TypeScript SDK**: [@skalenetwork/bite](/developers/sdks/skalenetwork-bite)
+- **Programmable Privacy Intro**: [Overview](/developers/programmable-privacy/intro)

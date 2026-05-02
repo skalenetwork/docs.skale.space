@@ -1,0 +1,71 @@
+---
+title: "Agentic Commerce"
+description: "The only agentic commerce chain with compliance-capable privacy at the protocol layer. Agents transact in the dark. No one else sees."
+---
+
+### Why SKALE for Agentic Commerce
+
+Agents are coming online. Millions of them — buying compute, renting data, trading services, negotiating with each other. This isn't a hypothetical future; it's happening now, and the infrastructure isn't built for it.
+
+Traditional payment rails don't work for agents. Credit cards require humans. Bank accounts require compliance reviews. Even crypto payments, as they exist today, require users to hold gas tokens, sign every transaction, and manage private keys — friction that kills autonomous workflows.
+
+Every blockchain claims to be the agent chain. But agentic commerce has one hard requirement that most chains can't meet: **agents need to keep their business private**. Pricing strategies, bidding limits, counterparty terms — none of it belongs on a public ledger. And yet, on every other chain, that's exactly where it ends up.
+
+SKALE doesn't solve that with a rollup, a sequencer promise, or a trusted hardware chip. It solves it at the protocol layer, so agents can negotiate, bid, and transact without leaking intent to the world.
+
+That's the differentiator. Not gas fees, not throughput — those are table stakes. The ability to keep commerce confidential, natively, on an EVM chain. That's what makes SKALE the **economic layer for autonomous commerce**.
+
+### What Makes SKALE the Agentic Commerce Chain
+
+**Confidential by default.** On SKALE, agent commerce isn't public by accident. [Programmable Privacy](/get-started/programmable-privacy/skale-programmable-privacy) means pricing, bidding, and negotiation all happen in the dark — only settlement is visible. No other chain offers this at the protocol level.
+
+**Zero gas fees.** Agents shouldn't need to manage gas balances to execute transactions. On SKALE, every interaction is gasless for end users. Agents operate without friction, without top-ups, without custodians.
+
+**Native payments with x402.** The x402 protocol extends HTTP with native payment capabilities. When an agent hits a `402 Payment Required` response, it automatically constructs and settles a payment — no manual signing, no browser extensions, no human in the loop. Payments are a protocol primitive, not a UX flow.
+
+**Onchain identity and reputation.** [ERC-8004](/get-started/agentic-builders/start-with-erc-8004) gives agents portable identities, reputation scores, and verifiable capabilities — all onchain. Agents discover each other, assess trustworthiness, and transact across organizational boundaries without pre-established relationships.
+
+**Horizontal compute.** Agents multiply exponentially — a thousand agents negotiating with a thousand agents generates traffic that no single chain can absorb. SKALE's architecture solves this natively: deploy more sChains as demand scales. Each sChain is an independent Layer 1 with dedicated validator resources. Agent operations don't compete — they shard naturally across chains. Need capacity for a new agent swarm? Spin up another sChain. The network grows horizontally with agent adoption, not against it.
+
+**Instant finality.** SKALE chains finalize in 1-2 seconds. Agents don't wait for confirmations. Commerce happens at the speed of the internet, not the speed of consensus rounds.
+
+### The Agent Commerce Stack
+
+Agentic Commerce on SKALE is built on composable layers:
+
+| Layer | Protocol | What It Does |
+|-------|----------|--------------|
+| **Payments** | x402, MPP | Gasless payments with `TransferWithAuthorization`. Agents pay without gas. |
+| **Identity** | ERC-8004 | Agent registries, reputation tracking, capability verification. |
+| **Discovery** | ERC-8004, x402 Bazaar | Service discovery, capability advertisement, agent-to-agent matching. |
+| **Privacy** | SKALE Compliant Privacy | Confidential pricing, private order flow, hidden terms, sealed-bid negotiation, encrypted agent state. Agents operate in the dark — no one sees intent until settlement. |
+| **Compute** | SKALE Chains | Deploy new sChains as agent populations scale. Each chain is an independent Layer 1 with dedicated validators. Zero gas fees, 1-2 second finality, full EVM compatibility. No contention, no bottlenecks — the network grows with adoption. |
+
+### What You Can Build
+
+**Autonomous AI marketplaces.** Agents that buy and sell AI inference, data access, storage, and compute — all settled automatically onchain. Programmable privacy keeps pricing and bidding strategy confidential. Horizontal compute lets marketplaces spin up dedicated sChains as agent populations grow.
+
+**Agent-operated services.** APIs and endpoints that charge per-request via x402. Your AI model, weather data, or trading signal becomes a self-serve revenue stream for agents.
+
+**Decentralized facilitator networks.** Run a facilitator that processes x402 payments and earns fees. The settlement layer for agentic commerce.
+
+**Multi-agent supply chains.** Agents that subcontract work to other agents, pay on delivery, and build reputation over time — all without human intervention. Each supply chain stage can run on its own sChain, keeping terms private and scaling independently.
+
+**Agent wallets and treasuries.** Smart wallets purpose-built for agent operations — automated payment flows, spending limits, revenue collection, and cross-agent settlement.
+
+### Start Building
+
+- [Accept x402 Payments](/cookbook/x402/accepting-payments) — Protect your API with x402 middleware. Agents pay to access your service.
+- [Build an x402 Agent](/cookbook/agents/build-an-agent) — Create an agent that discovers, pays for, and consumes agent services.
+- [Register an Agent](/get-started/agentic-builders/start-with-erc-8004) — Give your agent onchain identity, reputation, and discoverability.
+- [Run a Facilitator](/cookbook/x402/facilitator) — Earn fees by processing x402 payment settlements.
+- [Explore the Privacy Docs](/get-started/programmable-privacy/skale-programmable-privacy) — Understand the compliance-capable privacy that makes agentic commerce possible.
+
+### Learn More
+
+- [x402 Protocol](/get-started/agentic-builders/start-with-x402) — Payments for autonomous agents
+- [ERC-8004 Guide](/get-started/agentic-builders/start-with-erc-8004) — Agent identity and reputation
+- [Facilitator Network](/cookbook/x402/facilitator) — Run the settlement layer
+- [Build an Agent](/cookbook/agents/build-an-agent) — Full agent development guide
+- [Programmable Privacy](/get-started/programmable-privacy/skale-programmable-privacy) — Confidential agent commerce
+- [SKALE Expand](/get-started/skale-expand) — Deploy private compute to any ecosystem

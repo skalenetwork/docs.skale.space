@@ -1,0 +1,58 @@
+---
+title: "Gas Fees"
+description: "Zero gas fees, compute credits, and gasless transactions — how SKALE eliminates gas costs for users"
+---
+
+SKALE offers several models for handling gas, all designed to eliminate friction for end users. Which model fits depends on your chain type and deployment.
+
+## The Models
+
+### Zero Gas Fees (sFUEL)
+
+The original model — every SKALE Chain on Ethereum has a native gas token (sFUEL) that has **no monetary value**. It exists for EVM compatibility so wallets, tools, and SDKs work out of the box. sFUEL is pre-minted in massive surplus and recycled onchain — it never runs out.
+
+**Who pays:** sChain Owner
+
+```
+User sends tx → consumes sFUEL (valueless) → tx executes
+              → sFUEL recycled back to distribution pool
+```
+
+<Note>
+Developers and users can acquire sFUEL at https://sfuelstation.com
+</Note>
+
+Zero gas fee chains can optionally enable **gasless transactions** via Proof-of-Work, letting users transact without any sFUEL balance. The client computes a magic number that replaces the gas payment — no tokens required.
+
+### Compute Credits (CREDIT)
+
+On SKALE Base Mainnet, compute is paid for using **CREDIT tokens**. Developers and/or users purchase credits to cover transaction compute. SKALE Base Testnet uses a [faucet](https://base-sepolia-faucet.skale.space) instead — no purchase needed.
+
+See the [Buy CREDITS](/developers/integrate-skale/buy-credits) guide for detailed instructions.
+
+```
+Developer or user buys credits → credits deposited in their account
+                               → sending tx deducts compute from credits
+                               → no separate gas token needed
+```
+
+### Gas Chains
+
+A gas chain uses a real token (SKL, ETH, USDC, or any ERC-20) as the gas token. Users pay per-transaction in that token, similar to an L2. Available on SKALE Expand deployments.
+
+**Who pays:** Users
+
+## Which Model to Use
+
+| Model | Who Pays | User Needs Tokens? | Best For |
+|-------|----------|-------------------|----------|
+| Zero Gas Fees (sFUEL) | sChain Owner | sFUEL (valueless) | SKALE on Ethereum chains |
+| Compute Credits (CREDIT) | Developers and/or users | CREDIT tokens | SKALE Base Mainnet |
+| Gas Chain | Users | Gas token | DeFi, financial apps |
+
+## Related Topics
+
+- [Credit Chain](/chain-types/credit-chain) — How credit chains work
+- [Buy CREDITS](/developers/integrate-skale/buy-credits) — How to purchase credits
+- [Go Live on SKALE Base](/get-started/quick-start/go-live) — Deploy your application
+- [Pricing and Payments](/developers/run-a-skale-chain/pricing-and-payments) — Subscription costs

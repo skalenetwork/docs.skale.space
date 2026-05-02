@@ -28,7 +28,7 @@ After deploying your smart contracts to SKALE, it's important to verify them on 
         <CONTRACT_ADDRESS> \
         src/MyContract.sol:MyContract \
         --verifier blockscout \
-        --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+        --verifier-url https://base-sepolia-testnet-explorer.skalenodes.com/api
     ```
 
     #### Verification with Constructor Arguments
@@ -42,7 +42,7 @@ After deploying your smart contracts to SKALE, it's important to verify them on 
         src/MyContract.sol:MyContract \
         --constructor-args $(cast abi-encode "constructor(string,uint256)" "MyToken" 1000000) \
         --verifier blockscout \
-        --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+        --verifier-url https://base-sepolia-testnet-explorer.skalenodes.com/api
     ```
 
     #### Verification with Libraries
@@ -56,7 +56,7 @@ After deploying your smart contracts to SKALE, it's important to verify them on 
         src/MyERC20.sol:MyERC20 \
         --libraries @openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20:<LIBRARY_ADDRESS> \
         --verifier blockscout \
-        --verifier-url https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api
+        --verifier-url https://base-sepolia-testnet-explorer.skalenodes.com/api
     ```
   </Tab>
   <Tab title = "Using Hardhat">
@@ -78,10 +78,10 @@ After deploying your smart contracts to SKALE, it's important to verify them on 
         customChains: [
           {
             network: "skale_testnet",
-            chainId: 1444673419,
+            chainId: 324705682,
             urls: {
-              apiURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
-              browserURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com",
+              apiURL: "https://base-sepolia-testnet-explorer.skalenodes.com/api",
+              browserURL: "https://base-sepolia-testnet-explorer.skalenodes.com",
             },
           },
         ],
@@ -151,8 +151,6 @@ If automated verification fails, you can manually verify:
 ## Related Topics
 
 - [Deploy an ERC-20 Token](/cookbook/smart-contracts/deploy-erc20-token)
-- [Deploy an ERC-721 Token](/cookbook/smart-contracts/deploy-erc721-token)
-- [Deploy an ERC-1155 Token](/cookbook/smart-contracts/deploy-erc1155-token)
 - [Setup Foundry](/cookbook/deployment/setup-foundry)
 - [Setup Hardhat](/cookbook/deployment/setup-hardhat)
 

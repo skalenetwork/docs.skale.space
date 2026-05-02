@@ -1,0 +1,102 @@
+---
+title: "MCP Server"
+description: "Connect AI agents to SKALE documentation via the Model Context Protocol"
+---
+
+## Overview
+
+The SKALE Documentation MCP server gives AI assistants and agents the ability to search and read SKALE documentation directly. It's available at:
+
+```
+https://docs.skale.space/mcp
+```
+
+No installation, npm packages, environment variables, or private keys needed. Just add the URL to any MCP-compatible client.
+
+## What Is MCP?
+
+The Model Context Protocol (MCP) is an open standard that enables AI models to interact with external tools and data sources. The SKALE Docs MCP server exposes two tools:
+
+- **Search** — Search across all SKALE documentation to find relevant pages
+- **Query docs filesystem** — Read full page content, browse the doc structure, and extract specific sections
+
+AI agents connected to this server can answer questions about SKALE with up-to-date documentation, without relying on training data or web search.
+
+## Connecting
+
+### Claude Desktop (claude.ai)
+
+1. Go to **Settings → Connectors**
+2. Select **Add custom connector**
+3. Enter:
+   - Name: `SKALE Docs`
+   - URL: `https://docs.skale.space/mcp`
+4. Select **Add**
+
+### Claude Code
+
+```bash
+claude mcp add --transport http "SKALE Docs" https://docs.skale.space/mcp
+```
+
+Verify the connection:
+
+```bash
+claude mcp list
+```
+
+### Cursor
+
+1. Open **Cursor Settings → MCP** (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → "Open MCP settings")
+2. Add a new MCP server:
+
+```json
+{
+  "mcpServers": {
+    "SKALE Docs": {
+      "url": "https://docs.skale.space/mcp"
+    }
+  }
+}
+```
+
+### VS Code
+
+Create or edit `.vscode/mcp.json` in your project:
+
+```json
+{
+  "servers": {
+    "SKALE Docs": {
+      "type": "http",
+      "url": "https://docs.skale.space/mcp"
+    }
+  }
+}
+```
+
+### GitHub Copilot
+
+GitHub Copilot can also connect to MCP servers. Add the server in your client settings or [Copilot extensions configuration](https://docs.github.com/en/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot).
+
+### Other MCP Clients
+
+Any MCP-compatible client can connect by adding a server with `url` set to `https://docs.skale.space/mcp`. See the client's documentation for the exact configuration format.
+
+## What the MCP Server Provides
+
+The MCP server indexes all public pages listed in the documentation navigation. When an AI agent connects, it can:
+
+- Answer questions about SKALE concepts, APIs, and SDKs
+- Find relevant cookbook recipes and tutorials
+- Provide accurate code examples from the docs
+- Reference chain information and configuration details
+
+## MCP Resources: Skill Files
+
+The MCP server also exposes [SKALE Skills](/get-started/build-with-ai/using-skale-skills) as MCP resources. Agents connected to the server can discover and access skill files without installing them separately. Skills provide step-by-step instructions for building on SKALE — from setting up a chain to using programmable privacy.
+
+import AiIntegrationComparison from "../../_snippets/_ai-integrations.mdx"
+
+<AiIntegrationComparison />
+

@@ -1,0 +1,103 @@
+---
+title: "Confidential Tokens"
+description: "Private programmable money. Encrypted balances, compliant transfers, holder-only viewing — ERC20s that keep secrets"
+---
+
+<Note>
+**Beta on SKALE Base Sepolia** — Confidential Tokens are available for testing and development on testnet. Mainnet deployment coming soon. API is stable but may see refinements.
+</Note>
+
+## Why Confidential Tokens?
+
+Standard ERC20 tokens store balances as plaintext onchain — anyone can see who holds what. For payroll, lending, gaming, or any application where financial privacy matters, this is a non-starter. Confidential Tokens solve this by encrypting every balance using a dual-layer model: threshold encryption for onchain processing (transfers, sufficiency checks) and ECIES encryption for private off-chain viewing.
+
+## What Are Confidential Tokens?
+
+Confidential Tokens are ERC20 tokens where balances are encrypted onchain. No plaintext balance is ever stored. They use a dual-encryption model — threshold encryption for on-chain logic and ECIES encryption for off-chain viewing.
+
+## Quick Start
+
+<Tabs>
+  <Tab title="Foundry">
+  ```bash
+  forge install skalenetwork/confidential-token
+  ```
+
+  ```solidity
+  import "@skalenetwork/confidential-token/ConfidentialToken.sol";
+
+  // Balances are encrypted automatically — no manual encryption needed
+  // Transfers use CTX under the hood for secure processing
+  confidentialToken.transfer(recipient, amount);
+
+  // Balance is readable only by the holder via their viewer key
+  uint256 balance = confidentialToken.balanceOf(msg.sender);
+  ```
+  </Tab>
+
+  <Tab title="Hardhat">
+  ```bash
+  npm install @skalenetwork/confidential-token
+  ```
+
+  ```typescript
+  import { ConfidentialToken } from "@skalenetwork/confidential-token";
+
+  // Balances are encrypted automatically — no manual encryption needed
+  await confidentialToken.transfer(recipient, amount);
+
+  // Balance is readable only by the holder via their viewer key
+  const balance = await confidentialToken.balanceOf(sender);
+  ```
+  </Tab>
+</Tabs>
+
+## Dual-Encryption Model
+
+| Layer | Key | Purpose | Who Can Decrypt |
+|-------|-----|---------|-----------------|
+| TE (Threshold Encryption) | Network BLS key | On-chain logic (transfers, sufficiency checks) | Consensus via CTX callback |
+| ECIES | Recipient's secp256k1 key | Off-chain balance viewing | Token holder's private key |
+
+Both layers encrypt every balance. The TE layer allows the network to verify and process transfers without seeing amounts. The ECIES layer allows the token holder to read their balance privately off-chain.
+
+## Architecture
+
+A confidential token transfer works like this — encryption of new balances happens inside the CTX callback, not upfront:
+
+```
+transfer(from, to, amount)
+  → SubmitCTX(0x1B, from_encBalance, to_encBalance, amount, [plaintext metadata])
+    → Validators decrypt encrypted args
+      → onDecrypt() callback called via ephemeral wallet
+        → Validate from_balance >= amount
+        → Compute new_balance_from, new_balance_to
+        → EncryptTE(0x1D, new_balance_from) → store in _thresholdBalances
+        → EncryptTE(0x1D, new_balance_to)   → store in _thresholdBalances
+        → EncryptECIES(0x1C, new_balance_from, from_viewerKey) → _userBalances
+        → EncryptECIES(0x1C, new_balance_to, to_viewerKey)     → _userBalances
+```
+
+## Key Contracts
+
+| Contract | Purpose |
+|----------|---------|
+| `ConfidentialToken` | Core confidential ERC20 |
+| `ConfidentialWrapper` | Wraps an existing ERC20 into a confidential token |
+| `MintableConfidentialToken` | ConfidentialToken + restricted mint |
+| `ConfidentialEIP3009` | EIP-3009 with encrypted value parameters |
+
+## Roles
+
+| Role | Can Do | Can See Balance |
+|------|--------|-----------------|
+| Holder | Transfer, approve | Only via registered viewer key |
+| Viewer | Decrypt ECIES balance off-chain | Yes (if granted access) |
+| Anyone | View encrypted ciphertext onchain | Encrypted only |
+
+A holder registers a viewer public key via `setViewerPublicKey()`. The holder can be their own viewer.
+
+## Learn More
+
+- [Re-encryption](/developers/programmable-privacy/re-encryption) — The encryption precompiles that power confidential tokens
+- [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) — How CTX enables on-chain processing of encrypted data

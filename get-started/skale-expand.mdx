@@ -1,0 +1,66 @@
+---
+title: "SKALE Expand"
+description: "Private blockchain compute, deployed anywhere. Zero gas, instant finality, native privacy — now on any EVM ecosystem."
+---
+
+For five years, people called SKALE a Layer 1, then a Layer 2, then back to a Layer 1. The confusion made sense — SKALE doesn't fit the mental model of what a blockchain "should be."
+
+**SKALE Expand is the answer to that confusion.** SKALE was never just a chain. SKALE is an application capable of launching blockchains as a network. Expand surfaces that truth: deploy the full SKALE Manager onto any EVM chain, and instantly spin up gasless, private, instant-finality sChains that compose back to that ecosystem.
+
+[SKALE on Base](/get-started/quick-start/skale-on-base) is the first Expand network. It won't be the last.
+
+### Why Expand
+
+The problem Expand solves is simple: **good infrastructure shouldn't be bound to one ecosystem.**
+
+You shouldn't have to choose between EVM compatibility and zero gas fees. You shouldn't have to pick between privacy and composability. You shouldn't have to move your entire operation to a new ecosystem just to get better execution.
+
+Expand brings SKALE's core primitives — zero-gas transactions, 1-2 second finality, threshold-encrypted privacy, dedicated chain resources — to **any** EVM ecosystem that wants them.
+
+<CardGroup cols={2}>
+  <Card title="SKALE on Base" icon="base" href="/get-started/quick-start/skale-on-base">
+    The first Expand deployment. Gasless, private sChains on Base.
+  </Card>
+
+  <Card title="Deploy an sChain" icon="link" href="/developers/run-a-skale-chain/intro-to-schains">
+    Launch your own private SKALE Chain — dedicated resources, full EVM, zero compromises.
+  </Card>
+</CardGroup>
+
+### How It Works
+
+Expand is straightforward: deploy SKALE Manager onto a target chain. That deployment controls an entirely separate pool of validator compute. From it, you spin up sChains — each one a fully independent Layer 1 blockchain with its own validators, its own finality, and its own privacy.
+
+Here's what stays true across every deployment:
+
+| Property | Detail |
+|----------|--------|
+| **SKL canonical** | The one true SKL lives on Ethereum Mainnet. All Expand deployments bridge SKL — no new token minting. |
+| **Isolated compute** | Each deployment has its own validator pool. sChains on Base don't compete for resources with sChains on Ethereum. |
+| **Bespoke features** | Each Expand deployment can ship features unique to that ecosystem. Base gets things Ethereum might not. |
+| **No resource contention** | sChains created in one deployment have zero impact on another. Your chain's performance is your chain's performance. |
+
+### What an sChain Is (and Isn't)
+
+**sChains are Layer 1 blockchains.** They are not rollups. They do not push state back to a parent chain. They do not checkpoint. They do not inherit security from a Layer 1 — they have their own validator set, their own consensus, their own block production.
+
+Each sChain can be:
+
+- **Application-specific** — One app, one chain, dedicated resources
+- **Shared** — A group of entities sharing a chain with access controls
+- **Fully permissionless** — Open to anyone, like a public L1
+
+And now, with Expand, they can live off of **any** blockchain that has a SKALE Manager deployment.
+
+### What This Means
+
+Expand changes the calculus for ecosystem growth. Instead of convincing projects to bridge to SKALE, SKALE comes to them. A game on Base can spin up a gasless sChain with private game state in minutes — without leaving Base. An enterprise deploying on Ethereum can add confidential computation without leaving Ethereum. A DeFi protocol can get dedicated throughput and MEV resistance without convincing its users to switch chains.
+
+SKALE is the infrastructure. The ecosystem chooses where to deploy it.
+
+### Learn More
+
+- [SKALE on Base](/get-started/quick-start/skale-on-base) — First Expand deployment walkthrough
+- [sChain Architecture](/skale-chain/introduction) — Deep dive into sChain design
+- [Run a SKALE Chain](/developers/run-a-skale-chain/intro-to-schains) — Deploy and manage your own chain
+- [Official Expand Blog Post](https://blog.skale.space/blog/skale-expand-bringing-gas-free-instant-private-execution-to-any-evm-blockchain)

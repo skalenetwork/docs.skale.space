@@ -1,0 +1,76 @@
+---
+title: "Programmable Privacy"
+description: "Smart contracts with secrets. Native onchain confidentiality at the protocol layer — no trusted third parties, no rollups, no compromises."
+---
+
+### Why SKALE for Programmable Privacy
+
+Public blockchains are transparent by design. Every transaction amount, every contract interaction, every user intent is visible to the world. That's fine for a public ledger — but it's a dealbreaker for the applications that actually need blockchain.
+
+Payroll, supply chain, sealed-bid auctions, lending positions, gaming state, enterprise data — all of these require confidentiality. Not as an afterthought you bolt on with ZK proofs or trusted hardware, but as a **first-class primitive in the protocol itself**.
+
+SKALE is the only EVM blockchain where privacy capable of maintaining compliance is built into consensus, not appended as a layer. With **Programmable Privacy**, smart contracts define who sees what and when — all in Solidity, all composable, all without a trusted third party.
+
+<CardGroup cols={2}>
+  <Card title="Encrypted Transactions" icon="lock" href="/developers/programmable-privacy/encrypted-transactions">
+    Hide transaction payloads during mempool and consensus. MEV resistance by design.
+  </Card>
+
+  <Card title="Conditional Transactions" icon="code" href="/developers/programmable-privacy/conditional-transactions">
+    Smart contracts that request decryption on-demand for sealed-bid auctions, private voting, and more.
+  </Card>
+
+  <Card title="Confidential Tokens" icon="coins" href="/developers/programmable-privacy/confidential-tokens">
+    ERC-20 tokens with fully encrypted balances. Privacy-preserving DeFi, native.
+  </Card>
+
+  <Card title="Re-encryption" icon="shield" href="/developers/programmable-privacy/re-encryption">
+    Encrypt for specific viewers. Private onchain state with selective disclosure.
+  </Card>
+</CardGroup>
+
+### How It's Different
+
+Other approaches to blockchain privacy come with tradeoffs you don't want:
+
+- **ZK proofs** — Powerful, but not composable. Every private operation needs a new circuit. Developers need specialized cryptography knowledge.
+- **FHE** — Computes on encrypted data, but at prohibitive cost. Orders of magnitude slower than plaintext execution. Impractical for anything beyond toy workloads.
+- **TEEs** — Trusted hardware introduces a centralized trust assumption. If the hardware is compromised, privacy is gone.
+- **L2 sequencers** — Privacy via centralized sequencer is just a promise not to look. There's no cryptographic enforcement.
+- **Separate privacy chains** — Isolated ecosystems that can't compose with the rest of DeFi.
+
+**SKALE's approach is different.** Threshold encryption is baked into the consensus layer. The validator set jointly holds decryption keys via distributed key generation (DKG). No single party can decrypt. No circuits to write. No hardware to trust. Just Solidity smart contracts that decide what stays private.
+
+### What You Can Build
+
+| Application | What Programmable Privacy Enables |
+|-------------|-----------------------------------|
+| **Private DeFi** | Lending with hidden positions. DEXes with confidential order flow. Yield strategies that can't be front-run. |
+| **Enterprise** | Payroll onchain. Supply chain with private counterparties. Regulated securities with controlled disclosure. |
+| **Gaming** | Hidden game state. Private matchmaking. Secret moves in onchain strategy games. |
+| **Autonomous Agents** | Private agent-to-agent transactions. Confidential bidding and negotiation. Hidden strategies that competitors can't front-run. Agents that transact with privacy by default. |
+| **Auctions & Governance** | Sealed-bid auctions. Private voting with verifiable results. Quadratic funding without public donation amounts. |
+| **Identity & Credentials** | Onchain credentials with selective disclosure. Prove without revealing. |
+
+### Start Building
+
+Programmable Privacy is available on **SKALE Base** and **SKALE Base Sepolia**. All features work with standard EVM tooling — MetaMask, Foundry, Hardhat, Viem, ethers.js. No special compilers, no custom RPCs, no new languages.
+
+<CardGroup cols={2}>
+  <Card title="Encrypted Transactions Guide" icon="book" href="/cookbook/privacy/encrypted-transactions">
+    Walk through encrypting and submitting a private transaction.
+  </Card>
+
+  <Card title="Confidential Token Quickstart" icon="rocket" href="/developers/programmable-privacy/confidential-tokens">
+    Deploy a token with hidden balances in minutes.
+  </Card>
+</CardGroup>
+
+### Learn More
+
+- [Encrypted Transactions](/developers/programmable-privacy/encrypted-transactions) — Architecture and API reference
+- [Conditional Transactions](/developers/programmable-privacy/conditional-transactions) — On-demand decryption contracts
+- [Confidential Tokens](/developers/programmable-privacy/confidential-tokens) — Encrypted balance ERC-20s
+- [Re-encryption](/developers/programmable-privacy/re-encryption) — Selective disclosure cryptography
+- [BITE Encryption](/developers/bite) — The protocol layer powering it all
+- [Threshold Schemes](/developers/threshold-schemes) — How threshold BLS and DKG work

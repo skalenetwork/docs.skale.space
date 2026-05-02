@@ -1,3 +1,11 @@
+---
+name: glossary
+description: >
+  Comprehensive glossary of SKALE ecosystem terminology including core
+  infrastructure, protocols, privacy/security terms, BITE-specific features,
+  and formatting standards.
+---
+
 # Glossary
 
 ## Definitions
@@ -16,15 +24,15 @@
 
 ### Protocols & Standards
 
-**BITE (Blockchain Integrated Threshold Encryption)** - SKALE's privacy protocol that adds encryption capabilities while maintaining EVM compatibility. Enables encrypted transactions, confidential tokens, and MEV resistance.
+**BITE (Blockchain Integrated Threshold Encryption)** - SKALE's privacy layer that makes transactions invisible, value confidential, and frontrunning impossible — all while staying fully EVM-compatible. Encryption, confidentiality, and MEV resistance, no compromises.
 
-**MPP (Machine Payments Protocol)** - A protocol for autonomous machine-to-machine payments enabling AI agents, IoT devices, and applications to make and receive payments programmatically. Supports gasless transactions and privacy features.
+**MPP (Machine Payments Protocol)** - Money that moves itself. AI agents, bots, and IoT devices pay each other autonomously — no gas fees, no keys in the loop, total privacy by default. The payment rail for the autonomous economy.
 
 **IMA (Interchain Messaging Agent)** - SKALE's trustless bridge system for transferring assets and messages between SKALE Chains and Ethereum mainnet. Uses BLS threshold signatures for security.
 
-**x402** - A payment protocol built on HTTP 402 (Payment Required) status code. Enables paywalled APIs and resources where clients can automatically negotiate and execute payments to access content.
+**x402** - Pay-per-request for the internet. HTTP 402 reimagined: APIs charge per call, clients pay automatically, access is instant. Micropayments at web scale, no subscriptions, no friction.
 
-**ERC-8004** - An Ethereum standard for autonomous agent identity, reputation, and verification registries. Enables trustless agent-to-agent interactions without pre-established relationships.
+**ERC-8004** - Identity and reputation for autonomous agents. Trustless, self-sovereign, verification-native. Agents verify each other on the spot — no oracles, no intermediaries, no blind handshakes.
 
 **ERC-20** - The Ethereum standard for fungible tokens. Defines a common interface for token transfers, allowances, and balance queries.
 
@@ -44,13 +52,13 @@
 
 ### BITE-Specific Features
 
-**BITE encryption** - Feature that encrypts transaction "to" addresses and amounts during mempool propagation. Values become visible after onchain execution.
+**BITE encryption** - Transactions that vanish in transit, then reappear on execution. Addresses and amounts are encrypted in the mempool — MEV bots see nothing, only the chain knows.
 
-**Confidential tokens** - Native tokens (e.g., eUSDC) with built-in privacy where balances and transaction amounts remain shielded even onchain. Implements full privacy at the protocol level.
+**Confidential tokens** - Invisible value that moves silently. Balances and amounts stay shielded even after execution — privacy baked into the token itself, not bolted on. Like cash, but programmable.
 
-**Conditional Transactions (CTX)** - Smart contract transactions that store encrypted data and request decryption directly within Solidity. Enables automated decryption workflows without manual reveal phases.
+**Conditional Transactions (CTX)** - Encrypted intents that unlock themselves. Store secrets onchain, set conditions for decryption, let Solidity pull the trigger. No reveal phases, no user intervention — just automated privacy.
 
-**Threshold Encryption** - Cryptographic system where decryption requires collaboration from multiple parties (validators) - no single node can decrypt alone.
+**Threshold Encryption** - Secrets that no single node can spill. Decryption requires a quorum of validators — decentralized custody, no single point of compromise, zero trust in any one party.
 
 ## Formatting Standards
 
@@ -71,7 +79,6 @@
 ## Examples
 
 ❌ **Avoid:**
-- "on-chain execution"
 - "BITE Phase I encryption"
 - "Phase II confidential tokens"
 - "Skale" or "skale" (always SKALE)

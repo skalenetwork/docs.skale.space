@@ -1,0 +1,114 @@
+---
+title: "Using SKALE Skills"
+description: "Overview of installable SKALE agent skills for programmable privacy, bridging, CLI, and x402 payments"
+---
+
+SKALE Skills are reusable knowledge packages that give AI agents specialized capabilities for building on SKALE. They provide expert-level instructions, code examples, and reference materials your agent uses automatically.
+
+## Quick Install
+
+Install all SKALE Skills in one command:
+
+```bash
+npx skills add skalenetwork/skills
+```
+
+Or install individual skills:
+
+```bash
+# Install only the programmable privacy skill
+npx skills add skalenetwork/skills --skill programmable-privacy
+
+# Install specific skills together
+npx skills add skalenetwork/skills --skill x402-on-skale --skill ima-bridging-on-skale
+```
+
+No SDK, API key, or configuration file required. The skills CLI downloads and configures each skill for use with your AI agent (Claude Code, Cursor, Copilot, Windsurf, Codex, and others).
+
+---
+
+## Available Skills
+
+### Programmable Privacy
+
+**Skill name:** `programmable-privacy`
+
+Encrypted transactions, conditional transactions (CTX), re-encryption, and confidential tokens on SKALE. Covers precompiles, Solidity helpers, and TypeScript SDK usage.
+
+**Best for:** Privacy dApps, confidential voting, sealed-bid auctions, encrypted state, data sharing
+
+**What's included:**
+- Precompile reference (EncryptTE, EncryptECIES, SubmitCTX)
+- Solidity helper patterns and examples
+- TypeScript SDK usage rules
+- Foundry configuration guidance
+
+### IMA Bridging on SKALE
+
+**Skill name:** `ima-bridging-on-skale`
+
+Programmatic IMA (Interchain Messaging Agent) bridging for SKALE chains. Send and receive messages between SKALE chains and Ethereum.
+
+**Best for:** Cross-chain token transfers, bridging ETH/ERC20/ERC721/ERC1155, custom messaging
+
+### SKALE CLI
+
+**Skill name:** `skale-cli`
+
+Operational command playbooks for SKALE CLI usage. Exact command syntax, target selection, parameter formatting, and error handling.
+
+**Best for:** Chain management, node operations, validator commands, network administration
+
+### x402 on SKALE
+
+**Skill name:** `x402-on-skale`
+
+Build AI agents with x402 payments on SKALE. Covers facilitator setup, payment middleware, and agent client for monetized AI services.
+
+**Best for:** Agent-to-agent payments, API monetization, x402 integration
+
+### About SKALE
+
+**Skill name:** `about-skale`
+
+Learn about SKALE Network — what it is, chain types, and gas models. Useful for understanding SKALE architecture.
+
+**Best for:** General SKALE knowledge, architecture decisions, chain selection
+
+---
+
+## How Skills Work
+
+1. **Install** — Run `npx skills add` to download the skill files into your project
+2. **Auto-load** — Your agent loads the skill when it detects relevant tasks
+3. **Reference** — The skill provides rules, examples, and reference materials
+4. **Execute** — Your agent uses the skill's knowledge to complete tasks
+
+## Skill Structure
+
+Each skill contains:
+
+| Component | Description |
+|-----------|-------------|
+| `SKILL.md` | Main skill description and trigger conditions |
+| `rules/` | Behavioral rules and constraints |
+| `references/` | Technical reference documentation |
+| `examples/` | Code examples and patterns |
+| `assets/` | Supporting files and templates |
+
+## Example: Using Programmable Privacy
+
+Once installed, your agent can handle tasks like:
+
+```
+"Build a sealed-bid auction contract using CTX on SKALE Base Sepolia"
+```
+
+The agent will:
+1. Load the programmable-privacy skill
+2. Reference the CTX rules and precompile documentation
+3. Generate a Solidity contract following the skill's patterns
+4. Include proper compiler settings (Solidity >= 0.8.27, EVM version istanbul)
+import AiIntegrationComparison from "../../_snippets/_ai-integrations.mdx"
+
+<AiIntegrationComparison />
