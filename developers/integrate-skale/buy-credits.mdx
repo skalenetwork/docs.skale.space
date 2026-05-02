@@ -1,0 +1,55 @@
+---
+title: Buy CREDITS
+description: Purchase compute credits to deploy and transact on SKALE Base
+---
+
+On SKALE Base Mainnet, compute is paid for using **CREDIT tokens**. Credits are deposited into your wallet on SKALE Base and are used to cover the compute cost of every transaction — no separate gas token is needed.
+
+<Note>
+On SKALE Base Sepolia (testnet), you don't need to buy credits. Use the [faucet](https://base-sepolia-faucet.skale.space) to get free testnet CREDITS.
+</Note>
+
+## How It Works
+
+When you buy CREDITS, the tokens go directly into your wallet on SKALE Base. Every transaction you send deducts compute from your credit balance:
+
+```
+Buy CREDITS → CREDITS deposited in your wallet on SKALE Base
+           → Sending a transaction deducts compute from your balance
+           → No separate gas token required
+```
+
+## Acquire CREDITS for SKALE Base
+
+import BuyCredits from "../../_snippets/buy-credits.mdx"
+
+<BuyCredits />
+
+## Checking Your Balance
+
+You can check your CREDIT balance at any time:
+
+1. Go to the [CREDITS portal](https://base.skalenodes.com/credits)
+2. Connect your wallet
+3. View your available balance
+
+## Estimating Compute Costs
+
+Each transaction on SKALE Base consumes a small amount of CREDITS based on its compute complexity. Simple transfers and basic contract calls use minimal credits, while complex deployments and interactions use more.
+
+<Note>
+SKALE Base Testnet credits are free and replenishable via the [faucet](https://base-sepolia-faucet.skale.space) — perfect for testing and development.
+</Note>
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Insufficient CREDITS | Buy more credits on the [portal](https://base.skalenodes.com/credits) |
+| Transaction keeps failing | Check your CREDIT balance — you may have run out |
+| Can't find CREDITS in wallet | CREDITS are tracked on the SKALE Base chain, not in your wallet UI by default. Your balance is visible on the credits portal |
+| Need more testnet CREDITS | Open a ticket on [SKALE Discord](https://discord.gg/skale) and request a larger allocation |
+
+<Note>
+**Next:** [Deploy Your First Contract →](/developers/integrate-skale/deploy-first-contract)
+</Note>

@@ -5,101 +5,54 @@ description: Connect to the SKALE Network
 
 SKALE is a network of many chains. You can connect to SKALE Chains with a variety of tools and SDKs, just like you do other EVM chains.
 
-## Connect to SKALE
+## Connect via CLI
 
-To connect via your command line interface (CLI), we recommend starting with [cast](https://getfoundry.sh/cast/overview), a command-line tool for interacting with Ethereum-based networks. To install cast, you should first install [Foundry](https://docs.tempo.xyz/sdk/foundry#get-started-with-foundry).
+To connect via your command line interface, we recommend starting with [cast](https://getfoundry.sh/cast/overview), a command-line tool for interacting with Ethereum-based networks.
 
 ```bash
-# Check block height
+# Check the latest block number
 cast block-number --rpc-url https://skale-base.skalenodes.com/v1/base
+
+# Get chain ID
+cast chain-id --rpc-url https://skale-base.skalenodes.com/v1/base
 ```
 
-## SKALE Chains
+<Note>
+To install cast, first install [Foundry](https://book.getfoundry.sh/getting-started/installation).
+</Note>
 
-The following are active sChains. SKALE Chains are built on different base networks - either Base or Ethereum. The bridge mechanism depends on the base network:
+## Network Details
 
-- **Base chains**: Built on Base L2 with native bridge to/from Base
-- **Ethereum chains**: Built on Ethereum with IMA (SKALE Interchain Messaging Agent) bridge to/from Ethereum
+SKALE Base is the first permissionless chain on SKALE. Below are the connection details for mainnet and testnet.
 
-### SKALE Base Chains
+<Tabs>
+  <Tab title="Mainnet">
+    | Name | Value |
+    | --- | --- |
+    | Network Name | SKALE Base |
+    | RPC URL | `https://skale-base.skalenodes.com/v1/base` |
+    | WSS URL | `wss://skale-base.skalenodes.com/v1/ws/base` |
+    | Chain ID | `1187947933` |
+    | Chain ID (Hex) | `0x46cea59d` |
+    | Explorer | [skale-base-explorer.skalenodes.com](https://skale-base-explorer.skalenodes.com/) |
+    | Native Token | CREDIT |
+    | Portal | [base.skalenodes.com](https://base.skalenodes.com/chains/base) |
+  </Tab>
+  <Tab title="Testnet">
+    | Name | Value |
+    | --- | --- |
+    | Network Name | SKALE Base Sepolia |
+    | RPC URL | `https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha` |
+    | Explorer | [base-sepolia-testnet-explorer.skalenodes.com](https://base-sepolia-testnet-explorer.skalenodes.com/) |
+    | Chain ID | `324705682` |
+    | Chain ID (Hex) | `0x135A9D92` |
+    | Native Token | CREDIT |
+    | Faucet | [base-sepolia-faucet.skale.space](https://base-sepolia-faucet.skale.space) |
+  </Tab>
+</Tabs>
 
-*Built on Base L2 with native bridge to/from Base*
+<Note>
+**Next:** [Buy CREDITS →](/developers/integrate-skale/buy-credits)
+</Note>
 
-#### SKALE Base Mainnet
-
-| Network Name | SKALE Base |
-| --- | --- |
-| RPC Url | https://skale-base.skalenodes.com/v1/base |
-| WSS Url | wss://skale-base.skalenodes.com/v1/ws/base |
-| Chain Id | 1187947933 |
-| Chain Id Hex | 0x46cea59d |
-| Explorer | https://skale-base-explorer.skalenodes.com/ |
-| Portal | https://base.skalenodes.com/chains/base |
-
-#### SKALE Base Testnet
-
-| Network Name | SKALE Base Sepolia |
-| --- | --- |
-| RPC Url | https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha |
-| Chain Id | 324705682 |
-| Chain Id Hex | 0x135A9D92 |
-| Explorer | https://base-sepolia-testnet-explorer.skalenodes.com/ |
-| Faucet | https://base-sepolia-faucet.skale.space |
-
-### Ethereum-based Chains
-
-*Built on Ethereum with IMA (Interchain Messaging Agent) bridge to/from Ethereum*
-
-#### Calypso Mainnet
-
-| Network Name | Calypso Hub |
-| --- | --- |
-| RPC Url | https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague |
-| Chain Id | 1564830818 |
-| Explorer | https://honorable-steel-rasalhague.explorer.mainnet.skalenodes.com/ |
-| Portal | https://portal.skale.space/chains/calypso |
-
-#### Calypso Testnet
-
-| Network Name | Calypso Testnet |
-| --- | --- |
-| RPC Url | https://testnet.skalenodes.com/v1/giant-half-dual-testnet |
-| Chain Id | 974399131 |
-| Explorer | https://giant-half-dual-testnet.explorer.testnet.skalenodes.com/ |
-| Portal | https://testnet.portal.skale.space/chains/calypso |
-
-#### Europa Mainnet
-
-| Network Name | Europa Hub |
-| --- | --- |
-| RPC Url | https://mainnet.skalenodes.com/v1/elated-tan-skat |
-| Chain Id | 2046399126 |
-| Explorer | https://elated-tan-skat.explorer.mainnet.skalenodes.com/ |
-| Portal | https://portal.skale.space/chains/europa |
-
-#### Europa Testnet
-
-| Network Name | Europa Testnet |
-| --- | --- |
-| RPC Url | https://testnet.skalenodes.com/v1/juicy-low-small-testnet |
-| Chain Id | 1444673419 |
-| Explorer | https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/ |
-| Portal | https://testnet.portal.skale.space/chains/europa |
-
-#### Nebula Mainnet
-
-| Network Name | Nebula Hub |
-| --- | --- |
-| RPC Url | https://mainnet.skalenodes.com/v1/green-giddy-denebola |
-| Chain Id | 1482601649 |
-| Explorer | https://green-giddy-denebola.explorer.mainnet.skalenodes.com/ |
-| Portal | https://portal.skale.space/chains/nebula |
-
-#### Nebula Testnet
-
-| Network Name | Nebula Testnet |
-| --- | --- |
-| RPC Url | https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet |
-| Chain Id | 37084624 |
-| Explorer | https://lanky-ill-funny-testnet.explorer.testnet.skalenodes.com/ |
-| Portal | https://testnet.portal.skale.space/chains/nebula |
+For a complete list of all SKALE Chains, see [SKALE Chains](/developers/resources/skale-chains).

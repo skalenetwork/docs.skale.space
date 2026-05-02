@@ -6,3 +6,5 @@ node_modules
 .claude*
 .claude/*
 settings.local.json
+.pi/prompts
+.pi/agent/sandbox.json

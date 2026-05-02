@@ -1,0 +1,93 @@
+---
+title: "Privacy"
+description: "How Programmable Privacy brings confidential computing to SKALE"
+---
+
+## Overview
+
+SKALE is designed for consumer-grade UX with zero gas fees and instant finality. Programmable Privacy adds encryption—encrypted transactions and confidential state—without breaking EVM compatibility.
+
+## Why Privacy Matters
+
+Public ledgers expose amounts, participants, and intent. This is incompatible with many real-world use cases:
+
+- **Finance** - Trading strategies and positions visible to competitors
+- **Healthcare** - Patient data cannot be stored on public chains (HIPAA/GDPR)
+- **Enterprise** - Business-sensitive data visible to all competitors
+- **Gaming** - Moves and strategies visible to opponents in real-time
+
+## How SKALE Solves Privacy
+
+SKALE's Programmable Privacy suite delivers:
+
+- **Confidential transactions** - Encrypt destination and calldata during mempool and consensus (visible after execution)
+- **Trustless execution** - Threshold encryption secures data without trusted middlemen
+- **Cross-chain privacy** - Keep data confidential when moving between chains
+- **MEV resistance** - Hide intent during mempool to prevent front-running
+
+## Use Cases
+
+### Private Finance
+
+Hide trading activity and protect strategies:
+
+```typescript
+// Private swap - amount and tokens hidden until execution
+const swapData = iface.encodeFunctionData('swap', [tokenIn, tokenOut, amount]);
+const tx = { to: dexAddress, data: swapData, gasLimit: 300000 };
+const encryptedTx = await bite.encryptTransaction(tx);
+```
+
+### Healthcare
+
+Store patient data confidentially with selective disclosure:
+
+```typescript
+// Encrypt patient record before storing
+const recordData = JSON.stringify({ patientId, diagnosis, treatment });
+const encrypted = await bite.encryptMessage(Buffer.from(recordData));
+// Only authorized parties can trigger decryption
+```
+
+### Gaming
+
+Hide moves and strategies from opponents:
+
+```typescript
+// Commit encrypted move in chess-like game
+const move = { from: 'e2', to: 'e4' };
+const moveData = ethers.AbiCoder.defaultAbiCoder().encode(['tuple(string,string)'], [move]);
+const encryptedMove = await bite.encryptMessage(moveData);
+```
+
+### Enterprise
+
+Keep business data private while maintaining auditability:
+
+```typescript
+// Confidential supply chain update
+const update = { productId, supplier, price, quantity };
+const encrypted = await bite.encryptMessage(ethers.AbiCoder.defaultAbiCoder().encode(['tuple'], [update]));
+```
+
+### Confidential AI
+
+Process sensitive features safely:
+
+```typescript
+// Encrypt model input before inference
+const inputData = new Float32Array([...sensitiveFeatures]);
+const encryptedInput = await bite.encryptMessage(ethers.toUtf8Bytes(JSON.stringify(inputData)));
+```
+
+## Implementation
+
+- **Programmable Privacy** - Threshold encryption and commit-then-reveal flows
+- **Trusted Execution Environments (TEEs)** - Hardware-backed confidentiality for advanced use cases
+- **Threshold cryptography** - BLS signatures and distributed key generation
+- **Secure messaging** - Confidential communication across chains
+
+## Related Topics
+
+- [Programmable Privacy](/developers/programmable-privacy/intro)
+- [Encrypted Transactions](/developers/programmable-privacy/encrypted-transactions)
