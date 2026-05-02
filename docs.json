@@ -22,6 +22,8 @@
             "group": "Introduction",
             "pages": [
               "get-started/skale",
+              "get-started/agentic-commerce/skale-agentic-commerce",
+              "get-started/programmable-privacy/skale-programmable-privacy",
               "get-started/skale-expand"
             ]
           },
@@ -146,9 +148,17 @@
             "group": "Integrate SKALE",
             "pages": [
               "developers/integrate-skale/connect-to-skale",
-              "developers/integrate-skale/json-rpc-api",
-              "developers/integrate-skale/evm-differences",
-              "developers/integrate-skale/gas-fees"
+              "developers/integrate-skale/buy-credits",
+              "developers/integrate-skale/deploy-first-contract"
+            ]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "developers/resources/skale-chains",
+              "developers/resources/json-rpc-api",
+              "developers/resources/evm-differences",
+              "developers/resources/gas-fees"
             ]
           },
           {
@@ -164,10 +174,10 @@
           {
             "group": "SDKs",
             "pages": [
-              "developers/sdks/skalenetwork-mpp-sdk",
-              "developers/sdks/skalenetwork-cli",
+              "developers/sdks/skalenetwork-bite-solidity",
               "developers/sdks/skalenetwork-bite",
-              "developers/sdks/skalenetwork-bite-solidity"
+              "developers/sdks/skalenetwork-mpp-sdk",
+              "developers/sdks/skalenetwork-cli"
             ]
           },
           {
@@ -2155,6 +2165,10 @@
     {
       "source": "/developers/chain-types/zero-gas-fee-gasless-chain",
       "destination": "/chain-types/zero-gas-fee-gasless-chain"
+    },
+    {
+      "source": "/developers/integrate-skale/json-rpc-api",
+      "destination": "/developers/resources/json-rpc-api"
     }
   ]
 }

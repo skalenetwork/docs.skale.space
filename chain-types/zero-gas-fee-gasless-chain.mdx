@@ -1,35 +1,37 @@
 ---
-title: "Zero Gas Fee / Gasless Chain"
-description: "Two models for eliminating user gas costs — zero gas fees with sFUEL and gasless transactions with Proof-of-Work"
+title: "Zero Gas Fee Chain"
+description: "SKALE Chain model with zero gas fees using sFUEL, optionally with gasless Proof-of-Work transactions"
 ---
 
 ## Zero Gas Fees
 
-All SKALE Chains operate with **zero gas fees** by default. The native gas token (sFUEL) has no monetary value and cannot be traded. It exists purely for EVM compatibility — wallets and tools see a gas token, but users never pay real money for transactions.
+SKALE Chains on Ethereum operate with **zero gas fees** by default. The native gas token (sFUEL) has no monetary value and cannot be traded. It exists purely for EVM compatibility — wallets and tools see a gas token, but users never pay real money for transactions.
+
+**Who pays:** sChain Owner
 
 ### Key Points
 
 - **No monetary value** — sFUEL cannot be purchased or sold
 - **EVM compatible** — Works with MetaMask, Ethers.js, Foundry, etc.
 - **Spam prevention** — Computational requirements still prevent abuse
-- **Free forever** — Zero gas fees are permanent on all SKALE Chains
+- **Zero gas fees** — Users don't pay for transactions on SKALE Ethereum chains
 
-## Gasless Transactions (Proof-of-Work)
+### Gasless Transactions (Proof-of-Work)
 
-Gasless transactions take zero fees a step further: users don't even need sFUEL in their wallet. A Proof-of-Work algorithm generates a "magic number" that validates the transaction instead of a gas payment.
+Zero gas fee chains can optionally enable gasless transactions: users don't even need sFUEL in their wallet. A Proof-of-Work algorithm generates a "magic number" that validates the transaction instead of a gas payment.
 
-### How It Works
+#### How It Works
 
 1. Client generates a random 256-bit magic number using PoW
 2. The magic number is used as the `gasPrice` in the transaction
 3. Validators verify the computational work was performed
 4. No sFUEL balance required in the user's wallet
 
-### When to Use
+#### When to Use
 
 | Approach | Requires sFUEL | Best for |
 |----------|---------------|----------|
-| Zero Gas Fees | Yes (free) | Most applications |
+| Zero Gas Fees | Yes (valueless) | Most applications |
 | Gasless (PoW) | No | True decentralization, invisible UX |
 
 <Note>
@@ -40,17 +42,19 @@ Proof-of-Work is disabled by default on credit chains.
 
 A gas chain uses a real token (SKL, ETH, USDC, etc.) as the gas token. This works like a traditional L2 — users pay per-transaction in the chosen token. Gas chains are available on SKALE Expand deployments.
 
+**Who pays:** Users
+
 ## Comparison
 
 | Feature | Zero Gas Fees | Gasless (PoW) | Gas Chain |
 |---------|--------------|---------------|-----------|
-| User pays? | No | No | Yes |
-| Requires token? | sFUEL (free) | Nothing | Gas token |
+| Who pays | sChain Owner | sChain Owner | Users |
+| Requires token? | sFUEL (valueless) | Nothing | Gas token (market value) |
 | EVM compatible? | Yes | Yes | Yes |
-| Best for | Most apps | Consumer UX | DeFi, financial |
+| Best for | Most apps on SKALE Ethereum | Consumer UX | DeFi, financial |
 
 ## Related Topics
 
-- [Credit Chain](/chain-types/credit-chain) — Prepaid credit model
+- [Credit Chain](/chain-types/credit-chain) — Prepaid credit model for SKALE Base
 - [Gas Fees](/developers/integrate-skale/gas-fees) — Full gas fee guide
 - [sFUEL Distribution](/developers/run-a-skale-chain/managing-sfuel-distribution)

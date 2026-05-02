@@ -1,56 +1,54 @@
 ---
 title: "Credit Chain"
-description: "SKALE Chain model where compute is prepaid via credits — users transact for free, chain owners buy credits"
+description: "SKALE Chain model where compute is paid via credits — developers and/or users purchase credits to transact"
 ---
 
 ## What Is a Credit Chain?
 
-A credit chain is a SKALE Chain where compute resources are prepaid through **compute credits**. The chain owner purchases credits in a simple subscription, and end users transact with **zero gas fees** — they never need to hold or spend tokens.
+A credit chain is a SKALE Chain where compute resources are paid for through **compute credits**. Developers and/or users purchase credits, and transactions deduct compute from the credit balance — no separate gas token needed.
 
-This is the recommended model for most applications: predictable costs for you, friction-free experience for your users.
+On SKALE Base Mainnet, credits use the **CREDIT** native token. SKALE Base Testnet uses a [faucet](https://base-sepolia-faucet.skale.space) instead.
 
 ## How It Works
 
 ```
-Chain owner buys credits (monthly subscription)
-  → Credits are deposited into the chain's credit pool
-    → Users send transactions freely
-      → Compute is deducted from the pool, not from users
+Developer or user buys CREDIT tokens
+  → Credits are deposited into their account
+    → Sending transactions deducts compute from credits
+      → No sFUEL or gas token required
 ```
 
-## Buying Credits
+## Buying Credits (SKALE Base Mainnet)
 
-Credits are purchased on the [SKALE Portal](https://portal.skale.space/chains):
+Credits are purchased at **[https://base.skalenodes.com/credits](https://base.skalenodes.com/credits)**:
 
-1. Go to **https://portal.skale.space/chains**
-2. Select your chain
-3. Click **Manage**
-4. Connect your wallet
-5. Choose the number of months to prepay
-6. Bridge SKL tokens if needed and confirm
+1. Check your CREDIT balance
+2. Select **Buy credits**
+3. Choose payment method — USDC or SKL
+4. Complete the purchase
 
 <Note>
-Payments are due on the 1st of each month. Prepay up to 24 months to lock in current pricing.
+Compute credits are currently only available on SKALE Base Mainnet. SKALE Base Testnet uses the faucet at https://base-sepolia-faucet.skale.space.
 </Note>
 
 ## Key Characteristics
 
-- **Users pay nothing** — all gas costs are covered by the chain's credit pool
-- **Predictable costs** — flat monthly subscription, no per-transaction fees
-- **Frictionless onboarding** — users don't need tokens, KYC, or sFUEL
-- **Credit tracking** — compute usage is deducted from the pool transparently
+- **Flexible payment** — Developers can buy credits for their users, or users can purchase their own
+- **No sFUEL needed** — credits replace the valueless gas token model
+- **Transparent balance** — credit balance is visible on the [credits page](https://base.skalenodes.com/credits)
+- **Faucet available for testnet** — no purchase needed during development
 
 ## Comparison
 
-| Feature | Credit Chain | Appchain | Gas Chain |
-|---------|-------------|----------|-----------|
-| Who pays | Chain owner | Chain owner | Users |
-| User needs tokens? | No | No | Yes (gas token) |
-| Cost model | Subscription | Subscription | Per-transaction |
-| Best for | Consumer dApps, games | Enterprise, B2B | DeFi, financial apps |
+| Feature | Credit Chain | Zero Gas Fee (sFUEL) | Gas Chain |
+|---------|-------------|---------------------|-----------|
+| Who pays | Developers and/or users | sChain Owner | Users |
+| User needs tokens? | CREDIT (purchased or from faucet) | sFUEL (valueless) | Gas token (market value) |
+| Cost model | Pay-as-you-go credits | Subscription (sChain owner) | Per-transaction |
+| Best for | SKALE Base Mainnet | SKALE on Ethereum | DeFi, financial apps |
 
 ## Related Topics
 
-- [Zero Gas Fees](/developers/integrate-skale/gas-fees) — SKALE's gas fee model
-- [Appchain](/chain-types/appchain) — Dedicated appchains
-- [Pricing and Payments](/developers/run-a-skale-chain/pricing-and-payments) — Subscription costs
+- [Gas Fees](/developers/integrate-skale/gas-fees) — SKALE's gas fee models
+- [Go Live](/get-started/quick-start/go-live) — Deploy on SKALE Base
+- [SKALE on Base](/get-started/quick-start/skale-on-base) — Chain details

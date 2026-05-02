@@ -9,9 +9,7 @@ The MPP SDK is compatible with both JavaScript and TypeScript in Node.js, Bun, a
 If you have any issues, please join us in [Discord](https://discord.gg/skale) or open an issue on [GitHub](https://github.com/skalenetwork/mpp-sdk).
 </Note>
 
-<Note>
-Code examples in this page use the exact currency identifiers configured on each supported chain, such as `USDC.e` on SKALE Base and `eUSDC` on BITE Sandbox. In your application UI, you can still present a normalized display label like `USDC` if that is clearer for users.
-</Note>
+Currency identifiers in this page use exact onchain values (e.g., `USDC.e` on SKALE Base, `eUSDC` on BITE Sandbox). In your UI you can display a normalized label like `USDC`.
 
 ## Overview
 
@@ -95,9 +93,9 @@ const mppx = Mppx.create({
 })
 ```
 
-<Note>
-`MPP_SECRET` is a server-only secret used by your MPPx backend to sign or verify payment requests. Generate a long random value for your application, store it in your server environment, and never expose it in client-side code or commit it to your repository.
-</Note>
+<Warning>
+`MPP_SECRET` is a server-only secret — generate a long random value, store it in your server environment, and never expose it in client-side code or commit it to your repository.
+</Warning>
 
 ## Supported Chains
 
@@ -126,7 +124,7 @@ Creates a payment method for MPP integration.
 
 #### Gasless Payments
 
-Enable gasless transactions using EIP-3009 or EIP-2612:
+Enable gasless transactions using EIP-3009 or EIP-2612. Users can pay without holding the native gas token (sFUEL/ETH) — transaction fees are deducted from the token being transferred.
 
 ```typescript
 extensions: { gasless: 'eip3009' }  // EIP-3009 transfer with authorization
@@ -134,25 +132,17 @@ extensions: { gasless: 'eip2612' }  // ERC-2612 permit
 extensions: { gasless: true }       // Auto-detect EIP-3009
 ```
 
-<Note>
-Gasless payments allow users to pay without holding the native gas token (sFUEL/ETH). The transaction fees are deducted from the token being transferred.
-</Note>
-
 #### Encrypted Transaction Amounts
 
-Encrypt transaction amounts onchain:
+Encrypt transaction amounts onchain using threshold encryption. Amounts are hidden in the mempool until execution, then visible on the ledger. Requires a SKALE chain with Programmable Privacy.
 
 ```typescript
 extensions: { skale: { encrypted: true } }
 ```
 
-<Note>
-Encrypted transaction amounts use threshold encryption to hide transaction amounts while maintaining verifiability. Requires a SKALE chain with Programmable Privacy.
-</Note>
-
 #### Confidential Tokens
 
-Use native confidential tokens with built-in privacy:
+Use native confidential tokens with fully shielded balances and transaction amounts that remain private even onchain. Currently available on BITE Sandbox testnet with tokens like `eUSDC`.
 
 ```typescript
 extensions: {
@@ -163,10 +153,6 @@ extensions: {
 }
 ```
 
-<Note>
-Confidential tokens are native tokens with built-in privacy features. Currently available on BITE Sandbox testnet with tokens like `eUSDC`.
-</Note>
-
 ## Payment Strategies
 
 The SDK supports various combinations of features:
@@ -176,12 +162,9 @@ The SDK supports various combinations of features:
 | skale-base | USDC.e | ✓ | Optional | No |
 | bite-sandbox | eUSDC | ✓ | Always | Yes |
 
-<Note>
-**Feature details:**
 - **Gasless**: EIP-3009 transfer with authorization, eliminating gas fees
-- **Encrypted**: Transaction "to" address and amounts are encrypted in the mempool until onchain execution, after which they become visible on the ledger
-- **Confidential Token**: Native confidential tokens (e.g., eUSDC) provide fully shielded balances and transaction amounts that remain private even onchain
-</Note>
+- **Encrypted**: Transaction "to" address and amounts encrypted in the mempool, visible on the ledger after execution
+- **Confidential Token**: Native confidential tokens (e.g., eUSDC) provide fully shielded balances and amounts that remain private even onchain
 
 ## Custom Chains
 
@@ -212,16 +195,14 @@ const method = mpp.charge({
 ```
 
 <Warning>
-Custom chain configurations support **standard ERC-20 transfers** and **EIP-3009 gasless payments** only. Encrypted transaction amounts and confidential tokens require built-in chain configurations with specific contract addresses and cannot be used with custom chains.
+Custom chains support **standard ERC-20 transfers** and **EIP-3009 gasless payments** only. Encrypted amounts and confidential tokens require built-in chain configurations with specific contract addresses.
 </Warning>
 
 ## Best Practices
 
 ### Choosing the Right Configuration
 
-<Note>
-Select the simplest configuration that meets your privacy and UX requirements. Standard transfers are fastest and most cost-effective, while full privacy configurations provide maximum confidentiality.
-</Note>
+Pick the simplest setup that meets your privacy and UX needs. Standard transfers are fastest and most cost-effective; full privacy configurations provide maximum confidentiality.
 
 ### Testing
 
@@ -230,12 +211,6 @@ Always test payment flows on testnet before mainnet deployment:
 - Use `skale-base-sepolia` or `bite-sandbox` for testing
 - Verify gasless transactions work with your token contracts
 - Test encrypted transaction decryption and retrieval
-
-### Security Considerations
-
-<Warning>
-When using server-side MPP integration, never expose your `secretKey` in client-side code. Always handle sensitive credentials in secure server environments.
-</Warning>
 
 ## Browser Compatibility
 

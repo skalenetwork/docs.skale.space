@@ -1,22 +1,66 @@
-# SKALE Network Docs
+## Foundry
 
-Version: 3
-License: [MIT License](./LICENSE)
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
+Foundry consists of:
 
-## Development
+- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+## Documentation
 
+https://book.getfoundry.sh/
+
+## Usage
+
+### Build
+
+```shell
+$ forge build
 ```
-npm i -g mint
+
+### Test
+
+```shell
+$ forge test
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Format
 
+```shell
+$ forge fmt
 ```
-mint dev
+
+### Gas Snapshots
+
+```shell
+$ forge snapshot
 ```
 
-View your local preview at `http://localhost:3000`.
+### Anvil
 
+```shell
+$ anvil
+```
+
+### Deploy
+
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
+```

@@ -65,14 +65,14 @@ module.exports = {
   },
   networks: {
     skale_testnet: {
-      url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
+      url: "https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 1444673419,
+      chainId: 324705682,
     },
     skale_mainnet: {
-      url: "https://mainnet.skalenodes.com/v1/elated-tan-skat",
+      url: "https://skale-base.skalenodes.com/v1/base",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 2046399126,
+      chainId: 1187947933,
     },
   },
   etherscan: {
@@ -82,10 +82,19 @@ module.exports = {
     customChains: [
       {
         network: "skale_testnet",
-        chainId: 1444673419,
+        chainId: 324705682,
         urls: {
-          apiURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com/api",
-          browserURL: "https://juicy-low-small-testnet.explorer.testnet.skalenodes.com",
+          apiURL: "https://base-sepolia-testnet-explorer.skalenodes.com/api",
+          browserURL: "https://base-sepolia-testnet-explorer.skalenodes.com",
+        },
+      },
+      {
+        network: "skale_mainnet",
+        chainId: 1187947933,
+        urls: {
+          apiURL: "https://skale-base-explorer.skalenodes.com/api",
+          browserURL: "https://skale-base-explorer.skalenodes.com",
+        },
         },
       },
     ],

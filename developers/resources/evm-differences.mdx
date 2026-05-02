@@ -19,6 +19,16 @@ While the execution environment mirrors Ethereum's, SKALE introduces key differe
 SKALE has multiple types of chains due to the multichain network design including appchains, credit chains, and the ability to offer chains with a gas fee if chain buyers want them.
 </Note>
 
+### Programmable Privacy
+
+**SKALE**: Native threshold encryption built into consensus enables programmable onchain confidentiality. Smart contracts control who sees what and when using encrypted transactions, conditional decryption, re-encryption, and confidential tokens — all in Solidity without a trusted third party.
+
+**Ethereum**: No native privacy. All transaction data, contract state, and token balances are fully public. Privacy requires L2s with trusted sequencers or application-level workarounds that break composability.
+
+<Note>
+Programmable Privacy is available on SKALE Base and SKALE Base Sepolia. See the [Programmable Privacy](/developers/programmable-privacy/intro) section for implementation details.
+</Note>
+
 ### Block Production & Finality
 
 **SKALE**: Target 1-second block times with instant finality. Transactions are immutable after inclusion in a single block.

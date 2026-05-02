@@ -63,18 +63,19 @@ Both layers encrypt every balance. The TE layer allows the network to verify and
 
 ## Architecture
 
-A confidential token transfer works like this:
+A confidential token transfer works like this — encryption of new balances happens inside the CTX callback, not upfront:
 
 ```
 transfer(from, to, amount)
-  → TE-encrypt (from_balance, to_balance, amount)
-  → SubmitCTX(0x1B, encryptedArgs, [TransferInfo plaintext])
-    → Consensus decrypts
-      → onDecrypt() callback
-        → Validate sufficiency
-        → _setBalance():
-            → EncryptTE(0x1D, new_balance) → _thresholdBalances
-            → EncryptECIES(0x1C, new_balance, viewerPubKey) → _userBalances
+  → SubmitCTX(0x1B, from_encBalance, to_encBalance, amount, [plaintext metadata])
+    → Validators decrypt encrypted args
+      → onDecrypt() callback called via ephemeral wallet
+        → Validate from_balance >= amount
+        → Compute new_balance_from, new_balance_to
+        → EncryptTE(0x1D, new_balance_from) → store in _thresholdBalances
+        → EncryptTE(0x1D, new_balance_to)   → store in _thresholdBalances
+        → EncryptECIES(0x1C, new_balance_from, from_viewerKey) → _userBalances
+        → EncryptECIES(0x1C, new_balance_to, to_viewerKey)     → _userBalances
 ```
 
 ## Key Contracts
@@ -95,12 +96,6 @@ transfer(from, to, amount)
 | Anyone | View encrypted ciphertext onchain | Encrypted only |
 
 A holder registers a viewer public key via `setViewerPublicKey()`. The holder can be their own viewer.
-
-## Key Behaviors
-
-- **Staleness detection** — If another CTX modified a balance between submission and execution, `onDecrypt` detects it (compares `_lastChanged` vs `submittedBlockNumber`) and resubmits with fresh encrypted balances.
-- **Callback funding** — Contract holds ETH/SFUEL for CTX callback gas. Each CTX submission transfers gas to the callback sender.
-- **Zero balances** — Also TE-encrypted (not empty bytes) to prevent information leakage via ciphertext length.
 
 ## Learn More
 
