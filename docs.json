@@ -93,7 +93,8 @@
             "group": "Privacy",
             "pages": [
               "cookbook/privacy/encrypted-transactions",
-              "cookbook/privacy/conditional-transactions"
+              "cookbook/privacy/conditional-transactions",
+              "cookbook/privacy/private-chat"
             ]
           },
           {
