@@ -23,9 +23,9 @@ echo "@skalenetwork/bite-solidity/=lib/bite-solidity/" >> remappings.txt
 ## Imports
 
 ```solidity
-import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { BITE } from "@skalenetwork/bite-solidity/contracts/BITE.sol";
 import { IBiteSupplicant }
-    from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+    from "@skalenetwork/bite-solidity/contracts/interfaces/IBiteSupplicant.sol";
 ```
 
 ## `BITE.submitCTX()`
@@ -52,11 +52,11 @@ function submitCTX(
 ### Example
 
 ```solidity
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.27;
 
-import { BITE } from "@skalenetwork/bite-solidity/BITE.sol";
+import { BITE } from "@skalenetwork/bite-solidity/contracts/BITE.sol";
 import { IBiteSupplicant }
-    from "@skalenetwork/bite-solidity/interfaces/IBiteSupplicant.sol";
+    from "@skalenetwork/bite-solidity/contracts/interfaces/IBiteSupplicant.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 contract MyContract is IBiteSupplicant {

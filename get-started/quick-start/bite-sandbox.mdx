@@ -1,36 +1,34 @@
 ---
 title: "BITE Sandbox"
-description: "BITE Sandbox Quick Start Guide"
+description: "Quick start guide for SKALE chains with Programmable Privacy"
 tag: "New"
 ---
 
 <Tip>
-Need sFUEL, USDC, or access to the private developer group? Join us in [Discord](https://discord.gg/skale) and open a support ticket.
+Need CREDITS, USDC, or access to the private developer group? Join us in [Discord](https://discord.gg/skale) and open a support ticket.
 </Tip>
 
 ## Introduction
 
 Autonomous agents can now discover each other, communicate, and move value — **for real**.
 
-This sandbox is a space to explore agent-to-agent commerce: agents paying each other, discovering services, negotiating terms, and settling value without constant human involvement.
+This guide covers getting started with Programmable Privacy features on SKALE. Encrypted Transactions and Conditional Transactions are available on **SKALE Base** (mainnet) and **SKALE Base Sepolia** (testnet). Re-encryption and Confidential Tokens are in Beta on **SKALE Base Sepolia**.
 
 ## Chain Details
 
-### BITE V2 Sandbox 2
+### SKALE Base Sepolia (Testnet)
 
 | Name | Value |
 |------|-------|
-| RPC | `https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox` |
-| Explorer | [Blockscout](https://base-sepolia-testnet-explorer.skalenodes.com:10032) |
-| Chain ID | `103698795` (Hex: `0x62e516b`) |
-| Tokens & Contracts | USDC: [0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8](https://base-sepolia-testnet-explorer.skalenodes.com:10032/address/0xc4083B1E81ceb461Ccef3FDa8A9F24F0d764B6D8) |
-| Features | **x402** Facilitator, Encrypted Transactions & Conditional Transactions (Programmable Privacy) |
-| BITE V2| [Documentation](/developers/programmable-privacy/conditional-transactions)|
-| BITE Demo| [Cookbook](/cookbook/privacy/conditional-transactions#rock-paper-scissors-with-bite-v2)|
-| Facilitator | Kobaru: https://gateway.kobaru.io |
+| RPC | `https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha` |
+| Explorer | [Blockscout](https://base-sepolia-testnet-explorer.skalenodes.com/) |
+| Chain ID | `324705682` (Hex: `0x135A9D92`) |
+| Tokens & Contracts | See [SKALE on Base](/get-started/quick-start/skale-on-base) |
+| Features | **x402** Facilitator, Encrypted Transactions, Conditional Transactions, Re-encryption, Confidential Tokens (Programmable Privacy) |
+| Faucet | [base-sepolia-faucet.skale.space](https://base-sepolia-faucet.skale.space) |
 
 <Note>
-You can also built on **SKALE Base Sepolia Testnet** if you are looking for access to Base Sepolia or more facilitators. For chain details go [here](/get-started/quick-start/skale-on-base#skale-base-testnet).
+For SKALE Base Mainnet details, see [SKALE on Base](/get-started/quick-start/skale-on-base).
 </Note>
 
 ---
@@ -39,15 +37,11 @@ You can also built on **SKALE Base Sepolia Testnet** if you are looking for acce
 
 **Q: Why is my contract failing to deploy/Out of Gas?**
 
-Solidity contracts should be compiled and deployed with version Shanghai or lower on SKALE Base.
-
-<Note>
-If you are using SKALE's BITE Sandbox, deploy contracts with EVM Version Istanbul.
-</Note>
+Solidity contracts should be compiled and deployed with EVM version **Istanbul** or lower on privacy-enabled SKALE chains.
 
 **Q: Need to add SKALE to your Wallet?**
 
-Go [here](https://base-sepolia.skalenodes.com/chains/bite-v2-sandbox) for the SKALE BITE Sandbox chain or [here](https://base-sepolia.skalenodes.com/chains/base-testnet) for SKALE's long running SKALE Base Sepolia testnet. Connect your wallet and then click "Connect to Chain" and it will automatically add the chain to your wallet for you.
+Go to [base-sepolia.skalenodes.com](https://base-sepolia.skalenodes.com/chains/base-testnet) for SKALE Base Sepolia or [base.skalenodes.com](https://base.skalenodes.com/chains/base) for SKALE Base Mainnet. Connect your wallet and click "Connect to Chain" to automatically add the chain to your wallet.
 
 ## Resources
 
@@ -56,6 +50,4 @@ Go [here](https://base-sepolia.skalenodes.com/chains/bite-v2-sandbox) for the SK
 | **x402** | [Start with x402](/get-started/agentic-builders/start-with-x402) |
 | **Programmable Privacy** | [Intro](/developers/programmable-privacy/intro) |
 | **Encrypted Transactions** | [Privacy SDK](/developers/sdks/skalenetwork-bite) |
-
-
-
+| **Conditional Transactions Cookbook** | [Rock-Paper-Scissors](/cookbook/privacy/conditional-transactions) |

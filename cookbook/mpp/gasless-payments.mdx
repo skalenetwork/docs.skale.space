@@ -15,9 +15,9 @@ Accept gasless and standard payments using the MPP SDK on SKALE. These payment m
 
 Available payment strategies:
 
-- **Standard transfers** – Users hold sFUEL for gas, pay with USDC.e
+- **Standard transfers** – Users need the native gas token (CREDIT on SKALE Base), pay with USDC.e
 - **Gasless payments** – Users pay without holding any gas tokens (EIP-3009)
-- **Encrypted amounts** – Hide transaction amounts onchain (optional)
+- **Encrypted amounts** – Hide transaction amounts during submission and mempool; amounts become visible after execution (optional)
 
 ---
 
@@ -27,7 +27,7 @@ Create a `.env` file:
 
 ```bash
 # SKALE Base RPC
-SKALE_RPC=https://mainnet.skalenodes.com/v1/lanky-ill-funny-testnet
+SKALE_RPC=https://skale-base.skalenodes.com/v1/base
 
 # Your receiving address
 RECEIVING_ADDRESS=0xYourReceivingAddress
@@ -41,7 +41,7 @@ CURRENCY=USDC.e
 
 ## Standard Payment
 
-Users need sFUEL (gas token) to send transactions:
+Users need the native gas token (CREDIT on SKALE Base) to send transactions:
 
 ```typescript
 import { mpp } from '@skalenetwork/mpp/client'
@@ -81,7 +81,7 @@ await processStandardPayment('5000000')
 
 ## Gasless Payment
 
-Users pay without holding sFUEL—fees deducted from USDC.e:
+Users pay without holding CREDIT — fees deducted from USDC.e:
 
 ```typescript
 import { mpp } from '@skalenetwork/mpp/client'
@@ -113,7 +113,7 @@ await processGaslessPayment('5000000')
 
 ## Encrypted Payments (Optional)
 
-Hide transaction amounts onchain:
+Hide transaction amounts during submission and consensus:
 
 ```typescript
 // Encrypted payment method
@@ -209,7 +209,7 @@ app.post('/api/payment', async (req, res) => {
 Use SKALE Base Sepolia testnet:
 
 ```bash
-SKALE_RPC=https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet
+SKALE_RPC=https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha
 CHAIN=skale-base-sepolia
 CURRENCY=USDC.e
 ```
@@ -249,7 +249,7 @@ try {
 ## Best Practices
 
 <Note>
-- **Standard**: Use when users already have sFUEL (fastest)
+- **Standard**: Use when users already have the native gas token (fastest)
 - **Gasless**: Best UX for new users (no gas token needed)
 - **Encrypted**: Add for sensitive transaction amounts
 </Note>
