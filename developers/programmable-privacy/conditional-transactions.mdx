@@ -120,7 +120,7 @@ The following contract lets an owner store an encrypted value and grant viewers 
 
 ```solidity
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.27;
 
 import { BITE, PublicKey }
     from "@skalenetwork/bite-solidity/contracts/BITE.sol";
@@ -295,9 +295,15 @@ function resolveAuction() external {
 function onDecrypt(bytes[] calldata decryptedArgs, bytes[] calldata) external override {
     require(_canCallOnDecrypt[msg.sender], "Unauthorized");
     _canCallOnDecrypt[msg.sender] = false;
-    // Find highest bid and award item (losing bids stay secret)
+    // Determine winner and award item.
+    // Losing bids stay undisclosed only if this callback
+    // does not emit, store, or return their plaintext.
 }
 ```
+
+<Note>
+**Losing bids stay undisclosed only if the `onDecrypt` callback does not persist, emit, or return losing bid plaintext.** Your contract logic must explicitly handle only the winning result to maintain confidentiality.
+</Note>
 
 ### Private Voting with Cascading Outcomes
 

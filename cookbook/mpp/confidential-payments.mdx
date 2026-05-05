@@ -3,12 +3,12 @@ title: "Confidential Payments"
 description: "Accept private payments using confidential tokens (eUSDC) on SKALE chains with Programmable Privacy"
 ---
 
-Accept fully confidential payments using the MPP SDK on SKALE chains with Programmable Privacy. Confidential tokens (eUSDC) provide native privacy—hiding sender, receiver, and amount onchain.
+Accept fully confidential payments using the MPP SDK on SKALE chains with Programmable Privacy. Confidential tokens (eUSDC) provide native privacy — hiding sender, receiver, and amount onchain.
 
 ## Prerequisites
 
 - Node.js, Bun, or pnpm installed
-- SKALE chain with Programmable Privacy access (BITE Sandbox)
+- SKALE chain with Programmable Privacy access (SKALE Base Sepolia)
 - eUSDC tokens for testing
 - Understanding of confidential tokens vs standard tokens
 
@@ -28,14 +28,14 @@ Confidential token features:
 Create a `.env` file:
 
 ```bash
-# BITE Sandbox RPC
-SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
+# SKALE Base Sepolia RPC
+SKALE_RPC=https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha
 
 # Your receiving address
 RECEIVING_ADDRESS=0xYourReceivingAddress
 
 # Chain configuration
-CHAIN=bite-sandbox
+CHAIN=skale-base-sepolia
 CURRENCY=eUSDC
 ```
 
@@ -59,7 +59,7 @@ const walletClient = createWalletClient({
 
 // Create confidential payment method
 const confidentialPayment = mpp.charge({
-  chain: 'bite-sandbox',
+  chain: 'skale-base-sepolia',
   currency: 'eUSDC',
   extensions: {
     skale: { confidentialToken: true }
@@ -90,7 +90,7 @@ Combine gasless UX with full privacy:
 
 ```typescript
 const gaslessConfidential = mpp.charge({
-  chain: 'bite-sandbox',
+  chain: 'skale-base-sepolia',
   currency: 'eUSDC',
   extensions: {
     skale: { confidentialToken: true },
@@ -119,7 +119,7 @@ Enable all privacy layers:
 
 ```typescript
 const fullPrivacy = mpp.charge({
-  chain: 'bite-sandbox',
+  chain: 'skale-base-sepolia',
   currency: 'eUSDC',
   extensions: {
     skale: { 
@@ -156,7 +156,7 @@ import express from 'express'
 const app = express()
 
 const confidentialMethod = mpp.charge({
-  chain: 'bite-sandbox',
+  chain: 'skale-base-sepolia',
   currency: 'eUSDC',
   extensions: {
     skale: { confidentialToken: true },
@@ -218,19 +218,19 @@ async function verifyConfidentialPayment(txHash: string) {
 
 ---
 
-## Testing on the BITE Sandbox
+## Testing on SKALE Base Sepolia
 
-The BITE Sandbox is the testnet for confidential tokens:
+SKALE Base Sepolia supports confidential tokens for testing:
 
 ```bash
-SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
-CHAIN=bite-sandbox
+SKALE_RPC=https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha
+CHAIN=skale-base-sepolia
 CURRENCY=eUSDC
 ```
 
 ```typescript
 const testConfidential = mpp.charge({
-  chain: 'bite-sandbox',
+  chain: 'skale-base-sepolia',
   currency: 'eUSDC',
   extensions: {
     skale: { confidentialToken: true },
@@ -251,9 +251,9 @@ const tx = await testConfidential.createTransfer({
 
 | Feature | Standard | Gasless | Encrypted | Confidential |
 |---------|----------|---------|-----------|------------|
-| Chain | SKALE Base | SKALE Base | SKALE Base | BITE Sandbox |
+| Chain | SKALE Base | SKALE Base | SKALE Base | SKALE Base Sepolia |
 | Token | USDC.e | USDC.e | USDC.e | eUSDC |
-| Gas token | sFUEL required | Not needed | sFUEL required | Not needed (gasless) |
+| Gas token | CREDIT required | Not needed | CREDIT required | Not needed (gasless) |
 | Amount visible | ✓ | ✓ | Hidden | Hidden |
 | Native privacy | - | - | - | ✓ |
 
@@ -291,7 +291,7 @@ try {
 **Important considerations:**
 - Confidential tokens only work on chains with Programmable Privacy
 - eUSDC is different from USDC.e (different addresses)
-- Always test on the BITE Sandbox first
+- Always test on SKALE Base Sepolia first
 - Verify chain supports Programmable Privacy before deploying
 </Warning>
 

@@ -34,7 +34,7 @@ SKALE is the only EVM blockchain where privacy capable of maintaining compliance
 Other approaches to blockchain privacy come with tradeoffs you don't want:
 
 - **ZK proofs** — Powerful, but not composable. Every private operation needs a new circuit. Developers need specialized cryptography knowledge.
-- **FHE** — Computes on encrypted data, but at prohibitive cost. Orders of magnitude slower than plaintext execution. Impractical for anything beyond toy workloads.
+- **FHE** — Computes on encrypted data, but introduces significant computational overhead compared to plaintext execution. SKALE Programmable Privacy takes a different approach: threshold encryption for pre-execution privacy, programmable decryption, and selective disclosure — all with standard EVM execution performance.
 - **TEEs** — Trusted hardware introduces a centralized trust assumption. If the hardware is compromised, privacy is gone.
 - **L2 sequencers** — Privacy via centralized sequencer is just a promise not to look. There's no cryptographic enforcement.
 - **Separate privacy chains** — Isolated ecosystems that can't compose with the rest of DeFi.

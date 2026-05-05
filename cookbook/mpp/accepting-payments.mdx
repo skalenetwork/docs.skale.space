@@ -8,7 +8,7 @@ Accept payments using the MPP (Machine Payments Protocol) SDK on SKALE. MPP enab
 ## Prerequisites
 
 - Node.js, Bun, or pnpm installed
-- A SKALE Chain endpoint (SKALE Base or BITE Sandbox)
+- A SKALE Chain endpoint (SKALE Base or SKALE Base Sepolia)
 - Understanding of MPP protocol
 - USDC.e or eUSDC tokens for testing
 
@@ -29,13 +29,13 @@ Create a `.env` file:
 
 ```bash
 # SKALE Chain RPC
-SKALE_RPC=https://mainnet.skalenodes.com/v1/lanky-ill-funny-testnet
+SKALE_RPC=https://skale-base.skalenodes.com/v1/base
 
 # Your receiving address
 RECEIVING_ADDRESS=0xYourReceivingAddress
 
 # Chain configuration
-CHAIN=skale-base  # or 'bite-sandbox' for confidential tokens
+CHAIN=skale-base  # or 'skale-base-sepolia' for confidential tokens
 CURRENCY=USDC.e     # or 'eUSDC' for confidential tokens
 ```
 
@@ -164,14 +164,14 @@ async function processPrivatePayment(amount: string) {
 
 ## Confidential Token Payments
 
-Use native confidential tokens (eUSDC) on the BITE Sandbox for full privacy:
+Use native confidential tokens (eUSDC) on SKALE Base Sepolia for full privacy:
 
 ```typescript
 import { mpp } from '@skalenetwork/mpp/client'
 
 // Confidential token with gasless + encryption
 const confidentialPayment = mpp.charge({
-  chain: 'bite-sandbox',
+  chain: 'skale-base-sepolia',
   currency: 'eUSDC',
   extensions: {
     skale: { 
@@ -299,13 +299,13 @@ Test payments on testnet before mainnet:
 
 ```bash
 # SKALE Base Sepolia
-SKALE_RPC=https://testnet.skalenodes.com/v1/lanky-ill-funny-testnet
+SKALE_RPC=https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha
 CHAIN=skale-base-sepolia
 CURRENCY=USDC.e
 
-# BITE Sandbox
-SKALE_RPC=https://testnet.skalenodes.com/v1/bite-sandbox
-CHAIN=bite-sandbox
+# SKALE Base Sepolia
+SKALE_RPC=https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha
+CHAIN=skale-base-sepolia
 CURRENCY=eUSDC
 ```
 

@@ -18,7 +18,7 @@ A full-featured encrypted transfer application that:
 - Shows real-time pending encrypted transactions
 - Displays decrypted results after consensus finality
 - Handles committee rotations seamlessly
-- Provides complete privacy for sensitive transfers
+- Provides pre-execution privacy for sensitive transfers — data is hidden until consensus finality
 
 ### Prerequisites
 
@@ -47,7 +47,7 @@ Create a new file `contracts/SimpleTransferDemo.sol`:
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.27;
 
 contract SimpleTransferDemo {
     mapping(address => uint256) public balances;

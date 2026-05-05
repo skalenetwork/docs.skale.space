@@ -26,7 +26,7 @@ The game implements a **commit-reveal pattern with automatic decryption** using 
 
 
 <Note title="Before You Start">
-This tutorial requires access to a CTX-enabled SKALE chain. The demo is configured for the BITE V2 Sandbox 2. Check [Programmable Privacy](/developers/programmable-privacy/intro) for current feature availability.
+This tutorial requires access to a CTX-enabled SKALE chain (SKALE Base or SKALE Base Sepolia). Check [Programmable Privacy](/developers/programmable-privacy/intro) for current feature availability.
 </Note>
 
 **Prerequisites:**
@@ -81,7 +81,7 @@ The deployment script deploys both the MockSKL token and the RockPaperScissors g
 
 ```bash
 # Set your environment variables
-export RPC_URL="https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2"
+export RPC_URL="https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha"
 export PRIVATE_KEY="0x..."  # Your wallet private key
 
 # From the rock-paper-scissors/contracts directory
@@ -403,7 +403,7 @@ import { BITE } from '@skalenetwork/bite'
 const encryptMove = async (move: Move): Promise<string> => {
   // Convert move number to hex (1 -> "01", 2 -> "02", 3 -> "03")
   const moveHex = move.toString(16).padStart(2, '0')
-  const rpcUrl = 'https://base-sepolia-testnet.skalenodes.com/v1/bite-v2-sandbox-2'
+  const rpcUrl = 'https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha'
   const bite = new BITE(rpcUrl)
   const encryptedMove = await bite.encryptMessage(moveHex)
   return encryptedMove
@@ -559,7 +559,7 @@ npm run dev
 
 Open your browser to `http://localhost:5173` and:
 
-1. **Connect Wallet** - Connect your wallet to the BITE V2 Sandbox 2 network
+1. **Connect Wallet** - Connect your wallet to the SKALE Base Sepolia network
 2. **Get Test Tokens** - Visit the faucet to get gas tokens 
 3. **Play a Game** - Select your move, set wager amount, and create
 

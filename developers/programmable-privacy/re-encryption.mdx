@@ -9,7 +9,7 @@ description: "Encrypt for processing, decrypt for viewing. Threshold key for con
 
 ## Why Re-encryption?
 
-Smart contracts often need to store private data onchain — balances, game state, personal records — but public blockchains expose everything. Re-encryption solves this by letting contracts encrypt data onchain using **either** the network's threshold key (for validator-driven processing) **and/or** a specific viewer's public key (for private off-chain access). No plaintext is ever exposed, not even to validators.
+Smart contracts often need to store private data onchain — balances, game state, personal records — but public blockchains expose everything. Re-encryption solves this by letting contracts encrypt data onchain using **either** the network's threshold key (for validator-driven processing) **and/or** a specific viewer's public key (for private off-chain access). No single validator can decrypt data. Plaintext is only materialized during authorized threshold-decryption execution and delivered to the designated contract callback. Contracts should avoid emitting, storing, or returning plaintext unless disclosure is intended.
 
 ## What Is Re-encryption?
 
