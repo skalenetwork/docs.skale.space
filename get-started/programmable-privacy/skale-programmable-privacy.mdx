@@ -36,10 +36,9 @@ Other approaches to blockchain privacy come with tradeoffs you don't want:
 - **ZK proofs** — Powerful, but not composable. Every private operation needs a new circuit. Developers need specialized cryptography knowledge.
 - **FHE** — Computes on encrypted data, but introduces significant computational overhead compared to plaintext execution. SKALE Programmable Privacy takes a different approach: threshold encryption for pre-execution privacy, programmable decryption, and selective disclosure — all with standard EVM execution performance.
 - **TEEs** — Trusted hardware introduces a centralized trust assumption. If the hardware is compromised, privacy is gone.
-- **L2 sequencers** — Privacy via centralized sequencer is just a promise not to look. There's no cryptographic enforcement.
 - **Separate privacy chains** — Isolated ecosystems that can't compose with the rest of DeFi.
 
-**SKALE's approach is different.** Threshold encryption is baked into the consensus layer. The validator set jointly holds decryption keys via distributed key generation (DKG). No single party can decrypt. No circuits to write. No hardware to trust. Just Solidity smart contracts that decide what stays private.
+**SKALE's approach is different.** Threshold encryption is baked into the consensus layer. Validators jointly hold decryption keys — no single party can decrypt on their own. Privacy is enforced by cryptography, not by trust or custom code. No circuits to write. No hardware to trust. Just standard smart contracts on a chain where the protocol handles what stays private and who gets to see it.
 
 ### What You Can Build
 
