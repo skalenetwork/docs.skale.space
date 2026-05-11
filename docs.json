@@ -281,6 +281,7 @@
           {
             "group": "Network Releases",
             "pages": [
+              "validators/releases/4-0-2-upgrade",
               "validators/releases/4-0-1-upgrade",
               "validators/releases/4-0-0-upgrade",
               "validators/releases/3-1-2-upgrade",
