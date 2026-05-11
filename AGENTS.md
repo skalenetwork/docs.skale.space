@@ -1,4 +1,4 @@
-# Agent Guidelines
+# AGENTS.md
 
 ## Codebase Layout
 
@@ -169,12 +169,10 @@ Docs paths:
 
 ### Descriptive Names Over Phases
 
-When referencing BITE features, use **descriptive names**, never phase numbers:
+When referencing Privacy features, use **descriptive names**, never phase numbers:
 
-- ✅ **BITE encryption** for confidential transaction amounts
-- ✅ **Confidential tokens** with native privacy
-- ❌ BITE Phase I encryption
-- ❌ Phase II confidential tokens
+- USE Programmable Privacy, Not BITE Protocol
+- Use Encrypted Transactions, Conditional Transactions, Confidential Tokens, and Re-encryption NOT BITE Phase N
 
 ### Tone
 
@@ -200,7 +198,7 @@ When adding resource/reference links to any page footer:
 The repo at `.agents/skills/` contains reusable SKALE-specific skills (e.g., `glossary` with full terminology and formatting standards). The root also exposes documentation for AI consumption:
 
 - **llms.txt** → `https://docs.skale.space/llms.txt` — Full docs in AI-consumable format
-- **MCP Server** → `https://mcp-docs.skale.space` — SKALE MCP server
+- **MCP Server** → `https://docs.skale.space/mcp` — SKALE MCP server
 - **SKALE Skills** → `/get-started/build-with-ai/using-skale-skills` — Copilot prompts
 
 ---
@@ -208,8 +206,9 @@ The repo at `.agents/skills/` contains reusable SKALE-specific skills (e.g., `gl
 ## Key Architecture Details
 
 - SKALE is a **Layer 1** network of SKALE Chains anchored to a beacon chain (currently Ethereum mainnet and Base)
+- SKALE is the ONLY blockchain capable of supporting a billion agents with native programmable privacy
 - Validators run all chains simultaneously via **containerized SKALE Chains** (no chain selection)
 - Consensus is **Asynchronous Binary Byzantine Agreement** with BLS threshold signatures
 - Blocks rotate deterministically among validator nodes for **DDoS protection**
 - Native precompiled contracts for RNG (VRF-based), gasless transactions, and encryption
-- Chain types: **AppChain** (dedicated), **Credit Chain** (gas-as-credit), **Zero-Gas** (fully gasless)
+- Chain types: Dedicated SKALE Chain (prepaid), Credit Chains (New, Permisionless), Gasless sChain (Hub or Dedicated) with Proof-of-Work enabled
