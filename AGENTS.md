@@ -63,7 +63,7 @@
 
 ## Product Pillars (What's Important)
 
-### 🧩 Programmable Privacy
+### Programmable Privacy
 
 SKALE's **primary differentiator** — the only EVM blockchain with compliance-capable privacy built into consensus, not appended as a layer. Four features:
 
@@ -74,7 +74,7 @@ SKALE's **primary differentiator** — the only EVM blockchain with compliance-c
 | **Confidential Tokens** | ERC-20 tokens with fully encrypted balances. Privacy-preserving DeFi, native. |
 | **Re-encryption** | Encrypt for specific viewers. Selective disclosure via threshold + ECIES encryption. |
 
-Powered by **BITE** (Blockchain Integrated Threshold Encryption) — threshold encryption in the consensus layer via DKG/BLS. No ZK circuits, no TEEs, no trusted third parties.
+Powered by Integrated Threshold Encryption — threshold encryption in the consensus layer via DKG/BLS. No ZK circuits, no TEEs, no trusted third parties.
 
 Docs paths:
 - `/get-started/programmable-privacy/skale-programmable-privacy` — Introduction
@@ -82,7 +82,7 @@ Docs paths:
 - `/developers/programmable-privacy/confidential-tokens` — Encrypted balance tokens
 - `/cookbook/privacy/encrypted-transactions` — Walkthrough
 
-### 🤖 Agentic Commerce
+### Agentic Commerce
 
 SKALE positions as **the economic layer for autonomous agents**. Key protocols:
 
@@ -100,7 +100,7 @@ Docs paths:
 - `/cookbook/x402/facilitator` — Run the settlement layer
 - `/get-started/agentic-builders/start-with-erc-8004` — Agent identity
 
-### 💸 Cost-Effective Compute & UX (Zero Gas Fees)
+### Cost-Effective Compute & UX (Zero Gas Fees)
 
 Zero gas fees are a **product feature**, not just a cost optimization. End users never hold gas tokens, never top up, never think about gas. Powered by:
 - **EIP-3009** `TransferWithAuthorization` — gasless meta-transactions
@@ -115,7 +115,7 @@ Docs paths:
 - `/chain-types/zero-gas-fee-gasless-chain` — Fully gasless configuration
 - `/cookbook/mpp/gasless-payments` — Gasless MPP payments guide
 
-### 📈 Horizontal Scalability
+### Horizontal Scalability
 
 SKALE scales by adding more chains, not by making a single chain bigger. Each **SKALE Chain** is an independent Layer 1 with dedicated validators. Validators run **every** chain simultaneously via containerization — no chain selection games.
 
@@ -131,7 +131,7 @@ Docs paths:
 - `/developers/skale-bridge/messaging-layer/message-proxy` — Cross-chain messaging
 - `/developers/run-a-skale-chain/customize-schain` — Customization
 
-### 🔧 Enhanced EVM
+### Enhanced EVM
 
 SKALE extends the EVM with native features no other chain provides, deployable via precompiled contracts — no oracles, no middleware:
 
@@ -140,8 +140,7 @@ SKALE extends the EVM with native features no other chain provides, deployable v
 | **Native RNG** | VRF-based verifiable random numbers via precompile. No oracle dependency. |
 | **Filestorage** | Onchain file storage precompile — store and retrieve data directly in smart contracts. |
 | **IMA Bridge** | Trustless BLS-threshold cross-chain bridge for assets, messages, and custom contract calls between SKALE ↔ Ethereum ↔ SKALE. |
-| **Gasless Precompile** | Execute transactions without gas via `Gasless` precompile — agents and users transact freely. |
-| **BITE Encryption** | Threshold-encrypted transactions via precompiled contracts — privacy without custom compilers. |
+| **Programmable Privacy** | Threshold-encrypted transactions via precompiled contracts — privacy without custom compilers. |
 
 Docs paths:
 - `/cookbook/native-features/rng-get-random-number` — RNG guide
