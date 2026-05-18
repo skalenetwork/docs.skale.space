@@ -130,7 +130,8 @@
             "group": "AI Agents",
             "pages": [
               "cookbook/agents/build-an-agent",
-              "cookbook/agents/open-wallet-skale-cli"
+              "cookbook/agents/open-wallet-skale-cli",
+              "cookbook/agents/openfort-backend-wallet"
             ]
           },
           {
