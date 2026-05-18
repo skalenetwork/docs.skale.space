@@ -1,0 +1,302 @@
+---
+title: "Use Openfort Backend Wallets"
+description: "Create and operate server-side wallets for agents and automation on SKALE with the Openfort Node SDK"
+---
+
+## Use Openfort Backend Wallets
+
+[Openfort](https://www.openfort.io) backend wallets are developer-controlled EOAs whose private keys are held by Openfort. Your server calls a typed SDK to sign hashes, messages, EIP-712 typed data, and transactions — the key never leaves Openfort's infrastructure. This makes them a clean fit for autonomous agents, treasuries, and any server-side automation on SKALE.
+
+<Note>
+Openfort's Account Abstraction features (paymasters, EIP-7702 delegated accounts) are not currently available on SKALE Chains. This guide uses the EOA signing path: `account.signTransaction(...)` followed by `eth_sendRawTransaction` via viem. Gas on SKALE Base is paid in CREDIT — fund the wallet once and it can transact freely.
+</Note>
+
+## Prerequisites
+
+- Node.js 18 or higher
+- An Openfort account ([dashboard.openfort.io](https://dashboard.openfort.io))
+- A SKALE chain endpoint — this guide uses SKALE Base Sepolia (see [Connect to SKALE](/developers/integrate-skale/connect-to-skale))
+- CREDIT on the wallet to pay for transactions — for testnet, the [SKALE Base Sepolia faucet](https://base-sepolia-faucet.skale.space)
+
+## Overview
+
+| Wallet type           | Control                     | Best for                                           |
+| --------------------- | --------------------------- | -------------------------------------------------- |
+| **Backend wallet**    | Developer (server-side API) | Agents, treasury, automation, server signing       |
+| **Embedded wallet**   | End user (auth + recovery)  | Consumer apps where the user holds the keys        |
+
+Backend wallets give you programmatic signing without operating an HSM or rolling your own KMS. The Openfort Node SDK exposes `sign`, `signMessage`, `signTypedData`, and `signTransaction` directly on the account object returned by `create()`.
+
+## Implementation
+
+<Steps>
+    <Step title="Install dependencies">
+        ```bash
+        npm install @openfort/openfort-node viem dotenv
+        ```
+    </Step>
+
+    <Step title="Configure environment variables">
+        From the [Openfort dashboard](https://dashboard.openfort.io), grab a secret API key (`sk_test_...` or `sk_live_...`) and generate a wallet secret. The wallet secret is a base64-encoded EC P-256 private key — Openfort holds the matching public key to verify your signing requests.
+
+        Create a `.env` file:
+
+        ```bash
+        OPENFORT_API_KEY=sk_test_...
+        OPENFORT_WALLET_SECRET=...
+        OPENFORT_ACCOUNT_ID=     # leave blank for now; you'll fill it in after step 4
+        ```
+
+        <Note>
+        Never commit the wallet secret. It authenticates every backend wallet write operation — treat it like a root credential.
+        </Note>
+    </Step>
+
+    <Step title="Define the SKALE chain">
+        Create `chain.ts`:
+
+        ```typescript
+        import { defineChain } from "viem";
+
+        export const skaleBaseSepolia = defineChain({
+          id: 324705682,
+          name: "SKALE Base Sepolia",
+          nativeCurrency: { name: "Credits", symbol: "CREDIT", decimals: 18 },
+          rpcUrls: {
+            default: {
+              http: ["https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha"],
+            },
+          },
+          blockExplorers: {
+            default: {
+              name: "SKALE Base Sepolia Explorer",
+              url: "https://base-sepolia-testnet-explorer.skalenodes.com",
+            },
+          },
+          testnet: true,
+        });
+        ```
+
+        For mainnet, swap `id: 1187947933`, `rpcUrls.default.http: ["https://skale-base.skalenodes.com/v1/base"]`, and `testnet: false`.
+    </Step>
+
+    <Step title="Create a backend wallet">
+        Create `create-wallet.ts`:
+
+        ```typescript
+        import "dotenv/config";
+        import Openfort from "@openfort/openfort-node";
+
+        const openfort = new Openfort(process.env.OPENFORT_API_KEY!, {
+          walletSecret: process.env.OPENFORT_WALLET_SECRET!,
+        });
+
+        const account = await openfort.accounts.evm.backend.create();
+        console.log("Account ID:    ", account.id);
+        console.log("Account address:", account.address);
+        ```
+
+        Run it:
+
+        ```bash
+        npx tsx create-wallet.ts
+        ```
+
+        Two things to record from the output:
+
+        - **Address** (`0x…`) — where you'll send CREDIT in the next step.
+        - **Account ID** (`acc_…`) — the stable identifier for this wallet across runs. Paste it into `OPENFORT_ACCOUNT_ID` in your `.env`. Subsequent scripts retrieve the same wallet via `openfort.accounts.evm.backend.get({ id: process.env.OPENFORT_ACCOUNT_ID })` — without it, every run would create a new wallet.
+
+        You can also find the ID later via `openfort.accounts.evm.backend.list()` or by looking the wallet up in the [Openfort dashboard](https://dashboard.openfort.io).
+    </Step>
+
+    <Step title="Fund the wallet with CREDIT">
+        On testnet, request CREDIT for the address at the [SKALE Base Sepolia faucet](https://base-sepolia-faucet.skale.space). On mainnet, buy CREDIT at [base.skalenodes.com/credits](https://base.skalenodes.com/credits) and transfer to the wallet address.
+    </Step>
+
+    <Step title="Sign and broadcast a transaction">
+        Create `send-transaction.ts`:
+
+        ```typescript
+        import "dotenv/config";
+        import Openfort from "@openfort/openfort-node";
+        import {
+          createPublicClient,
+          http,
+          parseEther,
+          type TransactionSerializedEIP1559,
+        } from "viem";
+        import { skaleBaseSepolia } from "./chain";
+
+        const openfort = new Openfort(process.env.OPENFORT_API_KEY!, {
+          walletSecret: process.env.OPENFORT_WALLET_SECRET!,
+        });
+
+        const publicClient = createPublicClient({
+          chain: skaleBaseSepolia,
+          transport: http(),
+        });
+
+        // Reuse the wallet created in the previous step (ID is in .env).
+        const account = await openfort.accounts.evm.backend.get({
+          id: process.env.OPENFORT_ACCOUNT_ID!,
+        });
+
+        const nonce = await publicClient.getTransactionCount({
+          address: account.address,
+        });
+        const { maxFeePerGas, maxPriorityFeePerGas } =
+          await publicClient.estimateFeesPerGas();
+
+        const signedTx = await account.signTransaction({
+          to: "0x000000000000000000000000000000000000dEaD",
+          value: parseEther("0.0001"),
+          nonce,
+          gas: 21000n,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          chainId: skaleBaseSepolia.id,
+        });
+
+        const hash = await publicClient.sendRawTransaction({
+          serializedTransaction: signedTx as TransactionSerializedEIP1559,
+        });
+        console.log("Tx hash:", hash);
+        console.log(
+          "Explorer:",
+          `${skaleBaseSepolia.blockExplorers.default.url}/tx/${hash}`,
+        );
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        console.log("Mined in block:", receipt.blockNumber, "status:", receipt.status);
+        ```
+
+        `account.signTransaction(...)` returns a `0x02...`-prefixed serialized EIP-1559 transaction — the same wire format every Ethereum client produces. *Broadcasting* means submitting that signed payload to the network over JSON-RPC (`eth_sendRawTransaction`) so validators see it, validate it, and include it in a block. The signature proves the wallet authorized the transaction; broadcasting is what puts it onchain. viem's `sendRawTransaction` does the JSON-RPC call for you.
+
+        The explorer link the script prints is your own verification — open it and you'll see the transaction, the signer address, the value, and the block it was included in.
+    </Step>
+
+    <Step title="Sign messages and EIP-712 typed data">
+        The same account exposes `signMessage` (EIP-191) and `signTypedData` (EIP-712), useful for agent attestations and offchain auth:
+
+        ```typescript
+        const signature = await account.signMessage({
+          message: "agent-id:42 acting on behalf of user:alice",
+        });
+
+        const typedSignature = await account.signTypedData({
+          domain: { name: "MyApp", version: "1", chainId: skaleBaseSepolia.id },
+          types: {
+            Order: [
+              { name: "from", type: "address" },
+              { name: "amount", type: "uint256" },
+            ],
+          },
+          primaryType: "Order",
+          message: { from: account.address, amount: 1000n },
+        });
+        ```
+    </Step>
+</Steps>
+
+## Confine the wallet with a policy
+
+When a backend wallet drives an agent, the SDK credentials sit on a server the agent has access to. A policy turns the Openfort API itself into a guardrail: signing requests that don't match an allowlist are rejected server-side, regardless of what the agent code asks for.
+
+<Note>
+Openfort's `evmNetwork` policy criterion is currently limited to chains where Openfort runs Account Abstraction — SKALE chain IDs aren't accepted there yet. Use the chain-agnostic criteria (`evmAddress`, `ethValue`, `evmData`) instead, which describe the transaction's content rather than the network. Your code already pins the chain via `defineChain`, so the agent can't redirect to another network without changing your code.
+</Note>
+
+Create `policy.ts`:
+
+```typescript
+import "dotenv/config";
+import Openfort from "@openfort/openfort-node";
+import { parseEther } from "viem";
+
+const openfort = new Openfort(process.env.OPENFORT_API_KEY!, {
+  walletSecret: process.env.OPENFORT_WALLET_SECRET!,
+});
+
+const ALLOWED_RECIPIENT = "0x0000000000000000000000000000000000000001";
+
+// Account-scoped policy: rules are evaluated in order; the first match wins.
+const policy = await openfort.policies.create({
+  scope: "account",
+  accountId: "acc_...",         // the backend wallet you want to confine
+  description: "Agent allowlist: single recipient, value <= 0.001 ETH",
+  enabled: true,
+  rules: [
+    {
+      action: "accept",
+      operation: "signEvmTransaction",
+      criteria: [
+        {
+          type: "evmAddress",
+          operator: "in",
+          addresses: [ALLOWED_RECIPIENT],
+        },
+        {
+          type: "ethValue",
+          operator: "<=",
+          ethValue: parseEther("0.001").toString(),
+        },
+      ],
+    },
+    // Default deny — anything not matched above is rejected.
+    {
+      action: "reject",
+      operation: "signEvmTransaction",
+      criteria: [],
+    },
+  ],
+});
+
+console.log("Policy:", policy.id);
+```
+
+Once the script runs, the policy is visible in the [Openfort dashboard](https://dashboard.openfort.io) — same place you'd inspect it, edit it, or disable it without code.
+
+**Dry-run before deploying.** `openfort.policies.evaluate()` reports what the policy would decide for a hypothetical operation without signing anything:
+
+```typescript
+const decision = await openfort.policies.evaluate({
+  operation: "signEvmTransaction",
+  accountId: "acc_...",
+  payload: {
+    chainId: skaleBaseSepolia.id,
+    to: ALLOWED_RECIPIENT,
+    value: parseEther("0.0005").toString(),
+  },
+});
+console.log(decision.allowed, decision.reason, decision.matchedRuleId);
+```
+
+**Enforcement.** With the policy active, `account.signTransaction(...)` calls that violate the rules fail with a `Forbidden` API error before any signature is produced. The agent cannot route around it.
+
+| Criterion type        | What it checks                                                   |
+| --------------------- | ---------------------------------------------------------------- |
+| `evmAddress`          | The transaction's `to` against an allow/deny list                |
+| `ethValue`            | Native value (wei) against a numeric bound                       |
+| `evmData`             | Calldata against a pattern (e.g. specific function selectors)    |
+| `evmMessage`          | `signEvmMessage` text against an RE2 regex                       |
+| `evmTypedDataField`   | EIP-712 field values for `signEvmTypedData`                      |
+
+A common pattern is one policy per agent role: a "settlement" wallet allowlists the payment contract, a "gas-refill" wallet allowlists a single treasury address, and so on. Update or disable a policy at any time via `openfort.policies.update(id, ...)`.
+
+## What you've built
+
+A SKALE-connected agent or service can now:
+
+- Create a wallet on demand via the Openfort API
+- Sign and broadcast transactions on SKALE using standard EIP-1559 RLP — the same wire format every Ethereum client uses
+- Sign offchain messages and EIP-712 payloads for attestations or session auth
+- Operate under a policy that rejects out-of-bounds signing requests server-side, before any signature is produced
+
+Each backend wallet is a standalone EOA — spin up one per agent, per tenant, or per workflow, each with its own policy.
+
+## Next steps
+
+- [Openfort Node SDK](https://github.com/openfort-xyz/openfort-node) — full SDK reference, including signing policies and key rotation
+- [SKALE Chains](/developers/resources/skale-chains) — chain IDs and RPC endpoints for every active SKALE Chain
+- [Build an Agent](/cookbook/agents/build-an-agent) — pair a backend wallet with x402 payments for autonomous services
