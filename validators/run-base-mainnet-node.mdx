@@ -12,11 +12,11 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
    **Obtain Ethereum Software Wallet or Hardware wallet**
 
    Get a Ledger, Hardware or Software wallet ready like Metamask/Portis/Bitski/Torus/myetherwallet.
-   This wallet will be used for receiving delegation, bounties, and self delegating.
+   This wallet will be used for receiving bounties.
 
    **Fund Validator Wallet with ETH (on Base)**
 
-   Be ready to have some ETH on Base to accept delegations and link your validator supernode.
+   Be ready to have some ETH on Base to link your validator supernode.
    These are transactions with SKALE Manager deployed on Base Mainnet, and therefore require ETH on Base.
 
    *Minimum ETH: 1.0*
@@ -30,8 +30,7 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
    **Decide your commission fee**
 
    Decide on your commission fee. This cannot be changed once it is set. To set a new commission fee, you'll have to register a new validator.
-   This new validator would have to link supernodes and accept delegations for it (old validator supernodes and delegations cannot be rolled into a
-   new validator commission fee).
+   This new validator would have to link supernodes (old validator supernodes cannot be rolled into a new validator commission fee).
 
    _Reference Documents_
    - [Validator & Token Economics](https://skale.network/blog/validator-economics)
@@ -39,14 +38,11 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
 
 2. **Install SKALE Validator CLI**
 
-   SKALE Validator CLI is the validator client interface for registering a new validator into network or handling additional
-   delegation services where validators can self delegate or token holders can delegate to a validator. These are the type of
+   SKALE Validator CLI is the validator client interface for registering a new validator into the network. These are the type of
    operations that can be done with the Validator CLI:
 
-   - Register Validator (Set Commission Rate or Minimum delegation amount)
-   - Accept pending delegations
+   - Register Validator (Set Commission Rate)
    - Link all validator supernode addresses to a validator wallet address
-   - Request or cancel a delegation
 
    [See the SKALE Validator CLI documentation](/validators/validator-cli/overview)
 
@@ -115,7 +111,7 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
    </Warning>
 
    ```shell
-   sk-val validator register -n [NAME] -d [DESCRIPTION] -c [COMMISSION_RATE] --min-delegation [MIN_DELEGATION]
+   sk-val validator register -n [NAME] -d [DESCRIPTION] -c [COMMISSION_RATE]
    ```
 
    Required arguments:
@@ -123,7 +119,6 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
    - `--name/-n` - Validator name
    - `--description/-d` - Validator description (preferably organization info)
    - `--commission-rate/-c` - Commission rate (percent %)
-   - `--min-delegation` - Validator minimum delegation amount
 
    Optional arguments:
 

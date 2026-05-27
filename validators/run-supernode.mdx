@@ -12,11 +12,11 @@ description: Setup Process for new SKALE Validator
    **Obtain Ethereum Software Wallet or Hardware wallet**
 
    Get a Ledger, Hardware or Software wallet ready like Metamask/Portis/Bitski/Torus/myetherwallet.
-   This wallet will be used for receiving delegation, bounties, and self delegating.
+   This wallet will be used for receiving bounties.
 
    **Fund Validator Wallet with ETH**
 
-   Be ready to have some ETH to accept delegations and link your validator supernode.
+   Be ready to have some ETH to link your validator supernode.
    Remember these are transactions with SKALE Manager on Ethereum, and therefore require ETH.
 
    *Minimum ETH: 1.0*
@@ -30,8 +30,7 @@ description: Setup Process for new SKALE Validator
    **Decide your commission fee**
 
    Decide on your commission fee. This cannot be changed once it is set. To set a new commission fee, you'll have to register a new validator.
-   This new validator would have to link supernodes and accept delegations for it (old validator supernodes and delegations cannot be rolled into a
-   new validator commission fee).
+   This new validator would have to link supernodes (old validator supernodes cannot be rolled into a new validator commission fee).
 
    _Reference Documents_
    - [Validator & Token Economics](https://skale.network/blog/validator-economics)
@@ -39,14 +38,11 @@ description: Setup Process for new SKALE Validator
 
 2. **Install SKALE Validator CLI**
 
-   SKALE Validator CLI is the validator client interface for registering a new validator into network or handling additional
-   delegation services where validators can self delegate or token holders can delegate to a validator. These are the type of
+   SKALE Validator CLI is the validator client interface for registering a new validator into the network. These are the type of
    operations that can be done with the Validator CLI:
 
-   - Register Validator (Set Commission Rate or Minimum delegation amount)
-   - Accept pending delegations
+   - Register Validator (Set Commission Rate)
    - Link all validator supernode addresses to a validator wallet address
-   - Request or cancel a delegation
 
    [See the SKALE Validator CLI documentation](/validators/validator-cli/overview)
 
@@ -109,7 +105,7 @@ description: Setup Process for new SKALE Validator
    </Warning>
 
    ```shell
-   sk-val validator register -n [NAME] -d [DESCRIPTION] -c [COMMISSION_RATE] --min-delegation [MIN_DELEGATION]
+   sk-val validator register -n [NAME] -d [DESCRIPTION] -c [COMMISSION_RATE]
    ```
 
    Required arguments:
@@ -117,7 +113,6 @@ description: Setup Process for new SKALE Validator
    - `--name/-n` - Validator name
    - `--description/-d` - Validator description (preferably organization info)
    - `--commission-rate/-c` - Commission rate (percent %)
-   - `--min-delegation` - Validator minimum delegation amount
 
    Optional arguments:
 
@@ -321,13 +316,13 @@ description: Setup Process for new SKALE Validator
     vi docker-compose.yml
     ```
 
-    make sure `image` is skalenetwork/sgxwallet:&lt;1.9.1-stable.1> in docker-compose and it will look like:
+    make sure `image` is skalenetwork/sgxwallet:&lt;1.10.2> in docker-compose and it will look like:
 
     ```shell
     version: '3'
     services:
       sgxwallet:
-        image: skalenetwork/sgxwallet:1.9.1-stable.1
+        image: skalenetwork/sgxwallet:1.10.2
         network_mode: host
         devices:
           - "/dev/isgx" # leave on of them
@@ -682,42 +677,12 @@ description: Setup Process for new SKALE Validator
 
       More information can be found [here](/validators/node-cli/releases/v2-0#node-backup).
 
-28. **Accept Delegations**
-
-      Every delegation need to be accepted. You can do it using `sk-val validator accept-delegation` command:
-
-      ```shell
-      sk-val validator accept-delegation --delegation-id [DELEGATION-ID]
-      ```
-
-      Required arguments:
-
-      - `--delegation-id` - Delegation id to accept
-
-      Optional arguments:
-
-      - `--pk-file` - Path to file with private key (only for software wallet type)
-      - `--gas-price` - Gas price value in Gwei for transaction (if not specified doubled average network value will be used)
-      - `--yes` - Confirmation flag
-
-      You can get [DELEGATION-ID] by running `sk-val validator delegations`:
-
-      ```shell
-      sk-val validator delegations [VALIDATOR_ID]
-      ```
-
-      You will see your pending delegation (`PENDING` status)  as well as already accepted ones (`DELEGATED` status).
-
-      <Note>
-      To register the supernode validator must meet the Minimum Staking Requirement (MSR) of 20,000,000 SKL.
-      </Note>
-
 ## Register Node in SKALE Network
 
 29. **Register Node with Node CLI**
 
       <Note>
-      Before proceeding, you will need to have at least  **1 ETH**. Also amount of delegated skale tokens need to be more or equal to minimum staking amount.
+      Before proceeding, you will need to have at least  **1 ETH**. Also amount of staked SKL tokens need to be more or equal to minimum staking amount.
       </Note>
 
       To register with the network, you will need to provide the following:
@@ -769,7 +734,6 @@ description: Setup Process for new SKALE Validator
       - [ ] Private and backup keys are secured in a safe place.
       - [ ] VPN is configured on all SGXWallet servers.
       - [ ] Ensure node wallets have sufficient ETH.
-      - [ ] Accept delegations for the next month.
       - [ ] Check telegram notifications (if you enabled them).
       - [ ] Use [watchdog](/validators/watchdog/overview) to monitor node status.
       - [ ] Get support from the SKALE validator community.
