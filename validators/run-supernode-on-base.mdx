@@ -1,6 +1,6 @@
 ---
-title: Run a Node on Base Mainnet
-description: Setup Process for a SKALE Validator Node on Base Mainnet
+title: Run a Supernode on Base
+description: Setup Process for a SKALE Validator Supernode on Base Mainnet
 ---
 
 ## Setup Validator
@@ -138,10 +138,6 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
 ## Setup SGX
 
 6. **Understand SGX Overview**
-
-   <Note>
-   Due date: 23rd of each month
-   </Note>
 
    SGX is a secure storage for BLS private key shares, which are used in consensus to sign new blocks.
    SGX is also used for private key shares.
@@ -322,13 +318,13 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
     vi docker-compose.yml
     ```
 
-    make sure `image` is skalenetwork/sgxwallet:&lt;1.9.1-stable.1> in docker-compose and it will look like:
+    make sure `image` is skalenetwork/sgxwallet:&lt;1.10.2> in docker-compose and it will look like:
 
     ```shell
     version: '3'
     services:
       sgxwallet:
-        image: skalenetwork/sgxwallet:1.9.1-stable.1
+        image: skalenetwork/sgxwallet:1.10.2
         network_mode: host
         devices:
           - "/dev/isgx" # leave on of them
@@ -382,10 +378,6 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
 ## Supernode Setup
 
 16. **Prepare Supernode Server**
-
-      <Note>
-      Due date: 23rd of each month
-      </Note>
 
       After Setting up SGX Wallet and create certifications, validators can download the SKALE Node CLI executables register and maintain your SKALE supernode.
       This process downloads docker container images from docker hub and spins up SKALE supernode functionalities. Some base containers such as SKALE Admin,
@@ -467,12 +459,8 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
       - `FILEBEAT_HOST` - URL to the Filebeat log server
       - `MANAGER_CONTRACTS` - SKALE Manager contract address on Base Mainnet
       - `IMA_CONTRACTS` - IMA contract address on Base Mainnet
-      - `CONTAINER_CONFIGS_DIR` - Directory for container configuration files
-      - `DOCKER_LVMPY_VERSION` - Version of the docker-lvmpy volume driver
       - `BLOCK_DEVICE` - Attached storage block device (e.g. `/dev/nvme1n1`)
       - `SGX_URL` - URL to the SGX server (e.g. `https://host:port`, do not add a trailing "/" after the port number)
-      - `MONITORING_CONTAINERS` - Enable monitoring containers (`True`/`False`)
-      - `DEFAULT_GAS_PRICE_WEI` - Default gas price in wei for Base Mainnet transactions
       - `ENV_TYPE` - Network type (`mainnet`)
       - `BITE` - Enable BITE (Blockchain Integrated Threshold Encryption) programmable privacy for the node (`True`)
 
@@ -484,14 +472,8 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
       FILEBEAT_HOST="base-elk-mainnet.skalenodes.com:5000"
       MANAGER_CONTRACTS="0x9E2aE995dfa2928C144291A0dFf15458E10779e8"
       IMA_CONTRACTS="0x2C3cae1A2143De33F7fe887ad0428d33BBBd0A62"
-      CONTAINER_CONFIGS_DIR=""
-      DOCKER_LVMPY_VERSION="1.0.2-stable.0"
       BLOCK_DEVICE="/dev/nvme1n1"
       SGX_URL=[SGX_URL]
-      TG_API_KEY=""
-      TG_CHAT_ID=""
-      MONITORING_CONTAINERS="True"
-      DEFAULT_GAS_PRICE_WEI="10000000"
       ENV_TYPE="mainnet"
       BITE="True"
       ```
@@ -681,42 +663,12 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
 
       More information can be found [here](/validators/node-cli/releases/v2-0#node-backup).
 
-28. **Accept Delegations**
-
-      Every delegation need to be accepted. You can do it using `sk-val validator accept-delegation` command:
-
-      ```shell
-      sk-val validator accept-delegation --delegation-id [DELEGATION-ID]
-      ```
-
-      Required arguments:
-
-      - `--delegation-id` - Delegation id to accept
-
-      Optional arguments:
-
-      - `--pk-file` - Path to file with private key (only for software wallet type)
-      - `--gas-price` - Gas price value in Gwei for transaction (if not specified doubled average network value will be used)
-      - `--yes` - Confirmation flag
-
-      You can get [DELEGATION-ID] by running `sk-val validator delegations`:
-
-      ```shell
-      sk-val validator delegations [VALIDATOR_ID]
-      ```
-
-      You will see your pending delegation (`PENDING` status)  as well as already accepted ones (`DELEGATED` status).
-
-      <Note>
-      To register the supernode validator must meet the Minimum Staking Requirement (MSR) of 20,000,000 SKL.
-      </Note>
-
 ## Register Node in SKALE Network
 
 29. **Register Node with Node CLI**
 
       <Note>
-      Before proceeding, you will need to have at least  **1 ETH** on Base. Also amount of delegated skale tokens need to be more or equal to minimum staking amount.
+      Before proceeding, you will need to have at least  **1 ETH** on Base. Also amount of staked SKL tokens need to be more or equal to minimum staking amount.
       </Note>
 
       To register with the network, you will need to provide the following:
@@ -768,7 +720,6 @@ description: Setup Process for a SKALE Validator Node on Base Mainnet
       - [ ] Private and backup keys are secured in a safe place.
       - [ ] VPN is configured on all SGXWallet servers.
       - [ ] Ensure node wallets have sufficient ETH on Base.
-      - [ ] Accept delegations for the next month.
       - [ ] Check telegram notifications (if you enabled them).
       - [ ] Use [watchdog](/validators/watchdog/overview) to monitor node status.
       - [ ] Get support from the SKALE validator community.

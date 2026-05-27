@@ -269,7 +269,7 @@
             "group": "Validators",
             "pages": [
               "validators/run-supernode",
-              "validators/run-base-mainnet-node",
+              "validators/run-supernode-on-base",
               "validators/supernode-overview",
               "validators/compliance-requirements",
               "validators/faq",

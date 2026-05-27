@@ -53,28 +53,6 @@ The SKALE Network is open to any validator as long as they meet the technical re
 
 The SLA threshold is a high percentage uptime and low latency response time. If a validator cannot meet the SLA requirements for a particular epoch (as determined by the network monitoring procedures), they will not be eligible to participate in the awards from the bounty pool.
 
-### Is there a minimum delegation requirement?
-
-No -- there is no minimum delegation requirement for a validator. Validators can chose to self-delegate or choose to bring on delegators, in which case, validators can set minimum delegation amount for accepting delegations.
-
-### Does the network have support for validator commissions and delegation of investor stakes?
-
-Yes -- validators can raise stake from delegators and have this reflected via contracts running the network. Commissions can be set for the monthly bounties such that payouts can be split into both commissions (to the validator) and delegator awards (to stakers). The commission rate that is set is solely at the discretion of validators and on what the market will bear.
-
-### Is there any unbonding or undelegation period?
-
-Yes -- the unbonding period for SKL tokens is the time between an undelegation request and the epoch at whicher the current delegation ends. Example:
-
-Delegator delegates 100,000 SKL to Validator 1 on January 5th.
-
-Validator 1 accepts delegation on January 25th.
-
-Delegation goes into affect February 1.
-
-The delegation remains in affecet and and will automatically re-delegate on April 1.
-
-If an undelegation request is made anytime between February 1 and April 1 (~3 days before is the recommended deadline to request undelegation); then the unboding period is the time between undelegation request and April 1.
-
 ### Is there a Minimum Staking Requirement (MSR)? Why is there an MSR?
 
 Yes, the MSR for a single Supernode is currently **20,000,000 SKL**.
