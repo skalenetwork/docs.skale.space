@@ -27,15 +27,6 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
 
    Be ready to fund ETH in your self-recharging wallet (SRW). See [Self-recharging wallet documentation](/validators/validator-cli/self-recharging-wallets).
 
-   **Decide your commission fee**
-
-   Decide on your commission fee. This cannot be changed once it is set. To set a new commission fee, you'll have to register a new validator.
-   This new validator would have to link supernodes (old validator supernodes cannot be rolled into a new validator commission fee).
-
-   _Reference Documents_
-   - [Validator & Token Economics](https://skale.network/blog/validator-economics)
-   - [Tokenomics](https://skale.network/tokenomics)
-
 2. **Install SKALE Validator CLI**
 
    SKALE Validator CLI is the validator client interface for registering a new validator into the network. These are the type of
@@ -107,7 +98,7 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
 4. **Register as a new SKALE validator**
 
    <Warning>
-   DON'T REGISTER A NEW VALIDATOR IF YOU ALREADY HAVE ONE! check : `sk-val validator ls`. For additional supernode set up, please go to Step 3.
+   DON'T REGISTER A NEW VALIDATOR IF YOU ALREADY HAVE ONE ON BASE! check : `sk-val validator ls`. For additional supernode set up, please go to Step 3.
    </Warning>
 
    ```shell
@@ -137,7 +128,7 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
 
 ## Setup SGX
 
-6. **Understand SGX Overview**
+6. **SGX Overview**
 
    SGX is a secure storage for BLS private key shares, which are used in consensus to sign new blocks.
    SGX is also used for private key shares.
@@ -164,10 +155,6 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
 8. **Configure Network for SGX**
 
    It's required to setup VPN between supernodes and SGX server. Ports 1026-1031 should open only to SKALE supernodes, not public ports should be accessible by supernode.
-
-   <Note>
-   SGXWallet can support up to <strong>5</strong> SKALE supernodes. If you have more, you should setup additional server.
-   </Note>
 
 9. **Install and Configure Packages for SGX**
 
@@ -248,7 +235,7 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
     ```shell
     git clone https://github.com/skalenetwork/sgxwallet/
     cd sgxwallet
-    git checkout tags/1.9.1-stable.1
+    git checkout tags/1.10.2
     ```
 
 11. **Enable SGX**
@@ -520,11 +507,11 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
       0a3d98d81a07: Pull complete
       43b3a182ba00: Pull complete
       Creating monitor_filebeat          ... done
-      Creating skale_transaction-manager ... done
-      Creating skale_watchdog            ... done
-      Creating skale_admin               ... done
-      Creating skale_bounty              ... done
-      Creating skale_api                 ... done
+      Creating sk_transaction-manager ... done
+      Creating sk_watchdog            ... done
+      Creating sk_admin               ... done
+      Creating sk_bounty              ... done
+      Creating sk_api                 ... done
       ```
 
       You can verify installation procedure by running:
