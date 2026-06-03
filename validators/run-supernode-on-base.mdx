@@ -12,7 +12,6 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
    **Obtain Ethereum Software Wallet or Hardware wallet**
 
    Get a Ledger, Hardware or Software wallet ready like Metamask/Portis/Bitski/Torus/myetherwallet.
-   This wallet will be used for receiving bounties.
 
    **Fund Validator Wallet with ETH (on Base)**
 
@@ -235,7 +234,7 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
     ```shell
     git clone https://github.com/skalenetwork/sgxwallet/
     cd sgxwallet
-    git checkout tags/1.10.2
+    git checkout tags/1.10.3
     ```
 
 11. **Enable SGX**
@@ -305,13 +304,13 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
     vi docker-compose.yml
     ```
 
-    make sure `image` is skalenetwork/sgxwallet:&lt;1.10.2> in docker-compose and it will look like:
+    make sure `image` is skalenetwork/sgxwallet:&lt;1.10.3> in docker-compose and it will look like:
 
     ```shell
     version: '3'
     services:
       sgxwallet:
-        image: skalenetwork/sgxwallet:1.10.2
+        image: skalenetwork/sgxwallet:1.10.3
         network_mode: host
         devices:
           - "/dev/isgx" # leave on of them
@@ -397,21 +396,6 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
 
     <Note>
     After docker installation make sure that the `live-restore` option is enabled in `/etc/docker/daemon.json`. See more info in the [docker docs](https://docs.docker.com/config/containers/live-restore/).
-    </Note>
-
-    <Note>
-    You can install iptables-persistent using the following commands:
-    </Note>
-
-    ```shell
-    echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-    echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-    sudo apt install iptables-persistent -y
-    ```
-
-    <Note>
-    You should carefully control any automatic updates. In general avoid updates to the Linux kernel, docker, docker-compose, btrfs-progs.
-    And take care when updating lvm2, iptables, iptables-persistent, and python.
     </Note>
 
     If you have any concerns or questions, please don't hesitate to reach out to SKALE Team leads on [Discord](http://discord.gg/skale).
