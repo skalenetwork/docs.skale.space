@@ -235,7 +235,7 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
     ```shell
     git clone https://github.com/skalenetwork/sgxwallet/
     cd sgxwallet
-    git checkout tags/1.10.2
+    git checkout tags/1.10.3
     ```
 
 11. **Enable SGX**
@@ -305,13 +305,13 @@ description: Setup Process for a SKALE Validator Supernode on Base Mainnet
     vi docker-compose.yml
     ```
 
-    make sure `image` is skalenetwork/sgxwallet:&lt;1.10.2> in docker-compose and it will look like:
+    make sure `image` is skalenetwork/sgxwallet:&lt;1.10.3> in docker-compose and it will look like:
 
     ```shell
     version: '3'
     services:
       sgxwallet:
-        image: skalenetwork/sgxwallet:1.10.2
+        image: skalenetwork/sgxwallet:1.10.3
         network_mode: host
         devices:
           - "/dev/isgx" # leave on of them
