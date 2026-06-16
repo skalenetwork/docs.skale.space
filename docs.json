@@ -17,7 +17,14 @@
     "tabs": [
       {
         "tab": "Get Started",
-        "pages": [
+        "groups": [
+          {
+            "group": "Hackathon",
+            "tag": "Live",
+            "pages": [
+              "hackathon-programm"
+            ]
+          },
           {
             "group": "Introduction",
             "pages": [
