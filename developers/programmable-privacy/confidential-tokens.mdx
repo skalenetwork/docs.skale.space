@@ -92,9 +92,13 @@ transfer(from, to, amount)
 | --- | --- | --- |
 | Holder | Transfer, approve, register a viewer key, authorize historic decryption | Only via registered viewer key |
 | Viewer | Decrypt ECIES balance off-chain (if authorized) | Yes (if granted access) |
-| Anyone | View encrypted ciphertext onchain | Encrypted only |
+| Anyone | View encrypted cipher-text onchain | Encrypted only |
 
-A holder registers their viewer public key via `setViewerPublicKey()`. The holder can also authorize other addresses to decrypt specific past transfers. This is done by calling functions such as `authorizeHistoricViewTimeRange(viewer, fromTimestamp, toTimestamp)` or `authorizeHistoricViewTransferId(viewer, transferId)`. \
+## Delegating a Viewer role 
+
+A holder registers their viewer public key via `setViewerPublicKey()`. The holder can also authorize other addresses to decrypt specific past transfers. This is done by calling functions such as `authorizeHistoricViewTimeRange(viewer, fromTimestamp, toTimestamp)` or `authorizeHistoricViewTransferId(viewer, transferId)`. 
+
+The `setViewerAddress()` function allows a token holder to assign an account with a previously registered public key as the authorized viewer of their confidential balance information.
 
 ## Learn More
 
