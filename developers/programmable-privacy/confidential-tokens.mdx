@@ -4,7 +4,7 @@ description: "Private programmable money. Encrypted balances, compliant transfer
 ---
 
 <Note>
-**Beta on SKALE Base Sepolia** — Confidential Tokens are available for testing and development on testnet. Mainnet deployment coming soon. API is stable but may see refinements.
+  **Beta on SKALE Base Sepolia** — Confidential Tokens are available for testing and development on testnet. Mainnet deployment coming soon. API is stable but may see refinements.
 </Note>
 
 ## Why Confidential Tokens?
@@ -19,43 +19,42 @@ Confidential Tokens are ERC20 tokens where balances are encrypted onchain. No pl
 
 <Tabs>
   <Tab title="Foundry">
-  ```bash
-  forge install skalenetwork/confidential-token
-  ```
+    ```bash
+    forge install skalenetwork/confidential-token
+    ```
 
-  ```solidity
-  import "@skalenetwork/confidential-token/ConfidentialToken.sol";
-
-  // Balances are encrypted automatically — no manual encryption needed
-  // Transfers use CTX under the hood for secure processing
-  confidentialToken.transfer(recipient, amount);
-
-  // Balance is readable only by the holder via their viewer key
-  uint256 balance = confidentialToken.balanceOf(msg.sender);
-  ```
+    ```solidity
+    import "@skalenetwork/confidential-token/ConfidentialToken.sol";
+    
+    // Balances are encrypted automatically — no manual encryption needed
+    // Transfers use CTX under the hood for secure processing
+    confidentialToken.transfer(recipient, amount);
+    
+    // Balance is readable only by the holder via their viewer key
+    uint256 balance = confidentialToken.balanceOf(msg.sender);
+    ```
   </Tab>
-
   <Tab title="Hardhat">
-  ```bash
-  npm install @skalenetwork/confidential-token
-  ```
+    ```bash
+    npm install @skalenetwork/confidential-token
+    ```
 
-  ```typescript
-  import { ConfidentialToken } from "@skalenetwork/confidential-token";
-
-  // Balances are encrypted automatically — no manual encryption needed
-  await confidentialToken.transfer(recipient, amount);
-
-  // Balance is readable only by the holder via their viewer key
-  const balance = await confidentialToken.balanceOf(sender);
-  ```
+    ```typescript
+    import { ConfidentialToken } from "@skalenetwork/confidential-token";
+    
+    // Balances are encrypted automatically — no manual encryption needed
+    await confidentialToken.transfer(recipient, amount);
+    
+    // Balance is readable only by the holder via their viewer key
+    const balance = await confidentialToken.balanceOf(sender);
+    ```
   </Tab>
 </Tabs>
 
 ## Dual-Encryption Model
 
 | Layer | Key | Purpose | Who Can Decrypt |
-|-------|-----|---------|-----------------|
+| --- | --- | --- | --- |
 | TE (Threshold Encryption) | Network BLS key | On-chain logic (transfers, sufficiency checks) | Consensus via CTX callback |
 | ECIES | Recipient's secp256k1 key | Off-chain balance viewing | Token holder's private key |
 
@@ -65,7 +64,7 @@ Both layers encrypt every balance. The TE layer allows the network to verify and
 
 A confidential token transfer works like this — encryption of new balances happens inside the CTX callback, not upfront:
 
-```
+```text
 transfer(from, to, amount)
   → SubmitCTX(0x1B, from_encBalance, to_encBalance, amount, [plaintext metadata])
     → Validators decrypt encrypted args
@@ -81,21 +80,21 @@ transfer(from, to, amount)
 ## Key Contracts
 
 | Contract | Purpose |
-|----------|---------|
-| `ConfidentialToken` | Core confidential ERC20 |
+| --- | --- |
+| `ConfidentialToken` | Core confidential ERC20 token (encrypted balances, dual-layer encryption, etc.) |
 | `ConfidentialWrapper` | Wraps an existing ERC20 into a confidential token |
-| `MintableConfidentialToken` | ConfidentialToken + restricted mint |
-| `ConfidentialEIP3009` | EIP-3009 with encrypted value parameters |
+| `MintableConfidentialToken` | ConfidentialToken \+ controlled minting (access-managed) |
+| `ConfidentialEIP3009` | EIP-3009 (`TransferWithAuthorization`) extended with encrypted values (supports encrypted `transferWithAuthorization` and `receiveWithAuthorization`). |
 
 ## Roles
 
 | Role | Can Do | Can See Balance |
-|------|--------|-----------------|
-| Holder | Transfer, approve | Only via registered viewer key |
-| Viewer | Decrypt ECIES balance off-chain | Yes (if granted access) |
+| --- | --- | --- |
+| Holder | Transfer, approve, register a viewer key, authorize historic decryption | Only via registered viewer key |
+| Viewer | Decrypt ECIES balance off-chain (if authorized) | Yes (if granted access) |
 | Anyone | View encrypted ciphertext onchain | Encrypted only |
 
-A holder registers a viewer public key via `setViewerPublicKey()`. The holder can be their own viewer.
+A holder registers their viewer public key via `setViewerPublicKey()`. The holder can also authorize other addresses to decrypt specific past transfers. This is done by calling functions such as `authorizeHistoricViewTimeRange(viewer, fromTimestamp, toTimestamp)` or `authorizeHistoricViewTransferId(viewer, transferId)`. \
 
 ## Learn More
 
