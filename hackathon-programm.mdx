@@ -25,14 +25,39 @@ Build the next generation of Web3 applications using **SKALE's Programmable Priv
 
 ### Privacy SDK
 
-The Privacy SDK enables developers to build applications with programmable privacy, including:
+TypeScript SDK for SKALE Programmable Privacy — encrypted ERC-20 transfers with on-chain confidential computation
 
-- Confidential token transfers
-- Encrypted transactions
-- Private balance management
-- Re-encryption workflows
+- NPM package: [https://www.npmjs.com/package/@skalenetwork/privacy-sdk](https://www.npmjs.com/package/@skalenetwork/privacy-sdk)
 
-Start building privacy-first applications on SKALE and unlock new possibilities for Web3.
+### Privacy Toolkit
+
+The Privacy Toolkit provides the core libraries and smart contracts required to build privacy-enabled applications on SKALE.
+
+#### BITE Solidity Library
+
+Solidity library for building smart contracts that leverage SKALE's BITE 2 blockchain capabilities. It exposes wrappers around the BITE-specific precompiled contracts for threshold encryption (TE), ECIES encryption, and conditional transaction (CTX) submission.
+
+- Stable version: `1.0.1-stable.0`
+- Documentation: [https://docs.skale.space/developers/sdks/skalenetwork-bite-solidity](https://docs.skale.space/developers/sdks/skalenetwork-bite-solidity) 
+- GitHub Repo: [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity) 
+
+#### BITE TypeScript SDK
+
+Developer SDK for interacting with privacy-enabled smart contracts, encrypting data, managing confidential balances, and executing re-encryption workflows.
+
+- Stable version: `0.8.1`
+- Documentation: [https://docs.skale.space/developers/sdks/skalenetwork-bite](https://docs.skale.space/developers/sdks/skalenetwork-bite) 
+- GitHub Repo: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+
+#### Confidential Tokens 
+
+Confidential Tokens are ERC20 tokens where balances are encrypted onchain. This repository provides smart contracts that enable private token transfers and balance confidentiality using encryption integrated with SKALE's encryption precompiles and BITE consensus protocol.
+
+- Confidential Token address on SKALE on Base Sepolia: 
+- Beta version: `1.0.0-beta.1`
+- Documentation: [https://docs.skale.space/developers/programmable-privacy/confidential-tokens](https://docs.skale.space/developers/programmable-privacy/confidential-tokens)
+
+- GitHub Repo: [https://github.com/skalenetwork/confidential-token](https://github.com/skalenetwork/confidential-token)
 
 ## Resources
 
