@@ -4,7 +4,7 @@ description: "Solidity helpers for Conditional Transactions, re-encryption preco
 ---
 
 <Note>
-Compiler requirements: Solidity **>= 0.8.27**, EVM version **istanbul** or lower.
+  Compiler requirements: Solidity **\>= 0.8.27**, EVM version **istanbul** or lower.
 </Note>
 
 The BITE Solidity SDK (`@skalenetwork/bite-solidity`) provides smart contract interfaces for creating Conditional Transactions (CTX), encrypting data onchain, and handling decryption callbacks.
@@ -44,6 +44,7 @@ function submitCTX(
 **Returns:** The address of the ephemeral wallet that will call `onDecrypt`. **Each call generates a unique address.**
 
 **Parameters:**
+
 - `precompileAddress`: Use `BITE.SUBMIT_CTX_ADDRESS` (`0x1B`)
 - `gasLimit`: Gas for callback (in gas units, use `msg.value / tx.gasprice`)
 - `encryptedArgs`: Array of encrypted byte arrays to decrypt
@@ -105,19 +106,21 @@ function onDecrypt(
 
 ## `BITE.encryptTE()`
 
-Encrypts data using the network's BLS threshold key. Only the validator committee can decrypt (via CTX callback).
+Encrypts data using the network’s BLS threshold key. Only the validator committee can decrypt (via CTX callback).
 
 ```solidity
 function encryptTE(
-    address precompileAddress,  // use BITE.ENCRYPT_TE_ADDRESS (0x1D)
-    bytes memory data           // data to encrypt (32-byte aligned)
-) external returns (bytes memory encrypted, uint256 errorCode);
+        address precompileAddress,  // use BITE.ENCRYPT_TE_ADDRESS (0x1D)
+        bytes memory data           // data to encrypt (32-byte aligned)
+    ) external view returns (bytes memory encrypted);
 ```
+
+Returns the encrypted data. The call will revert on error (see below error details).
 
 **Error Codes:**
 
 | Code | Error |
-|------|-------|
+| --- | --- |
 | 1 | InputTooLarge |
 | 2 | InputTooShort |
 | 3 | InputNot32ByteAligned |
@@ -130,17 +133,19 @@ function encryptTE(
 Encrypts data for a specific viewer's secp256k1 public key. Only the holder of the corresponding private key can decrypt off-chain.
 
 ```solidity
-function encryptECIES(
-    address precompileAddress,  // use BITE.ENCRYPT_ECIES_ADDRESS (0x1C)
-    bytes memory data,          // data to encrypt
-    PublicKey memory publicKey  // viewer's public key (x, y)
-) external returns (bytes memory encrypted, uint256 errorCode);
+    function encryptECIES(
+        address precompileAddress,  // use BITE.ENCRYPT_ECIES_ADDRESS (0x1C)
+        bytes memory data,          // data to encrypt
+        PublicKey memory publicKey  // viewer's public key (x, y)
+    ) external view returns (bytes memory encrypted);
 ```
+
+Returns the encrypted data (encrypted under the given public key). The call will revert on error (see below error details).
 
 **Error Codes:**
 
 | Code | Error |
-|------|-------|
+| --- | --- |
 | 1-6 | Same as EncryptTE |
 | 7 | InvalidPublicKey |
 | 8 | EncryptionFailed |
@@ -159,7 +164,7 @@ The public key is an uncompressed secp256k1 point (without the `0x04` prefix).
 ## Constants
 
 | Constant | Address | Description |
-|----------|---------|-------------|
+| --- | --- | --- |
 | `BITE.SUBMIT_CTX_ADDRESS` | `0x1B` | CTX precompile for requesting decryption |
 | `BITE.ENCRYPT_TE_ADDRESS` | `0x1D` | Threshold encryption precompile |
 | `BITE.ENCRYPT_ECIES_ADDRESS` | `0x1C` | ECIES encryption precompile |
