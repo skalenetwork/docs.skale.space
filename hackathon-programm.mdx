@@ -1,0 +1,70 @@
+---
+title: "Info"
+description: "SKALE Network Hackathon Guide - Programmable Privacy"
+---
+
+## Introduction 
+
+Build the next generation of Web3 applications using **SKALE's Programmable Privacy Stack**. Explore conditional transactions, confidential token, re-encryption (BITE Phase 2) and privacy-preserving smart contracts while competing to create innovative decentralized applications.
+
+## Development Environment
+
+### SKALE Base Sepolia Testnet
+
+| Configuration | Value |
+| :-- | :-- |
+| RPC | `https://base-sepolia-testnet.skalenodes.com/v1/jubilant-horrible-ancha` |
+| Chain ID | `324705682 (Hex: 0x135A9D92)` |
+| Explorer | [Blockscout](https://base-sepolia-testnet-explorer.skalenodes.com/) |
+| Faucet | [Get test tokens](https://base-sepolia-faucet.skale.space/) |
+| Bridge | [SKALE Portal](https://base-sepolia.skalenodes.com/bridge) |
+| Features | Native Bridge, x402 Facilitators, Conditional Transactions (BITE Phase 2), Confidential tokens, re-encryption and more! |
+| Tokens & Contracts | [View reference](https://docs.skale.space/get-started/quick-start/skale-on-base#testnet-2) |
+
+## Start building 
+
+### Privacy SDK
+
+TypeScript SDK for SKALE Programmable Privacy — encrypted ERC-20 transfers with on-chain confidential computation
+
+- NPM package: [https://www.npmjs.com/package/@skalenetwork/privacy-sdk](https://www.npmjs.com/package/@skalenetwork/privacy-sdk)
+
+### Privacy Toolkit
+
+The Privacy Toolkit provides the core libraries and smart contracts required to build privacy-enabled applications on SKALE.
+
+#### BITE Solidity Library
+
+Solidity library for building smart contracts that leverage SKALE's BITE 2 blockchain capabilities. It exposes wrappers around the BITE-specific precompiled contracts for threshold encryption (TE), ECIES encryption, and conditional transaction (CTX) submission.
+
+- Stable version: `1.0.1-stable.0`
+- Documentation: [https://docs.skale.space/developers/sdks/skalenetwork-bite-solidity](https://docs.skale.space/developers/sdks/skalenetwork-bite-solidity) 
+- GitHub Repo: [https://github.com/skalenetwork/bite-solidity](https://github.com/skalenetwork/bite-solidity) 
+
+#### BITE TypeScript SDK
+
+Developer SDK for interacting with privacy-enabled smart contracts, encrypting data, managing confidential balances, and executing re-encryption workflows.
+
+- Stable version: `0.8.1`
+- Documentation: [https://docs.skale.space/developers/sdks/skalenetwork-bite](https://docs.skale.space/developers/sdks/skalenetwork-bite) 
+- GitHub Repo: [https://github.com/skalenetwork/bite-ts](https://github.com/skalenetwork/bite-ts)
+
+#### Confidential Tokens 
+
+Confidential Tokens are ERC20 tokens where balances are encrypted onchain. This repository provides smart contracts that enable private token transfers and balance confidentiality using encryption integrated with SKALE's encryption precompiles and BITE consensus protocol.
+
+- Confidential Token on SKALE on Base Sepolia: `0x48d9908986eF5822F419eE5911369f931e7653B3`
+- Beta version: `1.0.0-beta.1`
+- Documentation: [https://docs.skale.space/developers/programmable-privacy/confidential-tokens](https://docs.skale.space/developers/programmable-privacy/confidential-tokens)
+
+- GitHub Repo: [https://github.com/skalenetwork/confidential-token](https://github.com/skalenetwork/confidential-token)
+
+## Resources
+
+| Resource | What It Does | Link |
+| --- | --- | --- |
+| **Conditional Transactions** | Contracts that decrypt on demand. Set conditions, validators decrypt, callbacks fire — automated privacy with no reveal phase | [Conditional Transactions](https://docs.skale.space/developers/programmable-privacy/conditional-transactions) |
+| **Re-encryption** | Encrypt for processing, decrypt for viewing. Threshold key for contracts, ECIES for specific viewers — or both at once | [**Re-encryption**](https://docs.skale.space/developers/programmable-privacy/re-encryption) |
+| **Confidential Tokens** | Private programmable money. Encrypted balances, compliant transfers, holder-only viewing — ERC20s that keep secrets | [**Confidential Tokens**](https://docs.skale.space/developers/programmable-privacy/confidential-tokens) |
+| **Native Bridge** | Base ↔ SKALE asset bridging | [Bridge UI](https://base-sepolia.skalenodes.com/bridge) |
+| **Facilitators** | Off-chain entities handling payment routing | [Available facilitators](https://docs.skale.space/get-started/agentic-builders/facilitators) |
