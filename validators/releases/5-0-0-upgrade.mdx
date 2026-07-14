@@ -1,0 +1,91 @@
+---
+title: Upgrade to v5.0.0
+description: SKALE node upgrade steps from 4.0.1 to 5.0.0
+---
+
+<Note>
+Before beginning the upgrade, create and store backups on another machine:
+
+- Back up the SGXWallet `sgx_data` directory and `sgx_wallet_backup_key.txt`.
+- Back up the node:
+
+  ```bash
+  skale node backup .
+  ```
+</Note>
+
+## Upgrade steps for the SGX server
+
+<Steps>
+
+1. Confirm that the SGXWallet `sgx_data` directory and backup key are backed up.
+
+2. Open the SGXWallet configuration directory.
+
+    ```bash
+    cd sgxwallet/run_sgx
+    ```
+
+3. In `docker-compose.yml`, set the SGXWallet image to `skalenetwork/sgxwallet_release:1.10.2`.
+
+4. Pull and start the updated SGXWallet container.
+
+    ```bash
+    docker compose down && docker compose pull && docker compose up -d
+    ```
+
+</Steps>
+
+## Upgrade steps for the node server
+
+<Steps>
+
+1. Download node-cli v3.2.0.
+
+    ```bash
+    curl -L https://github.com/skalenetwork/node-cli/releases/download/3.2.0/skale-3.2.0-Linux-x86_64 > /usr/local/bin/skale
+    ```
+
+2. Verify the node-cli binary checksum.
+
+    ```bash
+    sha512sum /usr/local/bin/skale
+    ```
+
+    Expected checksum:
+
+    ```text
+    ccc2ae7a8694d75ed3f4cbc1d36dbfc4b55561fc41daecd30b52c97da6e122164333719b432fe246bc89f47737d743c2cf33b0f718070d4658789af817ee52d0
+    ```
+
+3. Make node-cli executable.
+
+    ```bash
+    chmod +x /usr/local/bin/skale
+    ```
+
+4. Update `.env` option names and values.
+
+    Replace each legacy option with its new option; do not keep both names in `.env`.
+
+    | Legacy option | New option |
+    | --- | --- |
+    | `DISK_MOUNTPOINT` | `BLOCK_DEVICE` |
+    | `DOCKER_LVMPY_STREAM` | `DOCKER_LVMPY_VERSION` |
+    | `CONTAINER_CONFIGS_STREAM` | `NODE_VERSION` |
+    | `MANAGER_CONTRACTS_ABI_URL` | `MANAGER_CONTRACTS` |
+    | `IMA_CONTRACTS_ABI_URL` | `IMA_CONTRACTS` |
+
+    Set `NODE_VERSION` to `5.0.0`:
+
+    ```bash
+    NODE_VERSION=5.0.0
+    ```
+
+5. Run the update procedure.
+
+    ```bash
+    skale node update .env --yes
+    ```
+
+</Steps>
