@@ -75,6 +75,7 @@ Before beginning the upgrade, create and store backups on another machine:
     | `CONTAINER_CONFIGS_STREAM` | `NODE_VERSION` |
     | `MANAGER_CONTRACTS_ABI_URL` | `MANAGER_CONTRACTS` |
     | `IMA_CONTRACTS_ABI_URL` | `IMA_CONTRACTS` |
+    | `SGX_SERVER_URL` | `SGX_URL` |
 
     Set `NODE_VERSION` to `5.0.0`:
 
@@ -82,7 +83,13 @@ Before beginning the upgrade, create and store backups on another machine:
     NODE_VERSION=5.0.0
     ```
 
-5. Run the update procedure.
+5. Stop docker-lvmpy service.
+
+    ```bash
+    systemctl stop docker-lvmpy
+    ```
+
+6. Run the update procedure.
 
     ```bash
     skale node update .env --yes
