@@ -283,6 +283,7 @@
           {
             "group": "Network Releases",
             "pages": [
+              "validators/releases/5-0-0-upgrade",
               "validators/releases/4-0-1-upgrade",
               "validators/releases/4-0-0-upgrade",
               "validators/releases/3-1-2-upgrade",
@@ -572,6 +573,10 @@
     {
       "source": "/run-a-skale-node/releases/4-0-1-upgrade",
       "destination": "/validators/releases/4-0-1-upgrade"
+    },
+    {
+      "source": "/run-a-skale-node/releases/5-0-0-upgrade",
+      "destination": "/validators/releases/5-0-0-upgrade"
     },
     {
       "source": "/building-applications/solidity-quickstart",
@@ -1086,6 +1091,10 @@
       "destination": "/validators/node-cli/releases/v2-0"
     },
     {
+      "source": "/ecosystem/validators/releases/5-0-0-upgrade",
+      "destination": "/validators/releases/5-0-0-upgrade"
+    },
+    {
       "source": "/ecosystem/validators/releases/3-0-2-upgrade",
       "destination": "/validators/releases/3-0-3-upgrade"
     },
@@ -1272,6 +1281,10 @@
     {
       "source": "/node-operations/releases/4-0-1-upgrade",
       "destination": "/validators/releases/4-0-1-upgrade"
+    },
+    {
+      "source": "/node-operations/releases/5-0-0-upgrade",
+      "destination": "/validators/releases/5-0-0-upgrade"
     },
     {
       "source": "/skale-chain-administration/skale-chain-access-control",
