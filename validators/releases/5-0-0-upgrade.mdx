@@ -77,10 +77,12 @@ Before beginning the upgrade, create and store backups on another machine:
     | `IMA_CONTRACTS_ABI_URL` | `IMA_CONTRACTS` |
     | `SGX_SERVER_URL` | `SGX_URL` |
 
-    Set `NODE_VERSION` to `5.0.0`:
+    Set `NODE_VERSION` to `5.0.0`, and `MANAGER_CONTRACTS` and `IMA_CONTRACTS` to `production`:
 
     ```bash
     NODE_VERSION=5.0.0
+    MANAGER_CONTRACTS=production
+    IMA_CONTRACTS=production
     ```
 
 5. Stop docker-lvmpy service.
