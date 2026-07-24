@@ -41,6 +41,12 @@ Before beginning the upgrade, create and store backups on another machine:
 ## Upgrade steps for the node server
 
 <Steps>
+  <Step title="Stop docker-lvmpy">
+    ```bash
+    systemctl stop docker-lvmpy
+    ```
+  </Step>
+
   <Step title="Download node-cli v3.2.0">
     ```bash
     curl -L https://github.com/skalenetwork/node-cli/releases/download/3.2.0/skale-3.2.0-Linux-x86_64 > /usr/local/bin/skale
@@ -77,6 +83,16 @@ Before beginning the upgrade, create and store backups on another machine:
     | `IMA_CONTRACTS_ABI_URL` | `IMA_CONTRACTS` |
     | `SGX_SERVER_URL` | `SGX_URL` |
 
+    Remove these obsolete options from `.env`:
+
+    - `DB_PORT`
+    - `DB_ROOT_PASSWORD`
+    - `DB_PASSWORD`
+    - `DB_USER`
+    - `IMA_ENDPOINT`
+    - `DISABLE_IMA`
+    - `TELEGRAF`
+
     Set `NODE_VERSION` to `5.0.0`, `MANAGER_CONTRACTS` and `IMA_CONTRACTS` to `production` and update `FILEBEAT_HOST`:
 
     ```bash
@@ -84,12 +100,6 @@ Before beginning the upgrade, create and store backups on another machine:
     MANAGER_CONTRACTS=production
     IMA_CONTRACTS=production
     FILEBEAT_HOST="mainnet-elk.skalenodes.com:5000"
-    ```
-  </Step>
-
-  <Step title="Stop docker-lvmpy">
-    ```bash
-    systemctl stop docker-lvmpy
     ```
   </Step>
 
