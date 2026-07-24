@@ -71,7 +71,7 @@ Before beginning the upgrade, create and store backups on another machine:
     ```
   </Step>
 
-  <Step title="Update the .env options">
+  <Step title="Replace legacy .env options">
     Replace each legacy option with its new option; do not keep both names in `.env`.
 
     | Legacy option | New option |
@@ -82,7 +82,9 @@ Before beginning the upgrade, create and store backups on another machine:
     | `MANAGER_CONTRACTS_ABI_URL` | `MANAGER_CONTRACTS` |
     | `IMA_CONTRACTS_ABI_URL` | `IMA_CONTRACTS` |
     | `SGX_SERVER_URL` | `SGX_URL` |
+  </Step>
 
+  <Step title="Remove obsolete .env options">
     Remove these obsolete options from `.env`:
 
     - `DB_PORT`
@@ -92,7 +94,9 @@ Before beginning the upgrade, create and store backups on another machine:
     - `IMA_ENDPOINT`
     - `DISABLE_IMA`
     - `TELEGRAF`
+  </Step>
 
+  <Step title="Set updated .env options">
     Set `NODE_VERSION` to `5.0.0`, `MANAGER_CONTRACTS` and `IMA_CONTRACTS` to `production` and update `FILEBEAT_HOST`:
 
     ```bash
