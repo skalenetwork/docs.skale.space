@@ -1,0 +1,22 @@
+---
+title: Upgrade to v5.2.1
+description: SKALE node upgrade steps from 5.2.0 to 5.2.1
+---
+
+## Upgrade steps for the node server
+
+<Steps>
+  <Step title="Set the node version and run the update">
+    In `.env`, set `NODE_VERSION` to `5.2.1`:
+
+    ```bash
+    NODE_VERSION=5.2.1
+    ```
+
+    Then run the update procedure:
+
+    ```bash
+    skale node update .env --yes
+    ```
+  </Step>
+</Steps>
