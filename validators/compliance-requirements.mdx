@@ -143,4 +143,5 @@ IMA Container must pass healthcheck. `http://YOUR_SKALE_NODE_IP:3009/status/ima`
 
 - Check key-cert pair validity using `http://YOUR_SKALE_NODE_IP:3009/status/ssl`
 - Test ssl certificates using `skale ssl check`
-- Don't touch machine firewall (iptables installed by supernode software automatically sets machine firewall rules), external VPC or networking firewall ensure Ports open on **80, 311, 443,** 3009, 8080, 9100, 10000–18192, and ICMP IPv4  (in other words, not closed by an external firewall).
+- Make sure the following port ranges are open **80, 311, 443,** 3009, 10000–18192, and ICMP IPv4. Those ports are utilized by SKALE node software.
+- Ensure all other port ranges are closed. If any are required for operations, confirm with the core team first.
