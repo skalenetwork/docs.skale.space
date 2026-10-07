@@ -283,6 +283,8 @@
           {
             "group": "Network Releases",
             "pages": [
+              "validators/releases/5-3-0-upgrade-base",
+              "validators/releases/5-3-0-upgrade-base-testnet",
               "validators/releases/5-2-1-upgrade",
               "validators/releases/5-2-0-upgrade",
               "validators/releases/5-0-0-upgrade",
