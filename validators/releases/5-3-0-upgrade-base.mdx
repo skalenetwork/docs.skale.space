@@ -1,9 +1,9 @@
 ---
 title: Upgrade to v5.3.0 on Base Mainnet
-description: Upgrade SKALE validator nodes on Base Mainnet to v5.3.0
+description: Upgrade SKALE validator nodes on Base Mainnet with node version 5.3.0-base
 ---
 
-This release updates the node version to `5.3.0`, node-cli to `3.3.1`, and SGXWallet to `1.10.4` on Base Mainnet.
+This release updates the node version to `5.3.0-base`, node-cli to `3.3.1`, and SGXWallet to `1.10.4` on Base Mainnet.
 
 <Note>
 Before starting, back up the SGXWallet `sgx_data` directory and `sgx_wallet_backup_key.txt` on another machine. Back up each node with `skale node backup .` from the directory containing its `.env` file.
@@ -65,7 +65,7 @@ Before starting, back up the SGXWallet `sgx_data` directory and `sgx_wallet_back
     In the node's `.env` file, set:
 
     ```bash
-    NODE_VERSION=5.3.0
+    NODE_VERSION=5.3.0-base
     ```
 
     Keep the existing Base Mainnet `ENDPOINT`, `ENV_TYPE`, contract addresses, and other network settings.
