@@ -72,6 +72,10 @@ Before starting, back up the SGXWallet `sgx_data` directory and `sgx_wallet_back
   </Step>
 
   <Step title="Run the node update">
+    <Note>
+    Remove the `INFLUX_URL` option from the node's `.env` file before starting the update.
+    </Note>
+
     From the directory containing `.env`, run:
 
     ```bash
