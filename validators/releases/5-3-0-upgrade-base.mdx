@@ -11,6 +11,15 @@ Before starting, back up the SGXWallet `sgx_data` directory and `sgx_wallet_back
 
 ## Upgrade the SGX server
 
+<Note>
+Verify the `skalenetwork/sgxwallet_release` image digest before and after the SGXWallet update:
+
+- **Before updating**, version `1.10.2` must match `sha256:82db299f99de550cc9e9d5c32669ae5b043d17ff04cc14cf9a5c56cd779a01bf`.
+- **After updating**, version `1.10.4` must match `sha256:174750f4d912ecb2680f8bc5f3ffc5f59ad25e62df9abff2e61a64fda8182953`.
+
+If either digest does not match, stop the upgrade process and notify the SKALE core team immediately through any available communication channel.
+</Note>
+
 <Steps>
   <Step title="Set the SGXWallet image to v1.10.4">
     On the SGX server, open `sgxwallet/run_sgx/docker-compose.yml` and set the image to:
