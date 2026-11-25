@@ -117,7 +117,7 @@ Good places to start:
 ### Need Help?
 
 - Open a [GitHub Issue](https://github.com/skalenetwork/docs.skale.space/issues)
-- Join the [SKALE Discord](https://discord.gg/skale) and open a ticket in `#support`
+- Join the [SKALE Discord](https://discord.skale.space) and open a ticket in `#support`
 - Check [AGENTS.md](./AGENTS.md) for the full product context used by AI coding assistants
 
 ## Related Resources
