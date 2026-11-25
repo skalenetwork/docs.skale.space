@@ -342,7 +342,7 @@
       },
       {
         "label": "Discord",
-        "href": "https://discord.gg/skale",
+        "href": "https://discord.skale.space",
         "icon": "discord"
       }
     ]
@@ -351,7 +351,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "https://discord.com/invite/skale"
+        "href": "https://discord.skale.space"
       },
       {
         "label": "GitHub",
@@ -402,7 +402,7 @@
     "socials": {
       "x": "https://x.com/skalenetwork",
       "github": "https://github.com/skalenetwork",
-      "discord": "https://discord.gg/skale"
+      "discord": "https://discord.skale.space"
     }
   },
   "redirects": [
